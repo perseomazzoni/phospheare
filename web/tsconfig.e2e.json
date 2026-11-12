@@ -1,0 +1,18 @@
+// The real-browser specs under e2e/ and the landing's screenshot rig built on
+// them. Playwright compiles them by stripping types and checks none, so this
+// project is what checks them; `npm run build` runs it beside the others.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // Node runs the specs, and the browsers they drive are newer than the
+    // app's own floor.
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable"]
+  },
+  "include": [
+    "e2e/**/*.ts",
+    "scripts/shots/**/*.ts",
+    "playwright.config.ts",
+    "src/**/*.d.ts"
+  ]
+}

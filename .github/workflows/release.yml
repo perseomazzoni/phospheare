@@ -1,0 +1,462 @@
+# Builds and tests a version tag, and drafts its GitHub release. The release
+# holds no program: writers build it from the tag's source code (README,
+# "Quickstart, for everyone"). It holds the tag's source code as
+# `once-dark-studio-source.zip`, the public site's archive and their
+# `SHA256SUMS`.
+# Nothing is deployed here: publishing a release that is not a pre-release
+# puts its site on GitHub Pages (`site.yml`).
+#
+#   1. `web-and-desktop`: the SPA is built once, the third-party notices are
+#      written into it, and `desktop/build.sh` packs the desktop program for
+#      its five targets, each archive holding the identity service beside it.
+#      The site (`build:demo`) is built after them, so no archive holds it,
+#      and packed as `site-<version>.tar.gz`.
+#   2. `smoke`: each archive is unpacked on its own platform, natively, and
+#      started with a placeholder Google client (`tools/smoke-desktop.mjs`):
+#      it must answer `/desktop/info`, `/app` and `/identity/session`, then
+#      quit with 0 and take the identity service with it. The linux/amd64
+#      job also serves the unpacked site archive as Pages does and runs the
+#      demo site's suite against it.
+#
+#      | Archive       | Runner             |
+#      |---------------|--------------------|
+#      | linux/amd64   | `ubuntu-latest`    |
+#      | linux/arm64   | `ubuntu-24.04-arm` |
+#      | windows/amd64 | `windows-latest`   |
+#      | darwin/arm64  | `macos-latest`     |
+#      | darwin/amd64  | `macos-26-intel`   |
+#
+#   3. `release`, once every archive passed: the tag's source code packed
+#      as `once-dark-studio-source.zip`, `SHA256SUMS` over it and the site
+#      archive, and a draft release holding the three, with notes that git-cliff
+#      writes from the Conventional Commits titles on `main`, in its default
+#      configuration.
+#   4. `clean-up`, whatever the jobs before it did: the desktop archives are
+#      deleted from the run, so no program stays downloadable. To build a
+#      failed draft again, run the whole workflow again, not its failed jobs.
+#
+# The release stays a draft until the maintainer publishes it, so no writer and
+# no installed copy's update check sees it before then.
+#
+# A manual run (Run workflow) builds an existing tag again, for a draft whose
+# build failed part way.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The existing tag to build, such as v1.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# One build per tag at a time, and none is cut short.
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  web-and-desktop:
+    name: Build the SPA and the desktop program
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read # the CI runs of the tag's commit
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          persist-credentials: false
+
+      # What CONTRIBUTING asks of a release commit, checked here rather than
+      # remembered: it is on `main`, and its CI run passed. The compare API
+      # says whether `main` already holds the commit, and the runs API
+      # whether CI succeeded on it.
+      - name: Check that the tag is on main and its CI passed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(git rev-parse 'HEAD^{commit}')
+          api() {
+            curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/$1"
+          }
+          # The `${...}` inside the single quotes are node's template
+          # literals, which the shell must leave alone.
+          # shellcheck disable=SC2016
+          api "compare/main...$sha" | node -e '
+            let body = "";
+            process.stdin.on("data", (chunk) => (body += chunk));
+            process.stdin.on("end", () => {
+              const { status } = JSON.parse(body);
+              if (status === "identical" || status === "behind") return;
+              console.log(`::error::${process.argv[1]} is not on main (${status}); release only a commit main holds.`);
+              process.exit(1);
+            });
+          ' "$sha"
+          # shellcheck disable=SC2016
+          api "actions/workflows/ci.yml/runs?head_sha=$sha&status=success&per_page=1" | node -e '
+            let body = "";
+            process.stdin.on("data", (chunk) => (body += chunk));
+            process.stdin.on("end", () => {
+              if (JSON.parse(body).total_count > 0) return;
+              console.log(`::error::CI has not passed on ${process.argv[1]}; wait for it, or fix it first.`);
+              process.exit(1);
+            });
+          ' "$sha"
+
+      # The version is the tag without its `v`, and stamps every artifact. A
+      # writer's build of the tag's source code reads it from the two
+      # `package.json` files instead, so they must say the same.
+      - name: Resolve the version
+        id: version
+        run: |
+          if ! printf '%s' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "::error::$TAG is not a version tag such as v1.2.0 or v1.2.0-beta.1"
+            exit 1
+          fi
+          for file in package.json web/package.json; do
+            own=$(sed -n 's/^ *"version" *: *"\([^"]*\)".*/\1/p' "$file" | head -n 1)
+            if [ "$own" != "${TAG#v}" ]; then
+              echo "::error::$file says version $own, the tag $TAG; set the version before you tag (CONTRIBUTING.md, Releasing)."
+              exit 1
+            fi
+          done
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      # No dependency cache in a workflow that builds release files, so
+      # nothing a pull request cached reaches them.
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: desktop/go.mod
+          cache: false
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Download the Go modules
+        run: |
+          (cd desktop && go mod download)
+          (cd identity && go mod download)
+
+      # The tag is checked again on its own commit, with the Go that builds
+      # it: an advisory published since its pull request stops the build.
+      - name: Check for known vulnerabilities (govulncheck)
+        run: |
+          (cd desktop && go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...)
+          (cd identity && go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...)
+
+      - name: Audit npm dependencies
+        run: npm run audit:lockfiles
+
+      # The same version the desktop program and the identity service carry;
+      # with it the SPA shows the version and looks for newer releases.
+      - name: Build the SPA
+        run: npm run build --workspace @phospheare/web
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Check the built CSS
+        run: node tools/check-built-css.mjs web/dist
+
+      # Written into `web/dist`, so the desktop program embeds it with the SPA.
+      - name: Write the third-party notices
+        run: node tools/generate-notices.mjs
+
+      # The archives' entries carry the tag's commit time, so two builds of
+      # one tag give byte-equal archives.
+      - name: Build the desktop archives
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+          export SOURCE_DATE_EPOCH
+          sh desktop/build.sh
+
+      # After the desktop archives, which embed all of `web/dist`. The site's
+      # notices list only the web packages it ships.
+      - name: Build the site
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          npm run build:demo --workspace @phospheare/web
+          node tools/check-built-css.mjs web/dist/demo
+          node tools/generate-notices.mjs --web-only --out web/dist/demo/third-party-notices.txt
+
+      # As in the desktop archives, the entries carry the tag's commit time,
+      # so two builds of one tag give byte-equal archives. Hidden files stay
+      # out: Pages never serves them.
+      - name: Pack the site
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+          tar --sort=name --mtime="@$SOURCE_DATE_EPOCH" --owner=0 --group=0 --numeric-owner \
+            --exclude='./.*' -C web/dist/demo -cf - . \
+            | gzip -n -9 > "$RUNNER_TEMP/site-$VERSION.tar.gz"
+
+      # The smoke job tests every file built here; the release receives the
+      # site archive only.
+      - name: Collect the built files
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/build" "$RUNNER_TEMP/release"
+          cp desktop/dist/*.zip desktop/dist/*.tar.gz \
+            "$RUNNER_TEMP/site-$VERSION.tar.gz" "$RUNNER_TEMP/build/"
+          cp "$RUNNER_TEMP/site-$VERSION.tar.gz" "$RUNNER_TEMP/release/"
+
+      - name: Upload the built files
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-build
+          path: ${{ runner.temp }}/build
+          if-no-files-found: error
+          # The `clean-up` job deletes it at the end of the run; one day is the
+          # limit if that job does not run.
+          retention-days: 1
+
+      - name: Upload the release files
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-files
+          path: ${{ runner.temp }}/release
+          if-no-files-found: error
+          retention-days: 7
+
+  smoke:
+    name: Start the ${{ matrix.target }} archive
+    needs: web-and-desktop
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    strategy:
+      # Every platform reports, so one failure does not hide another.
+      fail-fast: false
+      matrix:
+        include:
+          # One platform also drives the served app in a real browser.
+          - {
+              target: linux-amd64,
+              runner: ubuntu-latest,
+              archive: tar.gz,
+              browser: true,
+            }
+          - { target: linux-arm64, runner: ubuntu-24.04-arm, archive: tar.gz }
+          - { target: windows-amd64, runner: windows-latest, archive: zip }
+          - { target: darwin-arm64, runner: macos-latest, archive: tar.gz }
+          - { target: darwin-amd64, runner: macos-26-intel, archive: tar.gz }
+    env:
+      VERSION: ${{ needs.web-and-desktop.outputs.version }}
+    steps:
+      # The workflow's own commit, not the tag: a manual run builds a tag that
+      # may predate the smoke script, and the archives hold all the tag's code.
+      - name: Check out the smoke script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Download the built files
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-build
+          path: ${{ runner.temp }}/assets
+
+      # The browser smoke (`web/e2e/release-smoke.spec.ts`) needs Playwright
+      # and Chromium; the other platforms need only Node.
+      - name: Install npm dependencies
+        if: matrix.browser
+        run: npm ci
+
+      - name: Install Chromium
+        if: matrix.browser
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+
+      # With `browser`, the smoke script runs the browser smoke against the
+      # started program, between its own checks and the quit.
+      - name: Start the archive, drive it and stop it
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          ARCHIVE: ${{ matrix.archive }}
+          BROWSER_SMOKE: ${{ matrix.browser && 'npm --prefix web run test:e2e -- e2e/release-smoke.spec.ts --project=desktop' || '' }}
+        run: >-
+          node tools/smoke-desktop.mjs
+          "$RUNNER_TEMP/assets/once-dark-studio-desktop-$VERSION-$TARGET.$ARCHIVE"
+          "$VERSION"
+          ${BROWSER_SMOKE:+-- $BROWSER_SMOKE}
+
+      # The site as Pages will serve it: the archive the draft holds,
+      # unpacked and served as files only (`tools/serve-site.mjs`), under the
+      # demo site's suite.
+      - name: Serve the site archive and drive it
+        if: matrix.browser
+        working-directory: web
+        env:
+          E2E_DEMO: "1"
+          E2E_DEMO_DIR: ${{ runner.temp }}/site
+        run: |
+          mkdir "$E2E_DEMO_DIR"
+          tar -xzf "$RUNNER_TEMP/assets/site-$VERSION.tar.gz" -C "$E2E_DEMO_DIR"
+          npx playwright test
+
+  release:
+    name: Draft the release
+    needs: [web-and-desktop, smoke]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # creates the draft release and uploads its files
+    env:
+      TAG: ${{ needs.web-and-desktop.outputs.tag }}
+    steps:
+      # The whole history and every tag: git-cliff reads both.
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.web-and-desktop.outputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download the release files
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-files
+          path: ${{ runner.temp }}/assets
+
+      # The tag's source code under one name in every release, so the README
+      # links the newest one directly, at
+      # `releases/latest/download/once-dark-studio-source.zip`. It holds what
+      # GitHub's own source archive holds, in a `once-dark-studio` folder. A
+      # writer sees the product's name, as on the desktop archives, and never
+      # the working name of the repository.
+      - name: Pack the source code
+        run: git archive --format=zip --prefix=once-dark-studio/ -o "$RUNNER_TEMP/assets/once-dark-studio-source.zip" "$TAG"
+
+      - name: Write SHA256SUMS
+        working-directory: ${{ runner.temp }}/assets
+        run: |
+          export LC_ALL=C
+          sha256sum -- * > "$RUNNER_TEMP/SHA256SUMS"
+          mv "$RUNNER_TEMP/SHA256SUMS" SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      # git-cliff is pinned in `tools/changelog`, where Dependabot updates it,
+      # and installed from its lockfile, which CI audits (`audit-lockfiles`).
+      - name: Install git-cliff
+        run: |
+          npm ci --prefix tools/changelog --no-audit --no-fund
+          echo "$GITHUB_WORKSPACE/tools/changelog/node_modules/.bin" >> "$GITHUB_PATH"
+
+      # Only release tags count as versions (`--tag-pattern`), so a release's
+      # notes hold every change since the last release, those of its
+      # pre-releases included. The default pattern counts every `v` tag, and a
+      # release would then list only the changes after its last pre-release.
+      # A pre-release gets the range from the last release to its own commit:
+      # `--unreleased` finds nothing on a commit that carries the tag.
+      - name: Write the release notes
+        run: |
+          releases='^v[0-9]+\.[0-9]+\.[0-9]+$'
+          if printf '%s' "$TAG" | grep -Eq "$releases"; then
+            git-cliff --current --tag-pattern "$releases" > "$RUNNER_TEMP/notes.md"
+          else
+            last=$(git tag --merged HEAD | grep -E "$releases" | sort -V | tail -n 1 || true)
+            git-cliff --tag "$TAG" --tag-pattern "$releases" ${last:+"$last..HEAD"} > "$RUNNER_TEMP/notes.md"
+          fi
+          {
+            echo
+            echo "### Corresponding Source"
+            echo
+            echo "Licensed under AGPL-3.0-or-later. [Source for this release](https://github.com/$GITHUB_REPOSITORY/tree/$TAG) and [source archive](https://github.com/$GITHUB_REPOSITORY/archive/refs/tags/$TAG.tar.gz)."
+            echo
+            echo "### Build it"
+            echo
+            echo "This release holds no program. Download \`once-dark-studio-source.zip\` below and follow the [Quickstart](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/README.md#quickstart-for-everyone). Developers: [CONTRIBUTING.md](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/CONTRIBUTING.md), [desktop program](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/desktop/README.md)."
+            echo
+            echo "### Platforms"
+            echo
+            echo "Before this draft was made, the program was built from this source and started on each platform, natively: Linux amd64 and arm64, Windows amd64, macOS arm64 and amd64. Each answered, served the app, ran the identity service and quit cleanly."
+            echo
+            echo "### Site"
+            echo
+            echo "\`site-${TAG#v}.tar.gz\` is the public site and its demo, tested as it is served. It goes online when a release that is not a pre-release is published."
+            echo
+            echo "### Checksums"
+            echo
+            echo "\`SHA256SUMS\` lists the SHA-256 of the source code and of the site archive."
+          } >> "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md" >> "$GITHUB_STEP_SUMMARY"
+
+      # A draft left by an earlier run of the same tag receives the new files
+      # in place of its old ones. Only this step holds the write token: the
+      # steps before it install and run code that needs none.
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if is_draft=$(gh release view "$TAG" --json isDraft --jq .isDraft 2> /dev/null); then
+            if [ "$is_draft" != true ]; then
+              echo "::error::$TAG is already published; a published release is never changed by this workflow."
+              exit 1
+            fi
+            gh release upload "$TAG" --clobber "$RUNNER_TEMP"/assets/*
+          else
+            prerelease=()
+            case "$TAG" in *-*) prerelease=(--prerelease) ;; esac
+            gh release create "$TAG" --draft --verify-tag "${prerelease[@]}" \
+              --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" \
+              "$RUNNER_TEMP"/assets/*
+          fi
+
+  clean-up:
+    name: Delete the desktop archives
+    needs: [web-and-desktop, smoke, release]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write # deletes this run's artifact
+    steps:
+      # The archives were built only to be tested. A run that failed before
+      # it uploaded them finds nothing to delete.
+      - name: Delete the desktop archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" \
+            --jq '.artifacts[] | select(.name == "release-build") | .id')
+          for id in $ids; do
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id"
+            echo "Deleted the artifact $id."
+          done

@@ -1,0 +1,52 @@
+# Node
+node_modules
+dist
+coverage
+
+# Environment — never commit real secrets
+.env
+# A local identity keyring (README, "With Google")
+.keys/
+.env.local
+.env.*.local
+
+# Coding agents: publish only the shared configuration and source folders.
+# New runtime files and directories stay ignored by default.
+**/.claude/*
+!/.claude/settings.json
+!/.claude/launch.json
+!/.claude/hooks/
+!/.claude/references/
+!/.claude/skills/
+**/.opencode/*
+!/.opencode/opencode.json
+!/.opencode/commands/
+.agents/
+
+# Python — only for the logo tracing scripts in tools/brand, which
+# leave bytecode behind and may be run from a virtualenv.
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Vendored dependencies
+vendor/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Playwright
+test-results/
+playwright-report/
+
+# SPA
+web/cov.log
+web/.cache/
+# What `tsc -b` emits for the composite `tsconfig.node.json`: declarations
+# beside vite.config.ts and the sources it imports, and the build info.
+*.tsbuildinfo
+web/vite.config.d.ts
+web/src/product.d.ts
+web/src/security/csp.d.ts

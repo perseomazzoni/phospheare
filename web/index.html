@@ -1,0 +1,58 @@
+<!--
+  Copyright (C) 2026 Perseo Mazzoni
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  Free software under the GNU Affero General Public License, version 3 or
+  later; the full text is in `LICENSE`.
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- The Content-Security-Policy is NOT written here. The CSP plugin in
+      vite.config.ts injects it directly above this comment — right
+      after the charset declaration, which must stay inside the document's
+      first 1024 bytes — from the single source in src/security/csp.ts, which
+      is also what the test suite asserts against, so the policy cannot drift
+      from its pins. That file explains why the policy ships inside the
+      artifact instead of as a response header, and which directives a <meta>
+      cannot carry at all. -->
+    <!-- The product-name placeholders below are filled in by the
+      `product-name` plugin from product.json at the repository root, the
+      one place the public name lives. -->
+    <!-- The one companion header that HAS a meta form. Referrers leave this
+      origin as the origin alone and never as a path: a URL here names a
+      project id. -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- `viewport-fit=cover` is what makes `env(safe-area-inset-*)` report a
+      real number instead of 0. It lets the page under the notch
+      and the home indicator, which is only safe because every surface that
+      meets an edge now pays the inset: `#root` for everything in normal flow,
+      and the scrim, the toasts and the editor's chrome for the fixed ones. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="%PRODUCT_NAME% — an open source writing tool for novelists. You build it and you run it on your own computer, and your books stay plain files that you own."
+    />
+    <meta property="og:title" content="%PRODUCT_NAME%" />
+    <meta
+      property="og:description"
+      content="An open source writing tool for novelists. You build it and you run it on your own computer, and your books stay your own files."
+    />
+    <meta property="og:type" content="website" />
+    <title>%PRODUCT_NAME%</title>
+    <!-- The brand's marks at their sizes (docs/brand/study.html): the figure
+      with its spark for the tab, the figure's bust for every square icon. The
+      manifest is written by the product-name plugin from product.json, so
+      the name an installed icon carries is the one public name. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

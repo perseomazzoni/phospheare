@@ -1,0 +1,209 @@
+[
+  {
+    "id": "age-claim",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "reference:character--ilse.md",
+          "node:section--01-il-molo.md"
+        ],
+        "words": ["ventisei"]
+      },
+      {
+        "sources": ["node:section--02-l-impiegato.md"],
+        "words": ["trenta"]
+      }
+    ]
+  },
+  {
+    "id": "age-slip",
+    "explained": false,
+    "sides": [
+      {
+        "sources": [
+          "reference:character--ilse.md",
+          "node:section--01-il-molo.md"
+        ],
+        "words": ["ventisei"]
+      },
+      {
+        "sources": ["node:section--05-il-segno-dell-acqua.md"],
+        "words": ["ventidue"]
+      }
+    ]
+  },
+  {
+    "id": "scar",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:character--ilse.md"],
+        "words": ["mano sinistra"]
+      },
+      {
+        "sources": ["node:section--03-la-barca-di-notte.md"],
+        "words": ["mano destra"]
+      }
+    ]
+  },
+  {
+    "id": "mother",
+    "explained": true,
+    "sides": [
+      {
+        "sources": ["reference:character--ilse.md"],
+        "words": ["annegata"]
+      },
+      {
+        "sources": ["node:section--05-il-segno-dell-acqua.md"],
+        "words": ["altro nome", "capitale"]
+      }
+    ]
+  },
+  {
+    "id": "night-rule",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--rules.md"],
+        "words": ["nessuna barca", "di notte"]
+      },
+      {
+        "sources": ["node:section--03-la-barca-di-notte.md"],
+        "words": ["mezzanotte", "saltmarsh"]
+      }
+    ]
+  },
+  {
+    "id": "night-exception",
+    "explained": true,
+    "sides": [
+      {
+        "sources": ["reference:world--rules.md"],
+        "words": ["nessuna barca", "di notte"]
+      },
+      {
+        "sources": ["node:section--02-l-impiegato.md"],
+        "words": ["quella notte", "dall'altra parte dello stretto"]
+      }
+    ]
+  },
+  {
+    "id": "flood-belief",
+    "explained": true,
+    "sides": [
+      {
+        "sources": ["reference:world--timeline.md"],
+        "words": ["diga"]
+      },
+      {
+        "sources": ["node:section--01-il-molo.md"],
+        "words": ["mandata dio"]
+      }
+    ]
+  },
+  {
+    "id": "flood-year",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--timeline.md"],
+        "words": ["1904", "vecchia diga", "segno dell'acqua"]
+      },
+      {
+        "sources": ["node:section--05-il-segno-dell-acqua.md"],
+        "words": ["1906"]
+      }
+    ]
+  },
+  {
+    "id": "limp",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "reference:character--tomas.md",
+          "node:section--01-il-molo.md"
+        ],
+        "words": ["zoppica", "zoppicando"]
+      },
+      {
+        "sources": ["node:section--04-il-pontile.md"],
+        "words": ["due alla volta", "di corsa"]
+      }
+    ]
+  },
+  {
+    "id": "tom-eyes",
+    "explained": false,
+    "known": "loss",
+    "sides": [
+      {
+        "sources": ["reference:character--tomas.md"],
+        "words": ["azzurri"]
+      },
+      {
+        "sources": ["node:section--02-l-impiegato.md"],
+        "words": ["occhi verdi"]
+      }
+    ]
+  },
+  {
+    "id": "ferry-colour",
+    "explained": false,
+    "known": "loss",
+    "sides": [
+      {
+        "sources": ["reference:notes--traghetto.md"],
+        "words": ["rosso"]
+      },
+      {
+        "sources": ["node:section--02-l-impiegato.md"],
+        "words": ["scafo azzurro"]
+      }
+    ]
+  },
+  {
+    "id": "tom-knows",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:character--ilse.md"],
+        "words": ["sezione 5"]
+      },
+      {
+        "sources": ["node:section--03-la-barca-di-notte.md"],
+        "words": ["sapeva già"]
+      }
+    ]
+  },
+  {
+    "id": "lantern-knows",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--myths.md"],
+        "words": ["sezione 5"]
+      },
+      {
+        "sources": ["node:section--04-il-pontile.md"],
+        "words": ["sempre saputo"]
+      }
+    ]
+  },
+  {
+    "id": "bell-reveal",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--systems.md"],
+        "words": ["sezione 4"]
+      },
+      {
+        "sources": ["node:section--02-l-impiegato.md"],
+        "words": ["non era rientrata"]
+      }
+    ]
+  }
+]

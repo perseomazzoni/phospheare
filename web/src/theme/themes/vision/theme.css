@@ -1,0 +1,5445 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* Vision: the paint the app uses under this theme, then the theme's
+   own touches over it. The `paint` layer paints every rule of the frame's
+   (`styles/base.css`, `editor/editor.css`, `webapp/webapp.css`), which
+   paints nothing itself: first the rules every theme shares
+   (`shared.css`), then this sheet's own. The `tune` layer stands over it
+   whatever either rule's weight. It paints and never sizes, places, hides
+   or moves (`themes/sheets.test.ts`). */
+
+@layer paint, tune;
+
+@layer paint {
+  /* ── The kit ─────────────────────────────────────────────────────────────── */
+
+  /* ── The web application's three ─────────────────────────────────────────── */
+
+  .ui-btn-primary,
+  .ui-btn-outline,
+  .ui-btn-ghost,
+  .ui-btn-attention {
+    border-color: transparent;
+    border-radius: var(--r);
+    font-weight: var(--strong-weight);
+  }
+
+  .ui-btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow: var(--shadow-accent);
+  }
+
+  .ui-btn-outline {
+    border-color: var(--hair);
+    color: var(--ink);
+  }
+
+  .ui-btn-outline:hover:not(:disabled, [aria-disabled="true"]) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--hover-accent);
+  }
+
+  .ui-btn-ghost {
+    color: var(--ink-3);
+  }
+
+  .ui-btn-ghost:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  .ui-btn-attention {
+    background: var(--attention-tint);
+    color: var(--attention);
+    box-shadow: inset 0 0 0 1px var(--attention-glow);
+  }
+
+  .ui-btn-attention:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow:
+      inset 0 0 0 1px var(--attention-glow),
+      0 0 0 3px var(--attention-tint);
+  }
+
+  /* ── Loading inside a button ─────────────────────────────────────────────── */
+
+  .ui-btn-soft,
+  .ui-btn-danger {
+    border-radius: var(--r-sm);
+    font-weight: var(--medium-weight);
+  }
+
+  .ui-btn-soft {
+    background: var(--accent-tint);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+  }
+
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--accent-tint-2);
+  }
+
+  .ui-btn-danger {
+    background: var(--danger);
+    color: var(--on-fill);
+  }
+
+  .ui-btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow: 0 0 0 3px var(--danger-tint);
+  }
+
+  .ui-dialog-foot .ui-btn {
+    border-radius: var(--r);
+    font-weight: var(--strong-weight);
+  }
+
+  .ui-btn-quiet {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-quiet:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-link {
+    color: var(--ink-3);
+    font-weight: var(--link-weight);
+  }
+
+  .ui-btn-link:hover:not(:disabled, [aria-disabled="true"]) {
+    color: var(--ink-3);
+  }
+
+  .ui-btn-icon {
+    border-radius: var(--r-xs);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-icon:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .ui-btn-icon:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -1px;
+  }
+
+  /* ── Loading dots ────────────────────────────────────────────────────────── */
+
+  .ui-dots i {
+    border-radius: 50%;
+    background: var(--dots-dim);
+  }
+
+  /* ── Controls ────────────────────────────────────────────────────────────── */
+
+  .ui-text-link {
+    background: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .ui-text-link-ink {
+    color: var(--ink);
+  }
+
+  /* ── Input, with its evidence line ───────────────────────────────────────── */
+
+  .ui-input {
+    border-color: var(--field-edge);
+    border-bottom-color: var(--field-foot);
+    border-radius: var(--field-radius);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  .ui-input-bad {
+    border-color: var(--danger);
+  }
+
+  .ui-input-note {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .ui-input-note-bad {
+    color: var(--danger);
+  }
+
+  .ui-input-note-flag {
+    color: var(--ink);
+  }
+
+  /* ── Select ──────────────────────────────────────────────────────────────── */
+
+  .ui-select {
+    border-color: var(--field-edge);
+    border-bottom-color: var(--field-foot);
+    border-radius: var(--field-radius);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  /* ── Segmented control ───────────────────────────────────────────────────── */
+
+  .ui-seg {
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .ui-seg button:hover:not(:disabled) {
+    color: var(--ink);
+  }
+
+  .ui-seg button[aria-pressed="true"] {
+    background: var(--press-ground);
+    color: var(--press-ink);
+    box-shadow: var(--press-mark);
+  }
+
+  /* ── Kbd ─────────────────────────────────────────────────────────────────── */
+
+  .ui-kbd {
+    font-family: var(--f-mono);
+    font-weight: var(--name-weight);
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--paper-raised);
+    color: var(--ink-3);
+    font-variant-caps: normal;
+    letter-spacing: normal;
+  }
+
+  /* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+  .ui-skeleton {
+    border-radius: var(--r-xs);
+    background: linear-gradient(
+      90deg,
+      var(--paper-sunk),
+      var(--hair-soft),
+      var(--paper-sunk)
+    );
+    background-size: 200% 100%;
+  }
+
+  /* ── Banner ──────────────────────────────────────────────────────────────── */
+
+  .ui-banner {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+
+  .ui-banner-attention {
+    border-color: var(--attention-tint);
+    background: var(--attention-tint);
+    color: var(--attention);
+  }
+
+  .ui-banner-problem {
+    border-color: var(--danger-tint);
+    background: var(--danger-tint);
+    color: var(--danger);
+  }
+
+  .ui-banner-quiet {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* ── Meter ───────────────────────────────────────────────────────────────── */
+
+  .ui-meter-bar {
+    border-radius: var(--r-round);
+    background: var(--hair);
+  }
+
+  /* ── AccessCard ──────────────────────────────────────────────────────────── */
+
+  .ui-access {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+  }
+
+  .ui-access-perms {
+    border-top-color: var(--hair-soft);
+    background: var(--paper);
+  }
+
+  /* ── Slider ──────────────────────────────────────────────────────────────── */
+
+  .ui-slider-rail {
+    border-radius: var(--r-round);
+    background: var(--hair);
+  }
+
+  .ui-slider-fill {
+    border-radius: inherit;
+    background: linear-gradient(
+      to right,
+      var(--ui-slider-from, var(--accent)),
+      color-mix(
+        in oklch,
+        var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+        var(--ui-slider-from, var(--accent))
+      )
+    );
+  }
+
+  .ui-slider-input {
+    background: transparent;
+  }
+
+  .ui-slider-input::-webkit-slider-thumb {
+    border-radius: 50%;
+    background: color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    );
+    box-shadow: 0 0 0 2px var(--paper-raised);
+  }
+
+  .ui-slider-input::-moz-range-thumb {
+    border-radius: 50%;
+    background: color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    );
+    box-shadow: 0 0 0 2px var(--paper-raised);
+  }
+
+  .ui-slider-input:active::-webkit-slider-thumb,
+  .ui-slider-input:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+
+  .ui-slider-input:active::-moz-range-thumb,
+  .ui-slider-input:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+
+  .ui-slider-readout {
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 1px var(--hair);
+    font-family: var(--f-meta);
+    font-variant-numeric: var(--figures);
+    color: var(--ink-3);
+  }
+
+  /* ── Overlays ────────────────────────────────────────────────────────────── */
+
+  .ui-scrim {
+    background: var(--scrim);
+  }
+
+  .ui-dialog {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* ── Wizards ─────────────────────────────────────────────────────────────── */
+
+  .ui-steps-track {
+    border-radius: var(--r-xs);
+    background: var(--hair);
+  }
+
+  .ui-steps-fill {
+    border-radius: var(--r-xs);
+    background: var(--accent);
+  }
+
+  .ui-step-dot {
+    border-radius: var(--r-round);
+    background: var(--ink-3);
+  }
+
+  .ui-steps-comet {
+    border-radius: var(--r-round);
+    background:
+      repeating-linear-gradient(
+        to right,
+        transparent 0 7px,
+        color-mix(in srgb, var(--dots-hot) 85%, transparent) 7px 9px,
+        transparent 9px 15px
+      ),
+      linear-gradient(
+        to right,
+        transparent,
+        var(--dots-cy) 55%,
+        var(--dots-hot)
+      );
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--dots-c0) 70%, transparent);
+  }
+
+  .ui-job-seg {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+  }
+
+  .create-card {
+    border-color: var(--hair-soft);
+    border-radius: var(--r);
+    background: var(--paper);
+    color: var(--ink-3);
+  }
+
+  .create-chip {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .ui-dialog-foot {
+    border-top-color: var(--hair-soft);
+    background: var(--paper);
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+  }
+
+  .ui-alert-evidence {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    background: var(--paper-sunk);
+    border-left-color: var(--danger);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  }
+
+  @media (max-width: 720px) {
+    .ui-dialog,
+    .ui-dialog-alert {
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+
+    .ui-dialog-foot {
+      border-radius: 0;
+    }
+  }
+
+  /* ── Radio cards ─────────────────────────────────────────────────────────── */
+
+  .pick {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper);
+  }
+
+  .pick[data-on="1"] {
+    border-color: var(--press-edge);
+    border-bottom-color: var(--press-foot);
+    background: var(--press-ground);
+    box-shadow: var(--press-ring);
+  }
+
+  .pick:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .pick-sub {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .pick-tick {
+    color: var(--spark);
+  }
+
+  /* ── List rows ───────────────────────────────────────────────────────────── */
+
+  .ui-row {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-row-note {
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+  }
+
+  .ui-row-tick {
+    color: var(--spark);
+  }
+
+  /* ── Ticks ───────────────────────────────────────────────────────────────── */
+
+  .ui-tick {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-tick-box {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-xs);
+    color: transparent;
+  }
+
+  .ui-tick-box.ui-tick-bead {
+    border-radius: 50%;
+  }
+
+  /* ── The import window ───────────────────────────────────────────────────── */
+
+  .import-file-remove {
+    border-color: var(--danger);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--danger);
+  }
+
+  .import-file-remove:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--danger-glow);
+  }
+
+  .import-group {
+    --bead-c: var(--leaf);
+    border-radius: var(--r-sm);
+  }
+
+  input.import-row-title {
+    border-color: transparent;
+    border-radius: var(--r-sm);
+    background: transparent;
+  }
+
+  input.import-row-title:focus {
+    border-color: var(--hair-firm);
+    background: var(--paper);
+    outline: none;
+  }
+
+  .import-bead-ghost {
+    border-radius: 50%;
+    background: var(--bead-c);
+  }
+
+  .import-seam .import-join {
+    font-family: var(--f-chrome);
+    font-weight: var(--bold-weight);
+    color: var(--ink-3);
+    background: transparent;
+  }
+
+  .import-peek {
+    font-family: var(--f-prose);
+    color: var(--ink);
+    scrollbar-color: var(--scroll-thumb) transparent;
+  }
+
+  .import-cut-bead {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .import-cut:focus-visible {
+    outline: none;
+  }
+
+  /* ── Progress ────────────────────────────────────────────────────────────── */
+
+  .ui-prog-bar {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+  }
+
+  .ui-prog-bar i {
+    border-radius: var(--r-xs);
+    background: var(--accent);
+  }
+
+  /* ── The command bar ─────────────────────────────────────────────────────── */
+
+  .ui-bar {
+    border-color: var(--bar-edge);
+    border-radius: var(--bar-radius);
+    background: var(--bar-ground);
+    box-shadow: var(--bar-shadow);
+    backdrop-filter: var(--bar-frost);
+  }
+
+  /* ── Actions ─────────────────────────────────────────────────────────────── */
+
+  .ui-bar-act {
+    border-radius: var(--r);
+  }
+
+  /* The bar's one action is the ink button the buttons' first kind is, its
+     gold rule inside its edge (`Buttons` below). */
+  .ui-bar-act-solid {
+    background: var(--ink);
+    color: var(--paper);
+    outline: 1px solid var(--vision-gilt);
+    outline-offset: -4px;
+  }
+
+  .ui-bar-act-solid:hover:not(:disabled) {
+    background: var(--ink-2);
+  }
+
+  .ui-bar-act-solid:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .ui-bar-act-quiet {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ui-bar-act[aria-pressed="true"] {
+    background: var(--press-ground);
+    color: var(--press-ink);
+    box-shadow: var(--press-mark);
+  }
+
+  .ui-bar-act[aria-pressed="true"]:hover:not(:disabled) {
+    background: var(--press-hover);
+  }
+
+  .ui-bar-act[data-attention="1"] {
+    color: var(--attention);
+    box-shadow: inset 0 0 0 1px var(--attention-glow);
+  }
+
+  /* ── Track ───────────────────────────────────────────────────────────────── */
+
+  .ui-bar-track-thumb {
+    border-radius: var(--r-sm);
+    background: var(--press-ground);
+    box-shadow: var(--press-mark);
+  }
+
+  .ui-bar-track button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-bar-track button[aria-pressed="true"] {
+    color: var(--press-ink);
+  }
+
+  .ui-bar-track button[data-attention="1"] {
+    color: var(--attention);
+  }
+
+  /* ── Seated ──────────────────────────────────────────────────────────────── */
+
+  .ui-bar-track[data-seat="sunk"] {
+    border-radius: var(--r-sm);
+    background: var(--seat-trough);
+  }
+
+  /* ── Tip ─────────────────────────────────────────────────────────────────── */
+
+  .ui-tip {
+    border-radius: var(--r-sm);
+    background: var(--tip-solid);
+    box-shadow: 0 0 0 1px var(--tip-edge);
+    color: var(--tip-ink);
+  }
+
+  /* ── Bubble ──────────────────────────────────────────────────────────────── */
+
+  .ui-bubble {
+    border-radius: var(--r-lg);
+    background: var(--inverse-solid);
+    color: var(--inverse-ink);
+    box-shadow: var(--shadow-3);
+  }
+
+  .ui-bubble::after {
+    background: var(--inverse-solid);
+  }
+
+  .ui-bubble button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--inverse-ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-bubble button:hover {
+    background: var(--inverse-raised);
+    color: var(--inverse-ink-strong);
+  }
+
+  .ui-bubble button[aria-pressed="true"] {
+    color: var(--inverse-ink-strong);
+  }
+
+  .ui-bubble hr {
+    background: var(--inverse-raised);
+  }
+
+  /* ── Find ────────────────────────────────────────────────────────────────── */
+
+  .ui-bar-find {
+    border-radius: var(--r);
+    color: var(--ink);
+  }
+
+  .ui-bar-find-input {
+    outline: none;
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .ui-bar-find-count {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ui-bar-find-clear {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ui-bar-find-busy {
+    color: var(--ink-3);
+  }
+
+  /* ── Menu ────────────────────────────────────────────────────────────────── */
+
+  .ui-menu {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-2);
+  }
+
+  /* ── Popover ─────────────────────────────────────────────────────────────── */
+
+  .ui-popover {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-2);
+  }
+
+  .ui-menu button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-menu button:hover,
+  .ui-menu button:focus-visible {
+    background: var(--accent-tint);
+    color: var(--accent);
+    outline: none;
+  }
+
+  .ui-menu button.ui-menu-danger {
+    color: var(--danger);
+  }
+
+  .ui-menu button:disabled {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .ui-menu-group {
+    color: var(--ink-dim);
+    font-family: var(--f-chrome);
+  }
+
+  /* ── The prose context menu ──────────────────────────────────────────────── */
+
+  .ui-menu.ui-menu-inverse button {
+    color: var(--tip-ink);
+  }
+
+  .ui-menu.ui-menu-inverse button:hover,
+  .ui-menu.ui-menu-inverse button:focus-visible {
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+  }
+
+  .ui-menu.ui-menu-inverse button:disabled {
+    background: transparent;
+    color: var(--tip-ink);
+  }
+
+  /* ── The command palette ─────────────────────────────────────────────────── */
+
+  .palette {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  .palette-query input {
+    outline: none;
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .palette-row {
+    border-radius: var(--r-sm);
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .palette-row-on {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .palette-row-on .palette-group {
+    color: var(--accent);
+  }
+
+  /* ── Toast ───────────────────────────────────────────────────────────────── */
+
+  .ui-toast {
+    background: var(--tip-solid);
+    color: var(--tip-ink);
+    border-radius: var(--r);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+  }
+
+  .ui-toast-undo {
+    border-radius: var(--r-sm);
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    font-family: var(--f-chrome);
+    font-weight: var(--label-weight);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-dots i {
+      background: var(--dots-cy);
+      box-shadow: 0 0 calc(var(--dots-u) * 3)
+        color-mix(in srgb, var(--dots-cy) 50%, transparent);
+    }
+
+    .ui-skeleton {
+      background: var(--paper-sunk);
+    }
+  }
+
+  /* ══ Landing ═════════════════════════════════════════════════════════════════
+     The page at `/`: the display face for the promise, the glass of the
+     app's own panes round a page of prose, and the accent only as light: the
+     glow under the live page, the caret, a picture lit. */
+
+  /* ── Landing: the hero ────────────────────────────────────────────────────── */
+
+  .landing-hero {
+    background: radial-gradient(
+      60% 45% at 50% 78%,
+      var(--accent-glow),
+      transparent 72%
+    );
+  }
+
+  /* The hero's glow, on the finale's layer half as tall again as the section:
+     the same size and place, measured on the taller box. */
+  .landing-finale::before {
+    background: radial-gradient(
+      60% 30% at 50% 52%,
+      var(--accent-glow),
+      transparent 72%
+    );
+  }
+
+  /* ── Landing: screenshots and the foot ────────────────────────────────────── */
+
+  .landing-foot a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  /* ── Landing: headings ────────────────────────────────────────────────────── */
+
+  .landing-eyebrow,
+  .landing-palette-group h4,
+  .landing-persona-role {
+    color: var(--accent);
+    font-family: var(--f-meta);
+    font-weight: var(--label-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+
+  .landing-part-title,
+  .landing-h2,
+  .landing-promise h3,
+  .landing-persona-name {
+    color: var(--ink);
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+  }
+
+  .landing-part-problem,
+  .landing-section-lede,
+  .landing-promise p,
+  .landing-card-body,
+  .landing-more ul,
+  .landing-faq details p {
+    color: var(--ink-2);
+  }
+
+  /* ── Landing: the editorial team ──────────────────────────────────────────── */
+
+  .landing-chips button {
+    background: transparent;
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-2);
+    font-family: var(--f-ui);
+  }
+
+  .landing-chips button:hover {
+    color: var(--ink);
+  }
+
+  .landing-chips button[aria-pressed="true"] {
+    background: var(--press-ground);
+    border-color: var(--accent);
+    color: var(--press-ink);
+  }
+
+  /* ── Reach ───────────────────────────────────────────────────────────────── */
+
+  @media (pointer: coarse) {
+    .ui-input,
+    .ui-select,
+    .ui-seg {
+      border-color: var(--hair-firm);
+    }
+  }
+
+  /* ── Standing statuses ───────────────────────────────────────────────────── */
+
+  .status-notice-dismiss {
+    color: currentColor;
+  }
+
+  .status-notice-dot {
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ── The Library ─────────────────────────────────────────────────────────── */
+
+  /* ── The application bar ─────────────────────────────────────────────────── */
+
+  .app {
+    background-color: var(--paper);
+    background-image: var(--grain), var(--ground);
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      background-image: var(--grain);
+    }
+  }
+
+  .app-top {
+    border-bottom-color: var(--hair-soft);
+  }
+
+  .app-wordmark {
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--name-tracking);
+  }
+
+  .app-avatar {
+    border-radius: 50%;
+  }
+
+  /* ── The Library ─────────────────────────────────────────────────────────── */
+
+  .lib-title {
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+  }
+
+  /* ── Storage ─────────────────────────────────────────────────────────────── */
+
+  .shelf-storage-face {
+    border-radius: var(--r);
+    background: var(--wash-subtle);
+    color: var(--ink-3);
+  }
+
+  .shelf-storage-face:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .shelf-scope {
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    color: var(--ink);
+  }
+
+  .shelf-tally {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── The storage panel's rows ────────────────────────────────────────────── */
+
+  .store-row {
+    border-radius: var(--r);
+  }
+
+  .store-row[data-on="1"] {
+    background: var(--accent-tint);
+  }
+
+  .store-note {
+    font-family: var(--f-meta);
+    font-weight: normal;
+    color: var(--ink-3);
+  }
+
+  /* ── The shelf ───────────────────────────────────────────────────────────── */
+
+  /* Each book is its title page, on the paper inside a hairline. Picked up,
+     it is a leaf as the bar is: its edge inked, a gold rule inside it and
+     its shade flat at its foot. The lit edge is that gold rule, unseen at
+     rest; a book that asks for attention keeps it in its own colour. */
+  .project {
+    border-color: var(--hair);
+    border-radius: 0;
+    background: var(--paper);
+    box-shadow: none;
+  }
+
+  .project::before {
+    border: 1px solid var(--vision-gilt);
+    border-radius: 0;
+    filter: none;
+  }
+
+  .project:hover,
+  .project:focus-within {
+    border-color: var(--ink);
+    box-shadow: 6px 6px 0 0 var(--vision-shade);
+  }
+
+  .project-gone:hover,
+  .project-gone:focus-within {
+    border-color: var(--hair);
+    box-shadow: none;
+  }
+
+  .project-attention::before {
+    border-color: var(--attention);
+  }
+
+  /* The imprint's rule, over where the book is kept and when it was last
+     written in. */
+  .project::after {
+    content: "";
+    border-top: 1px solid var(--hair);
+  }
+
+  .project-title {
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--name-tracking);
+  }
+
+  .project-title::before {
+    content: "";
+    background: var(--vision-gilt);
+  }
+
+  .project-title::after {
+    content: "";
+    box-shadow:
+      -11px 0 0 var(--vision-gilt),
+      11px 0 0 var(--vision-gilt);
+  }
+
+  .project-where,
+  .project-stats > .project-when {
+    font-family: var(--f-meta);
+    font-style: normal;
+    color: var(--ink-3);
+  }
+
+  .project-stats {
+    font-family: var(--f-meta);
+    font-style: italic;
+    color: var(--ink-2);
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .project-stats b {
+    color: inherit;
+    font-weight: 400;
+  }
+
+  .project-stats > span + span::before {
+    color: inherit;
+  }
+
+  .project-more {
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .project-more:hover {
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  .projects-list .project,
+  .projects-list .project:is(:hover, :focus-within) {
+    border-color: var(--hair);
+    background: none;
+    box-shadow: none;
+  }
+
+  .projects-list .project::after,
+  .projects-list .project-title::before,
+  .projects-list .project-title::after {
+    content: none;
+  }
+
+  .lib-title::before {
+    content: "";
+    background: var(--vision-gilt);
+  }
+
+  .lib-title::after {
+    content: "";
+    box-shadow:
+      -11px 0 0 var(--vision-gilt),
+      11px 0 0 var(--vision-gilt);
+  }
+
+  /* ── First run, and no match ─────────────────────────────────────────────── */
+
+  .lib-empty {
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .lib-empty p {
+    color: var(--ink-3);
+  }
+
+  /* The setup card and the start panel are one weight: raised paper on one
+     hair, so the page reads set up, then begin. */
+  .ui-checklist,
+  .welcome-start {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+  }
+
+  .ui-checklist-flash {
+    background: var(--accent-tint-2);
+  }
+
+  .welcome-start p {
+    color: var(--ink-3);
+  }
+
+  /* ── The settings sheet ──────────────────────────────────────────────────── */
+
+  .sheet {
+    background: var(--paper);
+    border-left-color: var(--hair);
+    box-shadow: var(--shadow-3);
+  }
+
+  .sheet-nav button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    font-weight: var(--quiet-weight);
+  }
+
+  .sheet-nav button:hover {
+    background: var(--hover-sunk);
+    color: var(--ink);
+  }
+
+  .sheet-nav button[aria-current="true"] {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .sheet-pane h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--bold-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── About ───────────────────────────────────────────────────────────────── */
+
+  .about-emblem {
+    border-radius: 50%;
+  }
+
+  .about-foot a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+  }
+
+  /* ── Name-and-answer settings ────────────────────────────────────────────── */
+
+  .ai-settings-pairs input,
+  .ai-settings-pairs select {
+    color: var(--ink);
+    background: var(--field);
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .ai-address-field input {
+    font-family: var(--f-mono);
+  }
+
+  .ai-address-field input[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  /* ── Inside an AI card ───────────────────────────────────────────────────── */
+
+  .ui-access-body h4 {
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .ai-remote-chosen button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+  }
+
+  .ai-remote-chosen button:hover,
+  .ai-remote-chosen button:focus-visible {
+    background: var(--accent-tint);
+    outline: none;
+  }
+
+  .ai-remote-filter {
+    color: var(--ink);
+    background: var(--field);
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .ai-connection-status.is-connected {
+    color: var(--accent);
+  }
+
+  .ai-connection-status.is-failed,
+  .ai-connection-status.is-unverified {
+    color: var(--danger);
+  }
+
+  /* ── Theme tiles ─────────────────────────────────────────────────────────── */
+
+  .tile {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+  }
+
+  /* ── Reach ───────────────────────────────────────────────────────────────── */
+
+  @media (pointer: coarse) {
+    .ai-settings-pairs input,
+    .ai-settings-pairs select {
+      border-color: var(--hair-firm);
+    }
+  }
+
+  /* ── Access between crop marks ───────────────────────────────────────────── */
+
+  :root[data-crop="1"] .ui-access {
+    --crop-ink: var(--ink-3);
+    border-color: transparent;
+    border-radius: 0;
+    background:
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 1px 14px
+        no-repeat;
+  }
+
+  /* ── The editor ──────────────────────────────────────────────────────────── */
+
+  /* ── Editor shell ────────────────────────────────────────────────────────── */
+
+  .editor-shell {
+    background-color: var(--canvas);
+    background-image: var(--grain), var(--ground-quiet);
+  }
+
+  /* ── The page's sheet ────────────────────────────────────────────────────── */
+
+  /* The landing's demos stand on the same page as the editor. */
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"])::before,
+  .landing-sheet {
+    border-color: var(--sheet-edge);
+    border-radius: var(--r-lg);
+    background: var(--sheet);
+    box-shadow: var(--sheet-shadow);
+  }
+
+  /* ── Comments as notes ───────────────────────────────────────────────────── */
+
+  :root[data-comments="notes"] :is(.cm-pmark, .cm-marker[data-at="end"]) {
+    font-family: var(--f-prose);
+    font-weight: var(--medium-weight);
+    font-style: normal;
+    color: var(--spark);
+  }
+
+  :root[data-comments="notes"]
+    :is(.cm-layer[data-mode="notes"], .cm-float)
+    :is(.cm-card, .cm-card[data-active="1"], .cm-card[data-state="proposed"]) {
+    background: none;
+    box-shadow: none;
+  }
+
+  @media (max-width: 720px) {
+    .editor-shell {
+      background-image: var(--grain);
+    }
+  }
+
+  /* ── The Desk ────────────────────────────────────────────────────────────── */
+
+  .desk-eyebrow {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .desk-last {
+    border-left-color: var(--hair);
+    font-family: var(--f-prose);
+    color: var(--ink);
+  }
+
+  .desk-primary {
+    border-radius: var(--r);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .desk-primary:hover {
+    box-shadow: var(--shadow-accent);
+  }
+
+  .desk-quiet {
+    border-radius: var(--r);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+    font-weight: var(--link-weight);
+  }
+
+  .desk-quiet:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .desk-ledger b {
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  .desk-thread {
+    border-radius: var(--r);
+    background: var(--attention-tint);
+    color: var(--attention);
+  }
+
+  .desk-empty p {
+    color: var(--ink-3);
+  }
+
+  /* ── The prose column ────────────────────────────────────────────────────── */
+
+  .editor {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    font-family: var(--f-prose);
+    color: var(--prose-ink);
+    caret-color: transparent;
+  }
+
+  [contenteditable]:focus-visible {
+    outline: none;
+  }
+
+  /* ── Fake cursor ─────────────────────────────────────────────────────────── */
+
+  .fake-cursor {
+    border-radius: 1px;
+    background: var(--accent);
+  }
+
+  /* ── The revision rail ───────────────────────────────────────────────────── */
+
+  .rev-rail-head {
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .rev-rail-head-walking {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--hair-firm);
+  }
+
+  .rev-step {
+    border-radius: var(--r-sm);
+    background: var(--glass);
+    box-shadow:
+      0 0 0 1px var(--hair),
+      var(--glass-edge);
+    color: var(--ink-3);
+  }
+
+  .rev-step:hover:not(:disabled) {
+    background: var(--hover-row);
+  }
+
+  .rev-step:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .rev-chip {
+    border-color: var(--bar-edge);
+    border-radius: var(--r-sm);
+    background: var(--bar-ground);
+    box-shadow: var(--bar-shadow);
+    backdrop-filter: var(--bar-frost);
+  }
+
+  .rev-chip button {
+    background: transparent;
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .rev-chip button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── The titlebar's right cluster ────────────────────────────────────────── */
+
+  .ed-palette {
+    font-weight: var(--quiet-weight);
+  }
+
+  .titlebar-project {
+    background: transparent;
+    font-family: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    font-weight: var(--name-weight);
+    color: var(--ink);
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+  }
+
+  .titlebar-idx {
+    font-variant-numeric: var(--figures);
+    letter-spacing: calc(var(--meta-tracking) * 4);
+  }
+
+  /* ── The way back to the library ─────────────────────────────────────────── */
+
+  .titlebar-return {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+    text-decoration: none;
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .titlebar-return:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .titlebar-return[data-nudge="1"] {
+    box-shadow: 0 0 0 4px var(--accent-tint);
+  }
+
+  .titlebar-return-nudge {
+    border-radius: var(--r);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  /* ── The titlebar's frost ────────────────────────────────────────────────── */
+
+  .titlebar::before {
+    --frost-blur: 12px;
+    backdrop-filter: blur(var(--frost-blur));
+  }
+
+  .titlebar-veil {
+    --frost-a: 0.6;
+    background-color: var(--canvas);
+    background-image: var(--grain), var(--ground-quiet);
+    background-attachment: fixed;
+  }
+
+  /* ── A face that grows ───────────────────────────────────────────────────── */
+
+  .ed-fold {
+    border-radius: var(--r);
+  }
+
+  .ed-fold-face {
+    color: var(--ink-3);
+    font-weight: var(--strong-weight);
+  }
+
+  .ed-fold-comments .ed-fold-face {
+    border-radius: var(--r);
+  }
+
+  .ed-fold-comments .ed-fold-face[data-pressed="1"] {
+    background: var(--press-ground);
+    color: var(--press-ink);
+    box-shadow: var(--press-mark);
+  }
+
+  /* ── Special characters ──────────────────────────────────────────────────── */
+
+  .char-key {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--paper-raised);
+    color: var(--ink);
+    font-family: var(--f-mono);
+  }
+
+  .char-key:hover {
+    background: var(--accent-tint);
+    border-color: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  /* ── Find ────────────────────────────────────────────────────────────────── */
+
+  .find-row input {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  .find-row input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .find-tog:hover:not(:disabled) {
+    background: var(--hover-tool);
+    color: var(--ink);
+  }
+
+  /* ── The shortcut sheet ──────────────────────────────────────────────────── */
+
+  .keys-group h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── Document tree ───────────────────────────────────────────────────────── */
+
+  .doc-tree {
+    background: var(--pane-ground);
+    box-shadow: var(--pane-shadow);
+    backdrop-filter: var(--pane-frost);
+    border-color: var(--pane-edge);
+    border-radius: var(--pane-radius);
+  }
+
+  /* ── The panel's find ────────────────────────────────────────────────────── */
+
+  .dt-find {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+  }
+
+  /* ── The two bodies ──────────────────────────────────────────────────────── */
+
+  .dt-search-excerpt {
+    font-family: var(--f-prose);
+    color: var(--ink-3);
+  }
+
+  /* ── A body source and its occurrences ───────────────────────────────────── */
+
+  .dt-search-row.dt-search-head:hover {
+    background: transparent;
+  }
+
+  /* ── Regions ─────────────────────────────────────────────────────────────── */
+
+  .dt-region-label {
+    background: transparent;
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── The rail ────────────────────────────────────────────────────────────── */
+
+  .dt-rail button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+    letter-spacing: calc(var(--meta-tracking) * 3);
+    font-variant-numeric: var(--figures-text);
+  }
+
+  .dt-rail button:hover {
+    background: var(--hover-row);
+    color: var(--ink);
+  }
+
+  .dt-rail button[aria-current="true"],
+  .dt-rail .dt-rail-find {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .dt-rail button[aria-current="true"] {
+    box-shadow: var(--press-mark);
+  }
+
+  .dt-rail hr {
+    background: var(--hair-soft);
+  }
+
+  /* ── The recycle bin ─────────────────────────────────────────────────────── */
+
+  .dt-bin-restore:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── The boundary's own control ──────────────────────────────────────────── */
+
+  /* A clasp on the panel's edge: a square of paper in an ink edge with the
+     leaf's gold rule inside it, holding the edge's rules where it crosses
+     them. Under the pointer it fills with ink, as a `.dt-dock-button` does. */
+  .dt-collapse {
+    border-color: var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+    box-shadow:
+      inset 0 0 0 2px var(--paper),
+      inset 0 0 0 3px var(--vision-gilt);
+    color: var(--ink);
+  }
+
+  .dt-collapse:hover {
+    background: var(--ink);
+    box-shadow:
+      inset 0 0 0 2px var(--ink),
+      inset 0 0 0 3px var(--vision-gilt);
+    color: var(--paper);
+  }
+
+  .dt-collapse:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ── Rows ────────────────────────────────────────────────────────────────── */
+
+  .dt-row:hover {
+    background: var(--hover-row);
+    color: var(--ink);
+  }
+
+  .dt-part > :is(.dt-idx, .dt-words) {
+    font-weight: var(--quiet-weight);
+  }
+
+  .dt-label {
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .dt-label:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+    border-radius: var(--r-xs);
+  }
+
+  .dt-row::before {
+    border-radius: 0 1px 1px 0;
+    background: var(--accent);
+  }
+
+  .dt-row.active {
+    background: var(--row-selected);
+  }
+
+  /* ── Ticking rows to move together ───────────────────────────────────────── */
+
+  .dt-row.selected,
+  .dt-row.selected:hover {
+    background: var(--wash-strong);
+  }
+
+  .dt-row.selected.active {
+    background: var(--row-selected);
+  }
+
+  /* ── Moving ──────────────────────────────────────────────────────────────── */
+
+  .dt-moving-stop {
+    color: inherit;
+  }
+
+  .dt-landing:hover,
+  .dt-landing:focus-visible {
+    background: var(--accent-tint);
+    border-radius: var(--r-sm);
+    outline: none;
+  }
+
+  /* ── Expand and collapse ─────────────────────────────────────────────────── */
+
+  .dt-empty {
+    font-family: var(--f-prose);
+    font-style: var(--aside-style);
+    color: var(--ink-3);
+  }
+
+  .dt-add {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .dt-add:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── Drop indicator ──────────────────────────────────────────────────────── */
+
+  .dt-drop-line::before {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ── Inline naming ───────────────────────────────────────────────────────── */
+
+  .dt-name-input {
+    border-radius: var(--r-xs);
+    background: var(--field);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .dt-name-input:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .dt-name-input.invalid {
+    box-shadow: inset 0 0 0 1.5px var(--danger);
+  }
+
+  /* ── States ──────────────────────────────────────────────────────────────── */
+
+  .dt-state-hint {
+    font-family: var(--f-prose);
+    font-style: var(--aside-style);
+    color: var(--ink-3);
+  }
+
+  /* ── Undo toast ──────────────────────────────────────────────────────────── */
+
+  .dt-toast {
+    border-radius: var(--r-sm);
+    background: var(--tip);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+  }
+
+  .dt-toast-undo {
+    border-radius: var(--r-sm);
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+  }
+
+  /* ── The journal notice ──────────────────────────────────────────────────── */
+
+  .rev-notice {
+    border-radius: var(--r-sm);
+    background: var(--tip);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+    font-family: var(--f-chrome);
+    color: var(--tip-ink);
+  }
+
+  /* ── The save gutter ─────────────────────────────────────────────────────── */
+
+  .save-gutter i {
+    border-radius: 1px;
+    background: var(--attention);
+  }
+
+  /* ── The margin's comments ───────────────────────────────────────────────── */
+
+  .cm-card {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .cm-kicker {
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .cm-orphan q,
+  .cm-quote {
+    font-family: var(--f-prose);
+    font-style: var(--quote-style);
+    color: var(--ink-3);
+  }
+
+  .cm-face-letter {
+    font-weight: var(--bold-weight);
+    background: var(--wash-strong);
+    color: var(--on-fill);
+  }
+
+  .cm-searched a {
+    color: inherit;
+  }
+
+  .cm-input {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-sm);
+    background: var(--field);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .cm-input:focus {
+    outline: none;
+    box-shadow: var(--shadow-accent);
+  }
+
+  .dt-tag {
+    border-radius: var(--r-xs);
+    background: var(--chip);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .dt-tag-k {
+    color: var(--ink-3);
+  }
+
+  .dt-tag-v {
+    color: var(--ink);
+  }
+
+  /* ── The foot ────────────────────────────────────────────────────────────── */
+
+  .dt-foot {
+    border-top-color: var(--hair-soft);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+    color: var(--ink-3);
+  }
+
+  .dt-foot-demo-hint {
+    color: var(--ink-dim);
+    font-style: var(--aside-style);
+  }
+
+  .dt-foot-act {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .dt-foot-theme {
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .dt-prefs {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* ── Offered, not honoured here ──────────────────────────────────────────── */
+
+  .dt-pick-select {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+    color: var(--ink);
+    font-family: var(--f-meta);
+  }
+
+  .dt-pick-select:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  /* ── The dock ────────────────────────────────────────────────────────────── */
+
+  .ed-dock {
+    border-color: var(--pane-edge);
+    border-radius: var(--pane-radius);
+    background: var(--pane-ground);
+    box-shadow: var(--pane-shadow);
+    backdrop-filter: var(--pane-frost);
+  }
+
+  .dock-resize::before {
+    border-radius: 1px;
+    background: transparent;
+  }
+
+  .dock-resize:focus-visible {
+    outline: none;
+  }
+
+  .panel-resize::before {
+    border-radius: 1px;
+    background: transparent;
+  }
+
+  .panel-resize:focus-visible {
+    outline: none;
+  }
+
+  .dock-meta {
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── The snapshot face ───────────────────────────────────────────────────── */
+
+  .snap-rel {
+    border-radius: var(--r-xs);
+    background: var(--wash-subtle);
+    font-family: var(--f-meta);
+    font-variant-numeric: var(--figures);
+    color: var(--ink-3);
+  }
+
+  .snap-rel:focus-visible,
+  .ref-card-head:focus-visible,
+  .ref-card-row:focus-visible,
+  .ref-card-add:focus-visible,
+  .ai-new-chat:focus-visible,
+  .ref-picker-row:focus-visible,
+  .ref-picker-close:focus-visible,
+  .ref-row-del:focus-visible,
+  .ref-row-ren:focus-visible,
+  .dt-dock-button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .snap-row {
+    border-bottom-color: var(--hair);
+  }
+
+  .snap-row.selected {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    box-shadow: inset 2px 0 0 var(--spark);
+  }
+
+  .snap-tick {
+    color: var(--spark);
+  }
+
+  .snap-adopt {
+    font-family: var(--f-chrome);
+    font-weight: var(--quiet-weight);
+    letter-spacing: var(--meta-tracking);
+    color: var(--accent);
+    background: none;
+    border-radius: var(--r-sm);
+    font-variant-caps: var(--control-caps);
+  }
+
+  .snap-title-input {
+    font-family: var(--f-chrome);
+    color: var(--ink);
+    background: var(--paper);
+    border-color: var(--accent);
+    border-radius: var(--r-sm);
+    outline: none;
+  }
+
+  .snap-add,
+  .ref-card-add,
+  .ai-new-chat {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ref-card {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--paper);
+  }
+
+  .ref-card-head {
+    background: transparent;
+    color: var(--row-ink);
+    font-family: var(--f-chrome);
+    font-weight: var(--head-weight);
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+  }
+
+  .ref-card-row {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ref-card-row[aria-current="true"] {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .ref-row-ren,
+  .ref-row-del {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* ── The AI bar toggle ───────────────────────────────────────────────────── */
+
+  .ref-row-ai:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .ref-arc {
+    color: var(--ink-3);
+  }
+
+  /* ── The section picker ──────────────────────────────────────────────────── */
+
+  .ref-picker-row {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  /* ── No ligatures in the reference dock ──────────────────────────────────── */
+
+  .dock-read h1,
+  .dock-read h2,
+  .dock-read h3 {
+    color: var(--ink-3);
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── A template's question and its blank ─────────────────────────────────── */
+
+  .dock-read strong {
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── Editing a reference document ────────────────────────────────────────── */
+
+  .dock-editbar {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+  }
+
+  .dock-editbar button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .dock-editbar button:hover {
+    background: var(--hover-accent);
+    color: var(--accent);
+  }
+
+  .dock-editbar button:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save {
+    background: var(--accent-tint);
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save:hover {
+    background: var(--accent);
+    color: var(--on-fill);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save:disabled:hover {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .dock-edit-btn {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .dock-edit-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .dock-edit-btn:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .dock-edit {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-sm);
+    background: var(--paper);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .dock-edit:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-tint);
+  }
+
+  .dock-foot b {
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── The conversation ────────────────────────────────────────────────────── */
+
+  .ai-persona {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    color: var(--accent);
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    font-weight: var(--link-weight);
+  }
+
+  .ai-persona:hover:not(:disabled) {
+    background: var(--accent-tint-2);
+  }
+
+  .ai-persona:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The asking floats over the transcript ───────────────────────────────── */
+
+  .ai-stopped q {
+    font-family: var(--f-prose);
+    color: var(--ink);
+  }
+
+  /* ── The persona picker ──────────────────────────────────────────────────── */
+
+  .ai-persona-dialog .ai-persona-focus-label {
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+    font-weight: normal;
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+  }
+
+  .ai-mode-end:focus-visible {
+    outline: var(--focus-ring);
+    border-radius: var(--r-sm);
+  }
+
+  .ai-mode-panel p {
+    color: var(--ink-3);
+  }
+
+  .ai-reading:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .ai-reading-head strong {
+    font-weight: var(--bold-weight);
+  }
+
+  .ai-model-button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .ai-text-button {
+    color: var(--ink-3);
+    background: transparent;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .ai-refusal select {
+    color: var(--ink);
+    background: var(--paper-raised);
+    border-color: var(--hair);
+    border-radius: var(--r);
+    font-family: var(--f-chrome);
+  }
+
+  .ai-stop {
+    font-family: var(--f-chrome);
+    color: var(--ink-3);
+    background: transparent;
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+  }
+
+  .ai-stop:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The turn's footer ───────────────────────────────────────────────────── */
+
+  .ai-stop:hover {
+    background: var(--hover-quiet);
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .ai-stop.is-send {
+    color: var(--ink);
+    border-color: var(--ink-3);
+  }
+
+  .ai-stop.is-send:disabled {
+    color: var(--ink-3);
+    border-color: var(--hair);
+  }
+
+  .ai-stop.is-send:disabled:hover {
+    background: transparent;
+  }
+
+  .ai-stop.is-running::after {
+    border-radius: calc(var(--r-sm) + 3px);
+    background: conic-gradient(
+      from var(--ai-spark-at),
+      var(--vision-gilt) 0deg,
+      var(--vision-gilt) 10deg,
+      color-mix(in srgb, var(--vision-gilt) 45%, transparent) 34deg,
+      transparent 80deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+
+  /* ── The chat's ramp ─────────────────────────────────────────────────────── */
+
+  .msg-you .msg-body {
+    border-radius: var(--r);
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  .msg-assistant .msg-body {
+    color: var(--ink);
+  }
+
+  .msg-assistant .dock-read blockquote {
+    color: var(--ink);
+    font-family: var(--f-prose);
+  }
+
+  .ai-cite {
+    border-radius: var(--r-xs);
+    background: none;
+    box-shadow: inset 0 -1px 0 var(--hair-firm);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-cite:hover {
+    background: var(--accent-tint);
+    box-shadow: inset 0 -1px 0 var(--accent);
+  }
+
+  .ai-cite:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .msg-quote {
+    border-left-color: var(--accent);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    background: var(--accent-tint);
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .chip {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+    color: var(--accent);
+    font-family: var(--f-chrome);
+  }
+
+  .chip:hover {
+    background: var(--accent-tint-2);
+  }
+
+  .composer {
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    border-color: var(--hair-firm);
+    box-shadow: var(--shadow-card);
+  }
+
+  .ai-composer-menu {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ai-composer-menu:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .composer-quote {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    font-family: var(--f-meta);
+    color: var(--accent);
+  }
+
+  .composer-quote button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .composer-quote button:hover {
+    background: var(--accent-tint-2);
+  }
+
+  .composer-pin button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .composer-pin button:hover {
+    background: var(--accent-tint-2);
+  }
+
+  /* ── The comparing mode ──────────────────────────────────────────────────── */
+
+  [data-block-hunk="delete"] {
+    background: var(--mark-diff-wash-del);
+  }
+
+  [data-block-hunk="insert"] {
+    background: var(--mark-diff-wash-add);
+  }
+
+  .comparing-bar {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-1);
+  }
+
+  .comparing-select {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--glass);
+    backdrop-filter: var(--frost);
+    color: var(--ink);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .comparing-select:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .comparing-question {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .comparing-legend {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .comparing-swatch-del {
+    background: var(--mark-diff-del);
+  }
+
+  .comparing-swatch-add {
+    background: var(--mark-diff-add);
+  }
+
+  /* ── The Accept layer ────────────────────────────────────────────────────── */
+
+  .df-accept {
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    letter-spacing: var(--meta-tracking);
+    color: var(--mark-diff-add);
+    background: var(--mark-diff-tag-add);
+    font-variant-caps: var(--control-caps);
+  }
+
+  /* ── The board ───────────────────────────────────────────────────────────── */
+
+  .board {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  .board-head h2 {
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .board-close {
+    border-radius: var(--r);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .board-filter {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .board-filter:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .board-well h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .board-cell {
+    border-radius: var(--r);
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .board-cell:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  /* ── The board as a full-screen room ─────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .board {
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* ── The chat's head ─────────────────────────────────────────────────────── */
+
+  .ai-chat-title {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-chat-title:hover {
+    border-color: var(--ink-3);
+    background: var(--hover-accent);
+  }
+
+  .ai-chat-title:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .ai-chat-title.is-attention {
+    border-color: var(--attention-glow);
+  }
+
+  .ai-chat-title.is-attention:hover {
+    border-color: var(--attention);
+    background: var(--attention-tint);
+  }
+
+  .ai-switcher-row {
+    border-radius: var(--r-sm);
+  }
+
+  .ai-finding-head {
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .ai-evidence {
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--ink-3);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-evidence:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .ai-verdict > strong {
+    font-weight: var(--bold-weight);
+  }
+
+  .ai-map-station {
+    border-radius: 50%;
+    background: var(--ink-3);
+  }
+
+  .ai-map-start {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .ai-jump {
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-1);
+    color: var(--ink-3);
+  }
+
+  .ai-jump:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The summary dialog ──────────────────────────────────────────────────── */
+
+  .summary-wait p,
+  .summary-note {
+    color: var(--ink-3);
+  }
+
+  .summary-link {
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .summary-link:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ── A beta reader's reading ─────────────────────────────────────────────── */
+
+  .ai-attention > span {
+    border-radius: 50%;
+    border-color: var(--ink-3);
+  }
+
+  /* ── The editorial revision plan ─────────────────────────────────────────── */
+
+  .ai-plan > .ai-reading-summary {
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+    font-weight: var(--link-weight);
+  }
+
+  .ai-plan-verdict strong {
+    font-weight: var(--bold-weight);
+    color: var(--ink);
+  }
+
+  .ai-transit-line {
+    color: var(--ink-3);
+  }
+}
+
+@layer tune {
+  .snap-head {
+    border-color: transparent;
+  }
+  .snap-head .snap-add {
+    font-style: italic;
+  }
+  .snap-head .snap-add:hover {
+    color: var(--ink);
+  }
+  .snap-scroll {
+    background: var(--paper);
+  }
+  .snap-row {
+    position: relative;
+    border-color: transparent;
+  }
+  .snap-title {
+    color: var(--row-ink);
+  }
+  .snap-row:is(.selected, :hover) .snap-title {
+    color: var(--ink);
+    font-weight: var(--vision-lift);
+  }
+  .snap-row > .snap-actions > .ui-btn {
+    position: relative;
+  }
+  .snap-row
+    > .snap-actions
+    > .ui-btn:not(:disabled, [aria-disabled="true"]):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]):is(
+      .snap-row
+        > .snap-actions
+        > .ui-btn:not(:disabled, [aria-disabled="true"]):hover
+    ) {
+    background: var(--accent-tint-2);
+  }
+  .ref-face .ref-top {
+    background: var(--paper);
+  }
+  .ref-face .ref-card {
+    border-color: transparent;
+    background-color: transparent;
+  }
+  .ref-face .ref-card-head {
+    font-weight: var(--heading-weight);
+  }
+  .ref-face .ref-card-head:hover,
+  .ref-face .ref-card[data-open="0"] .ref-card-head:hover {
+    color: var(--ink);
+  }
+  .ref-face .ref-card-count {
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  .ref-face .ref-row {
+    position: relative;
+  }
+  .ref-face .ref-card-row {
+    color: var(--row-ink);
+  }
+  .ref-face .ref-card-row:hover,
+  .ref-face .ref-card-row[aria-current="true"] {
+    background-color: transparent;
+    color: var(--ink);
+  }
+  .ref-face .ref-row:hover > .ref-card-row:not(.ref-arc),
+  .ref-face .ref-card-row[aria-current="true"]:not(.ref-arc) {
+    font-weight: var(--vision-lift);
+  }
+  .ref-face .ref-arc {
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .ref-face .ref-row:hover > .ref-arc,
+  .ref-face .ref-arc[aria-current="true"] {
+    color: var(--ink);
+  }
+  .ref-face :is(.ref-row-ai, .ref-row-ren, .ref-row-del) {
+    position: relative;
+    color: var(--ink-3);
+  }
+  .ref-face :is(.ref-row-ai, .ref-row-ren, .ref-row-del):hover {
+    color: var(--ink);
+  }
+  .ref-face .ref-row:has(> .ref-row-ai.barred) > .ref-card-row {
+    color: var(--ink-3);
+  }
+  .ref-card-row:hover:is(
+      .ref-face .ref-row:has(> .ref-row-ai.barred) > .ref-card-row
+    ) {
+    color: var(--ink);
+  }
+  .ref-card-row[aria-current="true"]:is(
+      .ref-face .ref-row:has(> .ref-row-ai.barred) > .ref-card-row
+    ) {
+    color: var(--accent);
+  }
+  .ref-card-row:hover:is(
+      .ref-card-row[aria-current="true"]:is(
+          .ref-face .ref-row:has(> .ref-row-ai.barred) > .ref-card-row
+        )
+    ) {
+    color: var(--ink);
+  }
+  .ref-face .ref-row-ai.barred:hover {
+    color: var(--ink);
+  }
+  .ref-face .ref-card-add {
+    font-style: italic;
+  }
+  .ref-face .ref-card-add:hover {
+    color: var(--ink);
+  }
+  .ref-face .ref-card-empty {
+    font-family: var(--f-chrome);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .dt-row:hover,
+  .dt-row.active {
+    background-color: transparent;
+    color: var(--ink);
+  }
+  .dt-row.selected,
+  .dt-row.selected:hover,
+  .dt-row.selected.active {
+    background: var(--wash);
+  }
+  .dt-part {
+    color: var(--ink);
+  }
+  .dt-idx {
+    letter-spacing: inherit;
+  }
+  .dt-label {
+    letter-spacing: inherit;
+  }
+  .dt-summary {
+    font-weight: 400;
+  }
+  .dt-summary:hover {
+    color: var(--ink);
+  }
+  .dt-add {
+    font-style: italic;
+  }
+  .dt-add:hover {
+    color: var(--ink);
+  }
+  .dt-bin {
+    border-top-color: transparent;
+  }
+  .dt-bin-head:hover,
+  .dt-bin-head-flat:hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .dt-dock-button {
+    color: var(--row-ink);
+  }
+  .dt-dock-button:hover {
+    color: var(--ink);
+  }
+  .sheet-nav button {
+    position: relative;
+    color: var(--row-ink);
+  }
+  .sheet-nav button:hover {
+    color: var(--ink);
+  }
+  .sheet-nav button[aria-current="true"] {
+    background-color: transparent;
+    color: var(--accent);
+    font-weight: var(--vision-lift);
+  }
+  .ui-seg {
+    border-color: transparent;
+  }
+  .ui-seg button + button {
+    border-left-color: transparent;
+  }
+  .ui-bar[data-phone="1"] {
+    box-shadow: 0 0 0 1px var(--hair-firm);
+  }
+  .ui-bar-track button:hover:not(:disabled) {
+    color: var(--ink);
+  }
+  .ui-bar-track[data-seat="sunk"] button[aria-pressed="true"] {
+    color: var(--seat-ink);
+  }
+  .shelf-storage-face {
+    background-color: transparent;
+  }
+  .shelf-storage-face:hover {
+    background: var(--wash);
+  }
+  :is(.ui-btn-primary, .ui-btn-outline, .ui-btn-attention) .ui-kbd,
+  .ui-dialog-foot .ui-btn .ui-kbd {
+    font-variant-caps: normal;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  :is(.ui-btn-primary, .ui-btn-outline, .ui-btn-attention):is(
+      :hover,
+      :active
+    ):not(:disabled) {
+    box-shadow: none;
+  }
+  :where(.ui-dialog-foot)
+    .ui-btn:is(:hover, :active):not(:disabled, [aria-disabled="true"]) {
+    box-shadow: none;
+  }
+  .ui-btn-outline,
+  .ui-btn-outline:hover:not(:disabled, [aria-disabled="true"]) {
+    border-color: transparent;
+  }
+  .ui-dialog-foot
+    :is(.ui-btn-ghost, .ui-btn-quiet):hover:not(
+      :disabled,
+      [aria-disabled="true"]
+    ) {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ui-btn-attention {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: inset 0 -1px 0 var(--attention);
+  }
+  .ui-btn-attention:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow: inset 0 -1px 0 var(--attention);
+  }
+  .cm-card :is(.cm-buttons, .cm-confirm, .cm-composer-actions) .ui-btn {
+    background-color: transparent;
+  }
+  .cm-card
+    :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+    .ui-btn:is(:hover, :active):not(:disabled, [aria-disabled="true"]) {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: var(--ink);
+  }
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]):is(
+      .cm-card
+        :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+        .ui-btn:is(:hover, :active):not(:disabled, [aria-disabled="true"])
+    ) {
+    background: var(--accent-tint-2);
+  }
+  .cm-card
+    :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+    .ui-btn.ui-btn-soft,
+  .cm-card
+    :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+    .ui-btn.ui-btn-soft:is(:hover, :active):not(
+      :disabled,
+      [aria-disabled="true"]
+    ) {
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .cm-card
+    :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+    .ui-btn.ui-btn-danger,
+  .cm-card
+    :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+    .ui-btn.ui-btn-danger:is(:hover, :active):not(
+      :disabled,
+      [aria-disabled="true"]
+    ) {
+    color: var(--danger);
+    box-shadow: inset 0 -1px 0 var(--danger);
+  }
+  .rev-step {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  .rev-step:hover:not(:disabled) {
+    background: var(--hover-row);
+  }
+  .rev-chip button:hover:not(:disabled) {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .rev-chip .rev-chip-revert,
+  .rev-chip .rev-chip-revert:hover:not(:disabled) {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .df-accept {
+    letter-spacing: var(--label-tracking);
+  }
+  .cm-mentions li {
+    font-style: normal;
+  }
+  .ui-menu hr {
+    border-top-color: var(--hair);
+  }
+  .ui-menu.ui-menu-inverse button:disabled {
+    color: var(--ink-3);
+  }
+  .ui-menu.ui-menu-inverse .ui-kbd {
+    background-color: transparent;
+    background-image: none;
+    border-color: transparent;
+    color: var(--ink-3);
+  }
+  .board-head h2 {
+    font-weight: 400;
+  }
+  .ui-tip {
+    font-weight: 400;
+  }
+  .ui-tip .ui-kbd {
+    background-color: transparent;
+    color: var(--ink-3);
+  }
+  :is(.ui-toast, .dt-toast, .rev-notice) {
+    font-style: italic;
+  }
+  :is(.ui-toast, .dt-toast, .rev-notice) :is(.ui-toast-undo, .dt-toast-undo) {
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+    box-shadow: inset 0 -1px 0 var(--ink-3);
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+    font-variant-caps: var(--label-caps);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+  :is(.ui-toast, .dt-toast, .rev-notice)
+    :is(.ui-toast-undo, .dt-toast-undo):hover {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .rev-rail-time {
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 1px var(--hair-firm);
+    font-family: var(--f-chrome);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: normal;
+  }
+  .rev-now {
+    box-shadow: none;
+  }
+  .rev-chip {
+    border: 1px solid var(--hair-firm);
+    background: var(--paper-raised);
+    backdrop-filter: none;
+  }
+  .rev-chip button + button {
+    border-left-color: transparent;
+  }
+  .comparing-select {
+    backdrop-filter: none;
+  }
+  .cm-input {
+    background-color: transparent;
+  }
+  .ui-dialog .ui-input-label {
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+    font-variant-caps: var(--label-caps);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    color: var(--ink-3);
+  }
+  :is(.ui-input-bad, .ui-input-bad:focus) {
+    border-color: transparent;
+    border-bottom-color: var(--danger);
+    box-shadow: inset 0 -1px 0 var(--danger);
+  }
+  .dt-collapse svg {
+    width: 11px;
+    height: 11px;
+  }
+  .bar-stack .ui-bar {
+    background: var(--paper);
+  }
+  .editor-shell[data-narrow="1"] .ed-dock {
+    border-left-color: var(--hair-firm);
+  }
+  .app-wordmark {
+    letter-spacing: -0.012em;
+  }
+  .login-splash-name {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    letter-spacing: -0.012em;
+    text-transform: none;
+    font-style: normal;
+    opacity: 0.92;
+  }
+  .fake-cursor {
+    background: var(--ink);
+  }
+  .ed-save[data-state="saved"] {
+    color: var(--spark);
+  }
+  .ai-attention > span.is-on {
+    background: var(--spark);
+    border-color: var(--spark);
+  }
+  .titlebar {
+    color: var(--ink-3);
+  }
+  .titlebar-return:hover {
+    color: var(--ink);
+  }
+  .titlebar-sep {
+    opacity: 1;
+    color: var(--ink-3);
+  }
+  .titlebar-project:hover {
+    color: var(--ink);
+  }
+  .titlebar .ed-palette:hover:not(:disabled) {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .titlebar .ed-palette .ui-kbd {
+    background-color: transparent;
+    color: var(--ink-2);
+  }
+  .ed-account .app-avatar-initial {
+    font-family: var(--f-ui);
+  }
+  .ui-slider-rail {
+    border-radius: 0;
+    background: var(--hair-firm);
+  }
+  .ui-slider-fill,
+  .ui-slider.is-whole .ui-slider-fill {
+    background-image: none;
+  }
+  /* The Mode track alone keeps its fill, its scale from gold to ink. */
+  .ai-mode-track.ui-slider .ui-slider-fill,
+  .ai-mode-track.ui-slider.is-whole .ui-slider-fill {
+    background-image: revert-layer;
+  }
+  .ui-slider-input::-moz-range-thumb {
+    box-shadow: none;
+  }
+  .ui-slider-input:active::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+  .ui-slider-input::-webkit-slider-thumb {
+    box-shadow: none;
+  }
+  .ui-slider-input:active::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+  .ui-slider-input:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper),
+      0 0 0 4px var(--spark);
+  }
+  .ui-slider-input:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper),
+      0 0 0 4px var(--spark);
+  }
+  .ui-tick-box:not(.ui-tick-bead) {
+    border: 1px solid var(--ink-2);
+  }
+  .ui-tick[aria-checked="true"] .ui-tick-box:not(.ui-tick-bead),
+  .ui-tick[aria-checked="mixed"] .ui-tick-box:not(.ui-tick-bead) {
+    border-color: var(--ink-3);
+    background-color: transparent;
+    color: var(--ink);
+  }
+  /* A check mark is drawn in verdigris, as every sign that a thing is kept
+     or chosen is. */
+  .ui-tick[aria-checked="true"] .ui-tick-box:not(.ui-tick-bead) {
+    color: var(--spark);
+  }
+  .dt-root {
+    border-bottom: 1px solid var(--ink);
+  }
+  .dt-find:hover,
+  .dt-find:focus-within,
+  .dt-find[data-query="1"] {
+    background-color: transparent;
+  }
+  .dt-find .ui-bar-find-input {
+    font-style: italic;
+  }
+  .dt-find-back {
+    position: relative;
+  }
+  .dt-find-back:hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .dt-find .ui-bar-find-clear {
+    position: relative;
+  }
+  .dt-part:hover > .dt-cell > .dt-chevron,
+  .dt-part > .dt-cell > .dt-chevron:focus-visible {
+    color: var(--ink);
+  }
+  .dt-more:hover {
+    color: var(--ink);
+  }
+  .dt-dock-buttons {
+    border-top: 1px solid var(--ink);
+  }
+  .dt-meta {
+    border-top-color: transparent;
+  }
+  .dt-tag-k {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+  }
+  .dt-tag-v {
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .dt-foot {
+    border-top: 1px solid var(--hair);
+    font-style: italic;
+  }
+  .dt-foot-act {
+    color: var(--ink-2);
+  }
+  .dt-foot-act:hover {
+    color: var(--ink);
+  }
+  .dt-foot-theme {
+    font-style: italic;
+  }
+  .dt-rail button {
+    position: relative;
+    letter-spacing: 0;
+  }
+  .dt-rail button:hover:not(:disabled) {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .dt-rail .dt-rail-find {
+    background-color: transparent;
+  }
+  .dt-rail hr {
+    background: var(--ink);
+  }
+  .editor-shell[data-rail="1"] .dt-dock-buttons {
+    border-top-color: transparent;
+  }
+  .editor-shell[data-rail="1"] .dt-dock-button {
+    color: var(--ink-3);
+  }
+  .editor-shell[data-rail="1"] .dt-dock-button:hover {
+    color: var(--ink);
+  }
+  .editor-shell[data-rail="1"] .dt-dock-button-glyph {
+    letter-spacing: inherit;
+  }
+  .editor-shell[data-rail="1"] .dt-dock-button::after {
+    font-variant: inherit;
+    font-variant-caps: normal;
+    letter-spacing: 0;
+  }
+  .editor-shell[data-rail="1"] .dt-foot {
+    border-top-color: transparent;
+    color: var(--ink-2);
+  }
+  .dt-search-row:hover,
+  .dt-search-row.active {
+    background-color: transparent;
+    background-image: none;
+  }
+  .dt-search-where {
+    font-style: italic;
+  }
+  .dt-search-excerpt {
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .dt-search-excerpt mark {
+    background: var(--mark-search-current);
+  }
+  .dt-search-invite {
+    font-style: italic;
+  }
+  .dt-prefs {
+    border: 1px solid var(--hair-firm);
+    box-shadow: none;
+  }
+  .dt-prefs .ui-tick:hover:not(:disabled, [aria-disabled="true"]),
+  .dt-size:hover,
+  .dt-pick:hover {
+    background: var(--wash);
+  }
+  .dt-prefs .ui-tick[aria-checked="false"] .ui-row-text {
+    color: var(--ink-2);
+  }
+  .dt-size .ui-bar-track button {
+    font-weight: 400;
+  }
+  .dt-pick:not(.dt-pick-apart) > span {
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .dt-pick-select {
+    border-color: transparent;
+    border-bottom: 1px solid var(--hair-firm);
+    background-color: transparent;
+    font-style: italic;
+  }
+  .dt-pick-select:hover {
+    border-color: var(--hair-firm);
+  }
+  .dt-pick-select:focus {
+    box-shadow: none;
+  }
+  .dt-pick-select:focus-visible {
+    outline: var(--focus-ring);
+  }
+  .bar-stack .ui-bar-act-quiet {
+    color: var(--ink-2);
+  }
+  .bar-stack .ui-bar-act-quiet:hover {
+    color: var(--ink);
+  }
+  .bar-stack .ui-bar-act-quiet:hover:not(:disabled) {
+    color: var(--ink);
+  }
+  .bar-stack .ui-bar-track button:not([aria-pressed="true"]) {
+    color: var(--ink-2);
+  }
+  .bar-stack .ui-bar-find:not(:focus-within):not([data-query="1"]) {
+    color: var(--ink-2);
+  }
+  .bar-stack .ui-bar-find:not(:focus-within):not([data-query="1"]):hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+  .bar-stack .ui-bar-track button:hover:not(:disabled) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+  .bar-stack .ed-fold-face {
+    color: var(--ink-2);
+  }
+  .bar-stack .ui-bar-act > span:not([class]) {
+    font-family: var(--f-prose);
+  }
+  .bar-stack .ed-save {
+    font-family: var(--f-ui);
+  }
+  .ed-runhead,
+  .ed-folio {
+    color: var(--ink-3);
+  }
+  .ed-runhead {
+    border-bottom: 1px solid var(--hair-firm);
+  }
+  .ed-runhead-part {
+    color: var(--ink);
+  }
+  .ed-runhead b {
+    font-weight: 400;
+  }
+  :is(.cm-layer[data-mode="notes"], .cm-float) .cm-card {
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  :is(.cm-layer[data-mode="notes"], .cm-float) .cm-byline {
+    font-style: normal;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+  }
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+    .cm-chapter
+    :is(.cm-add-chapter, .cm-resolved > button):not(:disabled):is(
+      :hover,
+      :focus-visible
+    ) {
+    color: var(--ink);
+  }
+  .desk .desk-eyebrow {
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+  .desk .desk-where {
+    font-variant-caps: normal;
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--ink-2);
+  }
+  .desk .desk-last {
+    border-left: 1px solid var(--hair-firm);
+    color: var(--prose-ink);
+  }
+  .desk .desk-caret {
+    border-radius: 0;
+    background: var(--spark);
+  }
+  .desk :is(.desk-primary, .desk-quiet) {
+    border: 1px solid transparent;
+  }
+  .desk :is(.desk-primary, .desk-quiet):not(:disabled):is(:hover, :active) {
+    box-shadow: none;
+  }
+  .desk :is(.desk-primary, .desk-quiet):focus-visible {
+    outline: 2px solid var(--spark);
+    outline-offset: 2px;
+  }
+  .desk .desk-quiet {
+    color: var(--ink-2);
+  }
+  .desk .desk-quiet:hover {
+    color: var(--ink);
+  }
+  .desk .desk-quiet:not(:disabled):hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+  .sr-nums span {
+    font-variant-numeric: oldstyle-nums;
+    color: var(--ink-3);
+  }
+  .sr-nums span[data-current="1"] {
+    color: var(--ink);
+  }
+  .sr-counts span {
+    font-style: italic;
+    font-variant-numeric: oldstyle-nums;
+    color: var(--ink-3);
+  }
+  .sr-rule {
+    background: var(--ink);
+  }
+  .sr-rule[data-empty="1"] {
+    border: 1px solid var(--ink);
+    background-color: transparent;
+    background-image: none;
+  }
+  .sr-room {
+    border-bottom: 1px dotted var(--vision-ink-4);
+  }
+  .sr-rule[data-mark]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1px;
+    background: var(--spark);
+  }
+  .sr-rule[data-mark="cut"]::after {
+    background: var(--attention);
+  }
+  .desk .desk-ledger b {
+    font-weight: 400;
+  }
+  .desk .desk-thread {
+    border-left: 1px solid var(--attention);
+    background-color: transparent;
+    color: var(--ink-2);
+  }
+  .desk .desk-thread em {
+    color: var(--ink);
+  }
+  .desk .desk-thread code {
+    color: var(--attention);
+  }
+  .desk .desk-empty {
+    border-color: transparent;
+    border-radius: 0;
+  }
+  .desk .desk-empty h2 {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .desk .desk-empty p {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+  .dock-head .ui-bar-track button {
+    font-weight: var(--medium-weight);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+  }
+  .dock-head
+    .ui-bar-track
+    button[data-attention="1"]:not([aria-pressed="true"]) {
+    color: var(--attention);
+  }
+  :root[data-dock-tabs="words"]
+    .dock-head
+    .ui-bar-track
+    button:is(:hover:not(:disabled), [aria-pressed="true"]) {
+    color: var(--ink);
+  }
+  .ui-bar-track
+    button[data-attention="1"]:is(
+      :root[data-dock-tabs="words"]
+        .dock-head
+        .ui-bar-track
+        button:is(:hover:not(:disabled), [aria-pressed="true"])
+    ) {
+    color: var(--attention);
+  }
+  .dock-close:hover {
+    color: var(--ink);
+  }
+  :is(.ed-dock, .ed-dock-sheet)
+    .ai-workspace
+    :not(code, kbd, samp, pre, pre *, code *) {
+    font-family: var(--f-prose);
+  }
+  .ai-workspace .msg-assistant .dock-read :is(h1, h2, h3, h4) {
+    font-family: var(--f-prose);
+    font-weight: var(--heading-weight);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--ink);
+  }
+  .ai-workspace .msg-assistant .dock-read strong {
+    font-weight: var(--bold-weight);
+    color: var(--ink);
+  }
+  .ai-workspace .msg-assistant .dock-read code {
+    color: var(--ink-2);
+  }
+  .ai-workspace .ai-asking > :is(.dock-hint, .dock-problem) {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+  }
+  .ai-workspace .ai-asking > .dock-hint {
+    color: var(--ink-3);
+  }
+  .ai-workspace :is(.dock-hint, .dock-problem) .ui-text-link {
+    font-style: normal;
+    color: var(--ink);
+    text-decoration-color: var(--hair-firm);
+  }
+  .ai-workspace .dock-hint:not(.ai-asking > *) {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .ai-workspace :is(.ai-trace-thought, .ai-turn-detail, .ai-trace-row) {
+    font-style: italic;
+    font-variant-numeric: oldstyle-nums;
+  }
+  .ai-workspace .ai-trace-body {
+    border-left-color: var(--hair-firm);
+  }
+  .ai-workspace .ai-turn-detail-head {
+    color: var(--ink-2);
+  }
+  .ai-workspace .ui-slider-readout {
+    font-style: italic;
+  }
+  .ai-workspace .ai-jump {
+    border-color: transparent;
+    border-radius: 0;
+    background: var(--paper);
+    box-shadow: none;
+    color: var(--ink-3);
+  }
+  .ai-workspace .ai-jump:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+  .ai-workspace .ai-jump.is-attention {
+    border-color: var(--attention-glow);
+    color: var(--attention);
+  }
+  .ai-workspace .ai-jump.is-attention:hover {
+    border-color: var(--attention);
+    color: var(--attention);
+  }
+  .ai-workspace .ai-jump:not(:disabled):hover {
+    color: var(--ink);
+  }
+  .ai-jump.is-attention:is(.ai-workspace .ai-jump:not(:disabled):hover) {
+    color: var(--attention);
+  }
+  .ai-jump.is-attention:hover:is(.ai-workspace .ai-jump:not(:disabled):hover) {
+    color: var(--attention);
+  }
+  .ai-workspace .ai-chathead {
+    position: relative;
+    border-bottom: 1px solid var(--hair);
+  }
+  .ai-workspace .ai-chathead::after {
+    content: "";
+  }
+  .ai-workspace .ai-chathead .ai-persona {
+    background-color: transparent;
+  }
+  .ai-workspace .ai-chathead .ai-new-chat {
+    font-style: italic;
+  }
+  .ai-workspace .ai-chathead .ai-chathead-label {
+    font-style: italic;
+  }
+  .ai-workspace .ai-chathead .ai-chat-title {
+    position: relative;
+    border-color: transparent;
+  }
+  .ai-workspace .ai-chathead .ai-chat-title:hover {
+    border-color: var(--ink-3);
+  }
+  .ai-workspace .ai-chathead .ai-chat-title.is-attention {
+    border-color: var(--attention-glow);
+  }
+  .ai-workspace .ai-chathead .ai-chat-title.is-attention:hover {
+    border-color: var(--attention);
+  }
+  .ai-workspace .ai-chathead .ai-chat-title.is-attention {
+    color: var(--attention);
+  }
+  .ai-workspace
+    .ai-chathead
+    :is(.ai-persona, .ai-chat-title, .ai-new-chat):not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ai-chat-title.is-attention:hover:is(
+      .ai-workspace
+        .ai-chathead
+        :is(.ai-persona, .ai-chat-title, .ai-new-chat):not(:disabled):hover
+    ) {
+    background: var(--attention-tint);
+  }
+  .ai-workspace .msg-you .msg-body {
+    background-color: transparent;
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .ai-workspace .msg-you-actions button {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+    color: var(--vision-ink-4);
+  }
+  .ai-workspace .msg-you-actions button:not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ai-workspace .msg-assistant .msg-body {
+    color: var(--prose-ink);
+  }
+  .ai-workspace .msg-assistant .dock-read {
+    font-variant-ligatures: normal;
+    font-feature-settings: normal;
+  }
+  .ai-workspace .msg-assistant .dock-read :is(p, li) {
+    color: var(--prose-ink);
+  }
+  .ai-workspace .msg-assistant .dock-read blockquote {
+    border-left: 1px solid var(--hair-firm);
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .ai-workspace .msg-assistant .dock-read blockquote p {
+    color: var(--ink-2);
+  }
+  .ai-workspace .ai-trace > summary {
+    font-style: italic;
+  }
+  .ai-workspace .ai-web-sources {
+    position: relative;
+  }
+  .ai-workspace .ai-web-sources::before {
+    content: "";
+    position: absolute;
+    width: 48px;
+    border-top: 1px solid var(--hair-firm);
+  }
+  .ai-workspace .ai-web-sources .ai-web-source {
+    color: var(--ink-2);
+  }
+  .ai-workspace .ai-web-sources .ai-web-source > span {
+    text-decoration: none;
+  }
+  .ai-workspace .ai-web-sources .ai-web-source:not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ai-workspace .ai-web-sources .ai-web-n {
+    color: var(--ink-3);
+  }
+  .ai-workspace .ai-web-sources .ai-web-site {
+    color: var(--ink-3);
+  }
+  .ai-workspace
+    .msg-assistant
+    .ai-turn-foot
+    .ai-turn-copy:not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ai-workspace .msg-assistant .ai-turn-foot .ai-turn-meta > summary {
+    font-style: italic;
+    font-variant-numeric: oldstyle-nums;
+    color: var(--ink-3);
+  }
+  .ai-workspace .ai-ask {
+    border-left: 1px solid var(--attention);
+  }
+  .ai-workspace .ai-ask .ui-input-label {
+    font-weight: 400;
+  }
+  .ai-workspace .ai-ask .ui-input:focus {
+    border-color: var(--field-focus-edge);
+  }
+  .ai-workspace .ai-ask .ui-input {
+    border-color: transparent;
+    border-bottom: 1px solid var(--ink);
+    background-color: transparent;
+    font-style: italic;
+  }
+  .ai-workspace .ai-ask .ai-finding-actions .ui-btn {
+    background-color: transparent;
+    font-weight: 400;
+  }
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]):is(
+      .ai-workspace .ai-ask .ai-finding-actions .ui-btn
+    ) {
+    background: var(--accent-tint-2);
+  }
+  .ai-workspace .ai-ask .ai-finding-actions .ui-btn-soft {
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .ai-workspace
+    .ai-ask
+    .ai-finding-actions
+    .ui-btn:not(:disabled, [aria-disabled="true"]):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]):is(
+      .ai-workspace
+        .ai-ask
+        .ai-finding-actions
+        .ui-btn:not(:disabled, [aria-disabled="true"]):hover
+    ) {
+    background: var(--accent-tint-2);
+  }
+  .ai-workspace .ai-plan {
+    border-top: 1px solid var(--hair-firm);
+  }
+  .ai-workspace .ai-plan > summary {
+    letter-spacing: 0.08em;
+  }
+  .ai-workspace .ai-plan .ai-finding-head {
+    color: var(--ink);
+  }
+  .ai-workspace .ai-plan .ai-plan-item:not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+  }
+  .ai-workspace .ai-plan .ai-plan-item[aria-checked="true"] .ui-row-text {
+    text-decoration: none;
+  }
+  .ai-workspace .ai-plan .ai-text-button {
+    color: var(--ink);
+    box-shadow: inset 0 -1px 0 var(--hair-firm);
+  }
+  .ai-workspace .ai-plan .ai-plan-verdict {
+    font-style: italic;
+  }
+  .ai-workspace .ai-plan .ai-plan-verdict strong {
+    font-style: normal;
+    font-weight: var(--medium-weight);
+    color: var(--ink-2);
+  }
+  .ai-plan-verdict[data-verdict="resolved"]
+    strong:is(.ai-workspace .ai-plan .ai-plan-verdict strong) {
+    color: var(--accent);
+  }
+  .ai-plan-verdict[data-verdict="worse"]
+    strong:is(.ai-workspace .ai-plan .ai-plan-verdict strong) {
+    color: var(--danger);
+  }
+  .ai-workspace .ai-asking {
+    border-top: 1px solid var(--hair);
+    background: var(--paper);
+    box-shadow: none;
+  }
+  .ai-workspace .ai-asking .composer {
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+  .ai-workspace .ai-asking .composer:focus-within {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 3px var(--accent-tint),
+      var(--shadow-card);
+  }
+  .ai-workspace .ai-asking .composer :is(textarea, .composer-mirror) {
+    font-style: italic;
+  }
+  .ai-workspace .ai-asking .composer textarea {
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .ai-workspace .ai-asking .composer :is(.ai-composer-menu, .ai-stop) {
+    position: relative;
+    border-color: transparent;
+    color: var(--ink-2);
+  }
+  .ai-stop:hover:is(
+      .ai-workspace .ai-asking .composer :is(.ai-composer-menu, .ai-stop)
+    ) {
+    border-color: var(--ink-3);
+  }
+  .ai-stop.is-send:is(
+      .ai-workspace .ai-asking .composer :is(.ai-composer-menu, .ai-stop)
+    ) {
+    border-color: var(--ink-3);
+  }
+  .ai-stop.is-send:disabled:is(
+      .ai-workspace .ai-asking .composer :is(.ai-composer-menu, .ai-stop)
+    ) {
+    border-color: var(--hair);
+  }
+  .ai-workspace .ai-asking .composer .ai-stop {
+    color: var(--vision-ink-4);
+  }
+  .ai-workspace .ai-asking .composer .ai-stop:hover {
+    color: var(--ink);
+  }
+  .ai-workspace .ai-asking .composer .ai-stop.is-send {
+    color: var(--ink);
+  }
+  .ai-workspace .ai-asking .composer .ai-stop.is-send:disabled {
+    color: var(--ink-3);
+  }
+  .ai-workspace .ai-asking .composer .ai-stop:not(:disabled):hover,
+  .ai-workspace .ai-asking .composer .ai-composer-menu:not(:disabled):hover {
+    color: var(--ink);
+  }
+  .ai-workspace .ai-chatbar {
+    color: var(--ink-3);
+  }
+  .ai-workspace .ai-chatbar .ai-reading {
+    font-style: italic;
+  }
+  .ai-workspace .ai-chatbar .ui-meter.is-normal {
+    color: var(--ink-2);
+  }
+  .ai-workspace
+    .ai-chatbar
+    .ui-meter-ring
+    :is(.ui-meter-track, .ui-meter-fill) {
+    stroke-width: 4.5;
+  }
+  .ui-meter-ring.is-error
+    .ui-meter-track:is(
+      .ai-workspace
+        .ai-chatbar
+        .ui-meter-ring
+        :is(.ui-meter-track, .ui-meter-fill)
+    ) {
+    stroke: var(--danger-glow);
+  }
+  .ai-workspace .ai-chatbar .ui-meter-ring:not(.is-error) .ui-meter-track {
+    stroke: var(--hair-firm);
+  }
+  .ai-workspace .ai-chatbar .ui-meter-bar {
+    border-radius: 0;
+  }
+  .ai-workspace .ai-chatbar .ui-meter-bar:not(.is-error) {
+    background: var(--hair-firm);
+  }
+  .ai-workspace .ai-chatbar .ai-model-button {
+    font-style: italic;
+    color: var(--ink);
+  }
+  .ai-workspace .ai-chatbar .ai-model-button:hover {
+    color: var(--ink);
+  }
+  .ai-workspace .ai-chatbar .ai-model-button[aria-expanded="true"] {
+    color: var(--ink);
+  }
+  .ref-face :not(code, kbd, samp, pre, pre *, code *, .ui-tip, .ui-tip *) {
+    font-family: var(--f-prose);
+  }
+  .ref-face .ref-write-error {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+  }
+  .ref-face .dt-name-input {
+    border-color: transparent;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: inset 0 -1px 0 var(--ink);
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .ref-face .dt-name-input:focus {
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+  .ref-face .dt-name-input.invalid {
+    box-shadow: inset 0 0 0 1.5px var(--danger);
+  }
+  .ref-face .dt-name-error {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+  }
+  .ref-face .ref-divider:is(:hover, :focus-visible, :active)::before {
+    background: var(--ink);
+  }
+  .ref-face .ref-bottom {
+    border-top-color: transparent;
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) > .dock-document-meta {
+    border-bottom: 1px solid var(--hair-firm);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    > .dock-document-meta
+    .dock-meta {
+    letter-spacing: 0.1em;
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    > .dock-document-meta
+    .dock-generated-badge {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    > .dock-document-meta
+    .dock-generated-badge.is-current {
+    color: var(--accent);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    > .dock-document-meta
+    .dock-generated-badge.is-outdated {
+    color: var(--ink-3);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    > .dock-document-meta
+    .dock-generated-badge.is-unverified {
+    color: var(--ink-3);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-edit-btn {
+    position: relative;
+    border-color: transparent;
+    border-bottom: 1px solid var(--hair-firm);
+    background-color: transparent;
+    color: var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-edit-btn:hover {
+    border-color: var(--hair-firm);
+    color: var(--ink);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    .dock-edit-btn:hover::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 13px;
+    height: 1px;
+    background: var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-read {
+    color: var(--prose-ink);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-read h1 {
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-read h2 {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face:has(> .dock-scroll)
+    .dock-read
+    :is(h3, h4, h5, h6) {
+    font-family: var(--f-prose);
+    font-weight: var(--heading-weight);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-read code {
+    color: var(--ink-2);
+  }
+  .ref-face .ref-bottom > .dock-face:has(> .dock-scroll) .dock-problem {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+  }
+  .ref-face .ref-bottom > .dock-face-empty {
+    font-style: italic;
+  }
+  .ref-face .ref-bottom > .dock-face > .dock-meta {
+    border-bottom: 1px solid var(--hair-firm);
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    text-transform: none;
+    color: var(--ink-3);
+  }
+  .ref-face .ref-bottom > .dock-face .dock-editbar {
+    border-color: transparent;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+  }
+  .ref-face .ref-bottom > .dock-face .dock-editbar-formats button {
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink-3);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face
+    .dock-editbar-formats
+    button:not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face .dock-editbar-sep {
+    background: var(--hair);
+  }
+  .ref-face .ref-bottom > .dock-face :is(.dock-cancel, .dock-save) {
+    border-color: transparent;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--ink-3);
+  }
+  .ref-face .ref-bottom > .dock-face .dock-save {
+    box-shadow: inset 0 -1px 0 var(--ink);
+    color: var(--ink);
+  }
+  .ref-face
+    .ref-bottom
+    > .dock-face
+    :is(.dock-cancel, .dock-save):not(:disabled):hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face .dock-edit {
+    border-color: transparent;
+    border-bottom: 1px solid var(--ink);
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--prose-ink);
+  }
+  .ref-face .ref-bottom > .dock-face .dock-edit:focus {
+    border-color: var(--ink);
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .ref-face .ref-bottom > .dock-face :is(.dock-hint, .dock-problem) {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+  }
+  .ref-face .ref-picker .ref-picker-head {
+    border-bottom: 1px solid var(--hair-firm);
+  }
+  .ref-face .ref-picker .ref-picker-title {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    text-transform: none;
+    color: var(--ink-3);
+  }
+  .ref-face .ref-picker .ref-picker-close {
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink-3);
+  }
+  .ref-picker-close:hover:is(.ref-face .ref-picker .ref-picker-close) {
+    background: var(--hover-row);
+  }
+  .ref-face .ref-picker .ref-picker-close:hover {
+    color: var(--ink);
+  }
+  .ref-face .ref-picker .ref-picker-count {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .ref-face .ref-picker .ref-picker-row {
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+  }
+  .ref-picker-row:hover:is(.ref-face .ref-picker .ref-picker-row) {
+    background: var(--hover-row);
+  }
+  .ref-face .ref-picker .ref-picker-label {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+  .ref-face .ref-picker .ref-picker-row:hover .ref-picker-label {
+    color: var(--ink);
+  }
+  .ref-face .ref-picker .ref-picker-desc {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .notes-face.ref-face .snap-row:has(.ref-row-ai.barred) .snap-title {
+    color: var(--ink-3);
+  }
+  .notes-face.ref-face .snap-row.selected .snap-when {
+    font-weight: var(--vision-lift);
+  }
+  .snap-face:not(.ref-face) .snap-row.adopted .snap-title {
+    color: var(--ink);
+  }
+  .snap-face:not(.ref-face)
+    .snap-row:is(.selected, .adopted, :hover)
+    :is(.snap-title, .snap-rel, .snap-adopted) {
+    font-weight: var(--vision-lift);
+  }
+  .snap-face:not(.ref-face) .snap-title-input {
+    border-color: transparent;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: inset 0 -1px 0 var(--ink);
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .snap-face:not(.ref-face) .snap-rel {
+    background-color: transparent;
+    font-style: italic;
+  }
+  .snap-rel:hover:is(.snap-face:not(.ref-face) .snap-rel) {
+    background: var(--hover-quiet);
+  }
+  .snap-face:not(.ref-face) .snap-rel:hover {
+    color: var(--ink);
+  }
+  .snap-face:not(.ref-face) .snap-adopted {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+  }
+  .snap-face:not(.ref-face) .snap-when {
+    font-style: italic;
+  }
+  .snap-face:not(.ref-face) .snap-row .snap-adopt {
+    border-radius: 0;
+    box-shadow: inset 0 -1px 0 var(--hair-firm);
+    letter-spacing: 0.08em;
+  }
+  .snap-face:not(.ref-face) .snap-row .snap-adopt:hover {
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  .snap-face:not(.ref-face)
+    .snap-divider:is(:hover, :focus-visible, :active)::before {
+    background: var(--ink);
+  }
+  .snap-face:not(.ref-face) .snap-preview {
+    border-color: transparent;
+    background-color: transparent;
+  }
+  .snap-face:not(.ref-face) .snap-preview-body {
+    color: var(--prose-ink);
+  }
+  .snap-face:not(.ref-face) .snap-preview-body h1 {
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+  }
+  .snap-face:not(.ref-face) .snap-preview-body h2 {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .snap-face:not(.ref-face) :is(.snap-preview-empty, .dock-problem) {
+    font-family: var(--f-prose);
+    font-weight: 400;
+    font-style: italic;
+  }
+  .snap-face:not(.ref-face) .snap-preview-empty {
+    color: var(--ink-3);
+  }
+  :is(.board-filter, .comparing-select) {
+    border-color: transparent;
+    border-bottom-color: var(--ink-3);
+    background-color: transparent;
+  }
+  :is(.board-filter, .comparing-select):focus,
+  :is(.board-filter, .comparing-select):focus-visible,
+  .cm-input:focus {
+    border-color: transparent;
+    border-bottom-color: var(--ink);
+    box-shadow: inset 0 -1px 0 var(--ink);
+    outline: none;
+  }
+  .comparing-select:hover {
+    border-color: var(--accent);
+  }
+  .pick:focus-within {
+    border-color: var(--hair);
+    border-bottom-color: var(--ink);
+    box-shadow: none;
+  }
+
+  /* States the touches above would otherwise hide, restated. */
+  .dt-bin.armed .dt-bin-head:hover {
+    color: var(--accent);
+  }
+  .ui-menu.ui-menu-inverse hr {
+    border-top-color: var(--tip-raised);
+  }
+  .dt-rail button[aria-current="true"]:hover:not(:disabled) {
+    background-color: transparent;
+    color: var(--ink);
+  }
+  .dt-search-row.dt-search-head:hover {
+    background: transparent;
+  }
+  .dt-search-excerpt mark.df-deleted {
+    background: var(--mark-diff-wash-del);
+  }
+  .dt-search-excerpt mark.df-inserted {
+    background: var(--mark-diff-wash-add);
+  }
+  .bar-stack .ui-bar-act-quiet[aria-pressed="true"],
+  .bar-stack
+    .ui-bar-act-quiet[aria-pressed="true"]:not([data-attention="1"]):hover:not(
+      :disabled
+    ) {
+    color: var(--press-ink);
+  }
+  .bar-stack .ui-bar-act-quiet[data-attention="1"],
+  .bar-stack .ui-bar-act-quiet[data-attention="1"]:hover {
+    color: var(--attention);
+  }
+  .ai-workspace .ai-web-sources .ai-evidence.is-still:hover {
+    background: none;
+  }
+
+  /* The Desk's rules stand 8 above their box's foot, so the mark under
+     the current Section and the room's leader clear the counts below. */
+  .sr-parts {
+    padding-bottom: 8px;
+  }
+
+  /* A note's actions are words, set 14 apart without a button's sides, so
+     Reply, Resolve and Remove share one line of the 180 column. */
+  .cm-card :is(.cm-buttons, .cm-confirm, .cm-composer-actions) {
+    gap: 4px 14px;
+  }
+  .cm-card :is(.cm-buttons, .cm-confirm, .cm-composer-actions) .ui-btn {
+    padding: 0;
+  }
+  .ai-workspace .ai-ask {
+    padding: 2px 0 2px 14px;
+  }
+  /* ── The contents, set as a book's index ─────────────────────────────────
+
+     Every row runs on its dotted leader to its count, shown at rest; the
+     open Section's count is in the accent. The page glyph is not drawn,
+     its column kept for the tick. The fold and the row's menu come under
+     the hand or the keyboard, and stand on a touch screen, where there is
+     no hand to wait for. */
+  .dt-words,
+  .dt-row > .dt-lead {
+    opacity: 1;
+  }
+  /* The open row is told by its type alone: its title and its count in
+     the first ink over the others' third, its title lifted, its leader in
+     gold, and no rule down its edge. */
+  .dt-row.active,
+  .dt-row.active:hover,
+  .dt-row.active > .dt-words {
+    color: var(--ink);
+  }
+  .dt-row.active > .dt-cell > .dt-label {
+    font-weight: var(--vision-lift);
+  }
+  /* The leaders run in small squares, as the Vienna workshops set a rule:
+     a 2px square every 6, drawn in the slot's foot. */
+  .dt-row:has(> .dt-words) > .dt-lead,
+  .editor-shell:not([data-rail="1"]) .dt-dock-button > .dt-lead {
+    border-bottom: 2px solid transparent;
+    background: linear-gradient(
+        to right,
+        var(--leader-ink) 2px,
+        transparent 2px
+      )
+      0 0 / 6px 2px repeat-x border-box;
+  }
+  .dt-row.active > .dt-lead {
+    background-image: linear-gradient(
+      to right,
+      var(--vision-gilt) 2px,
+      transparent 2px
+    );
+  }
+  .dt-row::before {
+    background: transparent;
+  }
+  /* Set close, as an index is, so the title and its leader have the row:
+     4 between its pieces, the leader keeping that air either side. */
+  .dt-row {
+    gap: 4px;
+  }
+  .dt-row > .dt-lead {
+    margin-inline: 0;
+  }
+  .dt-chevron.placeholder > .dt-file-icon {
+    opacity: 0;
+  }
+  .dt-row > .dt-cell > button.dt-chevron,
+  .dt-row .dt-more {
+    opacity: 0;
+  }
+  .dt-row:is(:hover, :focus-within) > .dt-cell > button.dt-chevron,
+  .dt-row:is(:hover, :focus-within) .dt-more,
+  .dt-row .dt-more[aria-expanded="true"] {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .dt-row > .dt-cell > button.dt-chevron,
+    .dt-row .dt-more {
+      opacity: 1;
+    }
+  }
+
+  /* Reference and Notes stacked, each on its leader to its count, as the
+     index's last entries. */
+  .editor-shell:not([data-rail="1"]) .dt-dock-buttons {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* The project's facts as a list: each name in small capitals beside its
+     value, with no ground. Where the frame hides them (the rail, a short
+     window) they stay hidden. */
+  @media (min-height: 441px) {
+    .editor-shell:not([data-rail="1"]) .dt-meta {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 2px 12px;
+    }
+  }
+  .dt-tag {
+    display: contents;
+  }
+
+  /* The shape at the panel's head a thin rule of ink, as the Desk draws
+     it, and the region's name under it in full ink. The glyph sets its
+     height inline, so this restates it. */
+  .dt-ident .spine-bars {
+    height: 8px !important;
+  }
+  .dt-region-label {
+    color: var(--ink);
+  }
+
+  /* ── The book's ornaments ────────────────────────────────────────────────
+
+     Gold stands only where a book has a small ornament: between the book
+     and its Part in the running head, under a title, on a break, around
+     the folio. Each is a square, the Vienna workshops' mark. */
+  .ed-runhead-sep {
+    color: transparent;
+    background: linear-gradient(var(--vision-gilt), var(--vision-gilt)) 50%
+      60% / 4px 4px no-repeat;
+  }
+
+  /* A title opens on three marks under it, a square, a diamond and a
+     square, set where the title is: at its start, centre or end. */
+  .editor > h1 {
+    position: relative;
+  }
+  .editor > h1::before,
+  .editor > h1::after {
+    content: "";
+    position: absolute;
+    top: calc(100% + 0.27em);
+    left: 11px;
+    width: 5px;
+    height: 5px;
+  }
+  .editor > h1::before {
+    position: absolute;
+    background: var(--vision-gilt);
+    transform: rotate(45deg) scale(0.85);
+  }
+  .editor > h1::after {
+    box-shadow:
+      -11px 0 0 var(--vision-gilt),
+      11px 0 0 var(--vision-gilt);
+  }
+  .editor > h1[style*="text-align:center"]::before,
+  .editor > h1[style*="text-align:center"]::after {
+    position: absolute;
+    left: calc(50% - 2.5px);
+  }
+  .editor > h1[style*="text-align:right"]::before,
+  .editor > h1[style*="text-align:right"]::after {
+    position: absolute;
+    left: auto;
+    right: 11px;
+  }
+
+  .editor > hr {
+    border-top-color: transparent;
+  }
+  .editor > hr::after {
+    color: transparent;
+    background:
+      linear-gradient(var(--vision-gilt), var(--vision-gilt)) calc(50% - 14px)
+        50% / 4px 4px no-repeat,
+      linear-gradient(var(--vision-gilt), var(--vision-gilt)) 50% 50% / 4px 4px
+        no-repeat,
+      linear-gradient(var(--vision-gilt), var(--vision-gilt)) calc(50% + 14px)
+        50% / 4px 4px no-repeat;
+  }
+
+  .editor-surface > .ed-folio {
+    font-variant-numeric: lining-nums;
+  }
+  .ed-folio > span {
+    display: inline-block;
+    min-width: 22px;
+    padding: 2px 5px;
+    border: 1px solid var(--vision-gilt);
+    color: var(--ink-2);
+  }
+
+  .editor > :is(p:first-child, h1 + p, h1 + h2 + p)::first-line {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── The crop marks ──────────────────────────────────────────────────────
+
+     Fixed on the page: across, they stand 32 outside what it holds, the
+     text or, while the notes stand beside it, the text and their column
+     (16 for an arm, 16 of air), placed by the surface's arithmetic as the
+     running head is, so they move only as the text does and stay on the
+     page under a Dock that covers it; down, from the line the panel's
+     rule, the bar's foot and the Dock's rule share, the last of the bar's
+     46, 5 over the face, to the sheet's foot. They are drawn over the bar
+     (100) where its ends reach them, under the panel (105), the Dock (115)
+     and a bar at work (130). They take no pointer, so the prose under them
+     stays pressable. Narrow, they keep to the window's edges. */
+  .crop-frame {
+    position: fixed;
+    z-index: 101;
+    top: calc(var(--face-top) - 5px);
+    left: calc(var(--panel-left) + var(--panel-w) + var(--sheet-gap));
+    right: var(--sheet-gap);
+    bottom: var(--sheet-gap);
+    pointer-events: none;
+  }
+  .editor-shell:not([data-narrow="1"]):not([data-henosis="full"]) .crop-frame {
+    left: calc(
+      var(--panel-left) + var(--panel-w) + var(--panel-gutter) +
+        max(
+          0px,
+          (
+              100vw - var(--panel-left) - var(--panel-w) - var(--panel-gutter) -
+                var(--desk-right) - var(--editor-width)
+            ) /
+            2
+        ) +
+        var(--dock-shift, 0px) - 32px
+    );
+    right: auto;
+    width: calc(
+      min(
+          var(--editor-width),
+          100vw - var(--panel-left) - var(--panel-w) - var(--panel-gutter) -
+            var(--desk-right)
+        ) +
+        64px
+    );
+    transition:
+      left var(--t),
+      width var(--t);
+  }
+  .editor-shell[data-margin="1"]:not([data-narrow="1"]):not(
+      [data-henosis="full"]
+    ):has(.cm-layer[data-mode="notes"])
+    .crop-frame {
+    width: calc(var(--editor-width) + 208px + 64px);
+  }
+  .editor-shell[data-henosis="full"]:not([data-narrow="1"]) .crop-frame {
+    top: var(--sheet-gap);
+    left: var(--sheet-gap);
+    right: var(--sheet-gap);
+  }
+  .editor-shell[data-phone="1"] .crop-frame {
+    display: none;
+  }
+  /* The text keeps inside the marks, cut on their top line (`underBar`
+     "cut"), and fades in over the 8 under it, a light shade that ends
+     before the running head's letters. */
+  :root[data-under-bar="cut"]
+    .editor-shell:not([data-phone="1"]):not([data-henosis="full"])
+    .editor-surface {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent calc(var(--face-top) - 5px),
+      #000 calc(var(--face-top) + 3px)
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent calc(var(--face-top) - 5px),
+      #000 calc(var(--face-top) + 3px)
+    );
+  }
+  .crop {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-width: 0;
+    border-style: solid;
+  }
+  .crop-tl {
+    top: 0;
+    left: 0;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+  .crop-tr {
+    top: 0;
+    right: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+  }
+  .crop-bl {
+    bottom: 0;
+    left: 0;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+  }
+  .crop-br {
+    bottom: 0;
+    right: 0;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+  }
+
+  /* ── The page's head, foot and shape ─────────────────────────────────────
+
+     The running head, the folio, the shape drawn as rules, the Dock's
+     faces in words and the books between crop marks are Vision's alone,
+     so they stand here rather than in the frame. Each takes no room from
+     the text, which stands where it does under every theme. */
+  /* The running head stands over the measure in the band above the text,
+     scrolling with it: placed in the scroller's own box by the surface's
+     arithmetic, so it starts where the text does and moves with the
+     measure's shift. Its rule sits 16 above the text's first line. */
+  .editor-surface > .ed-runhead {
+    position: absolute;
+    top: calc(var(--text-top) - 16px);
+    left: calc(
+      var(--panel-left) + var(--panel-w) + var(--panel-gutter) +
+        max(
+          0px,
+          (
+              100% - var(--panel-left) - var(--panel-w) - var(--panel-gutter) -
+                var(--desk-right) - var(--editor-width)
+            ) /
+            2
+        )
+    );
+    width: min(
+      var(--editor-width),
+      100% - var(--panel-left) - var(--panel-w) - var(--panel-gutter) -
+        var(--desk-right)
+    );
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    translate: var(--dock-shift, 0px) -100%;
+    transition: translate var(--t);
+  }
+
+  /* The folio closes the page under the text, on a line of its own that
+     takes no height: it stands 18 under the text, in the surface's own room
+     at the foot, so the page scrolls as far as under any other theme. It
+     takes the whole line, its padding narrowing it to the measure, so it
+     never finds room beside a narrow text and pushes the text aside. */
+  .editor-surface:has(> .ed-folio) {
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+  .editor-surface > .ed-folio {
+    flex: 0 0 100%;
+    height: 0;
+    margin: 0;
+    padding-inline: max(0px, (100% - var(--editor-width)) / 2);
+    overflow: visible;
+    text-align: center;
+    translate: var(--dock-shift, 0px) 18px;
+    transition: translate var(--t);
+  }
+
+  /* While the notes stand beside the text they are part of the page, so the
+     head and the folio span both: the head still starts where the text does,
+     and the folio, centred, moves right by half the column it gains. */
+  .editor-shell[data-margin="1"]:not([data-phone="1"])
+    .editor-surface[data-desk="0"]:has(.cm-layer[data-mode="notes"])
+    > .ed-runhead {
+    width: calc(var(--editor-width) + 208px);
+  }
+  .editor-shell[data-margin="1"]:not([data-phone="1"])
+    .editor-surface[data-desk="0"]:has(.cm-layer[data-mode="notes"])
+    > .ed-folio {
+    padding-inline: max(0px, (100% - var(--editor-width) - 208px) / 2);
+    translate: calc(var(--dock-shift, 0px) + 104px) 18px;
+  }
+  /* Where the notes run past the text, the folio's line stands under the
+     last note (`--cm-overhang`, which `Margin` sets): a margin, not a
+     translate, so the page grows to hold it and it scrolls into view. */
+  .editor-shell[data-margin="1"]:not([data-phone="1"])
+    .editor-surface[data-desk="0"]:has(.cm-layer[data-mode="notes"])
+    > .ed-folio {
+    margin-top: var(--cm-overhang, 0px);
+  }
+
+  /* The phone has no band above the text for the page's head to stand in,
+     and a head may take no room of its own, so the phone draws none. */
+  .editor-shell[data-phone="1"] .editor-surface > .ed-runhead {
+    display: none;
+  }
+
+  /* Only the scroll view is a page; the typewriter's station is not, and
+     only the Desk, standing in any view, carries the head. */
+  .editor-surface[data-desk="0"]:not([data-view="scroll"])
+    :is(.ed-runhead, .ed-folio) {
+    display: none;
+  }
+
+  /* The book's shape drawn as rules (`Decorations.spine`): each Part a
+     column at its share of the book, its number over it and its count under
+     it, its Sections as rules 8 tall with the room left as a leader after
+     them. The drawing takes the glyph's own box (`.spine-labels`, the 54 of
+     the bars, `.spine-counts` in `base.css`), the rules standing at its
+     foot, so the Desk below stands where it does under the glyph. */
+  .spine-rules {
+    display: grid;
+  }
+  .spine-rules :is(.sr-nums, .sr-parts, .sr-counts) {
+    display: grid;
+    gap: 0 8px;
+  }
+  .spine-rules :is(.sr-nums, .sr-counts) {
+    height: 14px;
+    line-height: 14px;
+  }
+  .sr-nums {
+    margin-bottom: 4px;
+  }
+  .sr-parts {
+    height: 54px;
+    align-items: end;
+  }
+  .sr-counts {
+    margin-top: 2px;
+  }
+  .sr-part {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    height: 8px;
+  }
+  .sr-rule {
+    position: relative;
+  }
+  .sr-rule[data-empty="1"] {
+    box-sizing: border-box;
+  }
+  .sr-room {
+    flex: 1;
+    margin-left: 4px;
+    translate: 0 -4px;
+  }
+
+  /* The Dock's faces named in words (`FrameOptions.dockTabs`): the head is
+     a line of the faces' names, with no trough and no thumb, each name its
+     own width, 12 apart, 3 over its rule, which stands on the bar's foot
+     and the panel head's while the Dock stands beside the page. A name
+     carries no glyph beside it; the Assistant's spark returns while a chat
+     answers on another face, the one state it shows. */
+  :root[data-dock-tabs="words"] .dock-head {
+    align-items: baseline;
+    gap: 12px;
+    padding: 18px 16px 0;
+  }
+  :root[data-dock-tabs="words"] .dock-head .ui-bar-track {
+    flex: 1 1 auto;
+    gap: 12px;
+    padding: 0 0 10px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
+  :root[data-dock-tabs="words"] .dock-head .ui-bar-track-thumb {
+    display: none;
+  }
+  :root[data-dock-tabs="words"] .dock-head .ui-bar-track button {
+    flex: none;
+    height: auto;
+    padding-bottom: 3px;
+  }
+  :root[data-dock-tabs="words"]
+    .dock-head
+    .ui-bar-track
+    button:not([data-busy="1"])
+    > svg {
+    display: none;
+  }
+  :root[data-dock-tabs="words"] .dock-head .ui-bar-track[data-fit="1"] button {
+    padding: 0 0 3px;
+  }
+  /* The Assistant's spark, while a chat answers on another face, stands
+     still in gold, as the Stop button's sweep is gold. */
+  .dock-head .ui-bar-track button[data-busy="1"] svg {
+    animation: none;
+    color: var(--vision-gilt);
+    filter: none;
+  }
+
+  /* The Library as a book's opening: the greeting as a title with its three
+     marks, each book a title page set from its left edge. The marks start 11
+     in, so the left square's shadow stays on the page; the gold rule inside
+     the edge is drawn 3 in. */
+  .lib-title {
+    display: grid;
+    justify-items: start;
+  }
+  .lib-title::before,
+  .lib-title::after,
+  .projects-grid .project-title::before,
+  .projects-grid .project-title::after {
+    grid-area: 2 / 1;
+    width: 5px;
+    height: 5px;
+    margin: 8px 0 0 11px;
+  }
+  .lib-title::before,
+  .projects-grid .project-title::before {
+    transform: rotate(45deg) scale(0.85);
+  }
+
+  .projects-grid .project {
+    padding: 16px 16px 40px;
+  }
+  .projects-grid .project::before {
+    inset: 3px;
+  }
+  .project::before {
+    opacity: 0;
+  }
+  .project:is(:hover, :focus-within)::before {
+    opacity: 1;
+  }
+  .project-gone:is(:hover, :focus-within)::before {
+    opacity: 0;
+  }
+  .project-attention::before {
+    opacity: 0.5;
+  }
+  .project-attention:is(:hover, :focus-within)::before {
+    opacity: 1;
+  }
+  .projects-grid .project::after {
+    position: absolute;
+    pointer-events: none;
+    left: 16px;
+    right: 16px;
+    bottom: 32px;
+  }
+  .projects-grid .project-title {
+    display: grid;
+    justify-items: start;
+    margin: 0;
+  }
+  .projects-grid .project-where {
+    position: absolute;
+    left: 16px;
+    bottom: 10px;
+    display: block;
+    white-space: nowrap;
+  }
+  .projects-grid .project-where > svg {
+    margin-right: 6px;
+    vertical-align: -1px;
+  }
+  .projects-grid .project-where > .ui-dots {
+    display: inline-block;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .projects-grid .project:has(.project-sync) {
+    padding-bottom: 56px;
+  }
+  .projects-grid .project:has(.project-sync)::after {
+    bottom: 48px;
+  }
+  .projects-grid .project:has(.project-sync) .project-when {
+    bottom: 26px;
+  }
+  .projects-grid .project-sync {
+    display: block;
+    margin: 2px 0 0 18px;
+  }
+  .projects-grid .project-sync::before {
+    content: none;
+  }
+  .projects-grid .project-stats > .project-when {
+    position: absolute;
+    right: 16px;
+    bottom: 10px;
+    max-width: calc(55% - 16px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .projects-list .project,
+  .projects-list .project:is(:hover, :focus-within) {
+    border-width: 0 0 1px;
+  }
+  .projects-list .project::before {
+    border-width: 0 0 0 1px;
+  }
+
+  /* ── The contents as a classical index ───────────────────────────────────
+
+     "Contents" between two gold squares, 14 of air under it; each Part
+     in widely spaced capitals 14 under what stands above it, over a
+     hairline with 6 of air either side; its Sections set larger, their
+     numbers in their own column, each on its leader of squares to its
+     count. The sizes hold for a pointer: a touch screen keeps the frame's
+     own. */
+  .dt-region-head > .dt-region-label {
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    letter-spacing: 0.24em;
+    color: var(--ink);
+  }
+  .dt-region-head > .dt-region-label::before,
+  .dt-region-head > .dt-region-label::after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    background: var(--vision-gilt);
+  }
+  .dt-row.dt-part {
+    padding-top: 14px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    letter-spacing: 0.18em;
+    background-image: linear-gradient(var(--hair), var(--hair));
+    background-position: 12px 100%;
+    background-size: calc(100% - 22px) 1px;
+    background-repeat: no-repeat;
+  }
+  .dt-part .dt-label {
+    font-weight: 400;
+    text-transform: uppercase;
+    font-variant-caps: normal;
+    color: var(--ink);
+  }
+  .dt-part .dt-idx {
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }
+  .dt-section .dt-idx {
+    color: var(--ink-3);
+  }
+  .dt-section.active .dt-idx {
+    color: var(--ink);
+  }
+  @media (pointer: fine) {
+    .dt-row.dt-part {
+      font-size: 11.5px;
+    }
+    .dt-region-head > .dt-region-label {
+      font-size: 11px;
+    }
+    .dt-row.dt-section {
+      font-size: 14.5px;
+    }
+    .dt-row .dt-idx {
+      font-size: 11px;
+    }
+    .dt-part .dt-idx {
+      font-size: 10px;
+    }
+    .dt-words {
+      font-size: 12px;
+    }
+    .dt-add {
+      font-size: 13px;
+    }
+  }
+
+  /* ── Leaves laid on the page ─────────────────────────────────────────────
+
+     Where Radiant raises a card over the page, Vision lays a leaf on it:
+     its paper, its edge a double rule, ink outside and gold inside, and a
+     flat shade cast on the page beside it, as a print draws one. The Dock
+     becomes one when it covers the measure, the folded panel when it peeks
+     open, and the command bar with them, while either lies over the text;
+     each eases into it at the frame's pace. */
+  .bar-stack .ui-bar {
+    transition:
+      border-color var(--t),
+      box-shadow var(--t);
+  }
+  .editor-shell:is([data-dock="1"][data-dock-over="1"], [data-peek="1"]):not(
+      [data-phone="1"]
+    ):not([data-narrow="1"])
+    .bar-stack
+    .ui-bar {
+    border-color: var(--ink);
+    box-shadow:
+      inset 0 0 0 3px var(--paper),
+      inset 0 0 0 4px var(--vision-gilt),
+      5px 5px 0 0 var(--vision-shade);
+  }
+  .editor-shell[data-dock-over="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .ed-dock {
+    border-color: var(--ink);
+    box-shadow: -6px 6px 0 0 var(--vision-shade);
+  }
+  /* The Dock's gold rule is laid over its faces rather than under them, so
+     a face's own paper does not cover it. */
+  .ed-dock::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    box-shadow:
+      inset 0 0 0 3px var(--paper),
+      inset 0 0 0 4px var(--vision-gilt);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t);
+  }
+  .editor-shell[data-dock-over="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .ed-dock::after {
+    opacity: 1;
+  }
+  .editor-shell[data-peek="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .doc-tree {
+    border-right-color: var(--ink);
+    box-shadow: 6px 0 0 0 var(--vision-shade);
+  }
+  /* The panel's gold rule, as the Dock's, is laid over what the panel
+     holds, so the rules running to its edge stop short of it. */
+  .doc-tree::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    box-shadow:
+      inset -3px 0 0 var(--paper),
+      inset -4px 0 0 var(--vision-gilt);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t);
+  }
+  .editor-shell[data-peek="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .doc-tree::after {
+    opacity: 1;
+  }
+
+  /* As the index sets them: a Part's Sections stand in the Part's own
+     columns, their numbers under its number, told apart by their type
+     rather than an indent, set close, and a title too long for its row
+     runs on to a second line, its number and count on the first. The tree
+     indents by an inline style, so the rule says so outright. A Section's
+     summary mark comes under the hand, as its menu does. */
+  .dt-part + .dt-children > .dt-branch > .dt-row.dt-section {
+    padding-left: 12px !important;
+    align-items: baseline;
+  }
+  .dt-section .dt-label {
+    height: auto;
+    white-space: normal;
+  }
+  @media (pointer: fine) {
+    .dt-row {
+      padding-block: 4px;
+    }
+  }
+  .dt-row .dt-summary {
+    opacity: 0;
+  }
+  .dt-row:is(:hover, :focus-within) .dt-summary {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .dt-row .dt-summary {
+      opacity: 1;
+    }
+  }
+
+  /* The Dock's faces in words with no rule under them, the open one over
+     a gold rule of its own; the running head tracked as the index's
+     capitals are. */
+  :root[data-dock-tabs="words"] .dock-head .ui-bar-track {
+    border-bottom-color: transparent;
+  }
+  :root[data-dock-tabs="words"]
+    .dock-head
+    .ui-bar-track
+    button[aria-pressed="true"] {
+    box-shadow: inset 0 -1px 0 var(--vision-gilt);
+  }
+  .editor-surface > .ed-runhead {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+  }
+
+  /* The page's air as the book's: the title stands a line clear of the
+     running head, its ornament under it and the text a line under that; a
+     break keeps 14 either side, the text after it flush, as after a
+     title; the folio stands 18 under the text. */
+  .editor > h1:first-child {
+    margin-top: 1.15em;
+  }
+  .editor > h1 {
+    margin-bottom: 1.17em;
+  }
+  .editor > hr {
+    margin: 0.75em 0;
+  }
+  .editor > hr + p {
+    text-indent: 0;
+  }
+
+  /* A row's summary mark and menu stand over its end rather than beside
+     its count, so the title, its leader and the count have the panel's
+     whole width; under the hand they come up on the paper over the
+     count's place. A touch screen, with no hand to wait for, keeps them
+     in the row. */
+  @media (hover: hover) {
+    .dt-row > .dt-cell > .dt-summary,
+    .dt-row > .dt-actions {
+      position: absolute;
+      top: 50%;
+      translate: 0 -50%;
+    }
+    .dt-row > .dt-actions {
+      right: 10px;
+    }
+    .dt-row > .dt-cell > .dt-summary {
+      right: 32px;
+    }
+    .dt-row:is(:hover, :focus-within) > .dt-cell > .dt-summary,
+    .dt-row:is(:hover, :focus-within) > .dt-actions,
+    .dt-row > .dt-actions:has(.dt-more[aria-expanded="true"]) {
+      background-color: var(--paper);
+      box-shadow: -6px 0 0 var(--paper);
+    }
+  }
+
+  /* The panel set on one measure, as a page is: every piece starts 20 in
+     from the panel's edge and ends where the counts end. A row's fold and
+     tick hang in its margin, left of its number, so the numbers stand on
+     that line; the adds, the bin, the Reference and Notes buttons, the
+     facts and the foot keep to it. A Reference or Notes button's chevron
+     hangs in the right margin, so its count ends where the Sections' counts
+     end. */
+  .dt-row > .dt-chevron,
+  .dt-row > .dt-cell > .dt-chevron {
+    margin-inline: -12px -4px;
+  }
+  .dt-content > .dt-add-row,
+  .dt-part + .dt-children > .dt-add-row {
+    padding-left: 12px !important;
+  }
+  .dt-add-row > .dt-cell > .dt-add {
+    padding-left: 0;
+  }
+  .dt-bin-head {
+    padding-right: 10px;
+  }
+  .editor-shell:not([data-rail="1"]) :is(.dt-dock-buttons, .dt-meta) {
+    padding-inline: 12px 16px;
+  }
+  .editor-shell:not([data-rail="1"]) .dt-dock-button {
+    gap: 4px;
+    padding-inline: 0;
+  }
+  .editor-shell:not([data-rail="1"]) .dt-dock-button > .dt-lead {
+    margin-inline: 0;
+  }
+  .editor-shell:not([data-rail="1"]) .dt-dock-button-chevron {
+    margin-right: -14px;
+  }
+  .editor-shell:not([data-rail="1"]) .dt-foot {
+    padding-inline: 12px 13px;
+  }
+  /* A Section's tick stands on its number, as a Part's does, rather than
+     in the margin beside it, where it would touch the figure: the column
+     holding it lies over the number, and the number gives way to the tick
+     at the frame's beat. */
+  .dt-row.dt-section > .dt-chevron.placeholder {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 12px;
+    height: auto;
+    margin: 0;
+  }
+  .dt-row.dt-section > .dt-idx {
+    transition: opacity var(--t-tap);
+  }
+  @media (hover: hover) {
+    .dt-row.dt-section:hover:has(.dt-check) > .dt-idx {
+      opacity: 0;
+      transition-delay: 350ms;
+    }
+  }
+  .dt-row.dt-section:focus-within:has(.dt-check) > .dt-idx,
+  .doc-tree[data-selecting] .dt-row.dt-section:has(.dt-check) > .dt-idx {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dt-row.dt-section > .dt-idx {
+      transition-duration: 0s;
+    }
+  }
+
+  /* ── Verdigris ───────────────────────────────────────────────────────────
+
+     Gold is the book's ornament; verdigris, copper's patina, marks what is
+     alive in it: a note, the place the book is kept while it is kept, and
+     the thing chosen in a list of notes, references or snapshots. */
+
+  /* A note is marked by a small square, as the ornaments are, raised as a
+     note's call is, in the text and before its writer's name. */
+  :root[data-comments="notes"] .cm-pmark {
+    color: transparent;
+  }
+  :root[data-comments="notes"] .cm-pmark::after {
+    content: "";
+    position: absolute;
+    top: calc(50% - 0.45em);
+    left: calc(50% - 2px);
+    width: 4px;
+    height: 4px;
+    background: var(--spark);
+  }
+  :root[data-comments="notes"] .cm-marker[data-at="end"]::after {
+    content: "" / "";
+    display: block;
+    width: 4px;
+    height: 4px;
+    background: var(--spark);
+  }
+  :root[data-comments="notes"]
+    :is(.cm-layer[data-mode="notes"], .cm-float)
+    .cm-name::before {
+    content: "" / "";
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    margin-right: 8px;
+    background: var(--spark);
+    vertical-align: middle;
+    translate: 0 -1px;
+  }
+  /* The place the book is kept in verdigris while the bar says it is
+     kept there. */
+  .editor-shell:has(.ed-save:is([data-state="clean"], [data-state="saved"]))
+    .dt-foot
+    > svg {
+    color: var(--spark);
+  }
+  .dt-moving.dt-selecting,
+  .dt-moving.dt-selecting .dt-moving-stop:hover {
+    color: var(--paper);
+  }
+  .dt-moving.dt-selecting {
+    background: var(--spark);
+  }
+  /* The band keeps the panel's measure, from the numbers' line to the
+     counts' edge. */
+  .dt-moving {
+    margin-inline: 12px 10px;
+  }
+  /* ── Buttons ─────────────────────────────────────────────────────────────
+
+     Four kinds, as a book's furniture: the one thing to do in a view an
+     ink button framed inside by a gold rule; the second choice beside it its
+     words in a hairline; a word button its words alone, a gold rule under
+     them under the hand or the keyboard; a removal its words in copper.
+     A row's tools and the bar's keep their own. */
+  .ui-btn-primary,
+  .ui-btn-soft,
+  .desk .desk-primary {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: none;
+    outline: 1px solid var(--vision-gilt);
+    outline-offset: -4px;
+  }
+  .ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]),
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]),
+  .desk .desk-primary:not(:disabled):hover {
+    background: var(--ink-2);
+    box-shadow: none;
+  }
+  .ui-btn-primary:focus-visible,
+  .ui-btn-soft:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .ui-btn-outline,
+  .ui-btn-quiet:not(.import-act),
+  .desk .desk-quiet {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--hair-firm);
+  }
+  .ui-btn-outline:hover:not(:disabled, [aria-disabled="true"]),
+  .ui-btn-quiet:not(.import-act):hover:not(:disabled, [aria-disabled="true"]),
+  .desk .desk-quiet:not(:disabled):hover {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+  .ui-btn-link,
+  .ui-btn-ghost {
+    background: transparent;
+    color: var(--ink-2);
+  }
+  .ui-btn-link:is(:hover, :focus-visible):not(
+      :disabled,
+      [aria-disabled="true"]
+    ),
+  .ui-btn-ghost:is(:hover, :focus-visible):not(
+      :disabled,
+      [aria-disabled="true"]
+    ) {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 -1px 0 var(--vision-gilt);
+  }
+  .ui-btn-danger {
+    background: transparent;
+    color: var(--attention);
+    box-shadow: none;
+  }
+  .ui-btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+    background: transparent;
+    box-shadow: inset 0 -1px 0 var(--attention);
+  }
+  /* A note's actions stay words, as the margin sets them. */
+  .cm-card :is(.cm-buttons, .cm-confirm, .cm-composer-actions) .ui-btn {
+    background: transparent;
+    box-shadow: none;
+  }
+  .cm-card
+    :is(.cm-buttons, .cm-confirm, .cm-composer-actions)
+    .ui-btn:not(:focus-visible) {
+    outline: 0;
+  }
+  .cm-card :is(.cm-buttons, .cm-confirm, .cm-composer-actions) .ui-btn-soft {
+    color: var(--ink);
+  }
+  /* So do an ask's in the Assistant's conversation, its yes underlined. */
+  .ai-workspace .ai-ask .ai-finding-actions .ui-btn-soft {
+    color: var(--ink);
+  }
+  .ai-workspace .ai-ask .ai-finding-actions .ui-btn:not(:focus-visible) {
+    outline: 0;
+  }
+
+  /* The note, reference or snapshot that is open, in verdigris; on a
+     selected row's band the verdigris is deepened by a fifth of the ink, so
+     the title still reads at 4.5:1. */
+  .ref-face .ref-card-row[aria-current="true"],
+  .ref-face .ref-arc[aria-current="true"] {
+    color: var(--spark);
+  }
+  .snap-row.selected .snap-title {
+    color: color-mix(in srgb, var(--spark) 80%, var(--ink));
+  }
+}
+
+@layer paint {
+  .landing-beta,
+  .app-beta {
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+}

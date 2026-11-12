@@ -1,0 +1,32 @@
+{
+  "name": "phospheare",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "author": "Perseo Mazzoni",
+  "description": "A writing tool. Free and open source, a project open to everyone, not for profit.",
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @phospheare/web",
+    "dev:identity": "node tools/dev.mjs identity",
+    "dev:full": "node tools/dev.mjs full",
+    "build": "npm run build --workspace @phospheare/web",
+    "preview": "npm run preview --workspace @phospheare/web",
+    "test": "npm run test --workspaces --if-present",
+    "identity:test": "go -C identity test ./...",
+    "desktop:test": "go -C desktop test ./...",
+    "notices": "node tools/generate-notices.mjs",
+    "audit:lockfiles": "node tools/audit-lockfiles.mjs",
+    "headers:check": "node tools/check-headers.mjs",
+    "headers:fix": "node tools/check-headers.mjs --fix",
+    "licenses:check": "node tools/check-licenses.mjs"
+  },
+  "engines": {
+    "node": ">=26.0.0"
+  },
+  "overrides": {
+    "minimatch": "11.0.2"
+  }
+}

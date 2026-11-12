@@ -1,0 +1,81 @@
+# Puts a release's site on GitHub Pages when the maintainer publishes a release
+# that is not a pre-release. A pre-release publishes its downloads only.
+#
+# Nothing is built here. The site is the archive the Release workflow built
+# from the tag and tested as served (`release.yml`, `site-<version>.tar.gz`).
+# It is checked against the release's own `SHA256SUMS`, unpacked, and handed
+# to the official Pages actions. `deploy-pages` deploys only an artifact of
+# its own run, so the upload happens here too.
+#
+# The `github-pages` environment must allow the release tags (`v*`): a run on
+# a release has the tag as its ref. Only the deploy job holds the Pages
+# permissions. A failed deployment is run again from its run's page.
+name: Site
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+# One deployment at a time, and none is cut short half way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  site:
+    name: Check the release's site
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - name: Download the site and the checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern "site-${TAG#v}.tar.gz" --pattern SHA256SUMS \
+            --dir "$RUNNER_TEMP/release"
+
+      # The archive must be listed in SHA256SUMS and match it; a release
+      # without one is not deployed.
+      - name: Check the archive and unpack it
+        run: |
+          archive="site-${TAG#v}.tar.gz"
+          cd "$RUNNER_TEMP/release"
+          awk -v name="$archive" '{ file = $2; sub(/^\*/, "", file) } file == name' SHA256SUMS > site.sha256
+          if [ ! -s site.sha256 ]; then
+            echo "::error::SHA256SUMS of $TAG does not list $archive."
+            exit 1
+          fi
+          sha256sum --check --strict site.sha256
+          mkdir "$RUNNER_TEMP/site"
+          tar -xzf "$archive" -C "$RUNNER_TEMP/site"
+          for file in index.html 404.html LICENSE.txt third-party-notices.txt; do
+            test -s "$RUNNER_TEMP/site/$file" || { echo "::error::$archive has no $file"; exit 1; }
+          done
+
+      - name: Hand the site to Pages
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: site
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

@@ -1,0 +1,656 @@
+/*
+ * Copyright (C) 2026 Perseo Mazzoni
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * Free software under the GNU Affero General Public License, version 3 or
+ * later; the full text is in `LICENSE`.
+ */
+
+/* The page loads nothing from outside the host, so it uses system fonts. */
+:root {
+  --bg: #f5f5f3;
+  --panel: #ffffff;
+  --ink: #1c1c1e;
+  --muted: #62605b;
+  --line: #e1dfda;
+  --field: #fbfbfa;
+  --accent: #3550c8;
+  --accent-ink: #ffffff;
+  --accent-soft: #e9edfb;
+  --danger: #b0262d;
+  --ok: #1d6d3a;
+  --ok-soft: #e4f3e9;
+  --warn: #8a5a00;
+  --warn-soft: #fbf1dc;
+  --danger-soft: #fbe7e8;
+  --chip: #eeede9;
+  --radius: 12px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131315;
+    --panel: #1d1d20;
+    --ink: #ecebe8;
+    --muted: #a8a49d;
+    --line: #34343a;
+    --field: #17171a;
+    --accent: #8d9cf2;
+    --accent-ink: #0f1220;
+    --accent-soft: #252a45;
+    --danger: #f0898e;
+    --ok: #82d49e;
+    --ok-soft: #1c3325;
+    --warn: #e8b960;
+    --warn-soft: #3a2f17;
+    --danger-soft: #3d1d1f;
+    --chip: #2a2a2f;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+h1 { font-size: 1.75rem; line-height: 1.2; margin: 0; }
+h2 { font-size: 1.15rem; line-height: 1.3; margin: 0; }
+h3 { font-size: 1rem; margin: 2rem 0 .5rem; }
+h2:focus { outline: none; }
+p { margin: .75rem 0; }
+
+a { color: var(--accent); }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: .9em;
+  overflow-wrap: anywhere;
+}
+
+p > code, p > a > code { white-space: nowrap; }
+
+/* The home network's name opens the app there. */
+.ready a code { color: inherit; }
+.foot code { white-space: normal; }
+
+.hint { color: var(--muted); font-size: .92rem; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* The settings. */
+
+.top, .cards, .flow-top, .flow-body, .flow-foot {
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.top { padding-top: 2.5rem; padding-bottom: 1rem; }
+.eyebrow {
+  margin: 0 0 .25rem;
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* The language list sits on the eyebrow's line, at its right. */
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  flex-wrap: wrap;
+  margin-bottom: .25rem;
+}
+.top-row .eyebrow { margin: 0; }
+label.language {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 600;
+}
+label.language select { width: auto; margin-top: 0; padding: .3rem .5rem; font-size: .85rem; }
+
+.cards { padding-bottom: 3rem; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* A card's weight. "full" shows all of it: its body is a disclosure held
+   open, with no summary to close it. "compact" is a card that works: its
+   head, and the body on request. "checking" is its head alone, and
+   "blocked" a card that waits on another: its head alone, muted. */
+.card-more { margin: 0; }
+.card[data-weight="full"] .card-more > summary { display: none; }
+.card[data-weight="full"] .card-more > :not(summary) { margin-left: 0; }
+.card[data-weight="compact"] .card-more { margin-top: .5rem; }
+.card[data-weight="checking"] .card-more,
+.card[data-weight="blocked"] .card-more { display: none; }
+.card[data-weight="compact"],
+.card[data-weight="checking"],
+.card[data-weight="blocked"] { padding-top: .85rem; padding-bottom: .85rem; }
+.card[data-weight="blocked"] { background: transparent; }
+.card[data-weight="blocked"] h2 { color: var(--muted); font-weight: 600; }
+.card-sum { margin: .25rem 0 0; }
+.card[data-weight="full"] .card-sum { display: none; }
+
+/* Settings that need no setup, as quiet rows in one card. */
+.others { background: transparent; }
+.others > h2 {
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.others h3 { font-size: 1rem; margin: 0; }
+.line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .85rem 0;
+  border-top: 1px solid var(--line);
+}
+.others > h2 + .line { border-top: 0; }
+.line:last-child { padding-bottom: 0; }
+.line .hint { margin: .25rem 0 0; }
+.line .result:empty { display: none; }
+.line-text { min-width: 0; }
+.line > button, .line > .switch { flex: none; }
+.line-actions { display: flex; flex: none; flex-direction: column; align-items: stretch; gap: .5rem; }
+
+.chip {
+  display: inline-block;
+  padding: .15rem .65rem;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip.is-ok { background: var(--ok-soft); color: var(--ok); }
+.chip.is-warn { background: var(--warn-soft); color: var(--warn); }
+.chip.is-error { background: transparent; color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger); }
+
+.foot { text-align: center; }
+
+/* Buttons: primary, secondary, quiet, danger. */
+
+button, .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-height: 2.5rem;
+  font: inherit;
+  font-weight: 600;
+  padding: .45rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+}
+button:hover, .button:hover { border-color: var(--muted); }
+button:focus-visible, .button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button.primary, .button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+button.primary:hover, .button.primary:hover { filter: brightness(1.08); }
+
+button.quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--accent);
+  padding-left: .25rem;
+  padding-right: .25rem;
+}
+button.quiet:hover { text-decoration: underline; }
+
+button.danger { color: var(--danger); }
+button.danger:hover { border-color: var(--danger); }
+
+button:disabled, button:disabled:hover { opacity: .45; cursor: default; filter: none; border-color: var(--line); }
+button.primary:disabled { border-color: var(--accent); }
+
+button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+
+.row { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0 .25rem; }
+
+/* Fields. */
+
+label { display: block; margin: 1rem 0 .25rem; font-weight: 600; }
+label + .hint { margin-top: .25rem; }
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+  display: block;
+  width: 100%;
+  margin-top: .35rem;
+  padding: .55rem .7rem;
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.suffixed { display: flex; align-items: center; gap: .4rem; }
+.suffixed input { flex: 1; min-width: 0; }
+.suffixed span { font-weight: 400; color: var(--muted); }
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin: 1rem 0 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+.switch input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 2.75rem;
+  height: 1.6rem;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--line);
+  position: relative;
+  cursor: pointer;
+  transition: background .15s;
+}
+.switch input::after {
+  content: "";
+  position: absolute;
+  top: .2rem;
+  left: .2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+  transition: transform .15s;
+}
+.switch input:checked { background: var(--accent); }
+.switch input:checked::after { transform: translateX(1.15rem); }
+.line .switch { margin: 0; }
+
+/* While phones can open it: the code to scan and the address to type,
+   first on the card. The code keeps a white ground in the dark theme, which
+   phone cameras need. */
+.share {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  margin: .25rem 0 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--field);
+}
+.share[hidden] { display: none; }
+.share img { flex: none; width: 200px; height: 200px; padding: 8px; border-radius: 8px; background: #ffffff; }
+.share-title { margin: 0 0 .5rem; font-weight: 600; font-size: 1.05rem; }
+.share ol { margin: 0 0 .75rem; padding-left: 1.25rem; }
+.share ol li + li { margin-top: .25rem; }
+.share p { margin: 0 0 .25rem; }
+.share-url { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.share-url code { font-size: 1rem; }
+@media (max-width: 34rem) { .share { flex-direction: column; align-items: flex-start; } }
+
+/* A note to read before what follows: what is different here, and what
+   to do about it. */
+.callout { margin: .75rem 0 1rem; padding: .75rem 1rem; border-radius: var(--radius); background: var(--warn-soft); }
+.callout.is-error { background: var(--danger-soft); }
+.callout > p { margin: 0 0 .5rem; }
+.callout strong { color: var(--warn); }
+.callout.is-error strong { color: var(--danger); }
+.callout .row { margin-top: .75rem; }
+
+/* Turning the home network on: the stages, and a bar for the one whose
+   progress is known. */
+.stages .sheet-row:not(.is-next):not(.is-ticked) > dd { color: var(--muted); }
+.stages progress {
+  display: block;
+  width: 100%;
+  height: .5rem;
+  margin: .5rem 0 .3rem;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: var(--chip);
+  overflow: hidden;
+}
+.stages progress[hidden] { display: none; }
+.stages progress::-webkit-progress-bar { background: var(--chip); }
+.stages progress::-webkit-progress-value { background: var(--accent); border-radius: 999px; transition: width .4s; }
+.stages progress::-moz-progress-bar { background: var(--accent); border-radius: 999px; }
+#lan-progress > .hint { margin: -.5rem 0 1rem .6rem; }
+#lan-bar-words { display: block; line-height: 1.45; }
+
+/* Words that answer an action. */
+
+.status, .result { font-weight: 600; }
+.result { white-space: pre-line; }
+.result:empty, .status:empty { display: none; }
+.is-ok { color: var(--ok); }
+.is-warn { color: var(--warn); }
+.is-error { color: var(--danger); }
+
+.notice {
+  max-width: 42rem;
+  margin: 1rem auto 0;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: .75rem 1rem;
+}
+@media (max-width: 44rem) { .notice { margin-left: 1rem; margin-right: 1rem; } }
+
+/* Disclosures: "Why?", "Good to know", settings. */
+
+details.more { margin: 1rem 0 0; }
+details.more > summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  width: fit-content;
+  list-style: none;
+}
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before {
+  content: "";
+  display: inline-block;
+  width: .45rem;
+  height: .45rem;
+  margin: 0 .55rem .15rem 0;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s;
+}
+details.more[open] > summary::before { transform: rotate(45deg); }
+details.more[open] > summary { margin-bottom: .5rem; }
+details.more > :not(summary) { margin-left: 1rem; }
+
+ul.plain { padding-left: 1.1rem; margin: .5rem 0 0; }
+ul.plain li { margin: .45rem 0; }
+
+.plain-steps { padding-left: 1.25rem; }
+.plain-steps li { margin: .5rem 0; }
+
+/* A list of what to do: each row a sentence, with a check before it once
+   it is done. A row may hold its reason and its check, offered at its right
+   and shown on request under its words. The page is used beside
+   Google's tab, so it holds down to about 600px wide. */
+
+.sheet { margin: 1rem 0; }
+.sheet:empty { display: none; }
+.sheet + .sheet { margin-top: -.5rem; }
+.sheet-row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto auto;
+  gap: .3rem .75rem;
+  align-items: start;
+  padding: .5rem .6rem;
+  border-radius: 10px;
+  transition: background .2s;
+}
+.sheet-row > .tick-mark { grid-column: 1; grid-row: 1; }
+.sheet-row > .done-button { grid-column: 4; grid-row: 1; }
+.sheet-row > dd { grid-column: 2; grid-row: 1; padding-top: .1rem; }
+.sheet-row > .row-links { grid-column: 3; grid-row: 1; display: flex; gap: .75rem; line-height: 1.75rem; white-space: nowrap; }
+.sheet-row > dd.row-why, .sheet-row > dd.row-done { grid-column: 2 / -1; grid-row: auto; padding-top: 0; }
+.sheet-row.open-row { align-items: center; }
+.sheet-row.open-row > dd { padding-top: 0; }
+.sheet-row > dd.row-why, .sheet-row > dd.row-done { color: var(--muted); font-size: .92rem; }
+.sheet-row.wide > dd { display: block; }
+.sheet-row.open-row > dd:first-of-type { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+
+/* A ticked row is done; a suspect row is the one probably wrong. */
+.sheet-row.is-ticked { background: var(--ok-soft); }
+.sheet-row.is-suspect { background: var(--warn-soft); }
+.sheet-row.is-back { animation: back 1.6s ease-out; }
+@keyframes back {
+  0%, 30% { background: var(--accent-soft); }
+  100% { background: transparent; }
+}
+
+/* The check of a done row; nothing marks a row not done yet. */
+.tick-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: .1rem;
+  border-radius: 50%;
+  background: var(--ok);
+  color: var(--panel);
+  visibility: hidden;
+}
+.sheet-row.open-row > .tick-mark { margin-top: 0; }
+.tick-mark svg { width: .9rem; height: .9rem; }
+.sheet-row.is-ticked > .tick-mark { visibility: visible; }
+
+/* The next row to do has an empty circle where its check will be, and the
+   rest of its list steps back; only the next row can be used, though every
+   row's "Why?" and "Already done?" still open. A row that only shows
+   something, such as a password, stays as it is. */
+.sheet-row.is-next > .tick-mark { visibility: visible; background: transparent; border: 2px solid var(--accent); color: transparent; }
+[data-scope]:has(.is-next) .sheet-row:not(.is-next):not(.is-suspect):not(.no-tick) > :not(.row-links):not(.row-why):not(.row-done) { opacity: .45; }
+
+/* Done is offered on the next row to do only, and goes once used. */
+.done-button { display: none; min-height: 0; padding: .1rem .75rem; font-size: .88rem; }
+.sheet-row.is-next:not(.is-ticked) > .done-button { display: inline-flex; }
+
+/* Words that name a control on the page, and do what it does. */
+button.jump {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* "Why?" and "Already done?" at a row's right, quieter than the words. */
+button.more-link { min-height: 0; padding: 0; font-size: .88rem; font-weight: 500; color: var(--muted); }
+button.more-link:hover, button.more-link[aria-expanded="true"] { color: var(--ink); }
+
+.sheet dd { margin: 0; min-width: 0; }
+.sheet-row.wide > dd .copy { min-height: 1.6rem; height: 1.6rem; vertical-align: middle; }
+.sheet dd code {
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: .2rem .45rem;
+}
+.sheet code.block {
+  display: block;
+  margin: .5rem 0 0;
+  padding: .5rem .6rem;
+  white-space: pre;
+  overflow-x: auto;
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+/* A reference on a card. */
+.sheet.ref { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.sheet.ref .sheet-row {
+  grid-template-columns: minmax(8rem, 2fr) 5fr;
+  gap: .75rem 1rem;
+  padding: .6rem .9rem;
+  border-radius: 0;
+  border-top: 1px solid var(--line);
+}
+.sheet.ref .sheet-row:first-child { border-top: 0; }
+.sheet.ref .sheet-row > dt { grid-column: 1; }
+.sheet.ref .sheet-row > dd { grid-column: 2; display: flex; align-items: center; gap: .35rem; }
+.sheet.ref dt { color: var(--muted); font-weight: 600; font-size: .92rem; }
+
+.copy {
+  flex: none;
+  min-height: 2.1rem;
+  width: 2.1rem;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  position: relative;
+}
+.copy:hover { color: var(--accent); border-color: var(--line); }
+.copy svg { width: 1.05rem; height: 1.05rem; }
+.copy.is-done { color: var(--ok); }
+
+@media (max-width: 520px) {
+  .sheet.ref .sheet-row { grid-template-columns: 1fr; gap: .3rem; }
+  .sheet.ref .sheet-row > dt, .sheet.ref .sheet-row > dd { grid-column: 1; }
+}
+
+/* A flow, one step at a time. */
+
+.flow-top, .flow-body, .flow-foot { max-width: 38rem; }
+.flow-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding-top: 1.25rem;
+}
+.back-link { justify-self: start; margin-left: -.25rem; }
+.dots { display: flex; gap: .45rem; margin: 0; }
+.dots span { width: .45rem; height: .45rem; border-radius: 50%; background: var(--line); }
+.dots span.is-past { background: var(--muted); }
+.dots span.is-here { background: var(--accent); }
+
+.flow-body { padding-top: .5rem; }
+
+.step {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2.25rem 2rem 1.75rem;
+  margin-top: 1.25rem;
+}
+.step h2 { font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; }
+.step .lead-in { margin-top: 0; }
+.then { margin: 1rem 0; }
+
+.flow-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  padding-top: 1.25rem;
+  padding-bottom: 3rem;
+}
+.flow-foot #flow-next { margin-left: auto; }
+
+/* The drop zone for the client file. */
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+  padding: 1.5rem 1rem;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--field);
+  text-align: center;
+  cursor: pointer;
+}
+.drop:hover, .drop.is-over { border-color: var(--accent); background: var(--accent-soft); }
+.drop:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.drop .drop-title { font-weight: 600; }
+.drop .hint { font-weight: 400; }
+
+.verdict { margin-top: 1rem; }
+.verdict .verdict-text { margin-top: 0; font-weight: 600; }
+.verdict .sheet { margin: .75rem 0; }
+
+.done {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  background: var(--ok-soft);
+}
+.done .status { margin-top: 0; }
+
+#lan-qr { display: block; background: #ffffff; padding: 8px; border-radius: 8px; margin-top: .5rem; }
+
+/* A quiet link that swaps a step to its other way, above what it replaces. */
+.switch-path { margin: .75rem 0 0; }
+.switch-path .quiet { padding-left: 0; min-height: 0; }
+
+label.check {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 1.25rem 0 0;
+}
+label.check input { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: var(--accent); }
+
+/* What is already done, in one line. */
+.done-line { display: flex; align-items: center; gap: .5rem; font-weight: 600; margin: 1rem 0 0; }
+.tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--ok-soft);
+  color: var(--ok);
+  font-size: .85rem;
+}
+
+/* The reference sections of a card, apart from its main action. */
+.card-foot { margin-top: 1.25rem; padding-top: .25rem; border-top: 1px solid var(--line); }
+
+[hidden] { display: none !important; }

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "language": "it",
+  "cases": [
+    {
+      "id": "reader-horizon",
+      "kind": "alpha-reader",
+      "sources": ["section--il-cancello.md"],
+      "prompt": "Cosa pensi stia succedendo finora, e su cosa hai dubbi?",
+      "mustMentionAny": ["cancello", "lanterna"],
+      "mustNotMention": ["ashen", "ottone", "non dormiva", "non tornò"]
+    },
+    {
+      "id": "continuity",
+      "kind": "editorial",
+      "sources": ["section--il-cancello.md", "section--la-strada.md"],
+      "prompt": "Controlla la continuità tra queste due sezioni e cita ciò che hai usato.",
+      "mustMentionAny": ["cappotto", "lanterna"],
+      "mustNotMention": []
+    },
+    {
+      "id": "summary",
+      "kind": "summary",
+      "sources": ["section--il-cancello.md"],
+      "prompt": "Riassumi questa sezione in modo neutrale: eventi, decisioni e fili aperti.",
+      "mustMentionAny": ["lanterna", "cappotto"],
+      "mustNotMention": ["ashen", "non dormiva"]
+    }
+  ]
+}

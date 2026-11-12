@@ -1,0 +1,12 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* The editor's stylesheets, in the frame's layer (`styles/frame.css`).
+   `editor.css` holds the frame's geometry and the rules several features
+   share; a feature's own sheet follows it. The order is the cascade: between
+   two rules of equal weight the later sheet wins, so a move between sheets is
+   checked with `node tools/check-css-order.mjs`. */
+@import "./editor.css" layer(frame);
+@import "./assistant/assistant.css" layer(frame);

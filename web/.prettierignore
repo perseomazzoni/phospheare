@@ -1,0 +1,16 @@
+dist
+coverage
+node_modules
+test-results
+# Local tool output, ignored by git too.
+.cache
+# The reference templates are product content, authored by hand: their blank
+# bullet lines (`  - ` with a trailing space, where the writer types) are the
+# writer's material, not code style. Prettier trims them, so the folder is out
+# of the formatting gate by the owner's direction (2026-09-17).
+src/editor/reference/md-templates
+# The evaluation books whose references are those templates filled as a
+# writer fills them: the hints and the blank bullets a writer left are part
+# of what the app is measured reading, so they stay as written.
+src/ai/eval/guided/**/*.md
+src/ai/eval/references/**/*.md

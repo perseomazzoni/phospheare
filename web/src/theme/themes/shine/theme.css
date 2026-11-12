@@ -1,0 +1,3299 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* Shine: the paint the app uses under this theme, then the theme's
+   own touches over it. The `paint` layer paints every rule of the frame's
+   (`styles/base.css`, `editor/editor.css`, `webapp/webapp.css`), which
+   paints nothing itself: first the rules every theme shares
+   (`shared.css`), then this sheet's own. The `tune` layer stands over it
+   whatever either rule's weight. It paints, and sizes or places only the
+   few rules named in `themes/sheets.test.ts`; it never hides or moves. */
+
+@layer paint, tune;
+
+@layer paint {
+  /* ── The kit ─────────────────────────────────────────────────────────────── */
+
+  /* ── The web application's three ─────────────────────────────────────────── */
+
+  .ui-btn-primary,
+  .ui-btn-outline,
+  .ui-btn-ghost,
+  .ui-btn-attention {
+    border-color: transparent;
+    border-radius: var(--r);
+    font-weight: var(--strong-weight);
+  }
+
+  .ui-btn-primary {
+    background: var(--accent);
+    color: var(--on-fill);
+  }
+
+  .ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow: var(--shadow-accent);
+  }
+
+  .ui-btn-outline {
+    border-color: var(--hair-firm);
+    color: var(--ink);
+  }
+
+  .ui-btn-outline:hover:not(:disabled, [aria-disabled="true"]) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--hover-accent);
+  }
+
+  .ui-btn-ghost {
+    color: var(--ink-3);
+  }
+
+  .ui-btn-ghost:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  .ui-btn-attention {
+    background: var(--attention-tint);
+    color: var(--attention);
+    box-shadow: inset 0 0 0 1px var(--attention-glow);
+  }
+
+  .ui-btn-attention:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow:
+      inset 0 0 0 1px var(--attention-glow),
+      0 0 0 3px var(--attention-tint);
+  }
+
+  /* ── Loading inside a button ─────────────────────────────────────────────── */
+
+  .ui-btn-soft,
+  .ui-btn-danger {
+    border-radius: var(--r-sm);
+    font-weight: var(--medium-weight);
+  }
+
+  .ui-btn-soft {
+    background: var(--accent-tint);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+  }
+
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--accent-tint-2);
+  }
+
+  .ui-btn-danger {
+    background: var(--danger);
+    color: var(--on-fill);
+  }
+
+  .ui-btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow: 0 0 0 3px var(--danger-tint);
+  }
+
+  .ui-dialog-foot .ui-btn {
+    border-radius: var(--r);
+    font-weight: var(--strong-weight);
+  }
+
+  .ui-btn-quiet {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-quiet:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-link {
+    color: var(--ink-3);
+    font-weight: var(--link-weight);
+  }
+
+  .ui-btn-link:hover:not(:disabled, [aria-disabled="true"]) {
+    color: var(--ink-3);
+  }
+
+  .ui-btn-icon {
+    border-radius: var(--r-xs);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-icon:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .ui-btn-icon:focus-visible {
+    outline: 1px solid var(--accent-glow);
+    outline-offset: -1px;
+  }
+
+  /* ── Loading dots ────────────────────────────────────────────────────────── */
+
+  .ui-dots i {
+    border-radius: 50%;
+    background: var(--dots-dim);
+  }
+
+  /* ── Controls ────────────────────────────────────────────────────────────── */
+
+  .ui-text-link {
+    background: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .ui-text-link-ink {
+    color: var(--ink);
+  }
+
+  /* ── Input, with its evidence line ───────────────────────────────────────── */
+
+  .ui-input {
+    border-color: var(--field-edge);
+    border-bottom-color: var(--field-foot);
+    border-radius: var(--field-radius);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  .ui-input-bad {
+    border-color: var(--danger);
+  }
+
+  .ui-input-note {
+    font-family: var(--f-chrome);
+    color: var(--ink-3);
+  }
+
+  .ui-input-note-bad {
+    color: var(--danger);
+  }
+
+  .ui-input-note-flag {
+    color: var(--ink);
+  }
+
+  /* ── Select ──────────────────────────────────────────────────────────────── */
+
+  .ui-select {
+    border-color: var(--field-edge);
+    border-bottom-color: var(--field-foot);
+    border-radius: var(--field-radius);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  /* ── Segmented control ───────────────────────────────────────────────────── */
+
+  .ui-seg {
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .ui-seg button:hover:not(:disabled) {
+    color: var(--ink);
+  }
+
+  .ui-seg button[aria-pressed="true"] {
+    background: var(--press-ground);
+    color: var(--press-ink);
+    box-shadow: var(--press-mark);
+  }
+
+  /* ── Kbd ─────────────────────────────────────────────────────────────────── */
+
+  .ui-kbd {
+    font-family: var(--f-mono);
+    font-weight: var(--name-weight);
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--paper-raised);
+    color: var(--ink-3);
+    font-variant-caps: normal;
+    letter-spacing: normal;
+  }
+
+  /* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+  .ui-skeleton {
+    border-radius: var(--r-xs);
+    background: linear-gradient(
+      90deg,
+      var(--paper-sunk),
+      var(--hair-soft),
+      var(--paper-sunk)
+    );
+    background-size: 200% 100%;
+  }
+
+  /* ── Banner ──────────────────────────────────────────────────────────────── */
+
+  .ui-banner {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+
+  .ui-banner-attention {
+    border-color: var(--attention-tint);
+    background: var(--attention-tint);
+    color: var(--attention);
+  }
+
+  .ui-banner-problem {
+    border-color: var(--danger-tint);
+    background: var(--danger-tint);
+    color: var(--danger);
+  }
+
+  .ui-banner-quiet {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* ── Meter ───────────────────────────────────────────────────────────────── */
+
+  .ui-meter-bar {
+    border-radius: var(--r-round);
+    background: var(--hair);
+  }
+
+  /* ── AccessCard ──────────────────────────────────────────────────────────── */
+
+  .ui-access {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+  }
+
+  .ui-access-perms {
+    border-top-color: var(--hair-soft);
+    background: var(--paper);
+  }
+
+  /* ── Slider ──────────────────────────────────────────────────────────────── */
+
+  .ui-slider-rail {
+    border-radius: var(--r-round);
+    background: var(--hair);
+  }
+
+  .ui-slider-fill {
+    border-radius: inherit;
+    background: linear-gradient(
+      to right,
+      var(--ui-slider-from, var(--accent)),
+      color-mix(
+        in oklch,
+        var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+        var(--ui-slider-from, var(--accent))
+      )
+    );
+  }
+
+  .ui-slider-input {
+    background: transparent;
+  }
+
+  .ui-slider-input::-webkit-slider-thumb {
+    border-radius: 50%;
+    background: color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    );
+    box-shadow: 0 0 0 2px var(--paper-raised);
+  }
+
+  .ui-slider-input::-moz-range-thumb {
+    border-radius: 50%;
+    background: color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    );
+    box-shadow: 0 0 0 2px var(--paper-raised);
+  }
+
+  .ui-slider-input:active::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+
+  .ui-slider-input:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 3.5px var(--shine-mark);
+  }
+
+  .ui-slider-input:active::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+
+  .ui-slider-input:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 3.5px var(--shine-mark);
+  }
+
+  .ui-slider-readout {
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 1px var(--hair);
+    font-family: var(--f-meta);
+    font-variant-numeric: var(--figures);
+    color: var(--ink-3);
+  }
+
+  /* ── Overlays ────────────────────────────────────────────────────────────── */
+
+  .ui-scrim {
+    background: var(--scrim);
+  }
+
+  .ui-dialog {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* ── Wizards ─────────────────────────────────────────────────────────────── */
+
+  .ui-steps-track {
+    border-radius: var(--r-xs);
+    background: var(--hair);
+  }
+
+  .ui-steps-fill {
+    border-radius: var(--r-xs);
+    background: var(--accent);
+  }
+
+  .ui-step-dot {
+    border-radius: var(--r-round);
+    background: var(--ink-3);
+  }
+
+  .ui-steps-comet {
+    border-radius: var(--r-round);
+    background:
+      repeating-linear-gradient(
+        to right,
+        transparent 0 7px,
+        color-mix(in srgb, var(--dots-hot) 85%, transparent) 7px 9px,
+        transparent 9px 15px
+      ),
+      linear-gradient(
+        to right,
+        transparent,
+        var(--dots-cy) 55%,
+        var(--dots-hot)
+      );
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--dots-c0) 70%, transparent);
+  }
+
+  .ui-job-seg {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+  }
+
+  .create-card {
+    border-color: var(--hair-soft);
+    border-radius: var(--r);
+    background: var(--paper);
+    color: var(--ink-3);
+  }
+
+  .create-chip {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .ui-dialog-foot {
+    border-top-color: var(--hair-soft);
+    background: var(--paper);
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+  }
+
+  .ui-alert-evidence {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    background: var(--paper-sunk);
+    border-left-color: var(--danger);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  }
+
+  @media (max-width: 720px) {
+    .ui-dialog,
+    .ui-dialog-alert {
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+
+    .ui-dialog-foot {
+      border-radius: 0;
+    }
+  }
+
+  /* ── Radio cards ─────────────────────────────────────────────────────────── */
+
+  .pick {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper);
+  }
+
+  .pick[data-on="1"] {
+    border-color: var(--press-edge);
+    border-bottom-color: var(--press-foot);
+    background: var(--press-ground);
+    box-shadow: var(--press-ring);
+  }
+
+  .pick:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .pick-sub {
+    font-family: var(--f-chrome);
+    color: var(--ink-3);
+  }
+
+  .pick-tick {
+    color: var(--accent);
+  }
+
+  /* ── List rows ───────────────────────────────────────────────────────────── */
+
+  .ui-row {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-row-note {
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-row-tick {
+    color: var(--accent);
+  }
+
+  /* ── Ticks ───────────────────────────────────────────────────────────────── */
+
+  .ui-tick {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-tick-box {
+    border-color: var(--field-edge);
+    border-radius: var(--r-xs);
+    color: transparent;
+  }
+
+  .ui-tick-box.ui-tick-bead {
+    border-radius: 50%;
+  }
+
+  /* ── The import window ───────────────────────────────────────────────────── */
+
+  .import-file-remove {
+    border-color: var(--danger);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--danger);
+  }
+
+  .import-file-remove:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .import-group {
+    --bead-c: var(--shine-mark);
+    border-radius: var(--r-sm);
+  }
+
+  input.import-row-title {
+    border-color: transparent;
+    border-radius: var(--r-sm);
+    background: transparent;
+  }
+
+  input.import-row-title:focus {
+    border-color: var(--hair-firm);
+    background: var(--paper);
+    outline: none;
+  }
+
+  .import-bead-ghost {
+    border-radius: 50%;
+    background: var(--bead-c);
+  }
+
+  .import-seam .import-join {
+    font-family: var(--f-chrome);
+    font-weight: var(--bold-weight);
+    color: var(--ink-3);
+    background: transparent;
+  }
+
+  .import-peek {
+    font-family: var(--f-prose);
+    color: var(--ink);
+    scrollbar-color: var(--scroll-thumb) transparent;
+  }
+
+  .import-cut-bead {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .import-cut:not([data-cut]):focus-visible {
+    outline: none;
+  }
+
+  /* ── Progress ────────────────────────────────────────────────────────────── */
+
+  .ui-prog-bar {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+  }
+
+  .ui-prog-bar i {
+    border-radius: var(--r-xs);
+    background: var(--accent);
+  }
+
+  /* ── The command bar ─────────────────────────────────────────────────────── */
+
+  .ui-bar {
+    border-color: var(--bar-edge);
+    border-radius: var(--bar-radius);
+    background: var(--bar-ground);
+    box-shadow: var(--bar-shadow);
+    backdrop-filter: var(--bar-frost);
+  }
+
+  /* ── Actions ─────────────────────────────────────────────────────────────── */
+
+  .ui-bar-act {
+    border-radius: var(--r);
+  }
+
+  .ui-bar-act-solid {
+    background: var(--accent);
+    color: var(--on-fill);
+  }
+
+  .ui-bar-act-solid:hover:not(:disabled) {
+    box-shadow: var(--shadow-accent);
+  }
+
+  .ui-bar-act-quiet {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* A letter for a glyph steps back with its segment while find is engaged,
+     and still holds the 4.5:1 that text needs, where the icons beside it
+     need 3:1. */
+  .ui-bar[data-focus="find"] .ui-bar-act-quiet > span {
+    color: color-mix(in srgb, var(--ink-3) 60%, var(--ink));
+  }
+
+  .ui-bar-act[aria-pressed="true"] {
+    background: var(--press-ground);
+    color: var(--press-ink);
+    box-shadow: var(--press-mark);
+  }
+
+  .ui-bar-act[aria-pressed="true"]:hover:not(:disabled) {
+    background: var(--press-hover);
+  }
+
+  .ui-bar-act[data-attention="1"] {
+    color: var(--attention);
+    box-shadow: inset 0 0 0 1px var(--attention-glow);
+  }
+
+  /* ── Track ───────────────────────────────────────────────────────────────── */
+
+  .ui-bar-track-thumb {
+    border-radius: var(--r-sm);
+    background:
+      linear-gradient(var(--shine-press-line), var(--shine-press-line)) bottom /
+        100% 2px no-repeat,
+      var(--press-ground);
+    box-shadow: none;
+  }
+
+  .ui-bar-track button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-bar-track button[aria-pressed="true"] {
+    color: var(--press-ink);
+  }
+
+  .ui-bar-track button[data-attention="1"] {
+    color: var(--attention);
+  }
+
+  /* ── Seated ──────────────────────────────────────────────────────────────── */
+
+  .ui-bar-track[data-seat="sunk"] {
+    border-radius: var(--r-sm);
+    background: var(--seat-trough);
+  }
+
+  /* ── Tip ─────────────────────────────────────────────────────────────────── */
+
+  .ui-tip {
+    border-radius: var(--r-sm);
+    background: var(--tip-solid);
+    box-shadow: 0 0 0 1px var(--tip-edge);
+    color: var(--tip-ink);
+  }
+
+  /* ── Bubble ──────────────────────────────────────────────────────────────── */
+
+  .ui-bubble {
+    border-radius: var(--r-lg);
+    background: var(--inverse-solid);
+    color: var(--inverse-ink);
+    box-shadow: var(--shadow-3);
+  }
+
+  .ui-bubble::after {
+    background: var(--inverse-solid);
+  }
+
+  .ui-bubble button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--inverse-ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-bubble button:hover {
+    background: var(--inverse-raised);
+    color: var(--inverse-ink-strong);
+  }
+
+  .ui-bubble button[aria-pressed="true"] {
+    color: var(--inverse-ink-strong);
+  }
+
+  .ui-bubble hr {
+    background: var(--inverse-raised);
+  }
+
+  /* ── Find ────────────────────────────────────────────────────────────────── */
+
+  .ui-bar-find {
+    border-radius: var(--r);
+    color: var(--ink);
+  }
+
+  .ui-bar-find-input {
+    outline: none;
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .ui-bar-find-count {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ui-bar-find-clear {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ui-bar-find-busy {
+    color: var(--ink-3);
+  }
+
+  /* ── Menu ────────────────────────────────────────────────────────────────── */
+
+  .ui-menu {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-2);
+  }
+
+  /* ── Popover ─────────────────────────────────────────────────────────────── */
+
+  .ui-popover {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-2);
+  }
+
+  .ui-menu button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-menu button:hover,
+  .ui-menu button:focus-visible {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .ui-menu button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .ui-menu button.ui-menu-danger {
+    color: var(--danger);
+  }
+
+  .ui-menu button:disabled {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .ui-menu-group {
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  /* ── The prose context menu ──────────────────────────────────────────────── */
+
+  .ui-menu.ui-menu-inverse button {
+    color: var(--tip-ink);
+  }
+
+  .ui-menu.ui-menu-inverse button:hover,
+  .ui-menu.ui-menu-inverse button:focus-visible {
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    outline-color: var(--tip-ink-strong);
+  }
+
+  .ui-menu.ui-menu-inverse button:disabled {
+    background: transparent;
+    color: var(--tip-ink);
+  }
+
+  /* ── The command palette ─────────────────────────────────────────────────── */
+
+  .palette {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  .palette-query input {
+    outline: none;
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .palette-row {
+    border-radius: var(--r-sm);
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .palette-row-on {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .palette-row-on .palette-group {
+    color: var(--accent);
+  }
+
+  /* ── Toast ───────────────────────────────────────────────────────────────── */
+
+  .ui-toast {
+    background: var(--tip-solid);
+    color: var(--tip-ink);
+    border-radius: var(--r);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+  }
+
+  .ui-toast-undo {
+    border-radius: var(--r-sm);
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    font-family: var(--f-chrome);
+    font-weight: var(--label-weight);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-dots i {
+      background: var(--dots-cy);
+      box-shadow: 0 0 calc(var(--dots-u) * 3)
+        color-mix(in srgb, var(--dots-cy) 50%, transparent);
+    }
+
+    .ui-skeleton {
+      background: var(--paper-sunk);
+    }
+  }
+
+  /* ══ Landing ═════════════════════════════════════════════════════════════════
+     The page at `/`: the display face for the promise, the glass of the
+     app's own panes round a page of prose, and the accent only as light: the
+     glow under the live page, the caret, a picture lit. */
+
+  /* ── Landing: the hero ────────────────────────────────────────────────────── */
+
+  .landing-hero {
+    background: radial-gradient(
+      60% 45% at 50% 78%,
+      var(--accent-glow),
+      transparent 72%
+    );
+  }
+
+  /* The hero's glow, on the finale's layer half as tall again as the section:
+     the same size and place, measured on the taller box. */
+  .landing-finale::before {
+    background: radial-gradient(
+      60% 30% at 50% 52%,
+      var(--accent-glow),
+      transparent 72%
+    );
+  }
+
+  /* ── Landing: screenshots and the foot ────────────────────────────────────── */
+
+  .landing-foot a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  /* ── Landing: headings ────────────────────────────────────────────────────── */
+
+  .landing-eyebrow,
+  .landing-palette-group h4,
+  .landing-persona-role {
+    color: var(--accent);
+    font-family: var(--f-meta);
+    font-weight: var(--label-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+
+  .landing-part-title,
+  .landing-h2,
+  .landing-promise h3,
+  .landing-persona-name {
+    color: var(--ink);
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+  }
+
+  .landing-part-problem,
+  .landing-section-lede,
+  .landing-promise p,
+  .landing-card-body,
+  .landing-more ul,
+  .landing-faq details p {
+    color: var(--ink-2);
+  }
+
+  /* ── Landing: the editorial team ──────────────────────────────────────────── */
+
+  .landing-chips button {
+    background: transparent;
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-2);
+    font-family: var(--f-ui);
+  }
+
+  .landing-chips button:hover {
+    color: var(--ink);
+  }
+
+  .landing-chips button[aria-pressed="true"] {
+    background: var(--press-ground);
+    border-color: var(--accent);
+    color: var(--press-ink);
+  }
+
+  /* ── Reach ───────────────────────────────────────────────────────────────── */
+
+  @media (pointer: coarse) {
+    .ui-input,
+    .ui-select,
+    .ui-seg {
+      border-color: var(--hair-firm);
+    }
+  }
+
+  /* ── Standing statuses ───────────────────────────────────────────────────── */
+
+  .status-notice-dismiss {
+    color: currentColor;
+  }
+
+  .status-notice-dot {
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ── The Library ─────────────────────────────────────────────────────────── */
+
+  /* ── The application bar ─────────────────────────────────────────────────── */
+
+  .app {
+    background-color: var(--paper);
+    background-image: var(--grain), var(--ground);
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      background-image: var(--grain);
+    }
+  }
+
+  .app-top {
+    border-bottom-color: var(--hair-firm);
+  }
+
+  .app-wordmark {
+    font-family: var(--f-mono);
+    font-weight: var(--name-weight);
+    letter-spacing: var(--shine-wordmark-tracking);
+    text-transform: uppercase;
+  }
+
+  .app-avatar {
+    border-radius: 50%;
+  }
+
+  /* ── The Library ─────────────────────────────────────────────────────────── */
+
+  .lib-title {
+    font-family: var(--f-prose);
+    font-weight: var(--title-weight);
+    letter-spacing: var(--title-tracking);
+  }
+
+  /* ── Storage ─────────────────────────────────────────────────────────────── */
+
+  .shelf-storage-face {
+    border-radius: var(--r);
+    background: var(--wash-subtle);
+    color: var(--ink-3);
+  }
+
+  .shelf-storage-face:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  /* The scope and its counts read as one line of readings: one face, one
+     weight, one tracking; the chosen scope differs in ink alone. */
+  .shelf-scope,
+  .shelf-tally {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--shine-reading-tracking);
+    text-transform: uppercase;
+  }
+
+  .shelf-scope {
+    color: var(--shine-label-ink);
+  }
+
+  .shelf-tally {
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── The storage panel's rows ────────────────────────────────────────────── */
+
+  .store-row {
+    border-radius: var(--r);
+  }
+
+  .store-row[data-on="1"] {
+    background: var(--accent-tint);
+  }
+
+  .store-note {
+    font-family: var(--f-chrome);
+    font-weight: normal;
+    color: var(--ink-3);
+  }
+
+  /* ── The shelf ───────────────────────────────────────────────────────────── */
+
+  .project {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* A card at rest has no mark on its edge; the mark shows under the
+     pointer or with focus. A gone or an attention card keeps its mark at
+     rest, since it tells the card's state. */
+  .project::before {
+    border-radius: inherit;
+    border-left-color: transparent;
+    filter: drop-shadow(0 0 6px transparent);
+  }
+
+  .project:hover,
+  .project:focus-within {
+    border-color: var(--accent-tint-2);
+    box-shadow: var(--shadow-2);
+  }
+
+  .project:hover::before,
+  .project:focus-within::before {
+    border-left-color: var(--shine-mark);
+    filter: var(--shine-lit-drop);
+  }
+
+  .project-gone::before {
+    border-left-color: var(--ink-3);
+  }
+
+  .project-gone:hover,
+  .project-gone:focus-within {
+    border-color: var(--hair-firm);
+  }
+
+  .project-gone:hover::before,
+  .project-gone:focus-within::before {
+    border-left-color: var(--ink-3);
+    filter: drop-shadow(0 0 6px transparent);
+  }
+
+  .project-attention::before {
+    border-left-color: var(--attention);
+  }
+
+  .project-attention:hover,
+  .project-attention:focus-within {
+    border-color: var(--attention-tint);
+  }
+
+  .project-attention:hover::before,
+  .project-attention:focus-within::before {
+    border-left-color: var(--attention);
+    filter: drop-shadow(
+      0 0 calc(6px * var(--shine-glow)) var(--attention-glow)
+    );
+  }
+
+  /* A card's name at the medium weight: the semibold reads heavy at a
+     card's size. */
+  .project-title {
+    font-family: var(--f-display);
+    font-weight: var(--medium-weight);
+    letter-spacing: -0.02em;
+  }
+
+  .project-open:hover {
+    color: var(--accent);
+  }
+
+  .project-where {
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+    color: var(--ink-3);
+  }
+
+  .project-stats {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .project-stats b {
+    color: var(--ink);
+    font-weight: var(--bold-weight);
+  }
+
+  .project-stats > span + span::before {
+    color: var(--hair);
+  }
+
+  .project-more {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .project-more:hover {
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  /* ── First run, and no match ─────────────────────────────────────────────── */
+
+  .lib-empty {
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .lib-empty p {
+    color: var(--ink-3);
+  }
+
+  /* The setup card and the start panel are one weight: raised paper on one
+     hair, so the page reads set up, then begin. */
+  .ui-checklist,
+  .welcome-start {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+  }
+
+  .ui-checklist-flash {
+    background: var(--accent-tint-2);
+  }
+
+  .welcome-start p {
+    color: var(--ink-3);
+  }
+
+  /* ── The settings sheet ──────────────────────────────────────────────────── */
+
+  .sheet {
+    background: var(--paper);
+    border-left-color: var(--hair);
+    box-shadow: var(--shadow-3);
+  }
+
+  .sheet-nav button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    font-weight: var(--quiet-weight);
+  }
+
+  .sheet-nav button:hover {
+    background: var(--hover-sunk);
+    color: var(--ink);
+  }
+
+  .sheet-nav button[aria-current="true"] {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .sheet-pane h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--shine-label-ink);
+  }
+
+  /* ── About ───────────────────────────────────────────────────────────────── */
+
+  .about-emblem {
+    border-radius: 50%;
+  }
+
+  .about-foot a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+  }
+
+  /* ── Name-and-answer settings ────────────────────────────────────────────── */
+
+  .ai-settings-pairs input,
+  .ai-settings-pairs select {
+    color: var(--ink);
+    background: var(--field);
+    border-color: var(--field-edge);
+    border-radius: var(--r);
+  }
+
+  .ai-address-field input {
+    font-family: var(--f-mono);
+  }
+
+  .ai-address-field input[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  /* ── Inside an AI card ───────────────────────────────────────────────────── */
+
+  .ui-access-body h4 {
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .ai-remote-chosen button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+  }
+
+  .ai-remote-chosen button:hover,
+  .ai-remote-chosen button:focus-visible {
+    background: var(--accent-tint);
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .ai-remote-filter {
+    color: var(--ink);
+    background: var(--field);
+    border-color: var(--field-edge);
+    border-radius: var(--r);
+  }
+
+  .ai-connection-status.is-connected {
+    color: var(--accent);
+  }
+
+  .ai-connection-status.is-failed,
+  .ai-connection-status.is-unverified {
+    color: var(--danger);
+  }
+
+  /* ── Theme tiles ─────────────────────────────────────────────────────────── */
+
+  .tile {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+  }
+
+  /* ── Reach ───────────────────────────────────────────────────────────────── */
+
+  @media (pointer: coarse) {
+    .ai-settings-pairs input,
+    .ai-settings-pairs select {
+      border-color: var(--hair-firm);
+    }
+  }
+
+  /* ── Books between crop marks ────────────────────────────────────────────── */
+
+  :root[data-crop="1"] .project,
+  :root[data-crop="1"] .ui-access {
+    --crop-ink: var(--ink-3);
+    border-color: transparent;
+    border-radius: 0;
+    background:
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 1px 14px
+        no-repeat;
+  }
+
+  :root[data-crop="1"] .project {
+    box-shadow: none;
+  }
+
+  :root[data-crop="1"] .project:is(:hover, :focus-within) {
+    --crop-ink: var(--ink);
+  }
+
+  :root[data-crop="1"] .project.project-gone:is(:hover, :focus-within) {
+    --crop-ink: var(--ink-3);
+  }
+
+  :root[data-crop="1"] .project::before {
+    border-radius: 0;
+    filter: none;
+  }
+
+  :root[data-crop="1"] .project .project-where {
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    letter-spacing: var(--label-tracking);
+  }
+
+  :root[data-crop="1"] .projects-list .project,
+  :root[data-crop="1"] .projects-list .project:is(:hover, :focus-within) {
+    background: none;
+    border-color: var(--hair);
+  }
+
+  /* ── The editor ──────────────────────────────────────────────────────────── */
+
+  /* ── Editor shell ────────────────────────────────────────────────────────── */
+
+  .editor-shell {
+    background-color: var(--canvas);
+    background-image: var(--grain), var(--ground-quiet);
+  }
+
+  /* ── The page's sheet ────────────────────────────────────────────────────── */
+
+  /* The landing's demos stand on the same page as the editor. */
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"])::before,
+  .landing-sheet {
+    border-color: var(--sheet-edge);
+    border-radius: var(--r-lg);
+    background: var(--sheet);
+    box-shadow: var(--sheet-shadow);
+  }
+
+  /* ── Comments as notes ───────────────────────────────────────────────────── */
+
+  .cm-add-chapter {
+    opacity: 1;
+  }
+
+  :root[data-comments="notes"] :is(.cm-pmark, .cm-marker[data-at="end"]) {
+    font-family: var(--f-prose);
+    font-weight: var(--medium-weight);
+    font-style: normal;
+    color: var(--spark);
+  }
+
+  :root[data-comments="notes"]
+    :is(.cm-layer[data-mode="notes"], .cm-float)
+    :is(.cm-card, .cm-card[data-active="1"], .cm-card[data-state="proposed"]) {
+    background: none;
+    box-shadow: none;
+  }
+
+  @media (max-width: 720px) {
+    .editor-shell {
+      background-image: var(--grain);
+    }
+  }
+
+  /* ── The Desk ────────────────────────────────────────────────────────────── */
+
+  .desk-eyebrow {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--shine-label-ink);
+  }
+
+  .desk-last {
+    border-left-color: var(--hair);
+    font-family: var(--f-prose);
+    color: var(--ink);
+  }
+
+  .desk-primary {
+    border-radius: var(--r);
+    background: var(--accent);
+    color: var(--on-fill);
+    font-family: var(--f-chrome);
+    font-weight: var(--head-weight);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .desk-primary:hover {
+    box-shadow: var(--shadow-accent);
+  }
+
+  .desk-quiet {
+    border-radius: var(--r);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+    font-weight: var(--link-weight);
+  }
+
+  .desk-quiet:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .desk-ledger b {
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  .desk-thread {
+    border-radius: var(--r);
+    background: var(--attention-tint);
+    color: var(--attention);
+  }
+
+  .desk-empty p {
+    color: var(--ink-3);
+  }
+
+  /* ── The prose column ────────────────────────────────────────────────────── */
+
+  .editor {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    font-family: var(--f-prose);
+    color: var(--prose-ink);
+    caret-color: transparent;
+  }
+
+  [contenteditable]:focus-visible {
+    outline: none;
+  }
+
+  /* ── Fake cursor ─────────────────────────────────────────────────────────── */
+
+  .fake-cursor {
+    border-radius: 1px;
+    background: var(--shine-mark);
+  }
+
+  /* ── The revision rail ───────────────────────────────────────────────────── */
+
+  .rev-rail-head {
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .rev-rail-head-walking {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--hair-firm);
+  }
+
+  .rev-step {
+    border-radius: var(--r-sm);
+    background: var(--glass);
+    box-shadow:
+      0 0 0 1px var(--hair),
+      var(--glass-edge);
+    color: var(--ink-3);
+  }
+
+  .rev-step:hover:not(:disabled) {
+    background: var(--hover-row);
+  }
+
+  .rev-step:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .rev-chip {
+    border-color: var(--bar-edge);
+    border-radius: var(--r-sm);
+    background: var(--bar-ground);
+    box-shadow: var(--bar-shadow);
+    backdrop-filter: var(--bar-frost);
+  }
+
+  .rev-chip button {
+    background: transparent;
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .rev-chip button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── The titlebar's right cluster ────────────────────────────────────────── */
+
+  .ed-palette {
+    font-weight: var(--quiet-weight);
+  }
+
+  .titlebar-project {
+    background: transparent;
+    font-family: var(--f-ui);
+    letter-spacing: -0.005em;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    font-weight: var(--name-weight);
+    color: var(--ink);
+    font-variant-caps: var(--head-caps);
+  }
+
+  /* The crumb's separator at the meta's own strength: a dimmer stroke
+     falls under 4.5:1. */
+  .titlebar-sep {
+    opacity: 1;
+  }
+
+  .titlebar-idx {
+    font-variant-numeric: var(--figures);
+    letter-spacing: calc(var(--meta-tracking) * 4);
+    color: var(--shine-label-ink);
+  }
+
+  /* ── The way back to the library ─────────────────────────────────────────── */
+
+  .titlebar-return {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+    text-decoration: none;
+    font-family: var(--f-ui);
+    letter-spacing: -0.005em;
+  }
+
+  .titlebar-return:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .titlebar-return[data-nudge="1"] {
+    box-shadow: 0 0 0 4px var(--accent-tint);
+  }
+
+  .titlebar-return-nudge {
+    border-radius: var(--r);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  /* ── The titlebar's frost ────────────────────────────────────────────────── */
+
+  .titlebar::before {
+    backdrop-filter: blur(var(--frost-blur));
+  }
+
+  .titlebar::before {
+    --frost-blur: 12px;
+  }
+
+  .titlebar-veil {
+    --frost-a: 0.6;
+    background-color: var(--canvas);
+    background-image: var(--grain), var(--ground-quiet);
+    background-attachment: fixed;
+  }
+
+  /* ── A face that grows ───────────────────────────────────────────────────── */
+
+  .ed-fold {
+    border-radius: var(--r);
+  }
+
+  .ed-fold-face {
+    color: var(--ink-3);
+    font-weight: var(--strong-weight);
+  }
+
+  .ed-fold-comments .ed-fold-face {
+    border-radius: var(--r);
+  }
+
+  .ed-fold-comments .ed-fold-face[data-pressed="1"] {
+    background: var(--press-ground);
+    color: var(--press-ink);
+    box-shadow: var(--press-mark);
+  }
+
+  /* ── Special characters ──────────────────────────────────────────────────── */
+
+  .char-key {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--paper-raised);
+    color: var(--ink);
+    font-family: var(--f-mono);
+  }
+
+  .char-key:hover {
+    background: var(--accent-tint);
+    border-color: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  /* ── Find ────────────────────────────────────────────────────────────────── */
+
+  .find-row input {
+    border-color: var(--field-edge);
+    border-radius: var(--r-sm);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  .find-row input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .find-tog:hover:not(:disabled) {
+    background: var(--hover-tool);
+    color: var(--ink);
+  }
+
+  /* ── The shortcut sheet ──────────────────────────────────────────────────── */
+
+  .keys-group h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── Document tree ───────────────────────────────────────────────────────── */
+
+  .doc-tree {
+    background: var(--pane-ground);
+    box-shadow: var(--pane-shadow);
+    backdrop-filter: var(--pane-frost);
+    border-color: var(--pane-edge);
+    border-radius: var(--pane-radius);
+  }
+
+  /* ── The panel's find ────────────────────────────────────────────────────── */
+
+  .dt-find {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+  }
+
+  /* ── The two bodies ──────────────────────────────────────────────────────── */
+
+  .dt-search-excerpt {
+    font-family: var(--f-prose);
+    color: var(--ink-3);
+  }
+
+  /* ── A body source and its occurrences ───────────────────────────────────── */
+
+  .dt-search-row.dt-search-head:hover {
+    background: transparent;
+  }
+
+  /* ── Regions ─────────────────────────────────────────────────────────────── */
+
+  .dt-region-label {
+    background: transparent;
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--shine-label-ink);
+  }
+
+  /* ── The rail ────────────────────────────────────────────────────────────── */
+
+  .dt-rail button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+    letter-spacing: calc(var(--meta-tracking) * 3);
+    font-variant-numeric: var(--figures-text);
+  }
+
+  .dt-rail button:hover {
+    background: var(--hover-row);
+    color: var(--ink);
+  }
+
+  .dt-rail button[aria-current="true"],
+  .dt-rail .dt-rail-find {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .dt-rail hr {
+    background: var(--hair-soft);
+  }
+
+  /* ── The recycle bin ─────────────────────────────────────────────────────── */
+
+  .dt-bin-restore:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── The boundary's own control ──────────────────────────────────────────── */
+
+  .dt-collapse {
+    border-color: var(--hair);
+    border-radius: 50%;
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-1);
+    color: var(--ink-3);
+  }
+
+  .dt-collapse:hover,
+  .dt-collapse:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-fill);
+  }
+
+  /* ── Rows ────────────────────────────────────────────────────────────────── */
+
+  .dt-row:hover {
+    background: var(--row-selected);
+    color: var(--ink);
+  }
+
+  .dt-part > :is(.dt-idx, .dt-words) {
+    font-weight: var(--quiet-weight);
+  }
+
+  .dt-label {
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .dt-label:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+    border-radius: var(--r-xs);
+  }
+
+  .dt-row::before {
+    border-radius: 0 1px 1px 0;
+    background: var(--shine-mark);
+  }
+
+  .dt-row.active {
+    background: transparent;
+  }
+
+  .dt-row.active:hover {
+    background: var(--row-selected);
+  }
+
+  /* ── Ticking rows to move together ───────────────────────────────────────── */
+
+  .dt-row.selected,
+  .dt-row.selected:hover {
+    background: var(--wash-strong);
+  }
+
+  .dt-row.selected.active {
+    background: var(--wash-strong);
+  }
+
+  /* ── Moving ──────────────────────────────────────────────────────────────── */
+
+  .dt-moving-stop {
+    color: inherit;
+  }
+
+  .dt-landing:hover,
+  .dt-landing:focus-visible {
+    background: var(--accent-tint);
+    border-radius: var(--r-sm);
+    outline: none;
+  }
+
+  /* ── Expand and collapse ─────────────────────────────────────────────────── */
+
+  .dt-empty {
+    font-family: var(--f-ui);
+    font-style: var(--aside-style);
+    color: var(--ink-3);
+  }
+
+  .dt-add {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .dt-add:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── Drop indicator ──────────────────────────────────────────────────────── */
+
+  .dt-drop-line::before {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ── Inline naming ───────────────────────────────────────────────────────── */
+
+  .dt-name-input {
+    border-radius: var(--r-xs);
+    background: var(--field);
+    box-shadow: inset 0 0 0 1px var(--field-focus-edge);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .dt-name-input:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .dt-name-input.invalid {
+    box-shadow: inset 0 0 0 1.5px var(--danger);
+  }
+
+  /* ── States ──────────────────────────────────────────────────────────────── */
+
+  .dt-state-hint {
+    font-family: var(--f-ui);
+    font-style: var(--aside-style);
+    color: var(--ink-3);
+  }
+
+  /* ── Undo toast ──────────────────────────────────────────────────────────── */
+
+  .dt-toast {
+    border-radius: var(--r-sm);
+    background: var(--tip);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+  }
+
+  .dt-toast-undo {
+    border-radius: var(--r-sm);
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+  }
+
+  /* ── The journal notice ──────────────────────────────────────────────────── */
+
+  .rev-notice {
+    border-radius: var(--r-sm);
+    background: var(--tip);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+    font-family: var(--f-chrome);
+    color: var(--tip-ink);
+  }
+
+  /* ── The save gutter ─────────────────────────────────────────────────────── */
+
+  .save-gutter i {
+    border-radius: 1px;
+    background: var(--attention);
+  }
+
+  /* ── The margin's comments ───────────────────────────────────────────────── */
+
+  .cm-card {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .cm-kicker {
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .cm-orphan q,
+  .cm-quote {
+    font-family: var(--f-prose);
+    font-style: var(--quote-style);
+    color: var(--ink-3);
+  }
+
+  .cm-face-letter {
+    font-weight: var(--bold-weight);
+    background: var(--wash-strong);
+    color: var(--on-fill);
+  }
+
+  .cm-searched a {
+    color: inherit;
+  }
+
+  .cm-input {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-sm);
+    background: var(--field);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .cm-input:focus {
+    outline: none;
+    border-color: var(--field-focus-edge);
+    box-shadow: var(--field-focus-ring);
+  }
+
+  .dt-tag {
+    border-radius: var(--r-xs);
+    background: var(--chip);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .dt-tag-k {
+    color: var(--ink-3);
+    letter-spacing: var(--shine-reading-tracking);
+    text-transform: uppercase;
+  }
+
+  .dt-tag-v {
+    color: var(--ink);
+    font-family: var(--f-ui);
+  }
+
+  /* ── The foot ────────────────────────────────────────────────────────────── */
+
+  .dt-foot {
+    border-top-color: var(--hair-soft);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+    color: var(--ink-3);
+  }
+
+  .dt-foot-demo-hint {
+    color: var(--ink-3);
+    font-family: var(--f-ui);
+    letter-spacing: 0;
+    font-style: var(--aside-style);
+  }
+
+  .dt-foot-act {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .dt-foot-theme {
+    font-family: var(--f-ui);
+    letter-spacing: 0;
+  }
+
+  .dt-prefs {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* ── Offered, not honoured here ──────────────────────────────────────────── */
+
+  .dt-pick-select {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+    color: var(--ink);
+    font-family: var(--f-meta);
+  }
+
+  .dt-pick-select:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  /* ── The dock ────────────────────────────────────────────────────────────── */
+
+  .ed-dock {
+    border-color: var(--pane-edge);
+    border-radius: var(--pane-radius);
+    background: var(--pane-ground);
+    box-shadow: var(--pane-shadow);
+    backdrop-filter: var(--pane-frost);
+  }
+
+  .dock-resize::before {
+    border-radius: 1px;
+    background: transparent;
+  }
+
+  .dock-resize:focus-visible {
+    outline: none;
+  }
+
+  .panel-resize::before {
+    border-radius: 1px;
+    background: transparent;
+  }
+
+  .panel-resize:focus-visible {
+    outline: none;
+  }
+
+  .dock-meta {
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── The snapshot face ───────────────────────────────────────────────────── */
+
+  .snap-rel {
+    border-radius: var(--r-xs);
+    background: var(--wash-subtle);
+    font-family: var(--f-meta);
+    font-variant-numeric: var(--figures);
+    color: var(--ink-3);
+  }
+
+  .snap-rel:focus-visible,
+  .ref-card-head:focus-visible,
+  .ref-card-row:focus-visible,
+  .ref-card-add:focus-visible,
+  .ai-new-chat:focus-visible,
+  .ref-picker-row:focus-visible,
+  .ref-picker-close:focus-visible,
+  .ref-row-del:focus-visible,
+  .ref-row-ren:focus-visible,
+  .dt-dock-button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .snap-row {
+    border-bottom-color: var(--hair);
+  }
+
+  .snap-row.selected {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .snap-tick {
+    color: var(--accent);
+  }
+
+  .snap-adopt {
+    font-family: var(--f-chrome);
+    font-weight: var(--quiet-weight);
+    letter-spacing: var(--meta-tracking);
+    color: var(--accent);
+    background: none;
+    border-radius: var(--r-sm);
+    font-variant-caps: var(--control-caps);
+  }
+
+  .snap-title-input {
+    font-family: var(--f-chrome);
+    color: var(--ink);
+    background: var(--paper);
+    border-color: var(--accent);
+    border-radius: var(--r-sm);
+    outline: none;
+  }
+
+  .snap-add,
+  .ref-card-add,
+  .ai-new-chat {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ref-card {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: var(--paper);
+  }
+
+  .ref-card-head {
+    background: transparent;
+    color: var(--row-ink);
+    font-family: var(--f-chrome);
+    font-weight: var(--head-weight);
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+  }
+
+  .ref-card-row {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ref-card-row[aria-current="true"] {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .ref-row-ren,
+  .ref-row-del {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* ── The AI bar toggle ───────────────────────────────────────────────────── */
+
+  .ref-row-ai:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .ref-arc {
+    color: var(--ink-3);
+  }
+
+  /* ── The section picker ──────────────────────────────────────────────────── */
+
+  .ref-picker-row {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  /* ── No ligatures in the reference dock ──────────────────────────────────── */
+
+  .dock-read h1,
+  .dock-read h2,
+  .dock-read h3 {
+    color: var(--ink-3);
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── A template's question and its blank ─────────────────────────────────── */
+
+  .dock-read strong {
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── Editing a reference document ────────────────────────────────────────── */
+
+  .dock-editbar {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+  }
+
+  .dock-editbar button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .dock-editbar button:hover {
+    background: var(--hover-accent);
+    color: var(--accent);
+  }
+
+  .dock-editbar button:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save {
+    background: var(--accent-tint);
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save:hover {
+    background: var(--accent);
+    color: var(--on-fill);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save:disabled:hover {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .dock-edit-btn {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .dock-edit-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .dock-edit-btn:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .dock-edit {
+    border-color: var(--field-edge);
+    border-radius: var(--r-sm);
+    background: var(--paper);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .dock-edit:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-tint);
+  }
+
+  .dock-foot b {
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── The conversation ────────────────────────────────────────────────────── */
+
+  .ai-persona {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    color: var(--accent);
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    font-weight: var(--link-weight);
+  }
+
+  .ai-persona:hover:not(:disabled) {
+    background: var(--accent-tint-2);
+  }
+
+  .ai-persona:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The asking floats over the transcript ───────────────────────────────── */
+
+  .ai-stopped q {
+    font-family: var(--f-prose);
+    color: var(--ink);
+  }
+
+  /* ── The persona picker ──────────────────────────────────────────────────── */
+
+  .ai-persona-dialog .ai-persona-focus-label {
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+    font-weight: normal;
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+  }
+
+  .ai-mode-end:focus-visible {
+    outline: var(--focus-ring);
+    border-radius: var(--r-sm);
+  }
+
+  .ai-mode-panel p {
+    color: var(--ink-3);
+  }
+
+  .ai-reading:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .ai-reading-head strong {
+    font-weight: var(--bold-weight);
+  }
+
+  .ai-model-button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .ai-text-button {
+    color: var(--ink-3);
+    background: transparent;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .ai-refusal select {
+    color: var(--ink);
+    background: var(--paper-raised);
+    border-color: var(--field-edge);
+    border-radius: var(--r);
+    font-family: var(--f-chrome);
+  }
+
+  .ai-stop {
+    font-family: var(--f-chrome);
+    color: var(--ink-3);
+    background: transparent;
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+  }
+
+  .ai-stop:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The turn's footer ───────────────────────────────────────────────────── */
+
+  .ai-stop:hover {
+    background: var(--hover-quiet);
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .ai-stop.is-send {
+    color: var(--ink);
+    border-color: var(--ink-3);
+  }
+
+  .ai-stop.is-send:disabled {
+    color: var(--ink-3);
+    border-color: var(--hair);
+  }
+
+  .ai-stop.is-send:disabled:hover {
+    background: transparent;
+  }
+
+  .ai-stop.is-running::after {
+    border-radius: calc(var(--r-sm) + 3px);
+    background: conic-gradient(
+      from var(--ai-spark-at),
+      var(--shine-mark) 0deg,
+      color-mix(in srgb, var(--shine-mark) 70%, transparent) 10deg,
+      color-mix(in srgb, var(--shine-mark) 30%, transparent) 34deg,
+      transparent 80deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock-head .ui-bar-track button[data-busy="1"] svg {
+      color: var(--shine-mark);
+    }
+  }
+
+  /* ── The chat's ramp ─────────────────────────────────────────────────────── */
+
+  .msg-you .msg-body {
+    border-radius: var(--r);
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  .msg-assistant .msg-body {
+    color: var(--ink);
+  }
+
+  .msg-assistant .dock-read blockquote {
+    border-left-color: var(--shine-warm);
+    color: var(--ink);
+    font-family: var(--f-prose);
+  }
+
+  .ai-cite {
+    border-radius: var(--r-xs);
+    background: none;
+    box-shadow: none;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    font-family: var(--f-mono);
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-cite:hover {
+    background: var(--accent-tint);
+  }
+
+  .ai-cite:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .msg-quote {
+    border-left-color: var(--accent);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    background: var(--accent-tint);
+    font-family: var(--f-prose);
+    color: var(--prose-ink);
+  }
+
+  .chip {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+    color: var(--accent);
+    font-family: var(--f-chrome);
+  }
+
+  .chip:hover {
+    background: var(--accent-tint-2);
+  }
+
+  .composer {
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    border-color: var(--hair-firm);
+    box-shadow: var(--shadow-card);
+  }
+
+  .ai-composer-menu {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ai-composer-menu:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .composer-quote {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    font-family: var(--f-prose);
+    color: var(--prose-ink);
+  }
+
+  .composer-quote button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .composer-quote button:hover {
+    background: var(--accent-tint-2);
+  }
+
+  .composer-pin button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .composer-pin button:hover {
+    background: var(--accent-tint-2);
+  }
+
+  /* ── The comparing mode ──────────────────────────────────────────────────── */
+
+  [data-block-hunk="delete"] {
+    background: var(--mark-diff-wash-del);
+  }
+
+  [data-block-hunk="insert"] {
+    background: var(--mark-diff-wash-add);
+  }
+
+  .comparing-bar {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-1);
+  }
+
+  .comparing-select {
+    border-color: var(--field-edge);
+    border-radius: var(--r-sm);
+    background: var(--glass);
+    backdrop-filter: var(--frost);
+    color: var(--ink);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .comparing-select:focus {
+    outline: none;
+    border-color: var(--field-focus-edge);
+    box-shadow: var(--field-focus-ring);
+  }
+
+  .comparing-question {
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .comparing-legend {
+    font-family: var(--f-chrome);
+    color: var(--ink-3);
+  }
+
+  .comparing-swatch-del {
+    background: var(--mark-diff-del);
+  }
+
+  .comparing-swatch-add {
+    background: var(--mark-diff-add);
+  }
+
+  /* ── The Accept layer ────────────────────────────────────────────────────── */
+
+  .df-accept {
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    letter-spacing: var(--meta-tracking);
+    color: var(--mark-diff-add);
+    background: var(--mark-diff-tag-add);
+    font-variant-caps: var(--control-caps);
+  }
+
+  /* ── The board ───────────────────────────────────────────────────────────── */
+
+  .board {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  .board-head h2 {
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .board-close {
+    border-radius: var(--r);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .board-filter {
+    border-color: var(--field-edge);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .board-filter:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -1px;
+  }
+
+  .board-well h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .board-cell {
+    border-radius: var(--r);
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .board-cell:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  /* ── The board as a full-screen room ─────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .board {
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* ── The chat's head ─────────────────────────────────────────────────────── */
+
+  .ai-chat-title {
+    border-color: var(--hair);
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-chat-title:hover {
+    border-color: var(--ink-3);
+    background: var(--hover-accent);
+  }
+
+  .ai-chat-title:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .ai-chat-title.is-attention {
+    border-color: var(--attention-glow);
+  }
+
+  .ai-chat-title.is-attention:hover {
+    border-color: var(--attention);
+    background: var(--attention-tint);
+  }
+
+  .ai-switcher-row {
+    border-radius: var(--r-sm);
+  }
+
+  .ai-finding-head {
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .ai-evidence {
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--ink-3);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-evidence:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .ai-verdict > strong {
+    font-weight: var(--bold-weight);
+  }
+
+  .ai-map-station {
+    border-radius: 50%;
+    background: var(--ink-3);
+  }
+
+  .ai-map-start {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .ai-jump {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 6px var(--paper-raised);
+    color: var(--accent);
+  }
+
+  .ai-jump:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The summary dialog ──────────────────────────────────────────────────── */
+
+  .summary-wait p,
+  .summary-note {
+    color: var(--ink-3);
+  }
+
+  .summary-link {
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .summary-link:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ── A beta reader's reading ─────────────────────────────────────────────── */
+
+  .ai-attention > span {
+    border-radius: 50%;
+    border-color: var(--ink-3);
+  }
+
+  /* ── The editorial revision plan ─────────────────────────────────────────── */
+
+  .ai-plan > .ai-reading-summary {
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+    font-weight: var(--link-weight);
+  }
+
+  .ai-plan-verdict strong {
+    font-weight: var(--bold-weight);
+    color: var(--ink);
+  }
+
+  .ai-transit-line {
+    color: var(--ink-3);
+  }
+}
+
+@layer tune {
+  /* ── Type ─────────────────────────────────────────────────────────────── */
+
+  .dt-foot-where,
+  .dt-foot-theme span {
+    font-family: var(--f-ui);
+    letter-spacing: 0;
+  }
+  .titlebar-name {
+    font-family: var(--f-prose);
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  /* The writer's words at the prose weight (`--shine-prose-weight`). Bold
+     is stated, so it does not follow the lighter weight down. */
+  .editor,
+  .import-peek,
+  .desk-last,
+  .dt-search-excerpt,
+  .cm-orphan q,
+  .cm-quote,
+  .ai-stopped q,
+  .msg-quote,
+  .composer-quote,
+  .msg-assistant .dock-read blockquote {
+    font-weight: var(--shine-prose-weight);
+  }
+  .editor strong,
+  .import-peek strong,
+  .desk-last strong,
+  .msg-assistant .dock-read blockquote strong {
+    font-weight: var(--bold-weight);
+  }
+
+  /* The Snapshot list's small dates take a third of the ink, so they hold
+     on a selected row. */
+  :where(:root[data-theme="shine-light"]) .snap-when,
+  :where(:root[data-theme="shine-light"]) .snap-rel {
+    color: color-mix(in srgb, var(--ink-3) 70%, var(--ink));
+  }
+
+  /* ── The shelf's list ─────────────────────────────────────────────────── */
+
+  /* One raised box whose rows divide it. Its edge is an inset ring, where a
+     border would lie but taking no room; dark's panel halo adds its own
+     ring outside it, the two-pixel outline of every dark surface. The rows
+     give up their own edges, in every state, for a hairline between them,
+     and only the first and last turn the box's corners. */
+  .projects-list {
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+    box-shadow:
+      inset 0 0 0 1px var(--hair-firm),
+      var(--shadow-panel);
+  }
+  .projects-list .project {
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .projects-list .project,
+  .projects-list .project:is(:hover, :focus-within),
+  .projects-list .project-gone:is(:hover, :focus-within),
+  .projects-list .project-attention:is(:hover, :focus-within) {
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .projects-list .project + .project,
+  .projects-list .project + .project:is(:hover, :focus-within),
+  .projects-list .project + .project-gone:is(:hover, :focus-within),
+  .projects-list .project + .project-attention:is(:hover, :focus-within) {
+    border-top-color: var(--hair-soft);
+  }
+  .projects-list .project:first-child {
+    border-top-left-radius: var(--r-lg);
+    border-top-right-radius: var(--r-lg);
+  }
+  .projects-list .project:last-child {
+    border-bottom-left-radius: var(--r-lg);
+    border-bottom-right-radius: var(--r-lg);
+  }
+  .projects-list .project:is(:hover, :focus-within) {
+    background-color: var(--accent-tint);
+  }
+  .projects-list .project-attention:is(:hover, :focus-within) {
+    background-color: var(--attention-tint);
+  }
+
+  /* ── The reply's links ────────────────────────────────────────────────── */
+
+  /* Drawn as small outlined buttons; the outline is an inset ring, so it
+     takes no room the link does not already have. */
+  .ai-write-links .ui-text-link {
+    border-radius: var(--r-sm);
+    background-color: transparent;
+    background-image: none;
+    box-shadow: inset 0 0 0 1px var(--hair-firm);
+    text-decoration: none;
+    color: var(--accent);
+  }
+  .ai-write-links .ui-text-link:hover {
+    box-shadow: inset 0 0 0 1px var(--accent);
+    text-decoration: none;
+  }
+  .ai-write-links .ui-text-link:focus-visible {
+    border-radius: var(--r-sm);
+  }
+
+  /* ── Edges ────────────────────────────────────────────────────────────── */
+
+  /* The panel stands attached and square, its one edge on the right in
+     `--shine-panel-edge`, the colour of the titlebar's rule. The phone's
+     panel is a sheet over the page, and keeps its own. The titlebar draws a
+     rule along its foot. */
+  .editor-shell:not([data-phone="1"]) .doc-tree {
+    border-color: transparent;
+    border-right-color: var(--shine-panel-edge);
+    border-radius: 0;
+  }
+  .titlebar {
+    box-shadow: inset 0 -1px 0 var(--hair-firm);
+  }
+
+  /* Dark's lit edges glow on both sides of the line: a vertical one left and
+     right, a horizontal one above and below. The attached panel draws its
+     line on the right alone, since its top would lie on the title bar's own
+     rule and draw it twice. */
+  :where(:root[data-theme="shine-dark"])
+    .editor-shell:not([data-phone="1"])
+    .doc-tree,
+  :where(:root[data-theme="shine-dark"]) .ed-skeleton-panel {
+    box-shadow:
+      1px 0 0 0 var(--hair-firm),
+      5px 0 12px -5px var(--shine-edge-glow),
+      inset -5px 0 12px -5px var(--shine-edge-glow);
+  }
+  :where(:root[data-theme="shine-dark"]) .titlebar {
+    box-shadow:
+      inset 0 -1px 0 var(--hair-firm),
+      0 5px 12px -5px var(--shine-edge-glow),
+      inset 0 -5px 12px -5px var(--shine-edge-glow);
+  }
+  /* The Library's top band ends on the same lit rule as the titlebar. */
+  :where(:root[data-theme="shine-dark"]) .app-top {
+    box-shadow:
+      0 5px 12px -5px var(--shine-edge-glow),
+      inset 0 -5px 12px -5px var(--shine-edge-glow);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .editor-shell:not([data-narrow="1"]):not([data-phone="1"])
+    .ed-dock {
+    box-shadow: var(--pane-shadow), var(--shine-inner-glow);
+  }
+  :where(:root[data-theme="shine-dark"]) .ui-bar {
+    box-shadow: var(--bar-shadow), var(--shine-inner-glow);
+  }
+  :where(:root[data-theme="shine-dark"]) .project:not(.projects-list .project) {
+    box-shadow: var(--shadow-card), var(--shine-inner-glow);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .project:not(.projects-list .project):is(:hover, :focus-within) {
+    box-shadow: var(--shadow-2), var(--shine-inner-glow);
+  }
+
+  /* ── Dark's light ─────────────────────────────────────────────────────── */
+
+  /* What is on gives off light: a primary its halo, a mark of "here, now"
+     its core and halo, a label a glow, a control at rest a faint one.
+     Attention keeps its amber, unlit by the cyan, and nothing disabled
+     glows. The spine's bars glow in their own hue, which the tokens at the
+     root cannot know, so their halo is written here. */
+  :where(:root[data-theme="shine-dark"]) .ui-btn-primary,
+  :where(:root[data-theme="shine-dark"]) .desk-primary,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act-solid:where(
+      :not([aria-pressed="true"]):not([data-attention="1"])
+    ):not(:disabled) {
+    box-shadow: var(--shine-lit-fill);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]),
+  :where(:root[data-theme="shine-dark"]) .desk-primary:hover,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act-solid:hover:not(:disabled) {
+    box-shadow: var(--shadow-accent);
+  }
+  :where(:root[data-theme="shine-dark"]) .ui-btn-primary:disabled,
+  :where(:root[data-theme="shine-dark"]) .ui-bar-act-solid:disabled {
+    box-shadow: none;
+  }
+  :where(:root[data-theme="shine-dark"]) .dt-row::before,
+  :where(:root[data-theme="shine-dark"]) .greet-caret::after,
+  :where(:root[data-theme="shine-dark"]) .fake-cursor,
+  :where(:root[data-theme="shine-dark"]) .ui-step-dot[data-state="done"],
+  :where(:root[data-theme="shine-dark"]) .ui-steps-fill,
+  :where(:root[data-theme="shine-dark"]) .ui-job-seg[data-state="done"],
+  :where(:root[data-theme="shine-dark"]) .ui-prog-bar i,
+  :where(:root[data-theme="shine-dark"]) .cm-card[data-active="1"] {
+    box-shadow: var(--shine-lit);
+  }
+  /* The floating card is the sheet itself, and stands unlit. */
+  :where(:root[data-theme="shine-dark"]) .cm-float .cm-card[data-active="1"] {
+    box-shadow: none;
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick:not(:disabled):not([aria-disabled="true"])
+    .ui-tick-box {
+    box-shadow: var(--shine-lit-faint);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick[aria-checked="true"]:not(:disabled):not([aria-disabled="true"])
+    .ui-tick-box,
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick[aria-checked="mixed"]:not(:disabled):not([aria-disabled="true"])
+    .ui-tick-box {
+    box-shadow: var(--shine-lit);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-track[data-seat="sunk"]
+    .ui-bar-track-thumb {
+    filter: var(--shine-lit-drop);
+  }
+  :where(:root[data-theme="shine-dark"]) .ai-write-links .ui-text-link:hover {
+    box-shadow:
+      inset 0 0 0 1px var(--accent),
+      var(--shine-lit);
+  }
+  :where(:root[data-theme="shine-dark"]) .ai-jump:not(.is-attention) {
+    box-shadow:
+      0 0 0 6px var(--paper-raised),
+      var(--shine-lit-wide);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-btn:where(
+      :not(.ui-btn-primary):not(.ui-btn-danger):not(.ui-btn-attention):not(
+          :disabled
+        )
+    ),
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act:where(
+      :not(.ui-bar-act-solid):not([data-attention="1"]):not(:disabled)
+    ),
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-track
+    button:where(:not([data-attention="1"]):not(:disabled)),
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick:where(:not(:disabled):not([aria-disabled="true"])) {
+    text-shadow: var(--shine-lit-dim);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-btn:where(
+      :not(.ui-btn-primary):not(.ui-btn-danger):not(.ui-btn-attention):not(
+          :disabled
+        )
+    )
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act:where(
+      :not(.ui-bar-act-solid):not([data-attention="1"]):not(:disabled)
+    )
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-track
+    button:where(:not([data-attention="1"]):not(:disabled))
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick:where(:not(:disabled):not([aria-disabled="true"]))
+    svg {
+    filter: var(--shine-lit-dim-drop);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-btn:where(
+      :not(.ui-btn-primary):not(.ui-btn-danger):not(.ui-btn-attention):not(
+          :disabled
+        )
+    ):hover,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act:where(
+      :not(.ui-bar-act-solid):not([data-attention="1"]):not(:disabled)
+    ):hover,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act[aria-pressed="true"]:not([data-attention="1"]),
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-track
+    button[aria-pressed="true"]:not([data-attention="1"]),
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick[aria-checked="true"]:not(:disabled):not([aria-disabled="true"]),
+  :where(:root[data-theme="shine-dark"]) .desk-eyebrow,
+  :where(:root[data-theme="shine-dark"]) .dt-region-label,
+  :where(:root[data-theme="shine-dark"]) .sheet-pane h3,
+  :where(:root[data-theme="shine-dark"]) .shelf-scope,
+  :where(:root[data-theme="shine-dark"]) .titlebar-idx {
+    text-shadow: var(--shine-lit-text);
+  }
+  :where(:root[data-theme="shine-dark"])
+    .ui-btn:where(
+      :not(.ui-btn-primary):not(.ui-btn-danger):not(.ui-btn-attention):not(
+          :disabled
+        )
+    ):hover
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act:where(
+      :not(.ui-bar-act-solid):not([data-attention="1"]):not(:disabled)
+    ):hover
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-act[aria-pressed="true"]:not([data-attention="1"])
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-bar-track
+    button[aria-pressed="true"]:not([data-attention="1"])
+    svg,
+  :where(:root[data-theme="shine-dark"])
+    .ui-tick[aria-checked="true"]:not(:disabled):not([aria-disabled="true"])
+    svg {
+    filter: var(--shine-lit-drop);
+  }
+  :where(:root[data-theme="shine-dark"]) .spine-bars > g > g {
+    filter: drop-shadow(
+      0 0 calc(2px + calc(3px * var(--shine-glow)))
+        color-mix(
+          in srgb,
+          var(--spine-hue) calc(70% * var(--shine-glow)),
+          transparent
+        )
+    );
+  }
+
+  /* ── The spine ────────────────────────────────────────────────────────── */
+
+  /* Each Part's unused room and each empty Section as one solid hairline
+     box. The glyph strokes an empty Section inline, dashed, so the stroke
+     is restated here; the room has no stroke of its own. */
+  .spine-room,
+  .spine-blank {
+    stroke: var(--hair-firm) !important;
+    stroke-width: 1px;
+    stroke-dasharray: none;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* ── Shine's own placing ─────────────────────────────────────────────────
+     The few places Shine stands or sizes things where the frame does not;
+     each is named in `sheets.test.ts`. */
+
+  /* The panel's spine a thin rule of bars. The glyph sets its height
+     inline, so this restates it. */
+  .dt-ident .spine-bars {
+    height: 8px !important;
+  }
+
+  /* The path's number and the Section's name share a baseline: centred,
+     the italic serif's shorter box set its letters above the figures. */
+  .titlebar-idx,
+  .titlebar-name {
+    align-self: baseline;
+  }
+
+  /* The command bar stands clear of the titlebar's rule, not on it, and the
+     open Dock's top on the bar's, its foot as far from the window's. */
+  .editor-shell:not([data-phone="1"]) .bar-stack .ui-bar {
+    margin-top: var(--shine-bar-gap);
+  }
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"]) .ed-dock {
+    top: calc(var(--header-h) + var(--shine-bar-gap));
+    bottom: var(--shine-bar-gap);
+    /* The glass laid on the page's ground: the same tint, opaque, so the
+       command bar's end under the Dock does not show through it. */
+    background: linear-gradient(var(--glass), var(--glass)), var(--paper);
+  }
+
+  /* The Library's names at the size they read in the serif themes: Shine
+     sets a card's title in a sans, whose lowercase stands about a
+     fifth taller, and its scope in spaced capitals, so each comes down by
+     that much. The scope takes its counts' size, and a title in the list
+     view a row's. The wordmark's spaced capitals run wide, so it stands
+     smaller than the frame's. */
+  .app-wordmark {
+    font-size: 10.5px;
+  }
+  .project-title {
+    font-size: 16px;
+  }
+  .projects-list .project-title {
+    font-size: 14px;
+  }
+  .shelf-scope {
+    font-size: 11.5px;
+  }
+
+  /* The editor's wait takes the shape of the attached panel it stands in for:
+     flush left, from the titlebar's foot to the window's, its edge on the right
+     alone. The width is the panel's, repeated as the frame's skeleton
+     repeats it. */
+  .ed-skeleton-panel {
+    left: 0;
+    top: var(--header-h);
+    bottom: 0;
+    width: 256px;
+    border-width: 0 1px 0 0;
+    border-color: transparent;
+    border-right-color: var(--shine-panel-edge);
+    border-radius: 0;
+  }
+
+  /* The panel's head on the Dock head's line: the Dock stands on the bar's
+     seat, so the head's line comes down by the seat and the Dock's edge, and
+     both heads centre on one line and end on one foot. The fold follows the
+     line it sits on. */
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"]) .dt-root {
+    padding-top: calc(var(--shine-bar-gap) + 1px + 8px);
+  }
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"]) .dt-collapse {
+    top: calc(var(--header-h) + var(--shine-bar-gap) + 1px + 20px);
+  }
+}
+
+@layer paint {
+  .landing-beta,
+  .app-beta {
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+}
+
+@layer tune {
+  /* ── The cut corner ──────────────────────────────────────────────────────
+     Shine's mark: every surface that holds content (a card, a dialog, a
+     menu, a sheet) has its top-left corner cut at 45°. `corner-shape`
+     draws the border and the shadow along the cut, which `clip-path`
+     cannot. A browser without it keeps the theme's own rounded corner,
+     since the larger radius is set only where the cut is drawn. Controls and
+     fields keep theirs, so the cut marks the surfaces only. */
+  @supports (corner-shape: bevel) {
+    .project,
+    .ui-dialog,
+    .ui-dialog-alert,
+    .palette,
+    .board,
+    .landing-sheet,
+    .ui-checklist,
+    .welcome-start {
+      corner-top-left-shape: bevel;
+      border-top-left-radius: 12px;
+    }
+    .ui-banner,
+    .ui-access,
+    .ui-menu,
+    .ui-menu.ui-menu-inverse,
+    .ui-popover,
+    .ui-toast,
+    .ui-bubble,
+    .create-card,
+    .pick,
+    .tile,
+    .cm-card,
+    .lib-empty {
+      corner-top-left-shape: bevel;
+      border-top-left-radius: 8px;
+    }
+    /* The card's edge mark follows the card's outline. */
+    .project::before {
+      corner-top-left-shape: inherit;
+    }
+  }
+}

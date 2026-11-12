@@ -1,0 +1,27 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* In typewriter mode the station does the scrolling and the writer never aims
+   at a position in the document, so the view carries no scrollbar. The wheel
+   still scrolls, which is how a writer reads back off-station. The first
+   rule serves Firefox and the second Chromium and WebKit; no other engine
+   has a customisable scrollbar. */
+@layer frame {
+  .editor-surface[data-view="typewriter"] {
+    scrollbar-width: none;
+  }
+
+  .editor-surface[data-view="typewriter"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The feed is padding on the prose column, so the column must be free to
+     grow with it. The surface's default `align-items: stretch` would pin the
+     column to the surface's own height and remove the feed's scroll room, and
+     the last lines of a long Section could not reach the station. */
+  .editor-surface[data-view="typewriter"] .editor {
+    align-self: flex-start;
+  }
+}

@@ -1,0 +1,2960 @@
+{
+  "app": {
+    "loading": "Loading…",
+    "driveLapsed": "Remote Storage needs reconnecting",
+    "offline": "You’re offline",
+    "onlyOnDevice_one": "{{count}} file not yet synced",
+    "onlyOnDevice_other": "{{count}} files not yet synced",
+    "onlyOnDeviceAnnounce": "Some of your work is not yet synced.",
+    "changesLost_one": "Changes lost in {{count}} file",
+    "changesLost_other": "Changes lost in {{count}} files",
+    "changesLostAnnounce": "Some changes were lost before they synced.",
+    "changesLostDismiss": "Dismiss"
+  },
+  "landing": {
+    "head": {
+      "beta": "Alpha",
+      "nav": "Account",
+      "logIn": "Log in with Google",
+      "logInShort": "Log in",
+      "withoutAccount": "No account",
+      "download": "Install it"
+    },
+    "foot": {
+      "by": "By {{author}}"
+    },
+    "hero": {
+      "title": "From the start, through rewrites, to the final polish.",
+      "lede": "When you want feedback, you can turn on a team of AI assistants that can help you.",
+      "start": "Start writing",
+      "try": "Try it now",
+      "price": "A personal project · free and open source",
+      "category": "For your novels and stories",
+      "note": "Free and open source, a project open to everyone, not for profit · Open the demo without signing up, and decide if it is for you · With Google, your work follows you to your other devices",
+      "shotAlt": "The editor: the book's structure on the left, the chapter in the middle, comments in the margin."
+    },
+    "live": {
+      "label": "The real editor in the selected theme."
+    },
+    "more": "And everything else",
+    "parts": {
+      "write": {
+        "numeral": "Part I · Ki",
+        "title": "Start with a sentence.",
+        "short": "Write",
+        "problem": "You stop mid-sentence to hunt for an em dash.",
+        "answer": "Every mark a novel needs is one keystroke. The line you're writing stays in view, and the rest of the page steps back.",
+        "more": {
+          "engine": "A text engine of its own, built for fiction: its own document model, undo tree and diff.",
+          "find": "Search the whole project and replace across it. The search runs in your browser tab, and your text never leaves it.",
+          "goal": "A word goal for the book, and its shape drawn Part by Part as it grows."
+        },
+        "eyebrow": "Writing"
+      },
+      "organise": {
+        "numeral": "Part II · Shō",
+        "title": "Then, the whole book.",
+        "short": "Organize",
+        "problem": "A novel grows. And changes order.",
+        "answer": "Move a chapter and the rest of the book falls into place. Change the shape as often as the story does.",
+        "more": {
+          "rule": "The Golden Rule: a Part holds Parts or Sections, never both, so the shape of a project stays clear.",
+          "move": "Drag a Section where it belongs, or select several and move them together.",
+          "wizard": "A new project starts from a structure of your choice, with its genre, already laid out in Parts."
+        },
+        "eyebrow": "Structure"
+      },
+      "help": {
+        "numeral": "Part III · Ten",
+        "title": "An AI editorial team for the whole book.",
+        "short": "Editorial help",
+        "problem": "A paragraph isn't enough. Your problems live across three hundred pages.",
+        "answer": "It finds scenes, checks them against your reference sheets and points out what doesn't add up. Then ask for an editorial letter and a plan for revision.",
+        "more": {
+          "kinds": "Five kinds of chat: General, Drafting, Editorial review, Alpha reader and Beta reader. Each picks its persona, its model and how creative to be, and a reader chat knows the book only up to the chapter you choose.",
+          "ledgers": "<f>/canon</f> and <f>/continuity</f> keep ledgers of the facts that change and the things that don't add up, checked against your reference pages.",
+          "pages": "The assistant reads the pages each job needs. A dialogue pass reads your Prose Style and the language of your world; <f>/canon</f> Mirai checks the book against her page alone; <f>/blurb</f> waits until your Back Cover is written.",
+          "ghosts": "A review leaves its notes in the margin as suggested comments: keep the ones that help, dismiss the rest.",
+          "comments": "Margin comments in threads you resolve when they're done, and you can call an editor into any of them.",
+          "checks": "Ten craft detectors go through the text in your browser first, so the model starts from evidence: echoes, filter verbs, dialogue tags, sentence rhythm and more.",
+          "search": "It can search the web, but only after you approve, or edit, the exact query.",
+          "models": "Sign in with your {{provider}} account and pay {{provider}} for what you use, under a spending limit of $5 or less that you set. Or run a model through {{localProvider}} on your own machine, which sends nothing off it."
+        },
+        "eyebrow": "Editorial help, when you ask"
+      },
+      "keep": {
+        "numeral": "Part IV · Ketsu",
+        "title": "Plain files. Your folder. Yours to move.",
+        "short": "Keep it yours",
+        "problem": "Your book shouldn't be locked inside someone else's app.",
+        "answer": "It's saved as plain Markdown, in a folder you choose, in Remote Storage, or both. Bring it in from Word; take it out as DOCX, EPUB or PDF.",
+        "more": {
+          "local": "Local Storage, a folder on your device; Remote Storage; or both, kept in sync.",
+          "offline": "Lose the connection and keep writing in the open tab: changes wait in a queue, and the app tells you what isn't synced yet.",
+          "import": "Import docx, odt, rtf, epub, Markdown, text and HTML, with chapters detected and review comments carried into the margin.",
+          "export": "Export to DOCX, OpenDocument, PDF, RTF, EPUB, a web page, Markdown or plain text, as a book, a manuscript or a review copy.",
+          "open": "Free software under the AGPL: read the code, run it yourself."
+        },
+        "eyebrow": "Files, saving and formats"
+      },
+      "revise": {
+        "eyebrow": "Revision",
+        "title": "… what if the best sentence was in yesterday's version?",
+        "problem": "You rewrite chapter 12 and lose the line that worked.",
+        "answer": "Keep your drafts as snapshots. Compare any two, down to a single word, and take back only what you want.",
+        "more": {
+          "history": "The revision rail lets you walk back through undo history and return to an earlier version of the text.",
+          "snapshots": "Keep drafts as snapshots and compare any two, in either direction."
+        }
+      }
+    },
+    "cards": {
+      "keys": {
+        "title": "Keys that keep you writing",
+        "body": "Guillemets, curly quotes, the em dash, the ellipsis and the curly apostrophe are one keystroke each. So are the accented capitals an Italian keyboard can't type. No menu, no symbol picker, no break in the sentence."
+      },
+      "henosis": {
+        "title": "<f>Henosis</f>: only the page",
+        "body": "Write for a few seconds and the controls fade away; stop, and they come back. You decide how long each one takes.",
+        "alt": "Henosis as it happens: the controls fade while you write, until only the page is left."
+      },
+      "desk": {
+        "title": "The Desk: where you left off",
+        "body": "Open a book and its <f>Desk</f> shows the last lines you wrote, one button to carry on, the shape of every Part, and how far you've come lately.",
+        "alt": "The Desk: the last lines written, Continue writing, and the shape of each Part."
+      },
+      "compare": {
+        "title": "Two drafts, one better book",
+        "body": "Compare saved drafts by paragraph, sentence or word. Accept one change at a time to keep the best of both.",
+        "alt": "The compare view at word level: the page's words struck through, the snapshot's words beside them."
+      },
+      "summaries": {
+        "title": "A summary for every Section",
+        "body": "Ask for a summary of any Section. Each one remembers the text it summed up, so when you rewrite, it is marked outdated, and one click writes it again. Summaries are how <f>/where</f> finds a scene from a description and <f>/map</f> places every Part.",
+        "alt": "A Section's summary in the Summaries shelf, beside the page."
+      },
+      "ask": {
+        "title": "Ask in the margin",
+        "body": "Write @Nova, or any editor's name, in a margin comment, and the answer arrives in that thread, about that very passage. No chat to open, no page to leave.",
+        "alt": "A margin thread: the writer asks @Spark about a line, and Spark answers in the thread."
+      },
+      "autosave": {
+        "title": "Autosave at your pace",
+        "body": "Autosave is on from the start, every thirty seconds; set the pace from every five seconds to every five minutes, or turn it off. A mark beside each paragraph shows what isn't on disk yet, and the save chip tells you when it's saving, syncing to Remote Storage, and saved."
+      },
+      "sync": {
+        "title": "Two copies, one clear choice",
+        "body": "When your device and Remote Storage disagree, you choose which version wins, and the other is backed up first. If some of your work exists only on this device, the app tells you."
+      },
+      "move": {
+        "title": "Move in, move out",
+        "body": "Import DOCX, ODT, RTF, EPUB, Markdown, text and HTML, with chapter detection and review comments. Export to DOCX, ODT, PDF, RTF, EPUB, HTML, Markdown or text, in book, manuscript or review-copy layouts."
+      },
+      "focus": {
+        "title": "The sentence you are writing, in focus",
+        "body": "<f>Focus</f> dims the text around your current line or paragraph. The surrounding words stay in place while the current passage takes the foreground."
+      },
+      "structure": {
+        "title": "The structure follows the story",
+        "body": "Select Sections, move them together and group them in Parts. On a phone, move controls replace dragging.",
+        "alt": "Moving two Sections at once: tick them, choose Move…, then pick where they go."
+      }
+    },
+    "keys": {
+      "line": "[openDoubleQuote]It[apostrophe]s late,[closeDoubleQuote] Mirai said. [openDoubleQuote]Too late[emDash]or just in time[ellipsis][closeDoubleQuote]",
+      "label": "The keys pressed",
+      "capitals": "Accented capitals: {{key}} gives È, and the same goes for À, É, Ì, Ò, Ù and the rest."
+    },
+    "compare": {
+      "before": "Small acts.",
+      "aOld": "Little",
+      "aNew": "Tiny",
+      "mid": " sparks that ",
+      "bOld": "nobody saw",
+      "bNew": "no one noticed",
+      "after": "But every one of them lit a flame.",
+      "again": "Show the changes again",
+      "hint": "Pick a change and accept it."
+    },
+    "templates": {
+      "eyebrow": "From notes to a story",
+      "title": "Reference sheets ask the right questions.",
+      "lede": "A wound from the past, a desire, a rule of your world. Each sheet asks what a good editor would ask, and leaves room for what you haven't decided yet.",
+      "switch": "Any page can be kept from the assistant with one switch, in every chat.",
+      "details": "The <f>Guidebook</f> has fourteen sections. There are also fifteen worldbuilding templates, character sheets and character arcs, in English and Italian. Each field includes craft guidance to help you develop your answer."
+    },
+    "team": {
+      "eyebrow": "AI editorial feedback",
+      "title": "The same passage. Four different readings.",
+      "lede": "Phos sees the whole book. Nova works line by line. Spark asks what the story needs next. Lumi, the beta reader, tells you where a reader would put the book down. Pick one, and what they look for.",
+      "attitudes": "Attitudes",
+      "phos": {
+        "role": "Editor-in-chief",
+        "line": "“Respectfully: the book promises a change of sight. First, the voice keeps that promise. Second, the people arrive too late to share it.”"
+      },
+      "nova": {
+        "role": "Line editor",
+        "line": "“Three sentences, one rhythm. In the first paragraph that's a choice; by the third it's an echo.”"
+      },
+      "spark": {
+        "role": "Developmental editor",
+        "line": "“This is it, this is the engine! The light spreads, therefore someone has to pay for it. But who?”"
+      },
+      "lumi": {
+        "role": "Beta reader",
+        "line": "“I stayed up for Mirai. When she asked about the dog I actually put the book down for a second.”"
+      },
+      "explore": "Meet the four AI personas"
+    },
+    "commands": {
+      "eyebrow": "24 commands",
+      "title": "Type <f>/</f> and pick the job.",
+      "lede": "Check continuity, tighten a line, plan a scene, or ask for the letter.",
+      "shared": "General, drafting and editorial chats",
+      "explore": "Explore all 24 commands"
+    },
+    "letter": {
+      "eyebrow": "The revision plan",
+      "title": "Feedback becomes a plan.",
+      "lede": "Phos writes you an editorial letter: what works, what doesn't yet, quoting your own pages. Every point becomes a task: Must, Should or Could. Tick them off as you revise.",
+      "letter": {
+        "title": "The letter.",
+        "body": "What the book is, what works and what doesn't yet, argued from your own pages and quoting them."
+      },
+      "plan": {
+        "title": "The revision plan.",
+        "body": "Every point becomes an item, Must, Should or Could, to tick off as you revise."
+      },
+      "draft": {
+        "title": "Draft this.",
+        "body": "Takes an item to a new drafting chat, so the plan turns into pages. What reaches the book is up to you."
+      },
+      "followup": {
+        "title": "The plan follows your rewrites.",
+        "body": "Ask for another reading: each item is assessed as resolved, still open or made worse. Pick up with what remains to be done."
+      },
+      "planAlt": "The real revision plan: Must, Should and Could groups, checkboxes and Draft this actions."
+    },
+    "mobile": {
+      "eyebrow": "Mobile first",
+      "title": "Your novel, in your pocket.",
+      "lede": "On your home network, while your computer is on, open your novel on a phone or tablet, with the controls within your thumb's reach. Away from home, a tab that is already open keeps writing, and the changes wait until you are back.",
+      "alt": {
+        "phone": "The editor on a phone, its controls along the bottom edge.",
+        "phone-desk": "The Desk on a phone.",
+        "phone-library": "The Library on a phone."
+      }
+    },
+    "free": {
+      "eyebrow": "Free software",
+      "title": "Open source, all of it.",
+      "lede": "Run your own copy: the code is open under the AGPL, with nothing held back, and you build it yourself. The AI is optional, and you pay {{provider}} for what you use.",
+      "source": "Get the source",
+      "guide": "Read the setup guide"
+    },
+    "wear": {
+      "lastly": "And one more thing.",
+      "title": "Pick a theme. Watch what happens.",
+      "lede": "Four themes, each in light and dark. Pick one and this whole page changes with it."
+    },
+    "maker": {
+      "eyebrow": "Why it exists",
+      "one": "I've always believed the best work happens when things that seem opposed work as one. Logic and intuition. Discipline and creativity.",
+      "two": "In 1997, in a maths class, I wrote my first lines of code on a sheet of paper: a Battleship game in Turbo Pascal 7. I had no computer at home, so I couldn't wait to reach the computer lab and see if it ran. Programming and play. Maths and fun.",
+      "three": "Today the opposites are code and writing. I was looking for software that let me work the way I wanted, and couldn't find it. So I started building it. At first it was only for me; then I thought it would be good to share it with anyone who writes and doesn't mind running a few commands to set it up.",
+      "four": "Bringing a little light where there was dark: that's where the name comes from. To me it means understanding a little more, learning to listen, watching something beautiful take shape.",
+      "five": "There is a second reason. I wanted to see how far a software project made with AI could go, without writing the code myself. So I say it plainly: the ideas, the design decisions, the testing and the debugging are mine; AI agents write the code. It is a personal project, made in my free time, with no company behind it.",
+      "sign": "Perseo Mazzoni, who makes {{product}}.",
+      "more": "Read the whole story →"
+    },
+    "faq": {
+      "title": "Questions",
+      "lede": "The straight answers.",
+      "demo": {
+        "q": "Can I try it first, to see what it's like?",
+        "a": "Yes. The demo is the whole editor, open on a sample novel, and it needs no account. Nothing is saved: a reload starts the novel over. The assistant answers with sample replies; to use a real model, build the program on your computer and connect your {{provider}} account, or a local model through {{localProvider}}."
+      },
+      "files": {
+        "q": "Where are my files?",
+        "a": "In a folder on your device, in your Remote Storage, or both: plain Markdown, YAML and JSON that any editor can open. Your preferences, your <f>Library</f> and what each project card shows, such as titles, word counts and the shape of the structure, stay on your device and, while Remote Storage is connected, also in the folder reserved for the application in your Remote Storage. That folder never holds body text, snapshots, comments or chats."
+      },
+      "cost": {
+        "q": "What does it cost?",
+        "a": "{{product}} is free software: there is nothing to buy. The AI isn't included: to use a remote model, you sign in with your {{provider}} account and pay {{provider}} for what you use, under a spending limit of $5 or less that you set. Or run a local model through {{localProvider}} on your computer, with no provider to pay."
+      },
+      "ai": {
+        "q": "Which AI does it use, and what does it see?",
+        "a": "The model you choose. With a remote model, the passages you ask about go from your device straight to your model provider and on to the model's vendor; no central server sits in between. A model running through {{localProvider}} sends nothing off your machine, apart from a web search you approve, and then only that query. The assistant suggests changes and does not edit your manuscript; you choose which suggestions to use."
+      },
+      "leave": {
+        "q": "Can I move to another program?",
+        "a": "Yes. Your book is already plain files, and it exports to DOCX, OpenDocument, PDF, RTF, EPUB, a web page, Markdown and plain text."
+      },
+      "offline": {
+        "q": "Does it work offline?",
+        "a": "Yes. The program starts on your computer with no connection, and books in a folder there need none. Signing in needs one, and changes to books in Remote Storage wait in a queue until you're back online."
+      },
+      "browsers": {
+        "q": "Which browsers does it work in?",
+        "a": "Folders on your device need a Chromium browser, such as Chrome or Edge. Remote Storage and the demo work in every modern browser."
+      },
+      "host": {
+        "q": "Can I run it myself?",
+        "a": "Yes, that's how it works: {{product}} runs on your computer. You build it from the source code, then install and set it up yourself. There are no central servers."
+      },
+      "finished": {
+        "q": "Is it finished?",
+        "a": "It's in alpha and changes fast: if you use it now, you are experimenting with something that is still being made. Every change passes the full test suite and a run in a real browser, and I review it before it's merged. Keep your own copy of anything you can't afford to lose."
+      }
+    },
+    "close": {
+      "title": "Your book is waiting."
+    },
+    "motion": {
+      "pause": "Pause animations",
+      "play": "Play animations"
+    },
+    "demo": {
+      "title": "The whole editor. One click. No account.",
+      "lede": "The demo is the full editor, open on a sample novel: write, move chapters, compare drafts, open the reference sheets. You can't break anything: reload, and the novel is back as it was."
+    },
+    "storage": {
+      "browsers": "Use a folder on your device, Remote Storage, or both. Device folders require Chrome, Edge or another Chromium browser. Remote Storage and the demo work in every modern browser. The program starts with no connection; signing in and Remote Storage need one, and if you lose it, keep writing in the open tab."
+    },
+    "focus": {
+      "hint": "Pick Ln for the line or ¶ for the paragraph, then click in the text.",
+      "p1": "Small acts, yes. Tiny sparks that no one noticed. But each one kindled a flame. And that light grew brighter only when it was shared.",
+      "p2": "Over time, people began to understand something simple. Every sentient being experiences the world from its own center. A child feels joy no less than an old person. A dog hopes to return home. An elephant mourns its dead.",
+      "p3": "No law commanded it. No prophet carried it from town to town. It moved the way warmth moves through a room, from one body to the next, until no one could say where it had begun."
+    },
+    "foundation": {
+      "title": "And the book stays yours.",
+      "files": {
+        "title": "Files you own",
+        "body": "Markdown on your device, in Remote Storage, or both. Other editors can open your manuscript too."
+      },
+      "cost": {
+        "title": "Free software",
+        "body": "Nothing to buy and nothing locked away. The AI is optional, and you pay {{provider}} for what you use."
+      },
+      "mobile": {
+        "title": "Away from your desk too",
+        "body": "At home, with your computer on, read on your phone and take notes on your tablet. Remote Storage brings your projects to your other devices."
+      }
+    },
+    "context": {
+      "eyebrow": "Continuity check",
+      "title": "Chapter 3 still matters in chapter 30.",
+      "lede": "Mirai can't swim, says her sheet. In chapter 30 she swims a river. Ask for a continuity check and the assistant finds it, then asks whether she learned along the way."
+    },
+    "captures": {
+      "template": "Mirai’s reference sheet in the app, with field prompts and character details.",
+      "autosave": "The app’s writing preferences with autosave enabled every thirty seconds.",
+      "personas": "Choosing an editor in the app: each face shows as the pointer passes, then Spark and one of Spark’s reading approaches are picked.",
+      "continuity": "A sample answer in the real assistant panel: Mirai’s sheet says she cannot swim, but in chapter 30 she swims across a river."
+    },
+    "tryIt": "Try it!",
+    "tryFull": "Try it in the full editor →",
+    "groups": {
+      "focus": "Undivided attention."
+    },
+    "noFolders": {
+      "title": "This browser can't keep your work without an account",
+      "demo": "Or try the demo first",
+      "lead": "Without an account your projects live in a folder on your device, and this browser can't open one. It works in:",
+      "signIn": "Or sign in with {{identity}} and keep your projects in Remote Storage."
+    },
+    "withoutAccount": "Continue without an account",
+    "download": "Install it on your computer"
+  },
+  "demoNotice": {
+    "body": "This is a demo: nothing is saved.",
+    "reset": "Reload or close the page and the sample novel is back as it was.",
+    "download": "To keep your work, build the program on your computer: the source code and the steps are on GitHub.",
+    "close": "Close"
+  },
+  "release": {
+    "notice": "A new version is out. <release>{{version}}</release> If you want it, build it from the new source.",
+    "announce": "Version {{version}} is available.",
+    "close": "Close"
+  },
+  "auth": {
+    "backHome": "Back to the homepage",
+    "popupBlocked": "Your browser blocked the {{identity}} window. Allow pop-ups for this page, then click again.",
+    "googleNotSetUp": "{{identity}} sign-in isn't set up on this computer yet. You can add it on the setup page.",
+    "identityUnavailable": "Sign-in is not answering. Quit {{product}} and start it again, then try once more.",
+    "googleFailed": "{{identity}} did not finish the sign-in. Try again.",
+    "problemTitle": "Couldn't sign in",
+    "tryAgain": "Try again",
+    "farewellTitle": "Account deleted",
+    "farewellRevokePending": "{{identity}} did not confirm that {{product}}'s access was removed. To remove it yourself, open your {{identity}} account, go to Security, and remove {{product}} from the third-party apps connected to it."
+  },
+  "library": {
+    "title": "Your library",
+    "greetingHey": "Hey {{name}}, here's your library!",
+    "greetingHey_plain": "Hey, here's your library!",
+    "greetingWelcome": "Welcome back, {{name}}!",
+    "greetingWelcome_plain": "Welcome back!",
+    "greetingGoodToSeeYou": "Good to see you, {{name}}!",
+    "greetingGoodToSeeYou_plain": "Good to see you!",
+    "greetingReady": "Ready to write, {{name}}?",
+    "greetingReady_plain": "Ready to write?",
+    "greetingNice": "Nice to see you, {{name}}!",
+    "greetingNice_plain": "Nice to see you!",
+    "count_one": "{{count}} project",
+    "count_other": "{{count}} projects",
+    "countWord_one": "project",
+    "countWord_other": "projects",
+    "countShown_one": "{{count}} project shown",
+    "countShown_other": "{{count}} projects shown",
+    "looking": "looking…",
+    "reading": "Reading this project…",
+    "newProject": "New project",
+    "creating": "Creating the project…",
+    "findDrive": "Find projects in Remote Storage",
+    "findLocal": "Find projects on your device",
+    "chooseLocalFolder": "Choose local folder",
+    "locateFolder": "Show the folder",
+    "localFolderChosen": "Local folder chosen — projects on your device are read from it.",
+    "findDriveNone": "No new projects found in Remote Storage.",
+    "findLocalDone_one": "Added {{count}} project from your device.",
+    "findLocalDone_other": "Added {{count}} projects from your device.",
+    "findLocalNone": "No new projects found on your device.",
+    "openFailed": "That folder could not be opened.",
+    "alreadyInLibrary": "\"{{title}}\" is already in your library.",
+    "signOut": "Sign out",
+    "accountFor": "Account: {{email}}",
+    "findEverything": "Search everything",
+    "findLabel": "Filter projects",
+    "findPlaceholder": "Filter projects…",
+    "allProjects": "All projects",
+    "storageLabel": "Storage",
+    "sourceSummary": "{{here}} in Local Storage, {{there}} in Remote Storage",
+    "filterAll": "All",
+    "densityLabel": "View density",
+    "grid": "Grid view",
+    "list": "List view",
+    "diskUnsupported": "not available in this browser",
+    "driveOffHint": "Keep a second copy, and open this project on your other devices.",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "forgetLocalFolder": "Forget local folder",
+    "connectDrive": "Connect Remote Storage",
+    "disconnectDrive": "Disconnect Remote Storage",
+    "disconnectRemoteHere": "This browser only",
+    "disconnectRemoteEverywhere": "Every device",
+    "disconnectRemoteTitle": "Disconnect Remote Storage?",
+    "disconnectRemoteBody": "These are deleted from Remote Storage:",
+    "disconnectRemoteFailed": "Your settings and library could not be deleted, so Remote Storage is still connected. Try again in a moment.",
+    "words": "words",
+    "shape": "{{parts}} parts · {{sections}} sections",
+    "ofGoal": "{{pct}}% of goal",
+    "edited": "edited {{when}}",
+    "locked": "Choose the folder that holds your projects to open it.",
+    "reconnect": "Choose folder",
+    "goneLocal": "No longer on your device.",
+    "goneLocalHint": "It comes back when you run Find projects on your device.",
+    "unknownProject": "That link doesn’t lead to any of your projects.",
+    "goneDrive": "No longer in Remote Storage.",
+    "unreadable": "This project could not be read.",
+    "remove": "Remove from library",
+    "removed": "Removed “{{title}}” from your library. Nothing was deleted.",
+    "actionsFor": "Actions for {{title}}",
+    "revealInDrive": "Open in {{storage}}",
+    "syncToDrive": "Sync to Remote Storage",
+    "syncConfirmTitle": "Sync this project to Remote Storage?",
+    "syncConfirmLede": "Creates a copy in Remote Storage and keeps the two in step while the app is open. If you edit it in two places before they sync, {{product}} will ask you which version to keep.",
+    "syncConfirmConfirm": "Sync to Remote Storage",
+    "driveDisconnectedNote": "Only in Remote Storage right now — reconnect to open it.",
+    "driveDisconnectedBanner": "Remote Storage isn't connected, so the projects kept there can't be opened or checked for changes.",
+    "localDisconnectedBanner": "The local folder hasn't been chosen, so the projects on your device can't be opened or checked for changes.",
+    "localPermissionBanner": "{{product}} needs your permission again. Choose the folder to restore access — your browser can remember the choice, so this need only happen once.",
+    "signOutTitle": "Sign out?",
+    "signOutClean": "Sign out and clean everything",
+    "signOutHeldTitle_one": "Changes in {{count}} file not yet synced",
+    "signOutHeldTitle_other": "Changes in {{count}} files not yet synced",
+    "signOutHeldConfirm": "Sign out and lose the changes",
+    "signOutProfileUnsaved": "Your settings and library stay in Remote Storage without your latest changes: when you connect it again, you get them back as they were before.",
+    "signOutDismiss": "Stay signed in",
+    "signOutFailed": "The sign-out didn't finish. Try again.",
+    "signOutDisconnectFailed": "The sign-out didn't finish: Remote Storage couldn't be disconnected. Nothing has changed. Try again in a moment.",
+    "signOutFailedDisconnected": "Remote Storage is disconnected, but the sign-out didn't finish. Try again.",
+    "synced": "Synced",
+    "syncPending": "Sync pending",
+    "properties": "Properties",
+    "propertiesTitle": "Project properties",
+    "titleLabel": "Title",
+    "propertiesReading": "Reading the project…",
+    "folderKeeps": "Folder stays",
+    "structureNote": "Nothing is added or moved — the Parts you already have stay as they are.",
+    "propertiesSave": "Save",
+    "propertiesClose": "Close",
+    "propertiesSaved": "Saved the properties of “{{title}}”.",
+    "folderBecomes": "Folder becomes",
+    "duplicate": "Duplicate",
+    "duplicateTitle": "Duplicate this project",
+    "duplicateLede": "Makes a copy in a new folder beside the original, which stays as it is. Existing exports are not copied.",
+    "duplicateLedeDriveSource": "Makes a copy in a new folder in Local Storage. The copy does not sync with Remote Storage, even though the original does. The original stays as it is, and existing exports are not copied.",
+    "duplicateConfirm": "Duplicate",
+    "duplicated": "Duplicated as “{{title}}”.",
+    "duplicateCancelled": "The duplicate of “{{name}}” was stopped. Nothing was added to your Library.",
+    "copyOf": "{{title}} (copy)",
+    "deleteFolder": "Delete",
+    "deleteFolderTitle": "Delete this project's folder?",
+    "deleteFolderBody": "The folder and everything in it goes to the {{storage}} bin, where you can restore it. {{product}} cannot put it back for you.",
+    "deleteFolderBodySynced": "The copy in Remote Storage and everything in it goes to the {{storage}} bin, where you can restore it. The folder on this device is never touched, and stops syncing.",
+    "deleteFolderConfirm": "Delete the folder",
+    "deleteFolderCancel": "Keep it",
+    "deleted": "“{{title}}” is in the {{storage}} bin.",
+    "copyingTitle": "Copying to Remote Storage",
+    "copyingLede": "“{{name}}” is being copied. The original on your device is not touched.",
+    "copyCancelled": "Copy stopped after {{done}} of {{total}} files. The files already copied are still in the destination folder.",
+    "syncingTitle": "Syncing to Remote Storage",
+    "syncingLede": "“{{name}}” is being copied into Remote Storage, and will stay in sync with it from now on.",
+    "syncStarted": "“{{name}}” now syncs with Remote Storage.",
+    "syncRowLost": "“{{name}}” was copied into Remote Storage, but it left your library while the copy was being made, so the sync never started.",
+    "unpair": "Disable sync",
+    "unpaired": "“{{name}}” no longer syncs with Remote Storage. Both copies are untouched.",
+    "moveToDrive": "Move to Remote Storage",
+    "moveToDriveTitle": "Move this project to Remote Storage?",
+    "moveToDriveLede": "{{product}} copies the project to Remote Storage, leaving out any existing exports, and works from that copy from now on. The folder on this device stays as it is, but the app stops updating it.",
+    "moveToDriveConfirm": "Move to Remote Storage",
+    "movedToDrive": "“{{name}}” moved to Remote Storage.",
+    "moveToLocal": "Move to your device",
+    "moveToLocalTitle": "Move this project to your device?",
+    "moveToLocalBody": "{{product}} copies the project into your Local Storage folder, leaving out any existing exports. Once the copy is checked, the original goes to the {{storage}} bin, where you can still restore it.",
+    "moveToLocalConfirm": "Move to your device",
+    "moveToLocalCancel": "Keep it in Remote Storage",
+    "movedToLocal": "“{{name}}” moved to your device.",
+    "moveToLocalOwed": "“{{name}}” still has changes on their way to Remote Storage, so it stays there for now. Try again once they have been sent.",
+    "movingTitle": "Moving the project",
+    "movingLede": "“{{name}}” is being copied. Nothing at the source is removed until the copy finishes.",
+    "driveOffTitle": "Remote Storage isn't connected.",
+    "driveOffBody": "Connect Remote Storage to open the projects you keep there. {{product}} works on a copy kept on this device and syncs your changes back.",
+    "driveEmptyTitle": "No projects in Remote Storage yet.",
+    "driveEmptyBody": "New projects can be made here and kept in Remote Storage — or {{product}} can go looking for ones that are already there.",
+    "localEmptyTitle": "No projects on your device.",
+    "localEmptyBody": "A project is a folder. {{product}} reads the folder that holds all your projects — choose it and they appear here.",
+    "localScannedEmptyTitle": "No {{product}} projects here yet.",
+    "localScannedEmptyBody": "The local folder is chosen, but it holds no {{product}} projects yet. Create a project and it will appear here — or choose a different folder.",
+    "noMatchTitle": "Nothing matches.",
+    "noMatchHere": "No project lives there yet.",
+    "clearFilters": "Clear search and filters",
+    "driveFailed": "Remote Storage could not be connected. Try again.",
+    "driveAccountMismatch": "That Google account isn't the one you sign in with. Reconnect using {{loginEmail}} to continue.",
+    "driveScopeMissing": "Access to {{storage}} wasn't granted. Try again, and leave the {{storage}} option ticked on the permission screen.",
+    "driveRevokePending": "Remote Storage is disconnected, but {{identity}} did not confirm that {{product}}'s access was removed. To remove it yourself, open your {{identity}} account, go to Security, and remove {{product}} from the third-party apps connected to it.",
+    "exportToFile": "Export to file",
+    "greetingFirstWelcome": "Welcome, {{name}}.",
+    "greetingFirstWelcome_plain": "Welcome.",
+    "greetingFirstHello": "Hello, {{name}}. Let's begin.",
+    "greetingFirstHello_plain": "Hello. Let's begin.",
+    "greetingFirstBegin": "A first page is waiting, {{name}}.",
+    "greetingFirstBegin_plain": "A first page is waiting.",
+    "setup": {
+      "title": "Choose where your projects live",
+      "localName": "Local Storage",
+      "localNote": "A folder on this device.",
+      "remoteName": "Remote Storage",
+      "remoteNote": "Your own Remote Storage account, so your projects follow you to your other devices.",
+      "addLocal": "Also add Local Storage",
+      "addRemote": "Also add Remote Storage"
+    },
+    "welcome": {
+      "startTitle": "Start your first project",
+      "startBody": "Your projects will appear here as cards, with their words, progress and last edit.",
+      "lockNote": "First choose where your projects live.",
+      "foundTitle_one": "{{count}} project found",
+      "foundTitle_other": "{{count}} projects found",
+      "foundBody": "Your library is ready. Open it, or start something new.",
+      "show": "Show my projects",
+      "explore": "Explore the example project"
+    },
+    "noMatchQueryTitle": "No projects match “{{query}}”",
+    "noMatchSearched_one": "Searched the title and folder name of {{count}} project.",
+    "noMatchSearched_other": "Searched the titles and folder names of {{count}} projects.",
+    "identityUnavailable": "Sign-in is not answering, so Remote Storage can't be connected. Quit {{product}} and start it again, then try once more.",
+    "accountWithoutGoogle": "Your account on this device",
+    "driveNeedsGoogle": "Remote Storage needs a {{identity}} account. To use it, sign out and log in with {{identity}}.",
+    "driveNeedsAccount": "Requires a {{identity}} account",
+    "signOutLead": "These are deleted:",
+    "signOutLeadConnected": "These are deleted:",
+    "signOutAfter": "There is no copy anywhere else: they are lost.",
+    "signOutAfterConnected": "Your settings and library stay in Remote Storage: you get them back when you connect it again.",
+    "signOutAfterKept": "Your settings and library stay in Remote Storage as they were when you disconnected it: you get them back when you connect it again.",
+    "signOutHeldLost": "The changes are lost.",
+    "signOutHeldLeave": "The changes sync the next time you sign in.",
+    "signOutHeldLeaveDisconnected": "The changes stay here until you connect Remote Storage again.",
+    "disconnectRemoteAfter": "A new device will start from scratch.",
+    "disconnectRemoteDisconnectFailed": "Remote Storage could not be disconnected. Try again in a moment.",
+    "disconnectRemoteDeletedNotDisconnected": "Your settings and library were deleted, but Remote Storage could not be disconnected. Try again in a moment.",
+    "signOutChoiceLeave": "Leave everything as it is",
+    "signOutChoiceClean": "Clean everything from this browser",
+    "signOutLeaveSub": "You find everything here the next time you sign in on this browser.",
+    "signOutHeldItem_one": "changes not yet synced in {{count}} file",
+    "signOutHeldItem_other": "changes not yet synced in {{count}} files",
+    "disconnectRemoteHereSub": "Your other devices stay connected.",
+    "disconnectRemoteEverywhereSub": "{{product}} revokes its access to your {{identity}} account: you'll need to connect it again on each one. Your settings and library stay in Remote Storage.",
+    "disconnectRemoteEverywhereDelete": "From every device, deleting your data",
+    "disconnectRemoteConfirm": "Disconnect",
+    "disconnectRemoteConfirmDelete": "Disconnect and delete",
+    "restore": {
+      "title": "Looking for your data in Remote Storage",
+      "note": "If your settings and library are there, they come to this device.",
+      "stepSearch": "Looking for your settings and library",
+      "stepLibrary": "Updating your library",
+      "foundTitle": "Your data is back",
+      "foundLead": "These came to this device from Remote Storage:",
+      "library_one": "your library ({{count}} project)",
+      "library_other": "your library ({{count}} projects)",
+      "noneTitle": "Nothing to bring back",
+      "none": "Remote Storage held no settings or library. This device keeps its own, and from now on keeps a copy there.",
+      "unreachable": "Your data could not be looked for. It will be tried again by itself as soon as possible; meanwhile this device keeps its own settings."
+    },
+    "findDriveTitle": "Looking for projects in Remote Storage",
+    "findDriveStepList": "Looking for projects",
+    "findDriveStepAdd": "Adding them to your library",
+    "findDriveFailed": "Remote Storage could not be read. Try again in a moment.",
+    "search": {
+      "background": "Continue without waiting",
+      "close": "Close",
+      "retry": "Try again",
+      "count": "{{done}} of {{total}}",
+      "foundTitle": "Projects found",
+      "added": "Added to your library:",
+      "more_one": "and {{count}} more",
+      "more_other": "and {{count}} more",
+      "noneTitle": "No new projects",
+      "unreachableTitle": "Remote Storage can't be reached"
+    }
+  },
+  "sync": {
+    "conflictTitle": "“{{name}}” was edited in two places",
+    "thisComputer": "Your device",
+    "googleDrive": "Remote Storage",
+    "sideStats": "{{words}} words, edited {{when}}",
+    "sideWordsOnly": "{{words}} words",
+    "unknownSide": "No details available",
+    "keepLocal": "Keep your device's version",
+    "keepDrive": "Keep the Remote Storage version",
+    "resolved": "Kept {{side}} version of “{{name}}”.",
+    "resolvedLocal": "your device's",
+    "resolvedDrive": "Remote Storage's",
+    "resolveFailed": "Could not resolve the conflict. Please try again.",
+    "remoteUnsettled": "The Remote Storage copy of “{{name}}” is not complete yet: another device may still be uploading it. Nothing changed. Try again in a moment.",
+    "localUnsettled": "The copy of “{{name}}” on this device does not match its own records, so it cannot be kept. Nothing changed. Keep the Remote Storage copy instead.",
+    "pulled": "Pulled changes for “{{name}}” from Remote Storage.",
+    "syncNow": "Sync now",
+    "upToDate": "“{{name}}” is already up to date.",
+    "stillUploading": "Another device is still uploading “{{name}}”. Try Sync now again in a moment.",
+    "goneTitle": "The Remote Storage copy of “{{name}}” is gone",
+    "goneBody": "It was deleted or moved to the trash. The copy on your device is untouched.",
+    "uploadAgain": "Upload it again",
+    "uploadAgainFailed": "Could not upload “{{name}}” again. Please try again."
+  },
+  "palette": {
+    "label": "Command palette",
+    "filter": "Filter",
+    "close": "Close the palette",
+    "placeholder": "Jump to a project, or type a command…",
+    "noMatch": "Nothing matches “{{query}}”",
+    "groupCreate": "Create",
+    "groupGo": "Go",
+    "groupAccount": "Account"
+  },
+  "create": {
+    "title": "Start a project",
+    "start": {
+      "title": "How do you start?",
+      "blank": "Blank",
+      "blankSub": "an empty project, shaped as you choose",
+      "manuscript": "By importing an existing manuscript",
+      "manuscriptSub": "bring your work into {{product}} and keep developing it with all the tools at your fingertips."
+    },
+    "nameLabel": "What is it called?",
+    "authorLabel": "Author",
+    "namePlaceholder": "Once Dark",
+    "creates": "creates",
+    "folderStub": "your-title/",
+    "confirm": "Create the folder",
+    "whereLabel": "Where should it live?",
+    "localSub": "the folder you chose · stays on your device",
+    "localSubNoRoot": "choose a local folder first · it is remembered from then on",
+    "driveSub": "{{email}} · there on every device you sign in to",
+    "connectDriveHint": "Connect Remote Storage in Settings to keep projects there too.",
+    "noDestinationHint": "Nothing is set up yet — choose a local folder or connect Remote Storage in Settings.",
+    "noDestinationHintLocal": "Nothing is set up yet — choose a local folder in Settings.",
+    "structureLabel": "Structure",
+    "shape": {
+      "empty": "No structure",
+      "threeact": "Three Acts",
+      "kishotenketsu": "Kishōtenketsu (four acts)",
+      "freytagspyramid": "Freytag's Pyramid",
+      "herosjourney": "Hero's Journey"
+    },
+    "shapeDesc": {
+      "empty": "Nothing is laid out in advance — no Parts are created, and no shape is chosen for you.",
+      "threeact": "Three Acts splits a story into Setup, Confrontation and Resolution: the world as it was, the trouble that breaks it, and how it settles again.",
+      "kishotenketsu": "Kishōtenketsu comes from East Asian tradition and builds a story in four acts: Ki (introduction), Sho (development), Ten (twist) and Ketsu (conclusion). It turns on the twist, not on a central conflict: Ten recasts what came before, and Ketsu reconciles the two.",
+      "freytagspyramid": "Freytag's Pyramid stretches a dramatic arc across five Parts: Exposition, Rising action, Climax, Falling action and Denouement.",
+      "herosjourney": "The Hero's Journey follows someone out of their ordinary world, through trials that change them, and back home a different person: Departure, Initiation and Return."
+    },
+    "shapeFit": {
+      "empty": "Start from a blank page and let the project find its own.",
+      "threeact": "A dependable scaffold for a plot-driven novel — and an easy first structure if you have never used one.",
+      "kishotenketsu": "Suits quiet, character-driven writing.",
+      "freytagspyramid": "A map for stories with one great peak of tension — mysteries and dramas wear it well.",
+      "herosjourney": "A natural fit for adventure and fantasy told over one full arc."
+    },
+    "languageLabel": "Language",
+    "languageNote": "The language you write in — AI features will use it.",
+    "typeLabel": "Type",
+    "customTypeLabel": "Custom type",
+    "customTypePlaceholder": "e.g. Screenplay, Memoir…",
+    "customTypeRequired": "Name the type, or pick one from the list.",
+    "typeName": {
+      "novel": "Novel",
+      "epicNovel": "Epic novel",
+      "shortStory": "Short story",
+      "novella": "Novella",
+      "flashFiction": "Flash fiction",
+      "other": "Other"
+    },
+    "typeGuide": {
+      "novel": "A novel usually runs from about 50,000 to about 110,000 words.",
+      "epicNovel": "An epic novel usually runs beyond about 110,000 words.",
+      "novella": "A novella usually runs from about 20,000 to about 50,000 words.",
+      "shortStory": "A short story usually runs from about 1,000 to about 7,500 words.",
+      "flashFiction": "Flash fiction is usually under about 1,000 words."
+    },
+    "goalLabel": "Goal",
+    "goalPlaceholder": "50000",
+    "goalHint": "The word count you are aiming for.",
+    "goalInvalid": "A whole number of words.",
+    "goalRequired": "A goal is needed — the editor measures the project against it.",
+    "continue": "Continue",
+    "back": "Back",
+    "creating": "Hold on — I'm setting everything up.",
+    "progressCount": "{{done}} of {{total}}",
+    "failed": "The project could not be created.",
+    "recapGoal": "{{count}} words",
+    "stepStructure": "Structure and language",
+    "stepKind": "Type and goal",
+    "stepLanguage": "Language",
+    "progress": {
+      "folder": "Creating the folder",
+      "documents": "Setting up your manuscript",
+      "properties": "Saving the project's properties",
+      "structure": "Building the structure",
+      "workspace": "Preparing the workspace",
+      "adopt": "Adding to your library"
+    },
+    "partSetup": "Setup",
+    "partConfrontation": "Confrontation",
+    "partResolution": "Resolution",
+    "partKi": "Ki",
+    "partSho": "Sho",
+    "partTen": "Ten",
+    "partKetsu": "Ketsu",
+    "partExposition": "Exposition",
+    "partRising": "Rising action",
+    "partClimax": "Climax",
+    "partFalling": "Falling action",
+    "partDenouement": "Denouement",
+    "partDeparture": "Departure",
+    "partInitiation": "Initiation",
+    "partReturn": "Return",
+    "stepGenre": "Genre and readers"
+  },
+  "settings": {
+    "title": "Settings",
+    "close": "Close settings",
+    "paneLook": "How it looks",
+    "paneWords": "Where words live",
+    "paneEditor": "How you write",
+    "paneAi": "Set up your AI",
+    "paneYou": "Who you are",
+    "paneAbout": "About",
+    "aboutTagline": "The same spark",
+    "aboutNote": "A writing tool: the manuscript, its structure, your notes and an assistant, in one calm place.",
+    "aboutVersion": "Version {{version}}",
+    "aboutLicense": "Free software, released under the GNU Affero General Public License, version 3 or later.",
+    "aboutLicenseLink": "Read the license",
+    "aboutSourceLink": "Source code",
+    "storage": "Where your words live",
+    "driveOn": "connected · {{email}}",
+    "driveOffHint": "Keep a second copy, and open this project on your other devices.",
+    "driveExplainer": "Connect Remote Storage to keep projects there, or to sync a project from this device. You choose which projects to sync. Changes reach Remote Storage while the app is open and there is a connection.",
+    "driveCan": "Can read and write only the projects it created",
+    "driveCannotSee": "Cannot see the rest of your Remote Storage",
+    "driveCannotCopy": "Your documents live in Remote Storage. This browser also keeps a working copy of them and the changes not yet saved there, besides settings and library. When you use a remote AI model, the text it needs goes from this device to the AI model's provider",
+    "diskOffHint": "Your projects live in a folder you own, on your device.",
+    "diskOn": "a folder on your device",
+    "diskCan": "Can read and write only inside the folder you chose",
+    "diskCannot": "Your documents stay in the folder you chose, on this device; apart from them, this browser keeps only settings and library. When you use a remote AI model, the text it needs goes from this device to the AI model's provider",
+    "accountNote": "Signed in with Google. Your settings and library are kept on this device and, while Remote Storage is connected, in it too, so you find them on every device where you connect it.",
+    "deleteAccount": "Delete your account",
+    "deleteAccountNote": "Deletes your settings and library from this browser and, while Remote Storage is connected, from Remote Storage. Your projects are not touched.",
+    "deleteAccountTitle": "Delete your account?",
+    "deleteAccountConfirm": "Delete my account",
+    "deleteAccountCancel": "Keep it",
+    "deleteAccountFailed": "Your account could not be deleted. Nothing has changed.",
+    "deleteAccountRevokeFailed": "Your settings and library were deleted from Remote Storage, but it could not be disconnected: your account was not deleted. Try again in a moment.",
+    "editor": "Your editor, your way",
+    "editorHint": "Set how the editor looks and behaves by default. Every project starts with these. You can still change any of these for a specific project.",
+    "turnedOn": "on",
+    "turnedOff": "off",
+    "theme": "Theme",
+    "themeHint": "Changes straight away and, while Remote Storage is connected, follows you to every device where you connect it.",
+    "themeVariant": "Light or dark",
+    "themeSystem": "as the system",
+    "language": "Language",
+    "languageHint": "Changes the app's language straight away and, while Remote Storage is connected, follows you to every device where you connect it. Your manuscript is never translated.",
+    "account": "Account",
+    "aiLocal": "Local AI models",
+    "aiRemote": "Remote AI models",
+    "aiLocalName": "{{localProvider}}",
+    "aiLocalState": {
+      "idle": "on this device",
+      "checking": "connecting…",
+      "connected": "connected · on this device",
+      "failed": "not reachable, or no chat model"
+    },
+    "aiLocalCan": "Answers on your device, with no account and no network",
+    "aiLocalCannot": "Cannot send what you write over the internet",
+    "aiLocalCannotCloud": "Cannot use {{localProvider}}'s cloud models",
+    "aiRemoteNone": "No AI model provider is connected.",
+    "aiRemoteExpires": "expires {{date}}",
+    "aiRemoteLimit": "spend cap {{amount}}",
+    "aiRemoteLimitRenews": {
+      "daily": "spend cap {{amount}} a day",
+      "weekly": "spend cap {{amount}} a week",
+      "monthly": "spend cap {{amount}} a month"
+    },
+    "aiRemoteChoose": "Models on offer",
+    "aiRemoteChooseHint": "The ones offered when you pick a model in the editor.",
+    "aiRemoteFilter": "Filter models",
+    "aiRemoteChosen": "{{chosen}} of {{max}} chosen",
+    "aiRemoteShowing": "Showing {{shown}} of {{matched}} models. Narrow the list to see the rest.",
+    "aiRemoteFull": "That is as many as the list will hold. Remove one to add another.",
+    "aiRemoteReading": "Reading the catalogue…",
+    "aiRemoteUnread": "The catalogue could not be read.",
+    "aiRemoteNoMatch": "Nothing matches that.",
+    "ollamaEndpoint": "{{localProvider}} address",
+    "ollamaAddressDefault": "Default",
+    "ollamaAddressCustom": "Custom",
+    "ollamaAddressSave": "Save",
+    "ollamaAddressInvalid": "That is not an address on this device. Try {{address}}.",
+    "ollamaModel": "Model",
+    "chooseModel": "Connect to list installed models",
+    "aiRemoteRequirement": "Connecting has {{host}} create a key for the app. It will ask you for a spend cap: choose {{amount}} or less. An empty cap means unlimited, and the key is refused.",
+    "aiModelFree": "Free",
+    "aiModelPrice": "{{input}} in · {{output}} out, per million tokens",
+    "aiTools": "agent tools",
+    "aiChatOnly": "chat only",
+    "testOllama": "Test connection",
+    "checkingOllama": "Checking…",
+    "aiProbe": {
+      "verified": "agent tools verified",
+      "unverified": "chat only",
+      "skipped": "not on this device — agent tools were not tested"
+    },
+    "ollamaSetup": "Install {{localProvider}} and download a model first. Agent tools need a model that can call tools.",
+    "aiRemoteConnected": "connected",
+    "aiRemoteDisconnected": "not connected",
+    "aiRemoteConnect": "Connect",
+    "aiRemoteReconnect": "Create a new key",
+    "aiRemoteConnecting": "Waiting for approval…",
+    "aiRemoteTransit": "What you ask the AI goes from your device straight to {{host}}, without passing through any other server.",
+    "aiRemoteBlocked": "Your browser blocked the approval window. Allow pop-ups for this site, then try again.",
+    "aiRemoteDisconnect": "Remove the key",
+    "aiRemoteRefusal": {
+      "management-key": "That is a management key, which can create other keys. Connect with an ordinary key.",
+      "no-limit": "That key has no spend limit. Try again and set one of {{amount}} or less.",
+      "limit-too-high": "That key's spend limit is above {{amount}}. Try again with a smaller one.",
+      "already-expired": "That key had already expired. Try again.",
+      "exchange-expired": "The approval expired before it could be used. Try again.",
+      "exchange-failed": "{{host}} did not hand over a key. Nothing was saved.",
+      "unreachable": "{{host}} could not be reached. Nothing was saved.",
+      "revoked": "{{host}} no longer accepts this key. Connect again for a new one."
+    },
+    "accountNoteWithoutGoogle": "Your settings and library are kept on this device only. When you sign out, you can keep them here for next time or clear them.",
+    "deleteAccountLead": "Your account is deleted. These are deleted from this device:",
+    "deleteAccountLeadConnected": "Your account is deleted. These are deleted from this device and from Remote Storage:",
+    "deleteAccountAfterConnected": "{{product}} revokes its access to your {{identity}} account.",
+    "deleteAccountAfterKept": "The settings and library you left in Remote Storage stay there: to delete them, connect it again before deleting your account.",
+    "deleteAccountRemoteFailed": "Your settings and library could not be deleted from Remote Storage, so your account was not deleted. Try again in a moment.",
+    "deleteAccountLocalFailed": "Your settings and library were deleted from Remote Storage and it is disconnected, but your account could not be deleted from this device. Try again.",
+    "aiRemoteRememberQuestion": "Should this device remember the key?",
+    "aiRemoteRememberNo": "No, I'll create a new one each time",
+    "aiRemoteRememberYes": "Yes, remember it",
+    "aiRemoteRememberYesMore": "The key stays saved in this browser, encrypted in a cookie. You create a new one only when it expires or its spend cap runs out.",
+    "aiRemoteRememberUnavailable": "This device can't remember the key.",
+    "aiRemoteRememberNoMore": "When you close the app the key is forgotten, and next time you create a new one.",
+    "aiRemoteKeys": "Manage keys on {{host}}",
+    "aiRemoteRemoved": "The removed key still works on {{host}} until you delete it there."
+  },
+  "toolbar": {
+    "normalText": "Normal text",
+    "monospace": "Monospace",
+    "title": "Title (H1)",
+    "subtitle": "Subtitle (H2)",
+    "body": "Body",
+    "bold": "Bold",
+    "italic": "Italic",
+    "toggleCase": "Change case",
+    "alignLeft": "Align left",
+    "alignCenter": "Align center",
+    "alignRight": "Align right",
+    "justify": "Justify",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "pastePlain": "Paste without formatting",
+    "selectAll": "Select all",
+    "searchWeb": "Search on the internet",
+    "specialChars": "Special characters",
+    "save": "Save",
+    "search": "Search",
+    "formatting": "Formatting",
+    "pageBreak": "Page break",
+    "repetitionTooltip": "Repeated text — highlighted to help spot unintended repetitions",
+    "blockType": "Block type",
+    "inlineFace": "Text face",
+    "alignment": "Alignment",
+    "assistant": "Enlighten!",
+    "assistantWaiting": "Enlighten! — a search is waiting for you",
+    "snapshot": "Snapshots",
+    "history": "History",
+    "comments": "Comments",
+    "showComments": "Show comments",
+    "hideComments": "Hide comments",
+    "previousComment": "Previous comment",
+    "nextComment": "Next comment",
+    "saved": "Saved",
+    "comparing": "Comparing",
+    "saving": "Saving",
+    "unsaved": "Unsaved",
+    "pushing": "Syncing to Remote Storage",
+    "notSaved": "Save failed",
+    "autosave": "Autosave",
+    "today": "Today"
+  },
+  "titlebar": {
+    "backToLibrary": "Back to your projects",
+    "back": "Back",
+    "toDesk": "Go to the Desk",
+    "palette": "Palette"
+  },
+  "search": {
+    "placeholder": "Find in this text…",
+    "caseSensitive": "Match case",
+    "wholeWord": "Whole word",
+    "hyphensJoinWords": "Hyphens join words (e-mail is one word)",
+    "prev": "Previous",
+    "next": "Next",
+    "close": "Close",
+    "clear": "Clear search",
+    "noResults": "No results",
+    "replacePlaceholder": "Replace with…",
+    "replace": "Replace",
+    "replaceAll": "Replace all",
+    "clearFormatting": "Plain replacement (no formatting)"
+  },
+  "dialog": {
+    "markdown": "Markdown",
+    "allFiles": "All Files"
+  },
+  "confirm": {
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "done": "Done"
+  },
+  "tree": {
+    "panelLabel": "Project structure",
+    "loading": "Reading the folder…",
+    "emptyDocument": "This project has nothing in it yet.",
+    "unsupportedTitle": "Not supported here",
+    "unsupportedBrowser": "This browser can't open projects kept on your device. Remote Storage works in every browser.",
+    "reconnect": "Choose folder",
+    "reconnectHint": "Choose the folder that holds your projects to open it.",
+    "cannotOpen": "This folder cannot be opened",
+    "tryAgain": "Try again",
+    "partName": "Part name",
+    "sectionName": "Section name",
+    "addSection": "Add a Section",
+    "addPart": "Add a Part",
+    "rename": "Rename",
+    "renameOne": "Rename “{{title}}”",
+    "remove": "Move to the bin",
+    "actionsFor": "Actions for “{{title}}”",
+    "move": "Move…",
+    "movingNow": "Moving “{{title}}” — choose where",
+    "moveFirst": "First",
+    "moveAfter": "After “{{title}}”",
+    "moveNowhere": "There is nowhere else this can go yet. Add another Part first.",
+    "moveNowhereMany": "There is nowhere else these can go yet. Add another Part first.",
+    "dragMore_one": "and {{count}} more",
+    "dragMore_other": "and {{count}} more",
+    "movingSections_one": "Moving {{count}} Section — choose where",
+    "movingSections_other": "Moving {{count}} Sections — choose where",
+    "movingParts_one": "Moving {{count}} Part — choose where",
+    "movingParts_other": "Moving {{count}} Parts — choose where",
+    "select": "Select",
+    "selectOne": "Select “{{title}}”",
+    "selectedSections_one": "{{count}} Section selected",
+    "selectedSections_other": "{{count}} Sections selected",
+    "selectedParts_one": "{{count}} Part selected",
+    "selectedParts_other": "{{count}} Parts selected",
+    "clearSelection": "Clear",
+    "expand": "Expand “{{title}}”",
+    "collapse": "Collapse “{{title}}”",
+    "closePanel": "Close the panel",
+    "collapsePanel": "Narrow the panel",
+    "expandPanel": "Widen the panel",
+    "resize": "Drag to resize the structure panel",
+    "removeConfirmTitleEmpty": "Delete “{{title}}”? There's nothing inside it.",
+    "removeConfirmTitle_one": "Delete “{{title}}” and the {{count}} item inside it?",
+    "removeConfirmTitle_other": "Delete “{{title}}” and the {{count}} items inside it?",
+    "removeConfirmTitleSection": "Delete the Section “{{title}}”?",
+    "removeConfirmBody": "The files move to the Recycle bin. You can put them back from there.",
+    "findLabel": "Find in this project",
+    "findPlaceholder": "Find a name or a phrase…",
+    "findCount_zero": "Nothing matches.",
+    "findCount_one": "{{count}} match.",
+    "findCount_other": "{{count}} matches.",
+    "structure": "Structure",
+    "contents": "Contents",
+    "findInText": "In the text",
+    "findBack": "Back to the contents",
+    "findInvite": "Search the whole project.",
+    "findReading": "Reading the project…",
+    "reference": "Reference",
+    "openSummary": "Open the summary of {{title}}",
+    "writingPreferences": "Writing preferences",
+    "proseSize": "Prose size",
+    "proseSizeSmall": "Small",
+    "proseSizeMedium": "Medium",
+    "proseSizeLarge": "Large",
+    "typewriter": "Typewriter mode",
+    "focus": "Focus",
+    "focusOff": "Off",
+    "focusLine": "Line",
+    "focusParagraph": "Paragraph",
+    "smoothCaret": "Smooth caret",
+    "autosave": "Autosave",
+    "autosaveEvery": "Autosave every",
+    "autosaveEveryValue": "every {{value}}",
+    "autosaveMin": "min",
+    "autosaveSec": "sec",
+    "henosis": "Henosis mode",
+    "henosisAfter": "Starts after writing for",
+    "henosisFade": "Controls completely fade after",
+    "henosisAfterNote": "Once you have written this long without stopping, the controls start to fade.",
+    "henosisFadeNote": "Counted from when the fade begins: then the controls are gone and the page widens.",
+    "henosisPause": "Exit Henosis after a pause of",
+    "henosisPauseNote": "Stop writing this long and the controls come back.",
+    "createSummary": "Create summary",
+    "updateSummary": "Update summary"
+  },
+  "henosis": {
+    "full": "Henosis mode: only the page",
+    "back": "The controls are back"
+  },
+  "leave": {
+    "title": "Unsaved changes",
+    "body": "What would you like to do before leaving “{{title}}”?",
+    "bodyReference": "You have unsaved edits in the reference file “{{title}}”.",
+    "save": "Save",
+    "stay": "Stay",
+    "skip": "Don't save"
+  },
+  "name": {
+    "controlChars": "A name can't hold invisible control characters.",
+    "tooLong": "That name is too long — {{max}} characters at most.",
+    "tooLongForFile": "That name is too long to be a file name. Try a shorter one.",
+    "illegalChars": "A name can't contain \\ / : * ? \" < > |",
+    "noPrefix": "{{product}} adds that prefix for you.",
+    "trailingDot": "A name can't end with a dot.",
+    "reserved": "That name is reserved by Windows.",
+    "noFolderName": "The name must contain at least one letter or number.",
+    "folderTaken": "There is already a project in “{{folder}}”.",
+    "duplicate": "A {{kind}} named “{{title}}” already exists.",
+    "snapshotExists": "A snapshot file with that name already exists on disk — {{product}} will not write over it.",
+    "snapshotSourceUnreadable": "{{product}} could not read this text from the disk, so it made no snapshot. Try again.",
+    "kindPart": "Part",
+    "kindSection": "Section"
+  },
+  "structure": {
+    "atLine": "Line {{line}}: {{detail}}",
+    "missingProperties": "There is no document-properties.json here.",
+    "notAProject": "This folder isn't a {{product}} project.",
+    "propertiesParse": "document-properties.json is not readable JSON.",
+    "propertiesField": "document-properties.json is missing “{{field}}”.",
+    "propertiesNewer": "document-properties.json was written by a newer {{product}} (format {{version}}; this one reads up to {{supported}}). Update {{product}} to open this project.",
+    "yamlNewer": "document-structure.yaml was written by a newer {{product}} (format {{version}}; this one reads up to {{supported}}). Update {{product}} to open this project.",
+    "missingCatalogue": "There is no snapshots-catalogue.json here, so {{product}} cannot tell which files are snapshots.",
+    "catalogueParse": "snapshots-catalogue.json is not readable.",
+    "syncUnfinished": "The last sync of this project did not finish. Go back to the Library and use Sync now on its card.",
+    "missingStructure": "There is no document-structure.yaml here.",
+    "yamlParse": "document-structure.yaml could not be read. {{detail}}",
+    "rollbackIncomplete": "The change failed, and the project could not be fully put back as it was. {{detail}} Open the project again before you go on.",
+    "notAMap": "document-structure.yaml should start with “version:” and “document:”.",
+    "noDocumentList": "document-structure.yaml needs a “document:” list at the top level.",
+    "entryNotAMap": "An entry in document-structure.yaml is not a “part:” or “section:” line.",
+    "entryKind": "Every entry needs exactly one of “part:” or “section:”.",
+    "entryName": "A “{{kind}}:” entry has no name after it.",
+    "entryId": "A “{{kind}}:” entry has no valid id — an id looks like “EL1”.",
+    "duplicateId": "The id “{{id}}” is used by more than one node.",
+    "entryAdopted": "“{{title}}” ({{id}}) has no adopted snapshot.",
+    "snapshotsEmpty": "“{{title}}” ({{id}}) has no snapshots — every Part or Section needs at least one.",
+    "snapshotEntryBad": "A snapshot of “{{title}}” ({{id}}) is not a readable entry.",
+    "duplicateSnapshotFile": "The snapshot file “{{file}}” appears more than once.",
+    "adoptedNotListed": "The adopted snapshot “{{adopted}}” is not in its node's snapshots list.",
+    "sectionWithChildren": "“{{title}}” is a Section, so it cannot have children.",
+    "childrenNotAList": "The children of “{{title}}” should be a list.",
+    "mixedChildren": "“{{owner}}” mixes Parts and Sections. It can hold one or the other, not both.",
+    "missingDocumentDir": "The “document” folder is missing.",
+    "documentNotEmpty": "This folder has no document-properties.json, but its “document” folder already holds Parts or Sections. {{product}} will not write over them.",
+    "filesMissing_one": "document-structure.yaml names {{count}} file that is not in the document folder: {{names}}",
+    "filesMissing_other": "document-structure.yaml names {{count}} files that are not in the document folder: {{names}}",
+    "filesUnlisted_one": "The document folder holds {{count}} file that document-structure.yaml does not list: {{names}}",
+    "filesUnlisted_other": "The document folder holds {{count}} files that document-structure.yaml does not list: {{names}}",
+    "summaryName": "The summary named for {{title}} is not a file name.",
+    "summaryMismatch": "{{title}} names the summary {{value}}, but a summary for it must be called {{expected}}.",
+    "removedNotAList": "The removed items in document-structure.yaml should be a list."
+  },
+  "toast": {
+    "added": "Added “{{title}}”",
+    "renamed": "Renamed to “{{title}}”",
+    "moved": "Moved “{{title}}”",
+    "movedSections_one": "Moved {{count}} Section",
+    "movedSections_other": "Moved {{count}} Sections",
+    "movedParts_one": "Moved {{count}} Part",
+    "movedParts_other": "Moved {{count}} Parts",
+    "removed": "Removed “{{title}}”",
+    "restored": "Restored “{{title}}”",
+    "createdSnapshot": "Created “{{title}}”",
+    "adoptedSnapshot": "Adopted “{{title}}”",
+    "deletedSnapshot": "Deleted “{{title}}”",
+    "restoredSnapshot": "Restored “{{title}}”",
+    "renamedSnapshot": "Renamed “{{title}}” to “{{newTitle}}”",
+    "desktopOnly": "Needs a wider screen — open the project in a desktop browser.",
+    "settingOverride": "{{title}} is {{newTitle}} for this project only.",
+    "settingOn": "{{title}} is on for this project only.",
+    "settingOff": "{{title}} is off for this project only.",
+    "pasteTooLong": "Too much text to paste in one go — import it as a file instead.",
+    "undo": "Undo"
+  },
+  "snapshots": {
+    "label": "Snapshots",
+    "add": "New snapshot",
+    "adopted": "Adopted",
+    "adopt": "Adopt",
+    "rename": "Rename",
+    "delete": "Delete",
+    "deleteTitle": "Delete the Snapshot “{{name}}”?",
+    "deleteBody": "The snapshot goes to the bin. You can put it back from there, and nothing else in the project changes.",
+    "saveBeforeTitle": "Save “{{title}}” first?",
+    "saveBeforeBody": "A snapshot captures the saved text — anything still unsaved won't be in it.",
+    "emptyNoNode": "Open a Part or Section to see its snapshots.",
+    "previewEmpty": "Select a snapshot to see its text here.",
+    "direction": "Comparison direction",
+    "directionAdoptedFirst": "Adopted → Selected",
+    "directionSelectedFirst": "Selected → Adopted",
+    "granularity": "Granularity",
+    "granularityParagraph": "By paragraph",
+    "granularitySentence": "By sentence",
+    "granularityWord": "By word",
+    "questionAdoptedFirst": "What was in this selected snapshot that isn't in the current manuscript?",
+    "questionSelectedFirst": "What did the current manuscript add or remove compared with the selected snapshot?",
+    "removedAdoptedFirst": "content from the current manuscript that the selected snapshot removes or replaces",
+    "addedAdoptedFirst": "content from the selected snapshot that could be introduced into the current manuscript",
+    "removedSelectedFirst": "content that was in this selected snapshot but is no longer in the current manuscript",
+    "addedSelectedFirst": "content that the current manuscript introduces compared with the selected snapshot",
+    "escHint": "Esc to exit",
+    "rowBack": "{{count}} back",
+    "rowAhead": "{{count}} ahead",
+    "accept": "accept",
+    "acceptChange": "Accept this change",
+    "allAccepted": "All changes accepted.",
+    "addNewSnapshot": "Add a new snapshot"
+  },
+  "history": {
+    "journalCleared": "Undo history cleared — the file changed elsewhere.",
+    "now": "Now",
+    "undoTooltip": "Undo: {{label}}",
+    "undoDefault": "Undo",
+    "redoTooltip": "Redo: {{label}}",
+    "atNewest": "At the newest moment — no step is lost",
+    "parkedTooltip": "A later version is parked here",
+    "returnedToNow": "Returned to Now",
+    "revert": "Revert to here",
+    "reverted": "Reverted to here.",
+    "stepOlder": "Step to an older revision",
+    "stepTowardNow": "Step toward Now",
+    "stepsBack_one": "{{count}} step back from Now.",
+    "stepsBack_other": "{{count}} steps back from Now.",
+    "railSteps_one": "Revision rail. {{count}} step.",
+    "railSteps_other": "Revision rail. {{count}} steps."
+  },
+  "chars": {
+    "apostrophe": "Apostrophe",
+    "openDoubleQuote": "Open double quote",
+    "closeDoubleQuote": "Close double quote",
+    "emDash": "Em dash",
+    "enDash": "En dash",
+    "ellipsis": "Ellipsis",
+    "leftGuillemet": "Left guillemet «",
+    "rightGuillemet": "Right guillemet »"
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "group": {
+      "format": "Formatting",
+      "block": "Blocks",
+      "align": "Alignment",
+      "edit": "Editing",
+      "file": "The file",
+      "chars": "Characters",
+      "places": "Places"
+    }
+  },
+  "reference": {
+    "emptyNotes": "No notes yet.",
+    "emptyGroup": "Nothing here yet.",
+    "duplicate": "There is already a file named “{{title}}”.",
+    "addCharacter": "Add a character",
+    "namePlaceholder": "Name",
+    "group": {
+      "guidebook": "Guidebook",
+      "characters": "Characters",
+      "arcs": "Character arcs",
+      "summaries": "Summaries",
+      "world": "Worldbuilding",
+      "notes": "Notes"
+    },
+    "addNewNote": "Add a new note",
+    "deleteTitle": "Delete the note “{{name}}”?",
+    "deleteBody": "The note goes to the bin. You can put it back from there.",
+    "delete": "Delete",
+    "addSection": "Add a section",
+    "arc": "Character arc",
+    "addArc": "Add character arc",
+    "pickerTitle": "Add to {{group}}",
+    "pickerClose": "Close",
+    "pickerRemaining": "{{count}} of {{total}} sections left to compile",
+    "deleteSectionTitle": "Delete the section “{{name}}”?",
+    "deleteSectionBody": "It will be offered in the picker again, or you can restore it from the bin.",
+    "deleteSummaryTitle": "Delete the summary “{{name}}”?",
+    "deleteSummaryBody": "This can't be undone, but the assistant can write a new one.",
+    "createFailed": "That document could not be opened. Please try again.",
+    "rename": "Rename",
+    "renameFailed": "That name could not be used. Try a different one.",
+    "deleteFailed": "That file could not be deleted. Please try again.",
+    "restoreFailed": "That file could not be restored. Please try again.",
+    "aiAllowed": "Keep from the assistant",
+    "aiAllowedTip": "The assistant can read this. Click to keep it out.",
+    "aiBarred": "Let the assistant read this",
+    "aiBarredTip": "Kept from the assistant, in every chat. Click to let it in.",
+    "deleteCharacterTitle": "Delete “{{name}}”?",
+    "deleteCharacterBody": "The character goes to the bin. You can put them back from there.",
+    "deleteCharacterArcBody": "The character and their arc go to the bin together. You can put them back from there.",
+    "deleteArcTitle": "Delete the arc for “{{name}}”?",
+    "deleteArcBody": "The character stays; the arc goes to the bin, and you can put it back from there.",
+    "section": {
+      "guidebook": {
+        "at-a-glance": "Story at a Glance",
+        "editing-brief": "Editing Brief",
+        "prose-style": "Prose Style",
+        "theme": "Thematic Anchor",
+        "view": "The Story's View",
+        "promise": "The Story Promise",
+        "logline": "Logline",
+        "blurb": "Back Cover",
+        "query": "Query Summary",
+        "summary": "Narrative Summary",
+        "alignment": "Plot & Character Alignment",
+        "continuity": "Continuity Index",
+        "series": "Series & Market",
+        "research": "Research & Sources"
+      },
+      "world": {
+        "rules": "Rules of the Realm",
+        "systems": "Magic, Technology & Science",
+        "geography": "Geography & Climate",
+        "locations": "Key Locations",
+        "travel": "Travel & Distances",
+        "timeline": "History & Timeline",
+        "peoples": "Peoples, Species & Creatures",
+        "cultures": "Cultures & Societies",
+        "religion": "Religion & Cosmology",
+        "language": "Language, Names & Terms",
+        "economy": "Economy",
+        "factions": "Powers & Factions",
+        "ecology": "Flora, Fauna & Ecology",
+        "myths": "Origins & Myths",
+        "conflict": "Conflict & Tensions"
+      }
+    },
+    "sectionDesc": {
+      "guidebook": {
+        "at-a-glance": "Genre, readers, setting and the main narrative choices.",
+        "editing-brief": "What help you want, and what the edit should preserve.",
+        "prose-style": "The voice and conventions an edit should respect.",
+        "theme": "What the story is really about.",
+        "view": "Beliefs, blind spots, and what the reader knows first.",
+        "promise": "The experience the reader is owed.",
+        "logline": "One sentence that sells the story.",
+        "blurb": "The blurb a reader sees before buying the book.",
+        "query": "The agent-ready pitch, 250 words or fewer.",
+        "summary": "The story end to end, in beats.",
+        "alignment": "What each event asks of the plot and of the characters.",
+        "continuity": "Where each established fact is recorded, and what still contradicts it.",
+        "series": "Standalone or series, and where it sits.",
+        "research": "What is real, what is invented, where to check."
+      },
+      "world": {
+        "rules": "What is possible, impossible, and what it costs.",
+        "systems": "How the speculative element works — and its price.",
+        "geography": "Terrain, water, borders, weather.",
+        "locations": "The places the story actually uses.",
+        "travel": "How people move, and what it takes.",
+        "timeline": "The past that presses on the present.",
+        "peoples": "Who else is in the world.",
+        "cultures": "How people live, believe, and behave.",
+        "religion": "Powers, practice, and the politics of belief.",
+        "language": "Invented words, how to say them, how to keep them straight.",
+        "economy": "Currency, trade, and who can afford what.",
+        "factions": "Governments, orders, militaries — what they want.",
+        "ecology": "The living world around the plot.",
+        "myths": "What people believe happened, and who benefits.",
+        "conflict": "The fights the story is built on."
+      }
+    }
+  },
+  "bin": {
+    "label": "Recycle bin",
+    "groupStructure": "Parts & Sections",
+    "groupSnapshots": "Snapshots",
+    "restoreShort": "Restore",
+    "restore": "Restore “{{title}}” to the project",
+    "restoreRefused": "That can’t be put back there — a Part or Section with that name is already in the project.",
+    "restoreNotWhole": "That can’t be put back on its own — the Part it was inside went to the bin whole, and comes back whole.",
+    "dropToDelete": "Drop to move to the bin",
+    "moveTo": "Move to the bin"
+  },
+  "bubble": {
+    "label": "Selection",
+    "everyOne": "Every one",
+    "ask": "Enlighten!",
+    "comment": "Comment"
+  },
+  "desk": {
+    "whereYouLeftOff": "Where you left off",
+    "continue": "Continue writing",
+    "browse": "Open something else",
+    "shape": "The shape of it",
+    "since": "since {{when}}",
+    "lastWrite": "last written",
+    "total": "{{total}} total",
+    "overGoal": "+{{pct}}% over goal",
+    "words": "words",
+    "sections": "sections",
+    "threadLead": "You left a marker in",
+    "threadLeadPlain": "You left a marker",
+    "threadPos_one": "one paragraph from the end.",
+    "threadPos_other": "{{count}} paragraphs from the end.",
+    "threadAtEnd": "at the end.",
+    "emptyTitle": "Nothing written yet.",
+    "countParts_one": "{{count}} part",
+    "countParts_other": "{{count}} parts",
+    "countSections_one": "{{count}} section",
+    "countSections_other": "{{count}} sections",
+    "emptyBodyParts_one": "{{count}} part is waiting for words.",
+    "emptyBodyParts_other": "{{count}} parts are waiting for words.",
+    "emptyBodySections_one": "{{count}} section is waiting for words.",
+    "emptyBodySections_other": "{{count}} sections are waiting for words.",
+    "emptyBody": "{{parts}} and {{sections}} are waiting for words.",
+    "emptyInvite": "Write the first line, and the Desk fills in — a last paragraph to return to, a total that grows.",
+    "emptyInviteNoNodes": "Add a Part in the structure panel, and the Desk fills in — a last paragraph to return to, a total that grows.",
+    "start": "Start writing — {{title}}",
+    "noPlaceToReturn": "No place to return to",
+    "buildStructure": "Build the structure"
+  },
+  "dock": {
+    "label": "Assistant, reference, notes and snapshots",
+    "reference": "Reference",
+    "notes": "Notes",
+    "ask": "Enlighten!",
+    "askWaiting": "Enlighten! — a search is waiting for you",
+    "askPlaceholder": "Ask something…",
+    "assistantUnavailable": "Open a project before using the assistant.",
+    "unexpectedError": "Something went wrong. Try again.",
+    "deleteChatTitle": "Delete this chat?",
+    "deleteChatBody": "\"{{title}}\" and its review plans are removed from the project. Your manuscript is untouched.",
+    "deleteChatConfirm": "Delete the chat",
+    "removeUnreadable": "Remove",
+    "preparing": "Preparing context",
+    "resumeReview": "Resume review · {{complete}}/{{total}}",
+    "coverage_one": "{{inspected}} of {{count}} source inspected",
+    "coverage_other": "{{inspected}} of {{intended}} sources inspected",
+    "answeredWithoutWeb": "Answered without a web search",
+    "coverageUnjudged": "the check couldn't judge this one; read both places yourself",
+    "coverageUnasked_one": "{{count}} more fact the check collected went unverified",
+    "coverageUnasked_other": "{{count}} more facts the check collected went unverified",
+    "coverageDeferred": "held for the next check, which continues from here",
+    "coverageSkip": {
+      "not-read": "not read",
+      "pending": "not reached",
+      "invalidated": "changed during the review",
+      "failed": "couldn't be read",
+      "unmapped": "no summary yet",
+      "not-in-budget": "no room left to read it",
+      "too-large": "too long for the model to read",
+      "unknown": "not inspected",
+      "unanswered": "the model didn't place it",
+      "unsummarisable": "the model couldn't summarise it",
+      "unextracted": "the model couldn't read its facts into the check"
+    },
+    "reviewTransit": {
+      "withSummaries": "For this review, the titles, summaries and word counts of the Sections it covers, the titles and word counts of their Parts, whole Sections of the manuscript and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So do the reference documents and notes it checks the manuscript against, each in full.",
+      "sections": "For this review, whole Sections of the manuscript and the project's title, type, language, structure and word goal go from this device straight to {{provider}}.",
+      "facts": "For this check, whole Sections of the manuscript go from this device straight to {{provider}}: all of them the first time, and afterwards the ones you have changed. So do your character, arc and world documents, each in full, and the project's title, type, language, structure and word goal.",
+      "section": "For this review, the whole Section and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So do the reference documents and notes it checks the Section against, each in full."
+    },
+    "summariseTransit": "To write the summaries, whole Sections of the manuscript first go from this device straight to {{provider}}, along with the project's title, type and language and the names of its characters.",
+    "how-to-say": {
+      "hint": "what you mean",
+      "hintDescription": "After /how-to-say, describe what you mean, in your own words.",
+      "hintQuoteDescription": "Send /how-to-say alone for other ways to put the quoted passage, or describe what you mean, in your own words."
+    },
+    "verify": {
+      "hint": "a claim to check",
+      "hintDescription": "After /verify, type the claim you want to check against the web.",
+      "hintQuoteDescription": "Send /verify alone to check the quoted passage, or type the claim you want to check.",
+      "proposing": "Choosing what to search for",
+      "judging": "Weighing the results",
+      "verdict": {
+        "plausible": "Plausible",
+        "doubtful": "Doubtful",
+        "implausible": "Implausible",
+        "inconclusive": "Can't tell"
+      },
+      "wikipediaLimit": "Wikipedia may not cover this. Connect an AI model provider in Settings to search the wider web.",
+      "unjudged": {
+        "unchecked": "The claim wasn't checked: no search came back.",
+        "nothing-found": "The claim wasn't checked: the search turned up nothing."
+      },
+      "fix": "Suggested fix",
+      "quoted": "“{{text}}”"
+    },
+    "canon": {
+      "names": "You can check against {{names}}.",
+      "namedHint": "To check against a reference that had no room, type its name after {{command}}."
+    },
+    "where": {
+      "hint": "a moment in the story",
+      "hintDescription": "After /where, describe the moment you want to find, in your own words.",
+      "ranking": "Looking through the summaries",
+      "reading_one": "Reading the likely Section",
+      "reading_other": "Reading the likely Sections: {{complete}} of {{count}}",
+      "notFound": "That moment didn't turn up",
+      "checked_one": "Sections read in full: {{count}} of {{total}}.",
+      "checked_other": "Sections read in full: {{count}} of {{total}}.",
+      "noSummary_one": "{{count}} Section has no summary yet, so the search couldn't consider it.",
+      "noSummary_other": "{{count}} Sections have no summary yet, so the search couldn't consider them.",
+      "unsummarisable_one": "This model couldn't summarise {{count}} Section, so the search couldn't consider it.",
+      "unsummarisable_other": "This model couldn't summarise {{count}} Sections, so the search couldn't consider them.",
+      "summariseMissing_one": "Summarise {{count}} Section",
+      "summariseMissing_other": "Summarise {{count}} Sections",
+      "searchIncomplete": "The summaries are written now, but this answer came before them.",
+      "searchAgain": "Search again",
+      "remoteTransit": "For this search, the titles and summaries of the Sections it covers, a few whole Sections of the manuscript and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So do the names and nicknames of the project's characters and places, as you recorded them under Characters and in Key Locations.",
+      "found_one": "{{count}} passage found",
+      "found_other": "{{count}} passages found"
+    },
+    "summarisePart": {
+      "from": "From the summaries of the Sections in “{{title}}”.",
+      "fromWithheld": "From the summaries of the Sections in “{{title}}”, except those kept from the assistant.",
+      "remoteTransit_one": "To summarise the Part, the titles and summaries of its Sections, the names of the project's characters and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So does the whole text of the one Section whose summary is missing or out of date.",
+      "remoteTransit_other": "To summarise the Part, the titles and summaries of its Sections, the names of the project's characters and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So does the whole text of the {{count}} Sections whose summaries are missing or out of date.",
+      "remoteTransitAny": "To summarise the Part, the titles and summaries of its Sections, the names of the project's characters and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So does the whole text of any Section whose summary is missing or out of date."
+    },
+    "map": {
+      "remoteTransit_one": "For this map, the titles, summaries and word counts of the Sections it covers, the titles and word counts of their Parts and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So may one whole Section of the manuscript, if it fits within the model's limit.",
+      "remoteTransit_other": "For this map, the titles, summaries and word counts of the Sections it covers, the titles and word counts of their Parts and the project's title, type, language, structure and word goal go from this device straight to {{provider}}. So may up to {{count}} whole Sections of the manuscript, each short enough to fit within the model's limit.",
+      "stage": {
+        "ordinary-world": "Ordinary world",
+        "call": "Call to adventure",
+        "refusal": "Refusal of the call",
+        "mentor": "Meeting with the mentor",
+        "threshold": "Crossing the threshold",
+        "tests": "Tests, allies, enemies",
+        "approach": "Approach to the inmost cave",
+        "ordeal": "Ordeal",
+        "reward": "Reward",
+        "road-back": "The road back",
+        "resurrection": "Resurrection",
+        "elixir": "Return with the elixir"
+      },
+      "verdict": {
+        "fits": "fits",
+        "partly": "partly fits",
+        "no": "doesn't fit"
+      },
+      "outOfOrder": "out of sequence",
+      "issuesParts_one": "{{count}} Part doesn't fully fit where it stands",
+      "issuesParts_other": "{{count}} Parts don't fully fit where they stand",
+      "issuesSections_one": "{{count}} Section doesn't fully fit where it stands",
+      "issuesSections_other": "{{count}} Sections don't fully fit where they stand",
+      "issuesUnits_one": "{{count}} Section or Part doesn't fully fit where it stands",
+      "issuesUnits_other": "{{count}} Sections or Parts don't fully fit where they stand",
+      "alreadyWorking": "Already working · {{count}}",
+      "nonePlacedParts_one": "{{model}} didn't place the only Part",
+      "nonePlacedParts_other": "{{model}} placed none of the {{count}} Parts",
+      "nonePlacedSections_one": "{{model}} didn't place the only Section",
+      "nonePlacedSections_other": "{{model}} placed none of the {{count}} Sections",
+      "nonePlacedUnits_one": "{{model}} didn't place the only Section or Part",
+      "nonePlacedUnits_other": "{{model}} placed none of the {{count}} Sections and Parts",
+      "considered": "Sections considered: {{count}} of {{total}}.",
+      "noStructure": "To compare this reading with a structure, add one after the command: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} or {{herosjourney}}.",
+      "headerStructure": "Map of the whole manuscript",
+      "headerNode": "Map of “{{title}}”",
+      "shapeDeclared": "the project's structure: {{shape}}",
+      "shapeTyped": "a structure chosen for this map: {{shape}}",
+      "fit": {
+        "other": "Best fit, according to {{model}}: {{shape}}",
+        "declared": "Best fit, according to {{model}}: {{shape}}, the project's own structure",
+        "none": "Best fit, according to {{model}}: none of the four structures",
+        "mapWith": "Map with this structure"
+      },
+      "noSummary_one": "{{count}} Section has no summary yet, so the map couldn't consider it.",
+      "noSummary_other": "{{count}} Sections have no summary yet, so the map couldn't consider them.",
+      "unsummarisable_one": "This model couldn't summarise {{count}} Section, so the map couldn't consider it.",
+      "unsummarisable_other": "This model couldn't summarise {{count}} Sections, so the map couldn't consider them.",
+      "summariseMissing_one": "Summarise {{count}} Section and map again",
+      "summariseMissing_other": "Summarise {{count}} Sections and map again",
+      "answerOutOfDate": "The summaries are written now, but this map came before them.",
+      "structureChanged": "The Structure has changed since this map.",
+      "partGone": "The Part this map covers is no longer in the Structure.",
+      "mapAgain": "Map again",
+      "gone": "no longer in the Structure",
+      "plotPoint1": "Plot Point I",
+      "plotPoint2": "Plot Point II",
+      "caption": {
+        "threeact": "Syd Field's paradigm, from Screenplay (1979): three acts in the proportion 1:2:1, divided by Plot Points I and II. A convention, not a rule.",
+        "threeactShares": "Below, each Part is drawn to its share of the words.",
+        "threeactSharesUnits": "Below, each Section or Part is drawn to its share of the words.",
+        "kishotenketsu": "Kishōtenketsu prescribes no proportions, so the four acts are evenly spaced.",
+        "freytagspyramid": "Freytag's pyramid, from Die Technik des Dramas (1863). The ticks mark his three forces, left to right: the exciting force, the tragic force and the force of the last suspense. Only the first is necessary.",
+        "herosjourney": "Joseph Campbell's circle, read counter-clockwise, with the threshold across the middle. The stages are numbered as Christopher Vogler numbers them.",
+        "section": "Each beat is marked where it begins, from the Section's first word to its last."
+      },
+      "missingBeats_one": "Not in this Section: {{beats}}.",
+      "missingBeats_other": "Not in this Section: {{beats}}.",
+      "unansweredBeats_one": "{{model}} didn't place this beat: {{beats}}.",
+      "unansweredBeats_other": "{{model}} didn't place these beats: {{beats}}.",
+      "nonePlacedBeats_one": "{{model}} didn't place the only beat",
+      "nonePlacedBeats_other": "{{model}} placed none of the {{count}} beats",
+      "noStructureSection": "To mark where each beat begins, add a structure after the command: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} or {{herosjourney}}.",
+      "remoteTransitSection": "For this map, the whole Section and the project's title, type, language, structure and word goal go from this device straight to {{provider}}.",
+      "startsHere": "where it begins",
+      "sectionChanged": "The Section has changed since this map.",
+      "sectionGone": "The Section this map covers is no longer in the Structure."
+    },
+    "summarising_one": "Summarising the Section",
+    "summarising_other": "Summarising the Sections: {{complete}} of {{count}}",
+    "reviewFollowUp": {
+      "noSummary_one": "{{count}} Section has no summary yet, so the review couldn't consider it.",
+      "noSummary_other": "{{count}} Sections have no summary yet, so the review couldn't consider them.",
+      "unsummarisable_one": "This model couldn't summarise {{count}} Section, so the review couldn't consider it.",
+      "unsummarisable_other": "This model couldn't summarise {{count}} Sections, so the review couldn't consider them.",
+      "summariseMissing_one": "Summarise {{count}} Section and review again",
+      "summariseMissing_other": "Summarise {{count}} Sections and review again",
+      "answerOutOfDate": "The summaries are written now, but this review came before them.",
+      "reviewAgain": "Review again"
+    },
+    "jumpLatest": "Jump to latest",
+    "jumpToAsk": "Jump to the search waiting for you",
+    "cancelQueued": "Cancel queued request",
+    "cleanChat": "Start a fresh chat",
+    "choosePersona": "Choose a persona",
+    "problem": {
+      "reader-contaminated": "This reader has already seen pages past its reading limit. Start a new chat.",
+      "reader-horizon-missing": "Choose how far the reader may read before sending.",
+      "persona-missing": "The selected persona no longer exists. Choose a replacement to continue.",
+      "model-capability-missing": "This model is chat only — it can't search the project, open documents or run reviews. It answers from what is attached to this chat; choose a model with agent tools for the rest.",
+      "summary-source-missing": "There's no prose here to summarise yet.",
+      "summary-source-changed": "The source changed while the summary was being written. Nothing was replaced; try again.",
+      "review-node-missing": "The Part or Section named in this review is no longer in the Structure. Type the command again and choose it by its current title.",
+      "review-no-part": "The open Section is not inside a Part. After the command, type the title of the Part to review, or {{structure}} for the whole manuscript.",
+      "review-no-part-no-structure": "The open Section is not inside a Part. After the command, type the title of the Part to review, or {{section}} for this Section only.",
+      "review-nothing-to-read": "There's no Section here the assistant can read yet, so there's nothing to review.",
+      "review-no-section": "There's no Section open to review. Open one, or name a Part or the whole Structure after the command.",
+      "command-unknown": "This chat has no {{typed}} command. Type / to see the ones it has.",
+      "command-near": "This chat has no {{typed}}. Did you mean {{command}}?",
+      "command-elsewhere": "This chat has no {{typed}}. The closest command is {{command}}, which works in {{room}}.",
+      "review-outdated": "This review plan was made with a different model, persona or recipe. Start a new review.",
+      "review-plan-too-large": "This review plan is too large to store. Narrow the scope or exclude sources.",
+      "review-reference-unknown": "No character, reference or note the assistant can read is called “{{name}}”. Type a name after {{command}}, or remove {{command}} to send the rest as a question.",
+      "review-reference-unknown-none": "There's no character, reference or note the assistant can read yet, so there's no name to type after {{command}}. Remove {{command}} to send the rest as a question.",
+      "review-reference-missing": "A reference named in this review is no longer in the project, or is now kept from the assistant. Send {{command}} with a name the assistant can read, or with no name.",
+      "review-reference-empty": "Nothing is written in “{{name}}” yet, so there's nothing to check against. Write something there, or send {{command}} alone.",
+      "review-reference-too-large": "This model has no room to read “{{name}}” beside the prose being reviewed. To try only the open Section, send {{command}} {{section}} {{name}}, or choose a model that reads more at once.",
+      "review-reference-too-large-section": "This model has no room to read “{{name}}” beside the prose being reviewed. Choose a model that reads more at once.",
+      "run-in-progress": "A run is already in progress. Stop it first.",
+      "queue-full": "The request queue is full. Wait for a running request or cancel the queue.",
+      "continuation-unavailable": "The new chat was created, but its context summary could not be produced. The earlier chat stays in the project.",
+      "delete-failed": "The chat was removed from this list, but some of its files could not be deleted.",
+      "where-needs-tools": "{{model}} can't search the manuscript. Choose another model in the bar below.",
+      "where-too-long": "That description is too long. Keep it to {{max}} characters or fewer.",
+      "question-too-long": "That description is too long. Keep it to {{max}} characters or fewer.",
+      "verify-needs-tools": "{{model}} can't read web search results. Choose another model in the bar below.",
+      "verify-too-long": "That claim is too long. Keep it to {{max}} characters or fewer.",
+      "verify-needs-account": "Checking a claim takes a web search, which works only when you are signed in. Sign in to use it.",
+      "map-one-unit_part": "This Part holds only “{{title}}”, and mapping a Part takes at least two Sections or Parts. To map “{{title}}”, type its title after the command.",
+      "map-one-unit_section": "This Part holds only “{{title}}”, and mapping a Part takes at least two Sections or Parts. To map “{{title}}”, type its title after the command, or open it and type {{section}}.",
+      "map-no-part": "The open Section is not inside a Part. After the command, type {{section}} to map this Section on its own, or nothing for the whole manuscript.",
+      "map-no-parts": "This project has no Parts, so mapping the manuscript takes a structure. After the command, add one: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} or {{herosjourney}}.",
+      "map-nothing-to-read": "There's no Section here the assistant can read yet, so there's nothing to map.",
+      "map-needs-tools": "{{model}} can't map the manuscript. Choose another model in the bar below.",
+      "summarise-open-section": "This command summarises the open Section or a whole Part. To summarise “{{title}}”, open it and send the command.",
+      "summarise-no-part": "The open Section is not inside a Part. After the command, type the title of the Part to summarise, or {{section}} for this Section only.",
+      "summarise-no-part-no-parts": "The open Section is not inside a Part, and this project has none. To summarise this Section on its own, type {{section}} after the command.",
+      "summarise-nothing-to-read": "There's no Section here the assistant can read yet, so there's nothing to summarise.",
+      "summarise-section-failed": "The summary of “{{title}}” couldn't be written, so this Part can't be summarised. Try again, or choose a model that reads more at once.",
+      "summarise-part-too-large": "Together, the Section summaries in this Part are too long for {{model}} to read. Choose a model that reads more at once, or summarise only the open Section with {{section}}.",
+      "map-no-section": "No Section is open. Open the one you want to map, or type its title after the command.",
+      "map-no-part-no-parts": "The open Section is not inside a Part, and this project has none. To map this Section on its own, type {{section}} after the command.",
+      "map-section-empty": "There's no prose in this Section to map yet.",
+      "map-section-too-long": "This Section is too long for {{model}} to read whole, and a Section is never mapped in pieces. Map its Part with {{part}}, or choose a model that reads more at once.",
+      "map-section-too-long-no-part": "This Section is too long for {{model}} to read whole, and a Section is never mapped in pieces. Choose a model that reads more at once.",
+      "map-fit-failed": "{{model}} didn't say which structure fits this Section best. To mark where each beat begins, add a structure after the command: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} or {{herosjourney}}.",
+      "reading-whole-book": "This reader already knows the whole book, so it can't read on without knowing what comes next. To read the book in order, start a new Beta reader chat.",
+      "reading-finished": "The reader has reached the end of the book. Ask for its review with /review.",
+      "reading-journal-full": "The reader's journal is full: it has no room to write down another Section, so it can't read on. Ask for its review of what it has read with /review.",
+      "reading-empty-section": "The next Section, “{{title}}”, has no text yet. The reader will read on once it does.",
+      "reading-too-long": "“{{title}}” is too long for {{model}} to read in one go, and the reader never reads a Section in part. Choose a model with a larger context window in the bar below.",
+      "reading-needs-tools": "{{model}} can't fill in a reading journal. Choose another model in the bar below.",
+      "predict-nothing-read": "The reader has nothing to go on yet. Let it read the first Section with /read-on, or write the book's Back Cover in the Guidebook.",
+      "reference-needed_one": "/{{command}} works from your {{names}}, which you haven't written yet. Write it, then ask again.",
+      "reference-needed_other": "/{{command}} works from at least one of these, and you haven't written any yet: {{names}}. Write one, then ask again."
+    },
+    "continuationHint": "This chat is getting large. Continue in a new chat — its context is a summary of this one, which stays in the project.",
+    "continueChat": "Continue in a new chat",
+    "evidence": {
+      "changed": "That passage has changed since the answer; it was not selected.",
+      "unavailable": "That quotation could not be verified in the current source."
+    },
+    "severity": {
+      "observation": "Observation",
+      "minor": "Minor",
+      "major": "Major"
+    },
+    "finding": {
+      "resolve": "Resolve",
+      "dismiss": "Dismiss",
+      "restore": "Restore",
+      "dismissed": "dismissed",
+      "resolved": "resolved",
+      "unverified": {
+        "all": "None of the quotations is in the text: treat this as an observation to check.",
+        "half": "Only one side of the comparison is in the text: treat this as an observation to check."
+      }
+    },
+    "syncing": "syncing",
+    "retrySave": "Retry save",
+    "copyAnswer": "Copy",
+    "send": "Send",
+    "contextUsed": "{{percent}}% context",
+    "creditLeft": "{{amount}} left",
+    "reading": {
+      "contextTitle": "Context window",
+      "context": "Context",
+      "contextUsed": "{{used}} / {{window}} ({{percent}}%)",
+      "creditTitle": "Credit",
+      "creditSpent": "Spent",
+      "creditLeft": "Left",
+      "creditLimit": "Limit",
+      "keyExpires": "Key expires",
+      "reading": "Reading “{{title}}”",
+      "predicting": "Thinking about what comes next",
+      "remoteTransit": "To read on, the next whole Section, the Back Cover, the reader's own journal and the project's title, type and language go from this device straight to {{provider}}.",
+      "remoteTransitPredict": "For a prediction, the Back Cover, the reader's own journal and the project's title, type and language go from this device straight to {{provider}}. No Section is sent.",
+      "attention": "Attention {{score}} of 5",
+      "keepsReading": "I'd keep reading",
+      "putsDown": "I'd stop here",
+      "understanding": "What I think is going on",
+      "questions": "My questions",
+      "confusion": "Where I lost the thread",
+      "cares": "Who I care about",
+      "settledHere": "My earlier predictions",
+      "expects": "What I expect now",
+      "state": {
+        "open": "Still open",
+        "confirmed": "Came true",
+        "overturned": "Didn't happen"
+      },
+      "soFar_one": "The reading so far · one Section read",
+      "soFar_other": "The reading so far · {{count}} Sections read",
+      "ledger": "Predictions",
+      "prediction": "Prediction",
+      "madeAt": "Made after",
+      "outcome": "Outcome",
+      "beforeReading": "Before reading"
+    },
+    "mode": {
+      "label": "Mode",
+      "creative": "Creative",
+      "standard": "Standard",
+      "readout": "temp {{temperature}} · effort {{effort}}",
+      "readoutPlain": "temp {{temperature}}",
+      "creativeTitle": "Creative writing and brainstorming",
+      "creativeGoal": "Goal: generate original ideas, gripping plots, or fluid, expressive prose.",
+      "standardTitle": "Standard and routine tasks (summaries, translations)",
+      "standardGoal": "Goal: speed, efficiency and direct execution.",
+      "valueText": "Temperature {{temperature}}, reasoning effort {{effort}}",
+      "valueTextPlain": "Temperature {{temperature}}",
+      "effort": {
+        "none": "off",
+        "minimal": "minimal",
+        "low": "low",
+        "medium": "medium",
+        "high": "high",
+        "xhigh": "very high",
+        "max": "max"
+      }
+    },
+    "copied": "Copied",
+    "chooseModel": "Choose a model",
+    "chatLabel": "Chat:",
+    "chats": "Chats",
+    "chatsWaiting": "Chats — a search is waiting for you in another chat",
+    "noChats": "No chats yet",
+    "noChatsHint": "Start a chat, reader session, or editorial review.",
+    "newChat": "New chat",
+    "newChatAdd": "new chat",
+    "askPlaceholderCommands": "Ask something, or type / for commands",
+    "commands": "Commands",
+    "commandNote": {
+      "unresolved": "Threads left hanging",
+      "continuity": "What doesn't add up",
+      "summarise": "What happens, to whom",
+      "canon": "Facts that change",
+      "structure-and-motivation": "Stakes and motives",
+      "line-editing": "Rough lines and typos",
+      "where": "Find a moment by describing it",
+      "map": "Where each Part fits",
+      "how-to-say": "Find the words for what you mean",
+      "verify": "Check a claim against the web",
+      "read-on": "The reader reads on and keeps a journal",
+      "predict": "What the reader expects next",
+      "put-down": "Where the reader nearly gave up",
+      "review": "The review this reader would post today",
+      "blurb": "Does the book keep the back cover's promise?",
+      "heart": "Where the heart already is",
+      "intent": "The draft against what you meant",
+      "unstick": "Find the snag and three ways past it",
+      "what-if": "Three directions for what happens next",
+      "scene-plan": "Plan the scene, questions first",
+      "letter": "The editorial letter and a revision plan",
+      "sensitivity": "How people and cultures are portrayed",
+      "first-pages": "The opening, as an agent reads it",
+      "genre": "Does it keep its genre's promise?"
+    },
+    "noModelsInstalled": "No models available",
+    "modelGroup": {
+      "device": "Local AI models",
+      "remote": "Remote AI models",
+      "unavailable": "Not available"
+    },
+    "deleteChat": "Delete this chat",
+    "renameChat": "Rename",
+    "chatActions": "Actions for “{{title}}”",
+    "model": "Model for this chat",
+    "modelShort": "model",
+    "chatTitle": "Chat title",
+    "reviewProgress_one": "Reviewing",
+    "reviewProgress_other": "Reviewing · steps done: {{complete}} of {{count}}",
+    "mapProgress_one": "Mapping",
+    "mapProgress_other": "Mapping · steps done: {{complete}} of {{count}}",
+    "context": "Context",
+    "contextHint": "What you tick is attached to every message. The Part or Section open in the editor is always there. Anything else, a model with agent tools looks up on its own when it needs it.",
+    "sourceGroup": {
+      "manuscript": "Manuscript",
+      "reference": "Reference",
+      "note": "Notes",
+      "summary": "Summaries"
+    },
+    "tokenUsage": "{{total}} tokens · {{input}} in / {{output}} out",
+    "tokenUsageCached": "{{total}} tokens · {{input}} in ({{cached}} cached) / {{output}} out",
+    "readerScope": "This reader has read",
+    "readerScopeUnset": "Choose how far they have read",
+    "readerScopeWhole": "The whole manuscript",
+    "readerScopeThrough": "Up to and including {{title}}",
+    "reviewDone_one": "Review complete: {{count}} finding.",
+    "reviewDone_other": "Review complete: {{count}} findings.",
+    "reviewDoneNone": "Review complete: no issue the text bears out.",
+    "reviewShort_one": "Review stopped short: {{count}} finding.",
+    "reviewShort_other": "Review stopped short: {{count}} findings.",
+    "reviewShortNone": "Review stopped short: no issue the text bears out in what it read.",
+    "sourcesUsed_one": "{{count}} source used",
+    "sourcesUsed_other": "{{count}} sources used",
+    "origin": {
+      "live-buffer": "live text",
+      "project-file": "file"
+    },
+    "stop": "Stop",
+    "queued_one": "One request queued",
+    "queued_other": "{{count}} requests queued",
+    "editQuestion": "Edit this question",
+    "editSend": "Send",
+    "edited": "Question edited. What came after it was cleared.",
+    "personaUnavailable": "Unavailable",
+    "personaNotHere": "Not in this kind of chat. {{name}} is for: {{kinds}}.",
+    "chatKind": {
+      "general": "General chat",
+      "drafting": "Drafting",
+      "alpha-reader": "Alpha reader",
+      "beta-reader": "Beta reader",
+      "editorial": "Editorial review"
+    },
+    "review": {
+      "unresolved": "Unresolved threads",
+      "continuity": "Continuity",
+      "consistency": "Canon consistency",
+      "developmental": "Structure and motivation",
+      "line": "Line and copy editing",
+      "sensitivity": "Sensitivity reading"
+    },
+    "snapshot": "Snapshot",
+    "close": "Close the dock",
+    "resize": "Drag to resize the dock",
+    "edit": "Edit",
+    "aiGenerated": "AI generated · read only",
+    "summaryState": {
+      "current": "Current",
+      "outdated": "Outdated",
+      "unverified": "Unverified",
+      "missing": "Missing"
+    },
+    "save": "Save",
+    "saving": "Saving…",
+    "saveFailed": "This file could not be saved.",
+    "saveFailedNamed": "“{{title}}” could not be saved.",
+    "list": "List",
+    "discardEditTitle": "Discard your changes?",
+    "discardEditBody": "Your edits to “{{title}}” have not been saved.",
+    "discardEditConfirm": "Discard",
+    "unreadable": "This file could not be read.",
+    "pickReference": "Choose something from the Reference shelf to read it here.",
+    "pickNote": "Choose a note to read it here.",
+    "pickSection": "Open a Section to ask about it.",
+    "persona": "Persona",
+    "noPersona": "No persona",
+    "you": "You",
+    "assistant": "Assistant",
+    "thinking": "Thinking",
+    "writing": "Answering",
+    "elapsedSeconds": "{{seconds}}s",
+    "elapsedMinutes": "{{minutes}}m {{seconds}}s",
+    "doing": {
+      "list_sources": "Looking over the project's sources",
+      "grep": "Searching the project",
+      "grep_named": "Searching the project for “{{subject}}”",
+      "read_source": "Reading a source",
+      "read_source_named": "Reading “{{subject}}”",
+      "inspect_structure": "Reading the project's structure",
+      "submit_findings": "Writing down what it found",
+      "use_skill": "Picking up a method",
+      "use_skill_named": "Using {{subject}}",
+      "leave_comments": "Leaving comments in the margin"
+    },
+    "noModel": "no model",
+    "yourKey": "your key",
+    "demoModel": {
+      "reply1": "The opening moves quickly, and that suits it. The second paragraph stops to describe the room, though, and the tension you built drops for a while. Try keeping one detail the character would actually notice, and let the rest come out later through what they do.",
+      "reply2": "The dialogue works best where the characters say less than they mean. In the middle exchange both of them explain their feelings outright. Let one of them dodge the question, and the scene will carry more weight.",
+      "reply3": "A continuity question: in an earlier chapter the letter arrives on a Tuesday, but here the character remembers reading it at the weekend. If the change is intended, one line acknowledging it will help the reader; if not, it is an easy fix.",
+      "reply4": "As a reader, I wanted to keep going. The narrator's voice is distinct, and the last line of the section lands well. The only moment I lost my footing was the jump between the two timelines: a clearer anchor at the start of the flashback would keep me with you.",
+      "reply5": "A small line edit: “She slowly walked towards the door, feeling very nervous” could become “She edged towards the door.” The verb carries both the slowness and the nerves, and the sentence gets out of the scene's way.",
+      "disclaimer": "This is a static reply, shown only to demonstrate how the chat works: no real AI provider is available in the demo."
+    },
+    "askHint": "Enlighten your prose: talk it through with the editor and reader personas. This chat is saved with the project.",
+    "dropQuote": "Drop the quoted selection",
+    "pinnedSources": "Pinned to every message",
+    "unpin": "Unpin “{{title}}”",
+    "modelError": {
+      "not-configured": "Choose a model in Settings.",
+      "connection": "The model could not be reached.",
+      "origin-or-permission": "The model did not allow this app to connect.",
+      "model-missing": "That model is no longer available.",
+      "capability-missing": "That model cannot perform this request.",
+      "context-too-large": "The selected context is too large for this model.",
+      "resource-exhausted": "Right now {{provider}} won't take more requests on this key: its spending limit or credit doesn't cover this answer. Try again shortly, or check the key's limit.",
+      "busy": "Another answer is already being written for your account. Wait for it to finish, then try again.",
+      "invalid-response": "The model returned a response {{product}} could not read.",
+      "provider-rejected": "The request did not go through. Choose another model, then try again.",
+      "no-private-host": "This model has no host that promises not to keep your text or train on it, so nothing was sent to it. Choose another model.",
+      "key-expired": "The key for this model has expired. Renew it to continue.",
+      "credit-exhausted": "Your account with {{provider}} has run out of credit.",
+      "limit-reached": "This key has used the spending limit set for it.",
+      "rate-limited": "Too many requests to this model in a short time. Wait a moment, then try again.",
+      "model-busy": "This model is busy right now. Try again shortly, or choose another model.",
+      "quota-exhausted": "Your provider's free requests for today are used up. Choose another model, or try again tomorrow.",
+      "account-changed": "Another account signed in on this browser, so nothing was sent. The page is reloading.",
+      "timeout": "The model took too long to respond.",
+      "interrupted": "The response ended before it was complete.",
+      "cancelled": "Stopped.",
+      "output-limit": "The model ran out of room before it finished.",
+      "refusal": "The model declined this request. Try another model, or ask in another way.",
+      "unknown": "Something went wrong talking to the model."
+    },
+    "stopped": {
+      "cancelled": "You stopped this answer before it finished.",
+      "interrupted": "This answer was cut off: the editor closed or reloaded while it was being written.",
+      "output-limit": "This answer was cut off: the model ran out of room before it finished.",
+      "unfinished": "This answer did not finish.",
+      "retryHint": "Try again asks the same question and replaces this answer."
+    },
+    "retry": {
+      "again": "Try again",
+      "renew": "Renew the key",
+      "newKey": "Get a new key",
+      "keyReady": "This model's key is ready.",
+      "waitForReset": "Or wait until it resets on {{date}}, then try again.",
+      "creditExhausted": "Add credit with {{provider}}, then try again."
+    },
+    "spend": {
+      "most": "This model's key has used most of its {{limit}} limit.",
+      "reached": "This model's key has used its {{limit}} limit. Get a new key to keep going.",
+      "reachedOrWait": "This model's key has used its {{limit}} limit. Get a new key to keep going, or wait until it resets on {{date}}."
+    },
+    "renewal": {
+      "soon": "The key for this model is about to expire.",
+      "expired": "The key for this model has expired."
+    },
+    "reasoning": {
+      "trimmed": "Only the most recent part is kept."
+    },
+    "traceLive": "Steps so far",
+    "waiting": "Waiting for {{model}}",
+    "awaitingWriter": "Waiting for you",
+    "working": "Working",
+    "citation": "Open “{{title}}”",
+    "summaryTitle": "Summary · {{title}}",
+    "sourceGone": "A source no longer in the project",
+    "unfoundQuotes_one": "This quotation isn’t word for word in what the assistant read:",
+    "unfoundQuotes_other": "These quotations aren’t word for word in what the assistant read:",
+    "did": {
+      "list_sources": "Looked over the project's sources",
+      "grep": "Searched the project",
+      "grep_named": "Searched the project for “{{subject}}”",
+      "read_source": "Read a source",
+      "read_source_named": "Read “{{subject}}”",
+      "inspect_structure": "Read the project's structure",
+      "submit_findings": "Wrote down what it found",
+      "use_skill": "Used a method",
+      "use_skill_named": "Used {{subject}}",
+      "leave_comments": "Left comments in the margin"
+    },
+    "failed": {
+      "list_sources": "Couldn't look over the project's sources",
+      "grep": "Couldn't search the project",
+      "grep_named": "Couldn't search the project for “{{subject}}”",
+      "read_source": "Couldn't read a source",
+      "read_source_named": "Couldn't read “{{subject}}”",
+      "inspect_structure": "Couldn't read the project's structure",
+      "submit_findings": "Couldn't write down what it found",
+      "use_skill": "Couldn't use a method",
+      "use_skill_named": "Couldn't use {{subject}}",
+      "leave_comments": "Couldn't leave comments in the margin"
+    },
+    "web": {
+      "ask": {
+        "wikipedia": "Search Wikipedia for",
+        "web": "Search the web for"
+      },
+      "doing": {
+        "wikipedia": "Searching Wikipedia",
+        "web": "Searching the web"
+      },
+      "did": {
+        "wikipedia": "Searched Wikipedia for {{query}}",
+        "web": "Searched the web for {{query}}"
+      },
+      "failed": {
+        "wikipedia": "Couldn't search Wikipedia for {{query}}",
+        "web": "Couldn't search the web for {{query}}"
+      },
+      "declined": {
+        "wikipedia": "Didn't search Wikipedia",
+        "web": "Didn't search the web"
+      },
+      "note": {
+        "wikipedia_one": "From this device to Wikipedia, which may lack niche or very recent facts.",
+        "wikipedia_other": "From this device to Wikipedia, which may lack niche or very recent facts.",
+        "web_one": "From this device to {{searchProvider}}, its search engine and model. Uses your credit.",
+        "web_other": "From this device to {{searchProvider}}, its search engine and model. Each uses your credit."
+      },
+      "flag": "Words from your project leave with this search.",
+      "search": "Search",
+      "decline": "Don't search",
+      "edit": "Edit",
+      "editName": "Edit these searches",
+      "retry": "Try again",
+      "reask": {
+        "notSent": "This search never reached {{searchProvider}}, which can't be used now.",
+        "maybeSent": "This search may have reached {{searchProvider}}, but it didn't finish."
+      },
+      "retryLede": {
+        "wait": "Too many searches in a short time. You can try again at {{time}}.",
+        "ready": "Too many searches in a short time. You can try again now."
+      },
+      "results_one": "{{count}} result",
+      "results_other": "{{count}} results",
+      "costNotReported": "cost not reported",
+      "sources": "Web sources",
+      "newTab": "opens in a new tab"
+    },
+    "trail": {
+      "read_one": "Read {{count}} source",
+      "read_other": "Read {{count}} sources",
+      "searched": "Searched the project",
+      "web": {
+        "wikipedia": "Searched Wikipedia",
+        "web": "Searched the web",
+        "both": "Searched the web and Wikipedia"
+      },
+      "listed": "Looked over the sources",
+      "structure": "Read the structure",
+      "findings": "Wrote down what it found",
+      "failed_one": "{{count}} step failed",
+      "failed_other": "{{count}} steps failed",
+      "thoughtFor": "Thought for {{duration}}",
+      "thought": "Reasoned before answering"
+    },
+    "scope": {
+      "current": "this Section",
+      "quote": "the quoted passage",
+      "cost": "can take hours",
+      "structure": "the whole Structure"
+    },
+    "scopeNote": {
+      "structure": "{{structure}}: every Section",
+      "withQuote": "{{section}}: the whole Section",
+      "part": "{{part}}: the Part you're in",
+      "section": "{{section}}: the open Section"
+    },
+    "writeReference": "Write “{{name}}”",
+    "missingReferences_one": "This chat works from your {{names}}, which you haven't written yet.",
+    "missingReferences_other": "This chat works from documents you haven't written yet: {{names}}.",
+    "drafting": {
+      "question": "What do you need right now?",
+      "need": {
+        "unstick": "I'm stuck",
+        "what-if": "What could happen next?",
+        "scene-plan": "Help me plan this scene",
+        "words": "I need the right word",
+        "passage": "Write me a passage",
+        "check": "Is this working?"
+      },
+      "stoppedAt": "You stopped at:"
+    },
+    "plan": {
+      "title_one": "Revision plan · one item open",
+      "title_other": "Revision plan · {{count}} items open",
+      "priority": {
+        "must": "Must",
+        "should": "Should",
+        "could": "Could"
+      },
+      "done": "Done: {{item}}",
+      "draft": "Draft this",
+      "verdict": {
+        "resolved": "Resolved",
+        "open": "Still open",
+        "worse": "Made worse"
+      }
+    },
+    "focus": "Focus",
+    "personaAbout": {
+      "10": "Editor-in-chief. Looks at the book as a whole — what it promises, who it is for, what it is about — and is the one who writes the letter.",
+      "20": "Line editor. Reads sentence by sentence — rhythm, point of view, dialogue, continuity — and quotes the smallest passage that proves the point.",
+      "30": "Developmental editor. Thinks in cause and effect — structure, stakes, character, the logic of the world — and argues in \"therefore\" and \"but\".",
+      "40": "The reader. Reads in order, knows only what the pages have shown so far, and tells you what reading them felt like."
+    },
+    "preset": {
+      "whole-book": {
+        "name": "The whole book",
+        "hint": "Promise, theme and ending: does the book make one argument?"
+      },
+      "market": {
+        "name": "The market",
+        "hint": "Hook, first page, category, length and comparable titles."
+      },
+      "sensitivity": {
+        "name": "Sensitivity",
+        "hint": "Stereotypes, harmful tropes and who gets to act."
+      },
+      "authenticity": {
+        "name": "Authenticity",
+        "hint": "Expertise, trauma, period and viewpoint that ring true."
+      },
+      "line": {
+        "name": "Line by line",
+        "hint": "Rhythm, echoes, economy and filtering."
+      },
+      "dialogue": {
+        "name": "Dialogue",
+        "hint": "Voices, tags, subtext and exposition in speech."
+      },
+      "continuity": {
+        "name": "Continuity",
+        "hint": "Names, timeline, objects and who knows what."
+      },
+      "structure": {
+        "name": "Structure",
+        "hint": "Cause and effect, turns, stakes, setups and payoffs."
+      },
+      "character": {
+        "name": "Character",
+        "hint": "Want and need, flaw, agency, motive and arc."
+      },
+      "worldbuilding": {
+        "name": "Worldbuilding",
+        "hint": "Rules, info-dumps, timing and places that feel real."
+      },
+      "friend": {
+        "name": "A friendly read",
+        "hint": "Where the heart is, and whether it is what you meant."
+      },
+      "binge": {
+        "name": "Can't put it down",
+        "hint": "Pull, skimming, confusion and the urge to guess."
+      },
+      "skeptic": {
+        "name": "The skeptic",
+        "hint": "Motives, rules and setups that have to hold up."
+      },
+      "heart": {
+        "name": "All heart",
+        "hint": "Attachment, the high points and what stays with you."
+      },
+      "genre-veteran": {
+        "name": "Genre veteran",
+        "hint": "Knows the shelf: promises, predictions and surprises."
+      }
+    },
+    "nothingWritten": "Nothing of yours here yet. The document is created when you save something you wrote.",
+    "missingLead_one": "This chat works from a document you haven't written yet:",
+    "missingLead_other": "This chat works from documents you haven't written yet:",
+    "guide": {
+      "when": "When:",
+      "how": "How:"
+    },
+    "transitLine": "Sent from this device straight to {{provider}}",
+    "transitTitle": "What reaches {{provider}}",
+    "transitAgree": "I understand and agree",
+    "personaOk": "OK",
+    "route": {
+      "open": "Open a new chat: {{chat}}",
+      "openThrough": "Open a new chat: {{chat}}, reading up to “{{title}}”"
+    },
+    "reviewDoneMargin": "Review complete: what it found is in the margin.",
+    "reviewShortMargin": "Review stopped short: what it found is in the margin.",
+    "commented_one": "{{count}} comment in the margin of “{{title}}”",
+    "commented_other": "{{count}} comments in the margin of “{{title}}”"
+  },
+  "storage": {
+    "permission": "{{product}} needs your permission to read this folder.",
+    "permissionStill": "{{product}} still needs your permission to read that folder.",
+    "projectGone": "This project is no longer on your device.",
+    "remoteGone": "This project's Remote Storage copy is gone. Your device's copy was left as it is.",
+    "folderGone": "The folder “{{name}}” is no longer there.",
+    "fileGone": "The file “{{name}}” is no longer there.",
+    "tooLargeFolder": "That folder holds more than {{max}} items — it may not be a project.",
+    "tooLargeDrive": "“{{name}}” is too large to save to Remote Storage.",
+    "tooLargeFile": "“{{name}}” is too large to open.",
+    "unreachable": "Remote Storage could not be reached.",
+    "disconnected": "Remote Storage isn't connected.",
+    "browserUnsupported": "This browser can't open folders on your device. Remote Storage works in every browser.",
+    "localRootRequired": "Choose a local folder in Settings first — {{product}} needs one to do that.",
+    "io": "Something went wrong with that file. Please try again.",
+    "noSpace": "There's no room left on your device, so that file could not be saved. Free up some space and try again.",
+    "remoteFull": "Remote Storage is full, so that file could not be saved there. Free up some space in it and try again.",
+    "unusablePath": "“{{name}}” isn’t a valid file name, so {{product}} can’t save it. Fix it in the project’s structure file.",
+    "demoLabel": "Demo document",
+    "demoIsMemory": "Everything here is in memory — nothing is saved."
+  },
+  "connect": {
+    "workingTitle": "Opening",
+    "workingBody": "Taking you to {{provider}} to approve the connection.",
+    "failedTitle": "Not connected",
+    "close": "Close",
+    "returnedTitle": "Approved",
+    "returnedBody": "Back to {{product}}. This window closes by itself.",
+    "lostBody": "The approval could not be handed back. Close this window and connect again from {{product}}.",
+    "declinedTitle": "Not approved",
+    "declinedBody": "The connection was not approved on {{provider}}, so no key was made. You can close this window and try again from {{product}} whenever you like."
+  },
+  "summary": {
+    "createTitle": "Create summary",
+    "updateTitle": "Update summary",
+    "create": "Create",
+    "update": "Update",
+    "retry": "Try again",
+    "stop": "Stop",
+    "model": "Model",
+    "working": "Writing the summary…",
+    "loadingModels": "Looking for models…",
+    "noModels": "No model is available. Start {{localProvider}}, or connect an AI model provider in Settings.",
+    "keyExpired": "The key for this model has expired.",
+    "renewKey": "Renew it to continue.",
+    "newKey": "Get a new key to continue."
+  },
+  "genre": {
+    "label": "Genre",
+    "blendLabel": "Blended with",
+    "noBlend": "Nothing else",
+    "ageLabel": "Readers",
+    "unsaid": "Not decided yet",
+    "note": "The assistant reads your book against what this genre promises its readers. You can change it any time.",
+    "name": {
+      "romance": "Romance",
+      "mystery": "Mystery",
+      "thriller": "Thriller",
+      "fantasy": "Fantasy",
+      "science-fiction": "Science fiction",
+      "horror": "Horror",
+      "literary": "Literary fiction",
+      "historical": "Historical fiction",
+      "contemporary": "Contemporary fiction"
+    },
+    "age": {
+      "middle-grade": "Middle grade (8–12)",
+      "young-adult": "Young adult (12–18)",
+      "new-adult": "New adult (18–25)",
+      "adult": "Adult"
+    },
+    "tropesLabel": "Tropes you mean to deliver",
+    "tropesPlaceholder": "First Contact, Dystopian Mega-Corporations, Post-Apocalyptic Earth, The Chosen One, etc..."
+  },
+  "export": {
+    "title": "Export",
+    "lede": "The file is saved in the project's export folder, then downloaded.",
+    "confirm": "Export",
+    "untitled": "Untitled",
+    "formatLabel": "Format",
+    "format": {
+      "docx": {
+        "name": "DOCX",
+        "sub": "for agents and editors"
+      },
+      "odt": {
+        "name": "OpenDocument",
+        "sub": "OpenDocument, for any office suite"
+      },
+      "pdf": {
+        "name": "PDF",
+        "sub": "fixed pages, as they print"
+      },
+      "rtf": {
+        "name": "RTF",
+        "sub": "opens in any word processor"
+      },
+      "epub": {
+        "name": "EPUB",
+        "sub": "for e-readers and ebook stores"
+      },
+      "html": {
+        "name": "Web page",
+        "sub": "one file, opens in a browser"
+      },
+      "md": {
+        "name": "Markdown",
+        "sub": "CommonMark, for other writing tools"
+      },
+      "txt": {
+        "name": "Plain text",
+        "sub": "for online submission forms"
+      }
+    },
+    "includeLabel": "What goes in",
+    "include": {
+      "manuscript": "Manuscript",
+      "references": "References",
+      "notes": "Notes"
+    },
+    "nothing": "Tick at least one thing to export.",
+    "pick": {
+      "manuscript": "Choose Parts and Sections",
+      "references": "Choose references",
+      "notes": "Choose notes",
+      "count": "{{on}} of {{all}}",
+      "none": "None yet",
+      "arcOf": "{{name}}'s arc",
+      "loading": "Reading the project's references"
+    },
+    "layoutLabel": "Layout",
+    "layout": {
+      "book": {
+        "name": "Book",
+        "sub": "set like a printed book"
+      },
+      "manuscriptModern": {
+        "name": "Manuscript",
+        "sub": "standard format, in Times"
+      },
+      "manuscriptClassic": {
+        "name": "Manuscript, classic",
+        "sub": "the same, in Courier"
+      },
+      "review": {
+        "name": "Review copy",
+        "sub": "wide margin, numbered lines"
+      }
+    },
+    "pageLabel": "Page size",
+    "page": {
+      "a4": "A4",
+      "letter": "US Letter",
+      "trade": "6 × 9 in, trade paperback",
+      "digest": "5 × 8 in, digest"
+    },
+    "authorLabel": "Author",
+    "authorNote": "Saved with the project.",
+    "variant": {
+      "story": "Set as a short story, from the project's type: “{{type}}”.",
+      "novel": "Set as a novel, with a title page, from the project's type: “{{type}}”."
+    },
+    "contactLabel": "Contact details",
+    "contactNote": "Name, address, phone, email, one per line. Used for this export only.",
+    "headerLabel": "Running header",
+    "headerNote": "Top right of every text page, followed by the page number: {{header}} / 3",
+    "separatorLabel": "Between Sections",
+    "separator": {
+      "shunn": "# on the same page",
+      "pageBreak": "A new page"
+    },
+    "techPage": "Tech page first",
+    "tocTick": "Table of contents",
+    "tocLocked": "An EPUB always has one",
+    "nameLabel": "File name",
+    "nameEmpty": "The name must contain at least one letter or number.",
+    "error": {
+      "empty": "Everything ticked is empty, so there is nothing to export.",
+      "failed": "The export didn't finish. Try again.",
+      "nameTaken": "This name and its numbered variants are already taken in the export folder. Choose another."
+    },
+    "done": {
+      "all": "Saved in the export folder and downloaded.",
+      "remoteSkipped": "Downloaded, but not saved in the export folder in Remote Storage, which couldn't be reached.",
+      "deviceSkipped": "Downloaded. The project's folder on this device couldn't be written to.",
+      "noneSaved": "Downloaded, but not saved in the project's export folder."
+    },
+    "tech": {
+      "heading": "Technical details",
+      "title": "Title",
+      "author": "Author",
+      "type": "Type",
+      "genres": "Genres",
+      "ageCategory": "Readers",
+      "tropes": "Tropes",
+      "language": "Language",
+      "structure": "Structure",
+      "words": "Words",
+      "parts": "Parts",
+      "sections": "Sections",
+      "created": "Created",
+      "updated": "Last changed",
+      "exported": "Exported",
+      "contents": "Includes",
+      "format": "Format",
+      "layout": "Layout"
+    },
+    "toc": {
+      "heading": "Contents"
+    },
+    "furniture": {
+      "draft": "Draft · {{date}}",
+      "pageOf": "Page {{page}} of {{pages}}"
+    },
+    "manuscript": {
+      "about": "about {{count}} words",
+      "byline": "by {{author}}",
+      "end": "END"
+    },
+    "step": {
+      "format": "What kind of file?",
+      "contents": "What goes in?",
+      "pages": "Pages and paper",
+      "finish": "Author and file name"
+    },
+    "opening": "Opening the project",
+    "openFailed": "Couldn't open this project.",
+    "emptyBook": "This project has nothing to export yet.",
+    "epub": {
+      "accessibilitySummary": "Text only, with headings and a table of contents to move through it."
+    }
+  },
+  "import": {
+    "heading": "Import a manuscript",
+    "lede": "Bring in a manuscript that already exists. Your file is only read: {{product}} makes a new project from a copy, and the original stays where it is.",
+    "making": "Hold on — I'm making the project.",
+    "confirm": "Import",
+    "step": {
+      "choose": "Which files?",
+      "chapters": "Where does the manuscript divide?"
+    },
+    "drop": {
+      "title": "Choose a file",
+      "more": "Add more files",
+      "sub": "Choose files, or drop them on the tile · docx, odt, rtf, epub, md, txt, html"
+    },
+    "filesLabel": "Chosen files",
+    "reading": "Reading",
+    "several": "The manuscript is read in this order, starting from file 1. Set it here: the next step can’t change it.",
+    "earlier": "Move {{name}} earlier",
+    "later": "Move {{name}} later",
+    "remove": "Remove {{name}}",
+    "earlierTip": "Move earlier",
+    "laterTip": "Move later",
+    "removeTip": "Remove",
+    "leftOut": "Won’t be imported",
+    "tag": {
+      "kind": "{{kind}} · left out",
+      "alone": "Left out",
+      "offSpine": "Outside the reading order"
+    },
+    "refused": {
+      "doc": "A .doc file, or one with a password. Save it as .docx, without a password, and try again.",
+      "pdf": "PDFs can't be imported. Save the manuscript as .docx or .odt and try again.",
+      "pages": ".pages files can't be imported. Export it as .docx and try again.",
+      "gdoc": "A .gdoc is only a shortcut, not the document. Download it as .docx and try again.",
+      "scrivener": "A .scriv is a project folder, not the manuscript. Export it as .docx and try again.",
+      "binary": "This file has a text document's name, but there's no text in it.",
+      "unknown": "{{product}} can't read this kind of file.",
+      "empty": "There's no text in this file.",
+      "tooLarge": "This file is too large to import.",
+      "drm": "This ebook is locked with DRM, so its text can't be read.",
+      "damaged": "This file looks damaged and couldn't be read.",
+      "bomb": "This file would unpack to far more than its size, so it wasn't opened.",
+      "mixed": "An ebook is already a whole book: import it on its own, without other files.",
+      "tooMany": "Only {{max}} files at once — this one was left out."
+    },
+    "words_one": "{{formatted}} word",
+    "words_other": "{{formatted}} words",
+    "splitLabel": "Split by:",
+    "rule": {
+      "headings": "Headings",
+      "patterns": "Numbered titles",
+      "typography": "Bold or centred lines",
+      "pageBreaks": "Page breaks",
+      "files": "Files and contents",
+      "separator": "A line I choose",
+      "none": "Nothing — keep it whole"
+    },
+    "ruleNote": {
+      "headings": "Splits the manuscript wherever a heading style, such as Heading 1 or Heading 2, is used. The heading becomes the title of that section.",
+      "patterns": "Splits the manuscript when a line contains only a numbered title, such as “Chapter 3,” “Part One,” or “IV.” Numbers within a sentence won’t create a split.",
+      "typography": "Splits the manuscript at short lines that stand out visually—for example, text that is bold, centred, larger than the surrounding text, or written in all caps.",
+      "pageBreaks": "Splits the manuscript at every page break. If the new page starts with a short line, that line becomes the section title; otherwise, the section remains untitled.",
+      "files": "Splits the content wherever a new file begins, or at each entry listed in the ebook’s table of contents.",
+      "separator": "Splits the manuscript wherever a line matches or starts with the text you enter. A line containing only the separator leaves the section untitled; a longer line becomes the section title.",
+      "none": "Doesn’t split the manuscript. The entire text is imported as a single piece."
+    },
+    "separatorLabel": "Type the line that divides the manuscript",
+    "separatorPlaceholder": "For example: ###",
+    "listLabel": "Where it divides",
+    "beadsHelp": "A filled bead is imported, an empty one is left out: click it to switch. Click a title to rename it. Rest the pointer on a row to make it a Part or a Section, to split it, to merge it into the one above, or to separate it again.",
+    "outlineEmpty": {
+      "type": "Type the line above, and the places where it divides the manuscript will appear here.",
+      "noMatch": "No line in the manuscript matches “{{text}}”.",
+      "whole": "Nothing divides it: the manuscript comes in as one piece."
+    },
+    "title": {
+      "untitled": "Untitled",
+      "scene": "{{title}}, scene {{n}}",
+      "matter": {
+        "titlePage": "Title page",
+        "techPage": "Technical details",
+        "copyright": "Copyright",
+        "toc": "Contents",
+        "alsoBy": "Also by",
+        "dedication": "Dedication",
+        "epigraph": "Epigraph",
+        "foreword": "Foreword",
+        "preface": "Preface",
+        "introduction": "Introduction",
+        "prologue": "Prologue",
+        "epilogue": "Epilogue",
+        "afterword": "Afterword",
+        "acknowledgments": "Acknowledgments",
+        "about": "About the author",
+        "appendix": "Appendix",
+        "glossary": "Glossary",
+        "bibliography": "Bibliography",
+        "notes": "Notes",
+        "index": "Index"
+      },
+      "split": "{{title}} split {{n}}",
+      "shared": "{{title}} - {{n}}"
+    },
+    "open": "Split",
+    "openLabel": "Split “{{title}}”",
+    "join": "Join to the row above",
+    "merge": "Merge",
+    "separate": "Separate",
+    "separateLabel": "Separate “{{title}}” from the row above",
+    "joinLabel": "Join “{{title}}” to the row above",
+    "renameLabel": "Name of “{{title}}”",
+    "includeLabel": "Import “{{title}}”",
+    "uncutLabel": "Join “{{title}}” back to the row above",
+    "splitHere": "Split here",
+    "splitHereLabel": "Start a new row before “{{text}}”",
+    "scenes": "Each scene its own Section",
+    "scenesByMark_one": "{{count}} scene, marked by {{mark}}",
+    "scenesByMark_other": "{{count}} scenes, marked by {{mark}}",
+    "scenesByBlank_one": "{{count}} scene, marked by blank lines",
+    "scenesByBlank_other": "{{count}} scenes, marked by blank lines",
+    "underline": "Underlined words become italic",
+    "comments": "Comments go in the margin",
+    "undone_one": "Changing the split undid {{count}} change to the list.",
+    "undone_other": "Changing the split undid {{count}} changes to the list.",
+    "undo": "Undo",
+    "losses": "This file has {{list}}. {{product}} can't keep these yet, so they won't be in the project. Some formatting may change too.",
+    "loss": {
+      "footnotes_one": "{{count}} footnote",
+      "footnotes_other": "{{count}} footnotes",
+      "endnotes_one": "{{count}} endnote",
+      "endnotes_other": "{{count}} endnotes",
+      "images_one": "{{count}} picture",
+      "images_other": "{{count}} pictures",
+      "textBoxes_one": "{{count}} text box",
+      "textBoxes_other": "{{count}} text boxes"
+    },
+    "splitLead": "Click between two paragraphs to split the row there. Click a split line to join it back.",
+    "make": {
+      "part": "Make a Part",
+      "section": "Make a Section"
+    },
+    "makeLabel": {
+      "part": "Make “{{title}}” a Part",
+      "section": "Make “{{title}}” a Section"
+    },
+    "scenesNote": "Each chapter with scene breaks becomes a Part, and each of its scenes a Section inside it. Chapters without scene breaks stay as they are."
+  },
+  "comments": {
+    "you": "You",
+    "unknownAuthor": "Someone",
+    "suggested": "Suggested",
+    "ghostLabel": "Suggested comment",
+    "threadLabel": "Comment",
+    "orphan": "The text this was about has changed.",
+    "answers_one": "{{count}} reply",
+    "answers_other": "{{count}} replies",
+    "writing": "{{name}} is writing…",
+    "doing": "{{name}}: {{doing}}",
+    "searched": {
+      "wikipedia": "Searched Wikipedia for {{query}}",
+      "web": "Searched the web for {{query}}"
+    },
+    "replyFailed": "No answer from {{name}}.",
+    "retry": "Try again",
+    "placeholder": "Comment on this passage",
+    "chapterPlaceholder": "Comment on the chapter",
+    "replyPlaceholder": "Reply, or call someone in with @",
+    "add": "Comment",
+    "send": "Send",
+    "cancel": "Cancel",
+    "keep": "Keep",
+    "reply": "Reply",
+    "dismiss": "Dismiss",
+    "resolve": "Resolve",
+    "reopen": "Reopen",
+    "remove": "Remove",
+    "removeConfirm": "Remove this comment and its replies?",
+    "reattach": "Attach to selection",
+    "onChapter": "Comment on the chapter",
+    "resolvedCount_one": "{{count}} resolved",
+    "resolvedCount_other": "{{count}} resolved",
+    "damaged": "This chapter's comments file can't be read, so it's left as it is.",
+    "unavailable": "This chapter's comments can't be reached right now.",
+    "chapterMarker": "Comments on the chapter",
+    "markerLabel": "Comment by {{name}}",
+    "panelLabel": "Comment",
+    "close": "Close",
+    "countLabel": "Comments: {{list}}",
+    "countBy": "{{count}} by {{name}}",
+    "countOthers_one": "{{count}} by you or an editor",
+    "countOthers_other": "{{count}} by you or editors"
+  },
+  "legal": {
+    "menu": "Legal notice",
+    "close": "Close",
+    "links": {
+      "label": "Legal documents",
+      "notice": "Legal notice",
+      "privacy": "Privacy",
+      "terms": "Use and licence"
+    },
+    "page": {
+      "updated": "Last updated: {{updated}}"
+    },
+    "landing": {
+      "title": "Warranty and liability",
+      "body": "{{product}} is provided “as is”, without warranty, to the extent permitted by law and unless stated otherwise in writing. Rights and liabilities that the law makes mandatory still apply. Keep a copy of your writing.",
+      "more": "Read the legal notice"
+    },
+    "notice": {
+      "title": "Legal notice",
+      "lede": "The warranty disclaimer and the limits of liability set by the licence.",
+      "asIs": {
+        "title": "Provided \"as is\"",
+        "body": "{{product}} is free software published by {{publisherName}} (the Author) under the GNU Affero General Public License, version 3 or later (AGPL). It is a personal project, free of charge and outside any commercial or professional activity. To the extent permitted by law and unless stated otherwise in writing, the program is provided “as is”, without express or implied warranties, including those of merchantability and fitness for a particular purpose. Within those limits, you bear the risk of the program’s quality and performance and the cost of any servicing, repair or correction."
+      },
+      "liability": {
+        "title": "Limitation of liability",
+        "body": "Unless applicable law requires or a written agreement provides otherwise, the Author, copyright holders and others who modify or distribute the program as permitted by the licence are not liable for damages arising from its use or inability to use it. This includes loss or corruption of writing, files or data, interruption of work and lost profits, even if the possibility of such damage was known."
+      },
+      "writing": {
+        "title": "Your writing",
+        "body": "The program saves your writing where you choose to keep it, on your device or in Remote Storage. The availability and integrity of your data are not guaranteed. Keep a backup copy of your writing in a separate place."
+      },
+      "ai": {
+        "title": "Artificial intelligence",
+        "body": "The assistant is optional. Local models run on your computer, while external providers run remote models. You choose the model, among the local ones you installed and the remote ones your key gives you. The Author does not provide the models, does not choose one for you and does not see the requests or the answers. For remote models, the terms of the provider you choose apply. Answers may be wrong, incomplete or unsuitable. Check them before using them, especially if you plan to publish or share them. If you publish AI-generated or AI-altered text to inform the public on matters of public interest, Regulation (EU) 2024/1689 may require you to disclose that AI generated or altered the text. One exception applies if the text has undergone human review or editorial control and a natural or legal person holds editorial responsibility for its publication. These obligations do not apply to natural persons who use AI in a purely personal, non-professional activity (Article 2(10))."
+      },
+      "thirdParty": {
+        "title": "Third-party services",
+        "body": "External providers, including {{identity}}, {{ai}}, {{homeDns}} and {{certificates}}, set their own terms and charges and explain how they handle data in their privacy notices. They may change or discontinue their services. To the extent permitted by law, the Author is not responsible for how those services operate."
+      },
+      "law": {
+        "title": "Limits set by law",
+        "body": "These exclusions and limitations apply to the fullest extent permitted by applicable law. They do not exclude or limit any liability that cannot be excluded or limited by law, such as liability for wilful misconduct or gross negligence, nor any right the law gives consumers that cannot be waived. If any part of this notice is held invalid, the rest remains in effect to the extent permitted by law."
+      },
+      "license": {
+        "title": "The licence",
+        "copyright": "Copyright (C) 2026 {{publisherName}}.",
+        "body": "The AGPL governs the program, including its warranty and liability provisions. This notice summarizes those provisions. The licence text is at {{licenseText}}, and a copy comes with the source code and every release. The source code is at {{publisherRepository}}. Third-party licences for the components included in the program are at {{thirdPartyNotices}}."
+      },
+      "closing": "You can run, study, modify and share the program under its licence. You do not need to accept this notice to use the program."
+    },
+    "privacy": {
+      "title": "How the program handles personal data",
+      "lede": "Where your installation stores data and which optional services receive it.",
+      "controller": {
+        "title": "Who publishes the program and who handles your data",
+        "body": "{{publisherName}} (the Author) publishes {{product}} as a personal project, free of charge and outside any commercial or professional activity. You can download its source code from {{publisherRepository}}, build the program and run it on your devices. The Author does not run your installation or receive application logs, telemetry, credentials or manuscripts from the program. Sign-in with {{identity}} and authorization for Remote Storage use the {{identity}} Cloud project that the person who set up your installation created.",
+        "roles": "The Author is not the controller of the data in your installation: the Author does not determine why or how it is processed and does not receive it. Whoever runs the installation decides. If you use the program for purely personal or household activities, Regulation (EU) 2016/679 (GDPR) does not apply to that use (Article 2(2)(c)). If you run the installation for other people or for your work, you may be the controller of their data. In that case, it is for you to verify how the program works, including by examining the source code, whichever version you use, the one published by the Author included. This page concerns the version published by the Author; versions modified by others may behave differently. In every case it is a description, not a guarantee: it helps you choose with the facts in hand, but does not replace your own verification. The privacy notice published on the demo website applies to that website."
+      },
+      "notCollected": {
+        "title": "What the Author does not collect",
+        "body": "The program sends no telemetry to the Author and has no analytics, advertising or profiling integration. It keeps local accounts, preferences and working copies on your devices. Features you enable communicate directly with their providers; no service of the Author sits between them. Data you deliberately submit to GitHub, for example in an issue, is a separate disclosure: do not include credentials or private manuscripts."
+      },
+      "data": {
+        "title": "What data the program handles, and where",
+        "intro": "“This browser” and “this device” are the ones you read this page with. What this page says about them applies to each browser and each device you use the program with: each one keeps its own data.",
+        "table": {
+          "columns": {
+            "what": "Data",
+            "why": "What it is for",
+            "where": "Where it is stored or sent"
+          },
+          "rows": {
+            "account": {
+              "what": "Local account: an identifier made on this device; if you sign in with {{identity}}, also the verified identifier, name, email and profile picture of your {{identity}} account",
+              "why": "Knowing who is writing and keeping each writer's work apart",
+              "where": "In this browser, on this device"
+            },
+            "sessions": {
+              "what": "Sign-in: which account is signed in to this browser",
+              "why": "Keeping you signed in, in every tab",
+              "where": "In this browser, on this device"
+            },
+            "preferences": {
+              "what": "Preferences: theme, language, editor settings, chosen AI models",
+              "why": "Giving you the same settings each time and, while Remote Storage is connected, on your other installations",
+              "where": "In this browser, on this device. When you connect Remote Storage, the program also saves a copy of your preferences in the folder reserved for the application"
+            },
+            "library": {
+              "what": "Library: titles of books, Parts and Sections, word counts, goals, file locations",
+              "why": "Showing you your Library",
+              "where": "In this browser, on this device. When you connect Remote Storage, the program also saves a copy of your library in the folder reserved for the application"
+            },
+            "documents": {
+              "what": "Your documents: books, Parts, Sections, notes and their versions",
+              "why": "Your writing itself",
+              "where": "In the folder you choose on this device or, if you use Remote Storage, in the program’s folder there"
+            },
+            "storage": {
+              "what": "Remote Storage connection: access credential, identifier and email of the connected account",
+              "why": "Reading and saving your files in Remote Storage",
+              "where": "In a browser cookie. The installation’s identity service encrypts the data and is the only service that can decrypt it"
+            },
+            "ai": {
+              "what": "{{ai}} connection: your key, with its limit and spending as {{ai}} reports them",
+              "why": "Using remote AI features and checking your spending limit and usage",
+              "where": "In the tab’s memory. If you choose to keep the key, your browser sends it to the installation’s identity service, which encrypts it and stores it in a cookie"
+            },
+            "transit": {
+              "what": "Text sent to the AI and web searches",
+              "why": "Getting the answer you ask for",
+              "where": "Sent from your device straight to the service you chose, never through the Author"
+            },
+            "desktop": {
+              "what": "Desktop app settings: ports, the home network name and its {{homeDns}} account (email and access key), the certificate for that name",
+              "why": "Opening the program on your other devices at home",
+              "where": "On the computer that runs the desktop app"
+            }
+          }
+        },
+        "required": "You can use {{product}} without a {{identity}} account. With {{identity}} or without it, the program creates a local account, which stays in this browser. Signing in with {{identity}} identifies you as a writer and is required if you want to connect Remote Storage. Connecting it is a separate choice. The demo requires no account."
+      },
+      "retention": {
+        "title": "How long it is kept",
+        "list": {
+          "account": "Your local account, preferences, library and connections stay in your browser until you remove them. When signing out, you can keep your local data or choose to clear it.",
+          "sessions": "Your browser remembers that you are signed in until you sign out. The session cookie expires after 30 days. If you are still signed in then, the identity service makes a new one.",
+          "removed": "Projects removed from the Library: their card goes at once. The program records the removal in the library data associated with your local account so the project does not reappear after synchronization.",
+          "aiKey": "The {{ai}} key stays in memory until you close the tab or sign out. If you choose to have it remembered, the key is saved, encrypted, in a cookie: see the lifetimes under “Cookies and browser storage”.",
+          "sync": "Copies of your preferences and library stay in Remote Storage after you sign out. The program can recover them when you reconnect the same storage."
+        },
+        "deletion": "When you disconnect Remote Storage, the program asks you from where. If you disconnect it from this browser only, other devices stay connected. If you disconnect it everywhere, the program asks {{identity}} to revoke access. In the same window you can also have the remote copies of your preferences and library removed.",
+        "cleanup": "Before signing you out, the program saves open work and warns you if changes are still waiting to sync. If you choose to clear this browser, the program tries to remove the account’s local data and credentials. Sign-out may complete if the browser fails to remove some local data.",
+        "deleteAccount": "Choose “Delete your account” in Settings to remove your account from this browser. If Remote Storage is connected, the program first deletes the remote copies of your preferences and library and asks {{identity}} to revoke access. If something fails, deletion stops. The program tells you what it has already deleted and what is still there. You can try again. Your books stay in the folders you chose.",
+        "revoke": "Account deletion continues if {{identity}} does not confirm revocation. In that case, remove the program’s access from your {{identity}} account. To revoke your {{ai}} key, use your account with that service. Clearing the cookie does not revoke the key."
+      },
+      "recipients": {
+        "title": "Who receives it",
+        "list": {
+          "identity": "{{identity}} handles sign-in and, if you connect it, Remote Storage, through the {{identity}} Cloud project of your installation. Sign-in asks only for your basic profile (openid, email and profile); connecting Remote Storage asks for access to the files the program creates or opens and to a folder reserved for the application, never to the rest of your storage. Your profile picture also comes from {{identity}}.",
+          "ai": "{{ai}} forwards your request to the selected model provider. The request includes the text, context and necessary request metadata. The program asks {{ai}} to use only providers that say they do not store the text or use it for training. {{ai}} and the other services involved in the request may still retain data. Their privacy notices also explain how they handle searches.",
+          "search": "{{encyclopedia}} receives the query you approve and connection metadata. Search through {{ai}} sends the query and a fixed instruction to the model provider. {{ai}} runs the search with {{webSearch}}, a web search engine. The model may rephrase the query sent to {{webSearch}}. The search request does not include your manuscript.",
+          "home": "If you set up access over your home network, {{homeDns}} receives the domain name you chose and the computer’s address on that network, which it publishes in the DNS. If you create an account during setup, it also receives your email address and password. {{certificates}} receives the domain name to issue its certificate. The name appears in public Certificate Transparency logs. Both services also see the source IP address of incoming requests. {{certificates}} keeps source IP addresses. Its privacy notice gives the retention period ({{certificatesPrivacy}}).",
+          "updates": "{{updates}} receives a request with your connection’s IP address when the library checks for a new version and when you check for updates in the desktop app. The library reuses the result for 24 hours if the browser can store it."
+        },
+        "independent": "See each provider’s privacy notice and account terms for how it handles data. Its role depends on the processing and the applicable agreements. The Author does not run these connections or receive the data exchanged through them."
+      },
+      "transfers": {
+        "title": "Transfers outside the European Economic Area",
+        "body": "Connected services may process data outside the European Economic Area (EEA). Countries, recipients and safeguards depend on the service, model and applicable agreements. Read the providers’ privacy notices before sending personal or confidential data. Requests go from your installation straight to these services. They do not pass through the Author, who does not receive or see them."
+      },
+      "cookies": {
+        "title": "Cookies and browser storage",
+        "intro": "The program uses technical cookies to keep the session open and to complete {{identity}} sign-in or the connection to Remote Storage in the same browser. A persistent cookie maintains the Remote Storage connection. If you choose to save your {{ai}} key, another cookie stores it in encrypted form. Article 5(3) of Directive 2002/58/EC and, in Italy, Article 122 of the Personal Data Protection Code (Legislative Decree 196/2003) do not require consent where storage is strictly necessary to provide a feature you explicitly request. The program does not use tracking cookies. External providers describe their own cookies in their privacy notices.",
+        "table": {
+          "columns": {
+            "name": "Cookie",
+            "purpose": "What it is for",
+            "lifetime": "Lifetime"
+          },
+          "rows": {
+            "session": {
+              "name": "{{sessionCookie}}",
+              "purpose": "Linking the active local account to the connections and credentials the identity service manages",
+              "lifetime": "30 days, or until you sign out"
+            },
+            "signIn": {
+              "name": "{{flowCookie}}",
+              "purpose": "Keeping the authorization details in encrypted form and completing {{identity}} sign-in or the Remote Storage connection in the browser that started it",
+              "lifetime": "10 minutes"
+            },
+            "storageConnect": {
+              "name": "{{connectionCookie}}",
+              "purpose": "Keeping the encrypted credential for access to Remote Storage",
+              "lifetime": "Until you disconnect, at most 400 days"
+            },
+            "aiKey": {
+              "name": "{{keyCookie}}",
+              "purpose": "Keeping your {{ai}} key in encrypted form if you chose to keep it",
+              "lifetime": "Until you disconnect it or sign out cleaning the browser, at most 400 days"
+            }
+          }
+        },
+        "device": "Your browser keeps the local account, preferences, library, working copies of remote files and changes waiting to be saved. The update check record and the version whose notice you dismissed are shared by the installation and stay in the browser when you delete an account. Your browser also keeps the proof that links it to its session with the identity service, your choice to keep the {{ai}} key, the theme last used and the address of your local AI models."
+      },
+      "rights": {
+        "title": "Who to contact about your data",
+        "body": "To erase the data in your installation, choose to clear this browser when signing out or choose “Delete your account” in Settings. For data handled by connected services, use your account controls or the contact details in their privacy notices. If you use a copy of {{product}} that someone else installed and runs, contact that person. The Author does not receive manuscripts or account data from the program, and so cannot provide, correct or erase them.",
+        "delete": "If you write to the Author at {{privacyContact}}, the website’s privacy notice applies to your messages. Do not include personal data beyond what a reply needs, or credentials, manuscripts or other people’s data.",
+        "complaint": "If you believe that whoever processes your data infringes the GDPR, you can lodge a complaint with the competent supervisory authority. In Italy, you can contact the Garante per la protezione dei dati personali ({{supervisor}})."
+      },
+      "automated": {
+        "title": "Automated decisions",
+        "body": "The Author and the program do not use your data to analyse or predict your behaviour, interests or habits (profiling). No automated system makes decisions that produce legal effects concerning you or similarly significantly affect you (Article 22 of the GDPR)."
+      },
+      "changes": {
+        "title": "Changes",
+        "body": "This page shows the date it was last updated and remains available in the program. If the Author ever began to collect data, the Author would publish a privacy notice before the collection started."
+      }
+    },
+    "terms": {
+      "title": "Use and licence",
+      "lede": "Licence and usage information for the program.",
+      "scope": {
+        "title": "What this page covers",
+        "body": "{{publisherName}} (the Author) publishes {{product}} as a personal project, free of charge and outside any commercial or professional activity. You can build, install and run the program on your own devices. The AGPL, version 3 or later, governs use and distribution. This page and the legal notice summarize its provisions without adding conditions to the exercise of your rights under the licence."
+      },
+      "account": {
+        "title": "Local account and {{identity}} sign-in",
+        "body": "You can use the program without a {{identity}} account. Your browser keeps a local account either way. Signing in with {{identity}} does not encrypt files on your device.",
+        "storage": "To use Remote Storage, sign in with {{identity}} and authorize the connection. Both steps use the {{identity}} Cloud project configured for your installation. The program uses Remote Storage to sync your preferences and library across installations.",
+        "providers": "External providers set their own terms of use and any age requirements."
+      },
+      "free": {
+        "title": "Cost",
+        "body": "The Author distributes the program free of charge. If you use remote AI features, {{ai}} charges you under your account terms."
+      },
+      "writing": {
+        "title": "Your writing",
+        "body": "The program does not send your writing to the Author. Using the program gives the Author no rights in what you write. The law and third-party rights also apply to material produced with AI or imported from elsewhere. With “Import” you can bring files such as documents and EPUBs into the program. If a file holds someone else’s work, import it only if the law permits it or you have the rights holder’s permission."
+      },
+      "use": {
+        "title": "Use",
+        "body": "The licence allows you to run the program. If you modify the program and let other people use it over a network, the licence requires you to offer them the source code of your version (section 13). If you distribute the program, modified or not, you must do so under the licence and make the source code available. When accessing someone else’s writing, files or accounts, follow the law and the terms of the services you use."
+      },
+      "warranty": {
+        "title": "Warranty and liability",
+        "body": "The licence and the legal notice describe the exclusions of warranty and limitations of liability. Written agreements, liability for wilful misconduct or gross negligence, and other mandatory protections still apply. Keep backup copies of your writing."
+      },
+      "aiKey": {
+        "title": "Your {{ai}} key",
+        "body": "To connect {{ai}}, you need a key with a spending limit set at the service. Your browser keeps the key in the tab’s memory and uses it to authenticate requests to {{ai}}. If you choose to save it, your installation’s identity service encrypts it and stores it in a cookie. Anyone with access to your browser profile while the program is open can use the saved key.",
+        "spending": "A daily, weekly or monthly spending limit resets at the start of each period. Charges billed to your own provider keys count towards the limit only if you enable that option at {{ai}}.",
+        "revocation": "You can revoke the key in your {{ai}} account. Your account terms govern charges. The Author does not receive these payments and does not refund them. For damages, the limitation of liability in the legal notice applies."
+      },
+      "suspension": {
+        "title": "Releases and support",
+        "body": "The Author may change the program, or stop publishing releases and updates, in whole or in part, at any time and without notice, and owes no support. The licence lets you keep and run the versions you have."
+      },
+      "changes": {
+        "title": "Changes to this page",
+        "body": "Updates are published on this page, with the date it last changed. Your rights under the licence do not depend on this page."
+      },
+      "language": {
+        "title": "Language",
+        "body": "This page, the legal notice and the page on personal data are available in English and Italian. If they differ, the Italian version prevails. For the licence, the original English text prevails."
+      }
+    },
+    "siteNotice": {
+      "title": "Legal notice",
+      "lede": "How the demo works, where to get its source and what limits apply.",
+      "site": {
+        "title": "This site",
+        "body": "This site, run by {{publisherName}} (the Author) as part of a personal project, free of charge and outside any commercial or professional activity, presents {{product}} and lets you try its editor on a sample novel. It hosts only the demo: the source code of the full program is on GitHub ({{publisherRepository}}); whoever wants the program builds it from there and runs it on their own computer."
+      },
+      "nothingSaved": {
+        "title": "Nothing is saved",
+        "body": "The demo keeps what you write in the page’s memory. Your changes are lost when you reload or close the page. The site does not receive what you write in the demo. For writing you want to keep, use the program on your own computer."
+      },
+      "assistant": {
+        "title": "The demo's assistant",
+        "body": "The demo assistant shows prepared answers in the page. Your requests stay in the browser. The answers illustrate how the assistant works."
+      },
+      "asIs": {
+        "title": "Warranty and liability",
+        "body": "The site and demo are provided “as is”, without express or implied warranties. The Author is not liable for damage arising from use of the site or demo or inability to use them. These exclusions apply to the extent permitted by law and unless stated or agreed otherwise in writing. The Author may update, suspend or close the site."
+      },
+      "law": {
+        "title": "Limits set by law",
+        "body": "These exclusions and limitations apply to the fullest extent permitted by applicable law. They do not exclude or limit any liability that cannot be excluded or limited by law, such as liability for wilful misconduct or gross negligence, nor any right the law gives consumers that cannot be waived. If any part of this notice is held invalid, the rest remains in effect to the extent permitted by law."
+      },
+      "license": {
+        "title": "Licence and source code",
+        "body": "{{product}} and this demo are distributed under the GNU Affero General Public License, version 3 or later. The licence text is at {{siteLicense}}. You can obtain the source code and its build scripts from {{siteSource}}. Third-party licences for components included in this site are at {{thirdPartyNotices}}."
+      },
+      "links": {
+        "title": "Other sites",
+        "body": "External sites linked from this site have their own terms and privacy notices."
+      },
+      "language": {
+        "title": "Language",
+        "body": "The legal pages of this site are available in English and Italian. If they differ, the Italian version prevails. For the licence, the original English text prevails."
+      }
+    },
+    "sitePrivacy": {
+      "title": "Privacy notice",
+      "lede": "What data your visit involves, how it is handled and who to contact.",
+      "controller": {
+        "title": "Who publishes this site",
+        "body": "{{publisherName}} (the Author) publishes this static site on {{host}} Pages. The site has no accounts or forms. The Author is the controller for two activities: the publication of the site through {{host}}, which receives the technical data of your visit, and the handling of the messages the Author receives. {{host}} processes the access logs described in the next section for its own purposes, as an independent controller. The Author has no access to those logs."
+      },
+      "logs": {
+        "title": "The host's access logs",
+        "body": "To show you a page, your browser connects to {{host}}, which receives your IP address and the technical data of the request. The Author chose this service to make the site available: the legal basis is the Author’s legitimate interest in publishing it (Article 6(1)(f) of Regulation (EU) 2016/679, the GDPR). {{host}} logs and stores your IP address to protect its service, whether or not you are signed in to {{host}}.",
+        "basis": "{{host}} explains its legitimate interest in security and the criteria it uses to decide how long to keep data in its privacy notice: {{hostPrivacy}}."
+      },
+      "browser": {
+        "title": "Your browser",
+        "body": "The site sets no cookies and uses no persistent browser storage. It uses tab session storage to remember that you have seen how to leave the demo, restore scroll positions and manage reloads after an error. This data stays in the browser for the tab session. Theme and language choices stay in the open page’s memory."
+      },
+      "notCollected": {
+        "title": "What the site does not do",
+        "body": "The site has no analytics, advertising, tracking or profiling integrations. It serves its own fonts and images. Your writing and requests to the demo assistant stay in the browser. No automated system makes decisions that produce legal effects concerning you or similarly significantly affect you (Article 22 of the GDPR)."
+      },
+      "transfers": {
+        "title": "Transfers outside the European Economic Area",
+        "body": "Your visit sends technical data to {{host}} in the United States, on the basis of the adequacy decision for the EU–U.S. Data Privacy Framework. {{host}} says it processes data in the United States and other countries. Its privacy notice describes the EU–U.S. Data Privacy Framework for transfers covered by its certification. It generally uses the European Commission’s standard contractual clauses for transfers to countries without an adequacy decision. Read its privacy notice at {{hostPrivacy}}. For messages to the Author, {{mail}} keeps the mailbox in Switzerland, a country covered by an adequacy decision of the European Commission."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "For the access logs, you can use the contact details in {{host}}’s privacy notice. For requests about data the Author handles, use the address in the section “Messages to the Author”. Where the GDPR provides for it, you can request access, rectification, erasure, restriction or portability and object to processing.",
+        "complaint": "If you believe processing infringes the GDPR, you can lodge a complaint with the competent supervisory authority. In Italy, you can contact the Garante per la protezione dei dati personali ({{supervisor}})."
+      },
+      "changes": {
+        "title": "Changes",
+        "body": "The date at the top shows when this notice was updated. Changes to the processing described here will be published on this page before they apply."
+      },
+      "objection": {
+        "title": "Right to object",
+        "body": "This right covers the processing the Author does on the basis of legitimate interest: the publication of the site through {{host}} and the personal data in the messages you send to the Author, including messages that report a problem. You can object at any time, on grounds relating to your particular situation: write to {{privacyContact}}. The Author then stops handling that data, unless the Author shows compelling legitimate grounds that override your interests, rights and freedoms, or the data is needed to establish, exercise or defend legal claims. The objection does not cover data the Author handles to comply with a legal obligation, for example to answer a request to exercise rights under the GDPR. The Author keeps no data from your visit. For the access logs that {{host}} handles, contact {{host}}: the Author has no access to those logs."
+      },
+      "contact": {
+        "title": "Messages to the Author",
+        "body": "You can write to the Author at {{privacyContact}}. The Author uses your email address and the information you send to handle your request. Do not include personal data beyond what a reply needs, or credentials, manuscripts or other people’s data. For general requests the legal basis is the legitimate interest in replying (Article 6(1)(f) GDPR). For requests to exercise your rights under the GDPR, it is compliance with a legal obligation (Article 6(1)(c)).",
+        "optional": "Writing to the Author is your choice: no law and no contract requires it. Without your email address and the information that is needed, the Author cannot reply to you.",
+        "provider": "{{mail}}, a company in Switzerland, provides the Author’s mailbox and processes the messages on the Author’s behalf, as a processor (Article 28 GDPR).",
+        "retention": "The Author keeps messages for as long as needed to handle the request and, where necessary, meet legal obligations or protect legal rights."
+      }
+    }
+  },
+  "fault": {
+    "stale-build": {
+      "title": "A newer version is ready",
+      "hint": "This page comes from an older build than the one that is there now, and part of the old version is no longer there. Reload to carry on with the new one."
+    },
+    "not-found": {
+      "title": "Page not found",
+      "hint": "Nothing lives at this address. The link may be mistyped, or the page may have moved."
+    },
+    "unreachable": {
+      "title": "{{product}} can't be reached",
+      "hint": "Check your connection and that {{product}} is running, then reload."
+    },
+    "unexpected": {
+      "title": "Something went wrong",
+      "hint": "This page ran into a problem it couldn't recover from. Reloading usually fixes it."
+    },
+    "boot": {
+      "title": "{{product}} couldn't start",
+      "hint": "Reload the page. If it still doesn't start, try another browser. If the problem stays, report it on GitHub."
+    },
+    "reload": "Reload",
+    "backToLibrary": "Back to the Library",
+    "backHome": "Back to the homepage",
+    "updateNotice": "A newer version is ready.",
+    "updateNoticeAction": "Reload"
+  },
+  "accountData": {
+    "settings": "your settings",
+    "library": "your library",
+    "connection": "the connection to Remote Storage",
+    "unsynced": "changes not yet synced",
+    "projectsUntouched": "Your projects are not touched."
+  }
+}

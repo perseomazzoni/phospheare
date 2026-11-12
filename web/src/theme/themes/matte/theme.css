@@ -1,0 +1,3176 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* Matte: every colour, face, weight, edge, corner, shadow and frost the app
+   uses under this theme. The frame (`styles/base.css`, `editor/editor.css`,
+   `webapp/webapp.css`) lays the app out and paints nothing; `shared.css`
+   holds the paint every theme shares, and this sheet paints the rest, rule
+   for rule over the frame's selectors. It never sizes, places, hides or
+   moves (`themes/sheets.test.ts`). */
+
+/* ── The kit ─────────────────────────────────────────────────────────────── */
+
+/* ── The web application's three ─────────────────────────────────────────── */
+
+.ui-btn-primary,
+.ui-btn-outline,
+.ui-btn-ghost,
+.ui-btn-attention {
+  border-color: transparent;
+  border-radius: var(--r);
+  font-weight: var(--strong-weight);
+}
+
+/* An ink fill, not an accent one: Matte draws the accent as text, marks and
+   rings, never as a fill under text. The primary button is the darkest on the
+   page, and the accent appears on hover as a ring. */
+.ui-btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]) {
+  box-shadow: var(--shadow-accent);
+}
+
+.ui-btn-outline {
+  border-color: var(--hair);
+  color: var(--ink);
+}
+
+.ui-btn-outline:hover:not(:disabled, [aria-disabled="true"]) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--hover-accent);
+}
+
+.ui-btn-ghost {
+  color: var(--ink-3);
+}
+
+.ui-btn-ghost:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--hover-sunk);
+  color: var(--ink);
+}
+
+/* The one remedy of an attention state: a lapsed connection, a key that has
+   run out, a run that stopped part way. It is `soft`'s tint-and-ring shape in
+   ember, the ink `--attention` is documented for, which is attention and not
+   danger. Crimson stays with `danger`, for what cannot be taken back. */
+.ui-btn-attention {
+  background: var(--attention-tint);
+  color: var(--attention);
+  box-shadow: inset 0 0 0 1px var(--attention-glow);
+}
+
+.ui-btn-attention:hover:not(:disabled, [aria-disabled="true"]) {
+  box-shadow:
+    inset 0 0 0 1px var(--attention-glow),
+    0 0 0 3px var(--attention-tint);
+}
+
+/* ── The remaining variants ──────────────────────────────────────────────── */
+
+.ui-btn-soft,
+.ui-btn-danger {
+  border-radius: var(--r-sm);
+  font-weight: var(--medium-weight);
+}
+
+/* Its label leans a little towards the ink, so the accent on its own tint
+   keeps 4.5:1 on every ground it stands on. */
+.ui-btn-soft {
+  background: var(--accent-tint);
+  color: color-mix(in srgb, var(--accent) 88%, var(--ink));
+  box-shadow: inset 0 0 0 1px var(--accent-glow);
+}
+
+.ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--accent-tint-2);
+  color: var(--ink);
+}
+
+/* A crimson fill, not a tint: the one button in the app that destroys
+   something does not read as a highlight. */
+.ui-btn-danger {
+  background: var(--danger);
+  color: var(--on-fill);
+}
+
+.ui-btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+  box-shadow: 0 0 0 3px var(--danger-tint);
+}
+
+.ui-dialog-foot .ui-btn {
+  border-radius: var(--r);
+  font-weight: var(--strong-weight);
+}
+
+.ui-btn-quiet {
+  border-radius: var(--r-sm);
+  color: var(--ink-3);
+}
+
+.ui-btn-quiet:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--hover-quiet);
+  color: var(--ink-3);
+}
+
+.ui-btn-link {
+  color: var(--ink-3);
+  font-weight: var(--link-weight);
+}
+
+.ui-btn-link:hover:not(:disabled, [aria-disabled="true"]) {
+  color: var(--ink);
+}
+
+.ui-btn-icon {
+  border-radius: var(--r-xs);
+  color: var(--ink-3);
+}
+
+.ui-btn-icon:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--hover-quiet);
+  color: var(--ink);
+}
+
+.ui-btn-icon:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* ── Loading dots ────────────────────────────────────────────────────────── */
+
+.ui-dots i {
+  border-radius: var(--r-round);
+  background: var(--dots-dim);
+}
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+
+/* The accent and the underline are the whole signal. A call to action drawn
+   in the sentence's own colour reads as more of the sentence, not as
+   something to press. */
+.ui-text-link {
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* The same link in the text's ink: a way out of the page that is not its
+   call to action, so the underline alone marks it. */
+.ui-text-link-ink {
+  color: var(--ink);
+}
+
+/* ── Input, with its evidence line ───────────────────────────────────────── */
+
+.ui-input {
+  border-color: var(--field-edge);
+  border-bottom-color: var(--field-foot);
+  border-radius: var(--field-radius);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--f-chrome);
+  outline: none;
+}
+
+.ui-input-bad {
+  border-color: var(--danger);
+}
+
+/* Mono, because the note states a result. */
+.ui-input-note {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+}
+
+.ui-input-note-bad {
+  color: var(--danger);
+}
+
+/* A fact to weigh, not a refusal (`Input`'s `flag`): ink, not crimson, in
+   the note's voice otherwise. */
+.ui-input-note-flag {
+  color: var(--ink);
+}
+
+/* ── Select ───────────────────────────────────────────────────────────────────
+   Painted as `.ui-input`, because it answers a question in the same column of
+   the same dialog and a second field look there would read as a second kind
+   of thing. */
+
+.ui-select {
+  border-color: var(--field-edge);
+  border-bottom-color: var(--field-foot);
+  border-radius: var(--field-radius);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--f-chrome);
+  outline: none;
+}
+
+/* ── Segmented control ───────────────────────────────────────────────────── */
+
+.ui-seg {
+  border-color: var(--hair);
+  border-radius: var(--r);
+}
+
+.ui-seg button:hover:not(:disabled):not([aria-pressed="true"]) {
+  color: var(--ink);
+}
+
+.ui-seg button[aria-pressed="true"] {
+  background: var(--press-ground);
+  color: var(--press-ink);
+  box-shadow: var(--press-mark);
+}
+
+/* ── Kbd ─────────────────────────────────────────────────────────────────── */
+
+.ui-kbd {
+  font-family: var(--f-mono);
+  font-weight: var(--name-weight);
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--paper-raised);
+  color: var(--ink-3);
+  /* A key reads in its own case, whatever the control round it. */
+  font-variant-caps: normal;
+  letter-spacing: normal;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+.ui-skeleton {
+  border-radius: var(--r-xs);
+  background: linear-gradient(
+    90deg,
+    var(--paper-sunk),
+    var(--hair-soft),
+    var(--paper-sunk)
+  );
+  background-size: 200% 100%;
+}
+
+/* ── Banner ──────────────────────────────────────────────────────────────── */
+
+.ui-banner {
+  border-color: var(--hair);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+  color: var(--ink);
+}
+
+.ui-banner-attention {
+  border-color: var(--attention-tint);
+  background: var(--attention-tint);
+  color: var(--attention);
+}
+
+.ui-banner-problem {
+  border-color: var(--danger-tint);
+  background: var(--danger-tint);
+  color: var(--danger);
+}
+
+/* A cleared condition whose action still stands. Only the colours
+   go: the ember leaving is the signal, and the one colour left on the strip
+   is its action's. The border keeps the neutral `--hair` every banner starts
+   from: blanked to transparent, it would leave the sentence and its button
+   floating on the page with nothing saying they are one strip. */
+.ui-banner-quiet {
+  background: transparent;
+  color: var(--ink-3);
+}
+
+/* ── Meter ────────────────────────────────────────────────────────────────────
+   A ring or a bar climbing the theme's own status colours (`Meter.tsx` has
+   the scale). A stage sets only the meter's `color`, and the fill uses it as
+   `currentColor`: a local custom property would be a token outside the theme
+   contract (`theme/contract.test.ts`). The track is a hair, and only `error`
+   turns it too: at the edge, the empty part is not room to spare. */
+
+.ui-meter-bar {
+  border-radius: var(--r-round);
+  background: var(--hair);
+}
+
+/* ── AccessCard ───────────────────────────────────────────────────────────────
+   A place the writer's words can go, as a transparency statement: the most
+   confident surface in the application, because where the words go is the
+   product's central claim. What it
+   can and cannot do sits on the page's own paper, inset into the card's
+   raised paper, and a body for a place with controls is on the raised paper
+   again. */
+
+.ui-access {
+  border-color: var(--hair);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+}
+
+.ui-access-perms {
+  border-top-color: var(--hair-soft);
+  background: var(--paper);
+}
+
+/* ── Slider ───────────────────────────────────────────────────────────────────
+   A native range input restyled (`Slider.tsx`), its thumb in a paper ring
+   over a transparent native track. The fill runs from `--ui-slider-from` to
+   the colour at the thumb, and the thumb takes that colour, so the two always
+   meet in one hue. The colours default to the accent; a consumer sets its own
+   pair on its own class. `--ui-slider-at` (0..1) is the thumb's position,
+   written inline by the component.
+
+   Focus takes `.ui-input`'s tint ring, outside the paper ring, so a field and
+   a slider focused side by side are one family. */
+
+.ui-slider-rail {
+  border-radius: var(--r-round);
+  background: var(--hair);
+}
+
+.ui-slider-fill {
+  border-radius: inherit;
+  background: linear-gradient(
+    to right,
+    var(--ui-slider-from, var(--accent)),
+    color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    )
+  );
+}
+
+.ui-slider-input {
+  background: transparent;
+}
+
+.ui-slider-input::-webkit-slider-thumb {
+  border-radius: var(--r-round);
+  background: color-mix(
+    in oklch,
+    var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+    var(--ui-slider-from, var(--accent))
+  );
+  box-shadow: 0 0 0 2px var(--paper-raised);
+}
+
+.ui-slider-input::-moz-range-thumb {
+  border-radius: var(--r-round);
+  background: color-mix(
+    in oklch,
+    var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+    var(--ui-slider-from, var(--accent))
+  );
+  box-shadow: 0 0 0 2px var(--paper-raised);
+}
+
+.ui-slider-input:active::-webkit-slider-thumb,
+.ui-slider-input:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 2px var(--paper-raised),
+    0 0 0 5px var(--accent-tint);
+}
+
+.ui-slider-input:active::-moz-range-thumb,
+.ui-slider-input:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 2px var(--paper-raised),
+    0 0 0 5px var(--accent-tint);
+}
+
+/* Mono and tabular, in the chat bar's facts voice, because it states a
+   result. */
+.ui-slider-readout {
+  border-radius: var(--r-round);
+  background: var(--paper-raised);
+  box-shadow: 0 0 0 1px var(--hair);
+  font-family: var(--f-meta);
+  font-variant-numeric: var(--figures);
+  color: var(--ink-3);
+}
+
+/* ── Overlays ─────────────────────────────────────────────────────────────────
+   The scrim, and the panels that sit on it. Portalled to `<body>`, so no
+   rule here may assume an ancestor. */
+
+.ui-scrim {
+  background: var(--scrim);
+}
+
+.ui-dialog {
+  background: var(--paper-raised);
+  border-color: var(--slip-edge);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-3);
+}
+
+/* ── Wizards ──────────────────────────────────────────────────────────────────
+   The creation wizard's and the export window's (`ui/StepRail`). One
+   question per step, so a step has no hairlines to rule it off. */
+
+.ui-steps-track {
+  border-radius: var(--r-xs);
+  background: var(--hair);
+}
+
+.ui-steps-fill {
+  border-radius: var(--r-xs);
+  background: var(--accent);
+}
+
+.ui-step-dot {
+  border-radius: var(--r-round);
+  background: var(--ink-3);
+}
+
+/* The login spark's tail at the size of a rail, on the loader's palette: a
+   thread white-hot at the head, cyan behind it, with bright knots along it. */
+.ui-steps-comet {
+  border-radius: var(--r-round);
+  background:
+    repeating-linear-gradient(
+      to right,
+      transparent 0 7px,
+      color-mix(in srgb, var(--dots-hot) 85%, transparent) 7px 9px,
+      transparent 9px 15px
+    ),
+    linear-gradient(to right, transparent, var(--dots-cy) 55%, var(--dots-hot));
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--dots-c0) 70%, transparent);
+}
+
+.ui-job-seg {
+  border-radius: var(--r-xs);
+  background: var(--paper-sunk);
+}
+
+.create-card {
+  border-color: var(--hair-soft);
+  border-radius: var(--r);
+  background: var(--paper);
+  color: var(--ink-3);
+}
+
+.create-chip {
+  border-radius: var(--r-xs);
+  /* The sunk well on the card's paper ground, not the tint the panel tags
+     have: inside the dialog the chip sits on `--paper` (the card), so the
+     well is the ground that reads as "in the card" rather than "attached to
+     the page". */
+  background: var(--paper-sunk);
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+}
+
+.ui-dialog-foot {
+  border-top-color: var(--hair-soft);
+  background: var(--paper);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+
+/* Mono, because it is evidence rather than prose. The rule is crimson
+   because it is the reason the dialog exists. */
+.ui-alert-evidence {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+  background: var(--paper-sunk);
+  border-left-color: var(--danger);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+
+@media (max-width: 720px) {
+  .ui-dialog,
+  .ui-dialog-alert {
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+  }
+
+  .ui-dialog-foot {
+    border-radius: 0;
+  }
+}
+
+/* ── Radio cards ─────────────────────────────────────────────────────────── */
+
+.pick {
+  border-color: var(--hair);
+  border-radius: var(--r);
+  background: var(--paper);
+}
+
+.pick[data-on="1"] {
+  border-color: var(--press-edge);
+  border-bottom-color: var(--press-foot);
+  background: var(--press-ground);
+  box-shadow: var(--press-ring);
+}
+
+/* The ring goes on the card, since the radio driving it is not drawn. */
+.pick:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.pick-sub {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+}
+
+.pick-tick {
+  color: var(--accent);
+}
+
+/* ── List rows ────────────────────────────────────────────────────────────────
+   One row for every list a dialog holds: chats, voices, the sources a chat
+   may read. It takes `.ui-menu button`'s small corner and UI face, because a
+   dialog's list and a menu's list are the same kind of thing.
+
+   Hover is the quiet tint, not the menu's phos tint: in a picker there is
+   also a selected row, and a hover that looks like the selection is two
+   answers to "which one". The selection is a trailing tick (`.ui-row-tick`),
+   the model menu's own mark, and the name stays in ink: a green word is
+   colour carrying the state alone. Focus is the ring, for the same reason. */
+
+.ui-row {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--f-chrome);
+}
+
+.ui-row-note {
+  color: var(--ink-3);
+  font-family: var(--f-meta);
+}
+
+.ui-row-tick {
+  color: var(--accent);
+}
+
+/* ── Ticks ────────────────────────────────────────────────────────────────────
+   A setting that is on or off, as a row with a drawn box. The
+   box answers `aria-checked` alone. */
+
+.ui-tick {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--f-chrome);
+}
+
+.ui-tick-box {
+  border-color: var(--field-edge);
+  border-radius: var(--r-xs);
+  color: transparent;
+}
+
+/* A bead: the box drawn as a dot, for a tick that sits on a line (the
+   import's list). Ticked, it fills. */
+.ui-tick-box.ui-tick-bead {
+  border-radius: var(--r-round);
+}
+
+/* ── The import window ───────────────────────────────────────────────────── */
+
+.import-file-remove {
+  border-color: var(--danger);
+  border-radius: var(--r-round);
+  background: transparent;
+  color: var(--danger);
+}
+
+.import-file-remove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--danger-glow);
+}
+
+/* A bead and its line take the colour of what the row becomes (`--bead-c`):
+   ink for a Part, `--leaf` for a Section, so the two kinds part at a glance
+   down the whole list. Shades of one green by depth do not read as two
+   things. Ember and crimson already mean "needs you" and "cannot be undone",
+   and a bead does not borrow either. */
+.import-group {
+  --bead-c: var(--leaf);
+  border-radius: var(--r-sm);
+}
+
+/* The field draws nothing at rest, a hairline under the pointer, and a
+   field's edge while it is typed in, so a name reads as text until it is
+   clicked. */
+input.import-row-title {
+  border-color: transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+}
+
+input.import-row-title:focus {
+  border-color: var(--field-focus-edge);
+  background: var(--paper);
+  outline: none;
+}
+
+.import-bead-ghost {
+  border-radius: var(--r-round);
+  background: var(--bead-c);
+}
+
+.import-seam .import-join {
+  font-family: var(--f-chrome);
+  font-weight: var(--bold-weight);
+  /* Slate, not the bead colour: the dashes are what the join would draw,
+     and the join is the thing to press, so it stands apart from them as
+     the one control on the seam. Ink is too heavy beside the beads; it is
+     the colour under the pointer. */
+  color: var(--ink-3);
+  background: transparent;
+}
+
+.import-peek {
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  color: var(--prose-ink);
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+
+.import-cut-bead {
+  border-radius: var(--r-round);
+  background: var(--accent);
+}
+
+.import-cut:not([data-cut]):focus-visible {
+  outline: none;
+}
+
+/* ── Progress ────────────────────────────────────────────────────────────── */
+
+.ui-prog-bar {
+  border-radius: var(--r-xs);
+  background: var(--paper-sunk);
+}
+
+.ui-prog-bar i {
+  border-radius: var(--r-xs);
+  background: var(--accent);
+}
+
+/* ── The command bar ──────────────────────────────────────────────────────────
+   One floating control surface. The container carries the border, the shape
+   and the shadow; the segments carry none of their own and are separated by
+   hairlines alone. Segments with borders are a toolbar.
+
+   `--bar-radius` is `--r-lg`, not a capsule: a pill reads as a search widget,
+   and a soft rectangle reads as a tool, which is what it is above a page of
+   prose. */
+
+.ui-bar {
+  border-color: var(--bar-edge);
+  border-radius: var(--bar-radius);
+  background: var(--bar-ground);
+  box-shadow: var(--bar-shadow);
+  backdrop-filter: var(--bar-frost);
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────────
+   `--r`, not `--r-round`: the bar has rounded corners rather than circular
+   ones, and a capsule inside it fights the shape it is in. `--r-round` is for the one thing that stays a circle,
+   a status dot. */
+
+.ui-bar-act {
+  border-radius: var(--r);
+}
+
+.ui-bar-act-solid {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.ui-bar-act-solid:hover:not(:disabled) {
+  box-shadow: var(--shadow-accent);
+}
+
+.ui-bar-act-quiet {
+  background: transparent;
+  color: var(--ink-3);
+}
+
+/* A letter for a glyph steps back with its segment while find is engaged,
+   and still holds the 4.5:1 that text needs, where the icons beside it
+   need 3:1. */
+.ui-bar[data-focus="find"] .ui-bar-act-quiet > span {
+  color: color-mix(in srgb, var(--ink-3) 60%, var(--ink));
+}
+
+/* Engaged. A toggle in the bar that is on (the character panel open, the
+   assistant open) looks different from one under the pointer, and hover
+   cannot do both jobs. It takes the pressed ground an engaged control has
+   everywhere in the application. */
+.ui-bar-act[aria-pressed="true"] {
+  background: var(--press-ground);
+  color: var(--press-ink);
+  box-shadow: var(--press-mark);
+}
+
+.ui-bar-act[aria-pressed="true"]:hover:not(:disabled) {
+  background: var(--press-hover);
+}
+
+/* Something behind the button waits on the writer. Ember, the
+   attention ink, and an inset ring rather than a border: a border would move
+   the glyph by its width. The hover keeps the ember and adds no outer ring. */
+.ui-bar-act[data-attention="1"] {
+  color: var(--attention);
+  box-shadow: inset 0 0 0 1px var(--attention-glow);
+}
+
+/* ── Track ───────────────────────────────────────────────────────────────── */
+
+.ui-bar-track-thumb {
+  border-radius: var(--r-sm);
+  background: var(--press-ground);
+  box-shadow: var(--press-mark);
+}
+
+.ui-bar-track button {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+}
+
+.ui-bar-track button[aria-pressed="true"] {
+  color: var(--press-ink);
+}
+
+/* A cell with something waiting behind it takes its label in ember, and no
+   ring: a ring on a cell beside the raised one would read as a second
+   choice. */
+.ui-bar-track button[data-attention="1"] {
+  color: var(--attention);
+}
+
+/* ── Seated ───────────────────────────────────────────────────────────────────
+   The same track, sunk into a trough, with the chosen cell raised out of it:
+   at the top of a panel a bare accent tint reads as a selected list item
+   rather than a switch, so this is a physical control, the chosen label in
+   ink. */
+
+.ui-bar-track[data-seat="sunk"] {
+  border-radius: var(--r-sm);
+  background: var(--seat-trough);
+}
+
+/* ── Tip ─────────────────────────────────────────────────────────────────── */
+
+.ui-tip {
+  border-radius: var(--r-sm);
+  background: var(--tip-solid);
+  box-shadow: 0 0 0 1px var(--tip-edge);
+  color: var(--tip-ink);
+}
+
+/* ── Bubble ───────────────────────────────────────────────────────────────────
+   A surface that points at a selection, on the inverse ground of the toast
+   and the repetition tooltip: a new component, not a new visual idea. */
+
+.ui-bubble {
+  border-radius: var(--r-lg);
+  background: var(--tip-solid);
+  color: var(--tip-ink);
+  box-shadow: var(--shadow-3);
+}
+
+.ui-bubble::after {
+  background: var(--tip-solid);
+}
+
+.ui-bubble button {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--tip-ink);
+  font-family: var(--f-chrome);
+}
+
+.ui-bubble button:hover {
+  background: var(--tip-raised);
+  color: var(--tip-ink-strong);
+}
+
+.ui-bubble button[aria-pressed="true"] {
+  color: var(--tip-ink-strong);
+}
+
+.ui-bubble hr {
+  background: var(--tip-raised);
+}
+
+/* ── Find ────────────────────────────────────────────────────────────────── */
+
+.ui-bar-find {
+  border-radius: var(--r);
+  /* Ink, not slate: with no filled circle behind it, the glyph carries the
+     weight on its own. */
+  color: var(--ink);
+}
+
+.ui-bar-find-input {
+  outline: none;
+  background: transparent;
+  font-family: var(--f-chrome);
+  color: var(--ink);
+}
+
+.ui-bar-find-count {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-bar-find-clear {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.ui-bar-find-busy {
+  color: var(--ink-3);
+}
+
+/* ── Menu ────────────────────────────────────────────────────────────────── */
+
+.ui-menu {
+  background: var(--paper-raised);
+  border-color: var(--slip-edge);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-2);
+}
+
+/* ── Popover ──────────────────────────────────────────────────────────────────
+   The menu's panel with content instead of a list (`overlay/Popover.tsx`):
+   the same surface, edge and shadow, so a reading's panel and the model
+   button's menu beside it read as one family. */
+
+.ui-popover {
+  background: var(--paper-raised);
+  border-color: var(--slip-edge);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-2);
+}
+
+.ui-menu button {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--f-chrome);
+}
+
+.ui-menu button:hover,
+.ui-menu button:focus-visible {
+  background: var(--accent-tint);
+  color: var(--accent);
+  outline: none;
+}
+
+/* A destructive item is crimson. Qualified by the element, or
+   `.ui-menu button` outranks it and the item is not red at all. */
+.ui-menu button.ui-menu-danger {
+  color: var(--danger);
+}
+
+.ui-menu button:disabled {
+  background: transparent;
+  color: var(--ink);
+}
+
+.ui-menu-group {
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+}
+
+/* ── The prose context menu ───────────────────────────────────────────────────
+   The editor's right-click menu takes the tip's inverse surface, as the
+   selection bubble takes an inverse one, so the floating surfaces over the
+   prose read as one family. Its shortcuts are the `.ui-kbd` key caps the
+   command bar's tips print. */
+
+.ui-menu.ui-menu-inverse button {
+  color: var(--tip-ink);
+}
+
+.ui-menu.ui-menu-inverse button:hover,
+.ui-menu.ui-menu-inverse button:focus-visible {
+  background: var(--tip-raised);
+  color: var(--tip-ink-strong);
+}
+
+.ui-menu.ui-menu-inverse button:disabled {
+  background: transparent;
+  color: var(--tip-ink);
+}
+
+/* ── The command palette ─────────────────────────────────────────────────── */
+
+.palette {
+  background: var(--paper-raised);
+  border-color: var(--slip-edge);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-3);
+}
+
+.palette-query input {
+  outline: none;
+  background: transparent;
+  font-family: var(--f-chrome);
+  color: var(--ink);
+}
+
+.palette-row {
+  border-radius: var(--r-sm);
+  background: transparent;
+  font-family: var(--f-chrome);
+  color: var(--ink);
+}
+
+/* One highlight, driven by the arrow keys and followed by the pointer. A
+   `:hover` tint beside it would draw two. */
+.palette-row-on {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.palette-row-on .palette-group {
+  color: var(--accent);
+  opacity: 1;
+}
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+
+.ui-toast {
+  background: var(--tip-solid);
+  color: var(--tip-ink);
+  border-radius: var(--r);
+  box-shadow:
+    0 0 0 1px var(--tip-edge),
+    var(--shadow-2);
+}
+
+.ui-toast-undo {
+  border-radius: var(--r-sm);
+  background: var(--tip-raised);
+  color: var(--tip-ink-strong);
+  font-family: var(--f-chrome);
+  font-weight: var(--label-weight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-dots i {
+    background: var(--dots-cy);
+    box-shadow: 0 0 calc(var(--dots-u) * 3)
+      color-mix(in srgb, var(--dots-cy) 50%, transparent);
+  }
+
+  .ui-skeleton {
+    background: var(--paper-sunk);
+  }
+}
+
+/* ── Reach ───────────────────────────────────────────────────────────────── */
+
+@media (pointer: coarse) {
+  /* A boundary that is also a target has to read as an edge at arm's length,
+     where a hairline reads as nothing. Only these three: `--hair-firm` is the
+     card edge, and using it for every divider on a phone would make the page
+     a grid of boxes. */
+  .ui-input,
+  .ui-select,
+  .ui-seg {
+    border-color: var(--hair-firm);
+  }
+}
+
+/* ── Standing statuses ───────────────────────────────────────────────────── */
+
+.status-notice-dismiss {
+  color: currentColor;
+}
+
+.status-notice-dot {
+  border-radius: var(--r-round);
+  background: currentColor;
+}
+
+/* ── The Library ─────────────────────────────────────────────────────────── */
+
+/* ── The application bar ─────────────────────────────────────────────────── */
+
+/* Ground, then grain, then the flat paper underneath. Two radial pools
+   rather than one linear ramp, because a ramp bands across a wide window. The
+   grain hides the banding an 8-bit display adds to any gradient. The tint's
+   alpha ceiling is stated with `--ground` in `palette.ts`. */
+.app {
+  background-color: var(--paper);
+  background-image: var(--grain), var(--ground);
+}
+
+/* Grain alone on the phone. The pools are sized in pixels and placed in
+   percent, so at 375 they each span the whole width, overlap across the
+   middle, and land the green corner half again as dark as the desk's: two
+   hues over every pixel of the top of the screen. */
+@media (max-width: 720px) {
+  .app {
+    background-image: var(--grain);
+  }
+}
+
+.app-top {
+  border-bottom-color: var(--hair-soft);
+}
+
+.app-wordmark {
+  font-family: var(--f-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--name-tracking);
+}
+
+.app-avatar {
+  border-radius: var(--r-round);
+}
+
+/* ── The Library's title ─────────────────────────────────────────────────── */
+
+.lib-title {
+  font-family: var(--f-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+}
+
+/* ── Storage ─────────────────────────────────────────────────────────────── */
+
+/* Filled at rest: a word, two counts and a glyph in a row do not read as one
+   object, let alone a button, unless something draws the object. The tint
+   is the lightest step that bounds it without competing with the solid New
+   project beside it. */
+.shelf-storage-face {
+  border-radius: var(--r);
+  background: var(--wash-subtle);
+  color: var(--ink-3);
+}
+
+.shelf-storage-face:hover {
+  background: var(--hover-quiet);
+  color: var(--ink);
+}
+
+/* The interface's face, stated, so the word does not take the button's
+   inherited one. */
+.shelf-scope {
+  font-family: var(--f-chrome);
+  font-weight: var(--strong-weight);
+  color: var(--ink);
+}
+
+.shelf-tally {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── The storage panel's rows ────────────────────────────────────────────── */
+
+.store-row {
+  border-radius: var(--r);
+}
+
+.store-row[data-on="1"] {
+  background: var(--accent-tint);
+}
+
+.store-note {
+  font-family: var(--f-meta);
+  font-weight: normal;
+  color: var(--ink-3);
+}
+
+/* ── The shelf ───────────────────────────────────────────────────────────── */
+
+/* `--hair-firm` and a resting shadow, because the fill cannot carry the card
+   alone: `--paper-raised` over `--paper` measures 1.08:1 in light and 1.12:1
+   in dark, so a card defined by its border alone reads as a rectangle of text
+   rather than an object.
+   Lift rather than outline: a border heavy enough to do the job alone would
+   be a grey box. */
+.project {
+  border-color: var(--hair-firm);
+  /* The panes' radius: a card is a surface of the same kind as the Dock and
+     the bar above it. */
+  border-radius: var(--r-lg);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.project::before {
+  border-radius: inherit;
+  border-left-color: var(--accent);
+  /* The glow is a drop-shadow, not a box-shadow: this box is the whole card,
+     and a box-shadow would light all of it. A drop-shadow follows what is
+     painted, which is the strip alone.
+
+     It rests as the same shadow in a transparent colour, so under the hand
+     only the colour changes and the glow fades in. From `none` the browser
+     would animate it up from a zero-blur black shadow: the glow would grow,
+     and on a light ground begin as a dark halo. */
+  filter: drop-shadow(0 0 6px transparent);
+}
+
+.project:hover,
+.project:focus-within {
+  border-color: var(--accent-tint-2);
+  box-shadow: var(--shadow-2);
+}
+
+.project:hover::before,
+.project:focus-within::before {
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.project-gone::before {
+  border-left-color: var(--ink-3);
+}
+
+/* A gone card keeps its firm hairline and no glow under the hand, so it never
+   takes the accent. */
+.project-gone:hover,
+.project-gone:focus-within {
+  border-color: var(--hair-firm);
+}
+
+.project-gone:hover::before,
+.project-gone:focus-within::before {
+  filter: drop-shadow(0 0 6px transparent);
+}
+
+/* `--attention` instead of the accent. Hover repeats the healthy card's
+   border tint and glow in that colour. The note line prints the sentence in
+   `--attention`, so the colour is never the only signal. */
+.project-attention::before {
+  border-left-color: var(--attention);
+}
+
+.project-attention:hover,
+.project-attention:focus-within {
+  border-color: var(--attention-tint);
+}
+
+.project-attention:hover::before,
+.project-attention:focus-within::before {
+  filter: drop-shadow(0 0 6px var(--attention-glow));
+}
+
+.project-title {
+  font-family: var(--f-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--name-tracking);
+}
+
+.project-open:hover {
+  color: var(--accent);
+}
+
+.project-where {
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+  color: var(--ink-3);
+}
+
+.project-stats {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.project-stats b {
+  color: var(--ink);
+  font-weight: var(--bold-weight);
+}
+
+.project-stats > span + span::before {
+  color: var(--hair);
+}
+
+.project-more {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.project-more:hover {
+  background: var(--hover-sunk);
+  color: var(--ink);
+}
+
+/* ── First run, and no match ─────────────────────────────────────────────── */
+
+.lib-empty {
+  border-color: var(--hair);
+  border-radius: var(--r);
+}
+
+.lib-empty p {
+  color: var(--ink-3);
+}
+
+/* The setup card and the start panel are one weight: raised paper on one
+   hair, so the page reads set up, then begin. */
+.ui-checklist,
+.welcome-start {
+  border-color: var(--hair);
+  border-radius: var(--r-lg);
+  background: var(--paper-raised);
+}
+
+.ui-checklist-flash {
+  background: var(--accent-tint-2);
+}
+
+.welcome-start p {
+  color: var(--ink-3);
+}
+
+/* ── The settings sheet ──────────────────────────────────────────────────── */
+
+.sheet {
+  background: var(--paper);
+  border-left-color: var(--hair);
+  box-shadow: var(--shadow-3);
+}
+
+.sheet-nav button {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+  font-weight: var(--quiet-weight);
+}
+
+.sheet-nav button:hover {
+  background: var(--hover-sunk);
+  color: var(--ink);
+}
+
+.sheet-nav button[aria-current="true"] {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.sheet-pane h3 {
+  font-family: var(--f-meta);
+  font-weight: var(--bold-weight);
+  letter-spacing: 0.13em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+/* ── About ───────────────────────────────────────────────────────────────── */
+
+.about-emblem {
+  border-radius: var(--r-round);
+}
+
+.about-foot a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+/* ── Name-and-answer settings ────────────────────────────────────────────── */
+
+.ai-settings-pairs input,
+.ai-settings-pairs select {
+  color: var(--ink);
+  background: var(--field);
+  border-color: var(--hair);
+  border-radius: var(--r);
+}
+
+.ai-address-field input {
+  font-family: var(--f-mono);
+}
+
+.ai-address-field input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+/* ── Inside an AI card ───────────────────────────────────────────────────── */
+
+.ui-access-body h4 {
+  font-weight: var(--medium-weight);
+  color: var(--ink);
+}
+
+.ai-remote-chosen button {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+}
+
+.ai-remote-chosen button:hover,
+.ai-remote-chosen button:focus-visible {
+  background: var(--accent-tint);
+}
+
+.ai-remote-chosen button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.ai-remote-filter {
+  color: var(--ink);
+  background: var(--field);
+  border-color: var(--hair);
+  border-radius: var(--r);
+}
+
+.ai-connection-status.is-verified {
+  color: var(--accent);
+}
+
+/* A failure is the writer's problem to act on: crimson, the failure ink the
+   assistant's failed-save row also has. Ember belongs to unsaved work still
+   in hand, and a connection that failed is not that. */
+.ai-connection-status.is-failed,
+.ai-connection-status.is-unverified {
+  color: var(--danger);
+}
+
+/* ── Theme tiles ──────────────────────────────────────────────────────────────
+   Each tile is painted from its theme's own tokens, so it previews the real
+   thing. */
+
+.tile {
+  border-color: var(--hair);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+}
+
+/* ══ Landing ═════════════════════════════════════════════════════════════════
+   The page at `/`: the display face for the promise, the glass of the
+   app's own panes round a page of prose, and the accent only as light: the
+   glow under the live page, the caret, a picture lit. */
+
+/* ── Landing: the hero ────────────────────────────────────────────────────── */
+
+.landing-hero {
+  background: radial-gradient(
+    60% 45% at 50% 78%,
+    var(--accent-glow),
+    transparent 72%
+  );
+}
+
+/* The hero's glow, on the finale's layer half as tall again as the section:
+   the same size and place, measured on the taller box. */
+.landing-finale::before {
+  background: radial-gradient(
+    60% 30% at 50% 52%,
+    var(--accent-glow),
+    transparent 72%
+  );
+}
+
+/* ── Landing: screenshots and the foot ────────────────────────────────────── */
+
+.landing-foot a {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+/* ── Landing: headings ────────────────────────────────────────────────────── */
+
+.landing-eyebrow,
+.landing-palette-group h4,
+.landing-persona-role {
+  color: var(--accent);
+  font-family: var(--f-meta);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-case);
+}
+
+.landing-part-title,
+.landing-h2,
+.landing-promise h3,
+.landing-persona-name {
+  color: var(--ink);
+  font-family: var(--f-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+}
+
+.landing-part-problem,
+.landing-section-lede,
+.landing-promise p,
+.landing-card-body,
+.landing-more ul,
+.landing-faq details p {
+  color: var(--ink-2);
+}
+
+/* ── Landing: the editorial team ──────────────────────────────────────────── */
+
+.landing-chips button {
+  background: transparent;
+  border-color: var(--hair);
+  border-radius: var(--r-round);
+  color: var(--ink-2);
+  font-family: var(--f-ui);
+}
+
+.landing-chips button:hover {
+  color: var(--ink);
+}
+
+.landing-chips button[aria-pressed="true"] {
+  background: var(--press-ground);
+  border-color: var(--accent);
+  color: var(--press-ink);
+}
+
+/* ── Reach ────────────────────────────────────────────────────────────────────
+   The AI settings' fields are bare elements, not the kit's classes, so they
+   take the kit's firmer coarse-pointer edge here. */
+
+@media (pointer: coarse) {
+  .ai-settings-pairs input,
+  .ai-settings-pairs select {
+    border-color: var(--hair-firm);
+  }
+}
+
+/* ── Books between crop marks ─────────────────────────────────────────────────
+   The `pageCorners` decoration's "crop" (`theme/domain/decorations.ts`): no
+   card and no shadow, each book a page between four crop marks where its edge
+   would be cut, drawn as the editor's frame draws them. In the list each is a
+   line over a hairline. An access card is the same page. The marks take the
+   ink under the hand, unless the book is gone. Matte does not pick this
+   option; the block stays so the sheet covers every frame option. */
+
+:root[data-crop="1"] .project,
+:root[data-crop="1"] .ui-access {
+  --crop-ink: var(--ink-3);
+  border-color: transparent;
+  border-radius: 0;
+  background:
+    linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 14px 1px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 1px 14px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 14px 1px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 1px 14px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 14px 1px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 1px 14px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 14px 1px
+      no-repeat,
+    linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 1px 14px
+      no-repeat;
+}
+
+:root[data-crop="1"] .project {
+  box-shadow: none;
+}
+
+:root[data-crop="1"] .project:is(:hover, :focus-within) {
+  --crop-ink: var(--ink);
+}
+
+:root[data-crop="1"] .project.project-gone:is(:hover, :focus-within) {
+  --crop-ink: var(--ink-3);
+}
+
+:root[data-crop="1"] .project::before {
+  border-radius: 0;
+  filter: none;
+}
+
+:root[data-crop="1"] .project .project-where {
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  letter-spacing: var(--label-tracking);
+}
+
+:root[data-crop="1"] .projects-list .project,
+:root[data-crop="1"] .projects-list .project:is(:hover, :focus-within) {
+  background: none;
+  border-color: var(--hair);
+}
+
+/* ── The editor ──────────────────────────────────────────────────────────── */
+
+/* ── Editor shell ────────────────────────────────────────────────────────── */
+
+.editor-shell {
+  background-color: var(--canvas);
+  background-image: var(--grain), var(--ground-quiet);
+}
+
+/* ── The page's sheet ─────────────────────────────────────────────────────────
+   On the wide plane the page is one sheet on the desk, painted with
+   `--sheet`, `--sheet-edge` and `--sheet-shadow`. The narrow and phone planes
+   have no sheet, so there the sheet's paint is the page's whole ground. */
+
+/* The landing's demos stand on the same page as the editor. */
+.editor-shell:not([data-phone="1"]):not([data-narrow="1"])::before,
+.landing-sheet {
+  border-color: var(--sheet-edge);
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  box-shadow: var(--sheet-shadow);
+}
+
+/* ── Comments as notes ───────────────────────────────────────────────────── */
+
+.cm-add-chapter {
+  opacity: 1;
+}
+
+:root[data-comments="notes"] :is(.cm-pmark, .cm-marker[data-at="end"]) {
+  font-family: var(--f-prose);
+  font-weight: var(--medium-weight);
+  font-style: normal;
+  color: var(--spark);
+}
+
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  :is(.cm-card, .cm-card[data-active="1"], .cm-card[data-state="proposed"]) {
+  background: none;
+  box-shadow: none;
+}
+
+/* Grain alone on the phone: at 375 there is no middle outside the pools for
+   the measure to sit on, so a periphery-only tint would cover everything. */
+@media (max-width: 720px) {
+  .editor-shell {
+    background-image: var(--grain);
+  }
+}
+
+/* ── The Desk ────────────────────────────────────────────────────────────── */
+
+.desk-eyebrow {
+  font-family: var(--f-meta);
+  font-weight: var(--medium-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+.desk-last {
+  border-left-color: var(--hair);
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  color: var(--prose-ink);
+}
+
+.desk-primary {
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--f-chrome);
+  font-weight: var(--strong-weight);
+  font-variant-caps: var(--control-caps);
+  letter-spacing: var(--control-tracking);
+}
+
+.desk-primary:hover {
+  box-shadow: var(--shadow-accent);
+}
+
+/* Quiet, because resuming is the common case. */
+.desk-quiet {
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+  font-variant-caps: var(--control-caps);
+  letter-spacing: var(--control-tracking);
+  font-weight: var(--link-weight);
+}
+
+.desk-quiet:hover {
+  background: var(--hover-quiet);
+  color: var(--ink);
+}
+
+.desk-ledger b {
+  color: var(--accent);
+  font-weight: var(--bold-weight);
+}
+
+/* Ember, because an open thread is something outstanding rather than
+   something wrong. */
+.desk-thread {
+  border-radius: var(--r);
+  background: var(--attention-tint);
+  color: var(--attention);
+}
+
+.desk-empty p {
+  color: var(--ink-3);
+}
+
+/* ── The prose column ────────────────────────────────────────────────────── */
+
+.editor {
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  color: var(--prose-ink);
+  /* The native caret is hidden; the editor draws its own. */
+  caret-color: transparent;
+}
+
+[contenteditable]:focus-visible {
+  outline: none;
+}
+
+/* ── Fake cursor ─────────────────────────────────────────────────────────── */
+
+.fake-cursor {
+  border-radius: 1px;
+  /* The theme's primary: the caret marks where attention goes, which is what
+     the accent is for. */
+  background: var(--accent);
+}
+
+/* ── The revision rail ────────────────────────────────────────────────────────
+   The timeline's face (Ctrl+Shift+H), a hairline in the paper's margin.
+
+   The dim is focus mode's token, applied as `color: var(--ink-dim)` on the
+   column, never an opacity, which would fade the caret, the search marks and
+   the repetition underline too. Focus mode and the rail together are one
+   dim, and share the h2 carve-out. */
+
+.rev-rail-head {
+  border-radius: var(--r-round);
+  background: var(--ink);
+}
+
+/* The walk's marker is hollow while it is off Now: a ring marks a previewed
+   position, the filled disc marks the head. `--hair-firm` keeps the ring
+   within the existing tones. */
+.rev-rail-head-walking {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--hair-firm);
+}
+
+/* Each step is a small glass pill, so it reads as a control over the dimmed
+   paper. It is quiet navigation like Cancel; `--accent-tint` stays
+   Revert's alone. */
+.rev-step {
+  border-radius: var(--r-sm);
+  background: var(--glass);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    var(--glass-edge);
+  color: var(--ink-3);
+}
+
+.rev-step:hover:not(:disabled) {
+  background: var(--hover-row);
+}
+
+.rev-step:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.rev-chip {
+  border-color: var(--bar-edge);
+  border-radius: var(--r-sm);
+  background: var(--bar-ground);
+  box-shadow: var(--bar-shadow);
+  backdrop-filter: var(--bar-frost);
+}
+
+.rev-chip button {
+  background: transparent;
+  font-family: var(--f-chrome);
+  font-weight: var(--strong-weight);
+  font-variant-caps: var(--control-caps);
+  letter-spacing: var(--control-tracking);
+}
+
+.rev-chip button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* ── Page break ──────────────────────────────────────────────────────────── */
+
+/* Stated, not `bolder`: from the light prose weight `bolder` lands on 400,
+   no heavier than the regular around it. */
+.editor strong,
+.import-peek strong,
+.msg-assistant .dock-read blockquote strong {
+  font-weight: var(--bold-weight);
+}
+
+/* ── The titlebar ────────────────────────────────────────────────────────── */
+
+.ed-palette {
+  font-weight: var(--quiet-weight);
+}
+
+.titlebar-project {
+  background: transparent;
+  font-family: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+  font-weight: var(--name-weight);
+  color: var(--ink);
+  font-variant-caps: var(--head-caps);
+  letter-spacing: var(--head-tracking);
+}
+
+/* The crumb's separator at the meta's own strength: a dimmer stroke
+   falls under 4.5:1. */
+.titlebar-sep {
+  opacity: 1;
+}
+
+.titlebar-idx {
+  font-variant-numeric: var(--figures);
+  letter-spacing: calc(var(--meta-tracking) * 4);
+}
+
+/* ── The way back to the library ──────────────────────────────────────────────
+   The way back stays quiet, in mono like the path beside it. The nudge that
+   names it on a session's first visit is an ink caption under an accent
+   ring. */
+
+.titlebar-return {
+  border-radius: var(--r-sm);
+  color: var(--ink-3);
+  text-decoration: none;
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+}
+
+.titlebar-return:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.titlebar-return[data-nudge="1"] {
+  box-shadow: 0 0 0 4px var(--accent-tint);
+}
+
+.titlebar-return-nudge {
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+}
+
+/* ── The titlebar's frost ─────────────────────────────────────────────────────
+   `.chrome` is a transparent overlay, so the titlebar stands on one band of
+   frost that fogs prose passing under it and paints nothing over an empty
+   ground. It has two parts.
+
+   - A blur with no fill. A blur of flat paper is flat paper, and of
+     `--ground-quiet`'s pools is the same pools. No `saturate()`, unlike the
+     panels' glass: saturating moves the paper's hue.
+   - A veil that is the ground. A blur keeps all the ink, so the veil lifts
+     it toward the paper. It is a copy of the shell's background (`--canvas`,
+     `--grain`, `--ground-quiet`), pinned to the window by `fixed`, so over
+     empty ground it paints what is already there and over prose it fades
+     the ink by its alpha. A plain paper tint would patch over the pools in
+     the top corners. Where the fog is full, the veil is the ground at a
+     little over half strength. */
+
+.titlebar::before {
+  --frost-blur: 6px;
+  backdrop-filter: blur(var(--frost-blur));
+}
+
+.titlebar-veil {
+  --frost-a: 0.35;
+  background-color: var(--canvas);
+  background-image: var(--grain), var(--ground-quiet);
+  background-attachment: fixed;
+}
+
+/* ── A face that grows ───────────────────────────────────────────────────── */
+
+.ed-fold {
+  border-radius: var(--r);
+}
+
+.ed-fold-face {
+  color: var(--ink-3);
+  font-weight: var(--strong-weight);
+}
+
+.ed-fold-comments .ed-fold-face {
+  border-radius: var(--r);
+}
+
+.ed-fold-comments .ed-fold-face[data-pressed="1"] {
+  background: var(--press-ground);
+  color: var(--press-ink);
+  box-shadow: var(--press-mark);
+}
+
+/* ── Special characters ──────────────────────────────────────────────────── */
+
+.char-key {
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--f-mono);
+}
+
+.char-key:hover {
+  background: var(--accent-tint);
+  border-color: var(--accent-glow);
+  color: var(--accent);
+}
+
+/* ── The editor's find ───────────────────────────────────────────────────── */
+
+.find-row input {
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--f-chrome);
+  outline: none;
+}
+
+.find-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.find-tog:hover:not(:disabled):not([aria-pressed="true"]) {
+  background: var(--hover-tool);
+  color: var(--ink);
+}
+
+/* ── The shortcut sheet ──────────────────────────────────────────────────── */
+
+.keys-group h3 {
+  font-family: var(--f-meta);
+  font-weight: var(--medium-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+/* ── Document tree ────────────────────────────────────────────────────────────
+   A sibling of the toolbar: the same glass, with a softer shadow so a tall
+   surface reads as calm. */
+
+.doc-tree {
+  background: var(--pane-ground);
+  box-shadow: var(--pane-shadow);
+  backdrop-filter: var(--pane-frost);
+  border-color: var(--pane-edge);
+  border-radius: var(--pane-radius);
+}
+
+/* ── The panel's find ────────────────────────────────────────────────────── */
+
+.dt-find {
+  /* `--r-sm`, not the bar's `--r`: the seats beneath it in the same column
+     are `--r-sm`, and one column takes one corner. */
+  border-radius: var(--r-sm);
+  /* Slate, not the bar's ink: the bar's glyph keeps the weight of an
+     ink-filled circle, and this one has no fill. */
+  color: var(--ink-3);
+}
+
+/* ── Search results ──────────────────────────────────────────────────────── */
+
+/* The prose face, because these are the writer's words: the one place in
+   the panel that quotes the book rather than naming a part of it. */
+.dt-search-excerpt {
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  color: var(--ink-3);
+}
+
+/* ── A body source and its occurrences ────────────────────────────────────────
+   A Part or Section under the body heading is a heading line naming the
+   node, over one quotation for every place inside it that holds the query.
+   The heading line takes no hover tint: `.dt-search-row` paints one, and a
+   surface does not light under the pointer and then do nothing. */
+
+.dt-search-row.dt-search-head:hover {
+  background: transparent;
+}
+
+/* ── Regions ──────────────────────────────────────────────────────────────────
+   `.dt-region-label` is the voice that travels: the panel's heading and the
+   search face's group heads use it, so they cannot drift. */
+
+.dt-region-label {
+  background: transparent;
+  font-family: var(--f-meta);
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+/* ── The rail ────────────────────────────────────────────────────────────── */
+
+.dt-rail button {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-meta);
+  letter-spacing: calc(var(--meta-tracking) * 3);
+  font-variant-numeric: var(--figures-text);
+}
+
+.dt-rail button:hover {
+  background: var(--hover-row);
+  color: var(--ink);
+}
+
+.dt-rail button[aria-current="true"],
+/* The search's face on the rail is lit as the current Part is: it is what
+   the panel will open onto. */
+.dt-rail .dt-rail-find {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.dt-rail hr {
+  background: var(--hair-soft);
+}
+
+/* ── The recycle bin ─────────────────────────────────────────────────────── */
+
+.dt-bin-restore:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* ── The boundary's own control ───────────────────────────────────────────────
+   Quiet at rest, accent at the moment of use: a lit dot at the prose's edge
+   for as long as the writer works would go against the editor's posture,
+   where the tree's own actions sit quiet on slate. The seat is the
+   panel's material, a hairline on raised paper, with the glyph in slate until
+   a pointer or focus arrives; then the seat fills with the accent, the lit
+   state `.ui-tick`'s box takes when ticked. */
+
+.dt-collapse {
+  border-color: var(--hair);
+  border-radius: var(--r-round);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-1);
+  color: var(--ink-3);
+}
+
+.dt-collapse:hover,
+.dt-collapse:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-fill);
+}
+
+/* ── Rows ────────────────────────────────────────────────────────────────── */
+
+.dt-row:hover {
+  background: var(--hover-row);
+  color: var(--ink);
+}
+
+.dt-part > :is(.dt-idx, .dt-words) {
+  font-weight: var(--quiet-weight);
+}
+
+.dt-label {
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+}
+
+.dt-label:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--r-xs);
+}
+
+.dt-row::before {
+  border-radius: 0 1px 1px 0;
+  background: var(--accent);
+}
+
+/* The active row keeps its ink; the fill and the rule carry the accent. The
+   marks recolour, never the title, which is the writer's chapter name. */
+.dt-row.active {
+  background: var(--row-selected);
+}
+
+/* ── Ticking rows to move together ───────────────────────────────────────── */
+
+/* A ticked row: a neutral tint, a step firmer than hover. No left rule and no
+   accent, which belong to the open file (`.active`), so a ticked row never
+   reads as open. The box's fill carries the accent. A row both open and
+   ticked stays `.active`, and its box says it is ticked. */
+.dt-row.selected,
+.dt-row.selected:hover {
+  background: var(--wash-strong);
+}
+
+.dt-row.selected.active {
+  background: var(--row-selected);
+}
+
+/* ── Moving ──────────────────────────────────────────────────────────────── */
+
+.dt-moving-stop {
+  color: inherit;
+}
+
+/* Pinned, the line stands on the panel's paper so scrolling rows do not
+   show through. */
+
+.dt-landing:hover,
+.dt-landing:focus-visible {
+  background: var(--accent-tint);
+  border-radius: var(--r-sm);
+}
+
+.dt-landing:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* ── Expand and collapse ─────────────────────────────────────────────────── */
+
+.dt-empty {
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  font-style: var(--aside-style);
+  color: var(--ink-3);
+}
+
+/* Quiet by voice, not by hiding: a pressable control keeps its full slate.
+   The pill is `.ref-card-add`'s recipe (slate word, tint hover) with the
+   tree's corner, so the two cannot drift. */
+.dt-add {
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+}
+
+.dt-add:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* ── Drop indicator ──────────────────────────────────────────────────────── */
+
+.dt-drop-line::before {
+  border-radius: var(--r-round);
+  background: var(--accent);
+}
+
+/* ── Inline naming ───────────────────────────────────────────────────────── */
+
+.dt-name-input {
+  border-radius: var(--r-xs);
+  background: var(--field);
+  box-shadow: inset 0 0 0 1px var(--accent-glow);
+  color: var(--ink);
+  font-family: var(--f-chrome);
+}
+
+.dt-name-input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.dt-name-input.invalid {
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+
+.dt-state-hint {
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  font-style: var(--aside-style);
+  color: var(--ink-3);
+}
+
+/* ── Undo toast ──────────────────────────────────────────────────────────── */
+
+.dt-toast {
+  border-radius: var(--r-sm);
+  background: var(--tip);
+  box-shadow:
+    0 0 0 1px var(--tip-edge),
+    var(--shadow-2);
+}
+
+.dt-toast-undo {
+  border-radius: var(--r-sm);
+  background: var(--tip-raised);
+  color: var(--tip-ink-strong);
+  font-family: var(--f-chrome);
+  font-weight: var(--medium-weight);
+}
+
+/* ── The journal notice ───────────────────────────────────────────────────────
+   The quiet notice that a stale undo journal was dropped at open, in the
+   undo toast's family. */
+
+.rev-notice {
+  border-radius: var(--r-sm);
+  background: var(--tip);
+  box-shadow:
+    0 0 0 1px var(--tip-edge),
+    var(--shadow-2);
+  font-family: var(--f-chrome);
+  color: var(--tip-ink);
+}
+
+/* ── The save gutter ──────────────────────────────────────────────────────────
+   Which paragraphs are not yet on disk. Two inks: `--attention`, the token
+   for work not yet written, draws the dirty mark, and a write that did not
+   land is crimson, the failure ink shared with the save chip and the tree
+   row. */
+
+.save-gutter i {
+  border-radius: 1px;
+  background: var(--attention);
+}
+
+/* ── The margin's comments ────────────────────────────────────────────────────
+   The passages are painted through the Custom Highlight API, never marks: a
+   `<p>` touched by anything forces `patchDocument` to rebuild every
+   paragraph. */
+
+.cm-card {
+  border-color: var(--hair);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  font-family: var(--f-chrome);
+  color: var(--ink);
+}
+
+.cm-kicker {
+  letter-spacing: 0.04em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+.cm-orphan q,
+.cm-quote {
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  font-style: var(--quote-style);
+  color: var(--ink-3);
+}
+
+.cm-face-letter {
+  font-weight: var(--bold-weight);
+  background: var(--wash-strong);
+}
+
+.cm-searched a {
+  color: inherit;
+}
+
+.cm-input {
+  border-color: var(--hair-firm);
+  border-radius: var(--r-sm);
+  background: var(--field);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+}
+
+.cm-input:focus {
+  outline: none;
+  box-shadow: var(--shadow-accent);
+}
+
+.dt-tag {
+  border-radius: var(--r-xs);
+  background: var(--chip);
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+}
+
+/* The key names the fact in the writer's language and stays dim; the value,
+   what was stored, is in ink. */
+.dt-tag-k {
+  color: var(--ink-3);
+}
+
+.dt-tag-v {
+  color: var(--ink);
+}
+
+/* ── The foot ────────────────────────────────────────────────────────────── */
+
+/* A step firmer than the quiet ink: its 10px words keep 4.5:1 under the
+   shadow of a card opened above them. */
+.dt-foot {
+  border-top-color: var(--hair-soft);
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+  color: color-mix(in srgb, var(--ink-3) 80%, var(--ink));
+}
+
+.dt-foot-demo-hint {
+  color: var(--ink-3);
+  font-style: var(--aside-style);
+}
+
+.dt-foot-act {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: inherit;
+}
+
+.dt-foot-theme {
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+}
+
+/* Raised paper and the deepest shadow rather than glass: the card sits on
+   top of the page. */
+.dt-prefs {
+  border-color: var(--hair);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-3);
+}
+
+/* ── Writing preferences ─────────────────────────────────────────────────── */
+
+.dt-pick-select {
+  border-color: var(--hair-firm);
+  border-radius: var(--r-sm);
+  background: var(--paper-sunk);
+  color: var(--ink);
+  font-family: var(--f-meta);
+}
+
+.dt-pick-select:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+/* ── The dock ─────────────────────────────────────────────────────────────────
+   One surface with several faces, in its sibling the structure panel's
+   material. */
+
+.ed-dock {
+  border-color: var(--pane-edge);
+  border-radius: var(--pane-radius);
+  background: var(--pane-ground);
+  box-shadow: var(--pane-shadow);
+  backdrop-filter: var(--pane-frost);
+}
+
+.dock-resize::before {
+  border-radius: 1px;
+  background: transparent;
+}
+
+.dock-resize:focus-visible {
+  outline: none;
+}
+
+/* Lit from its own hover, focus and press only, never from the panel's
+   hover as the dock's is. The tree is hovered constantly while the writer
+   reads titles, and a panel-hover rule would light an accent beside the
+   prose on almost every crossing. */
+.panel-resize::before {
+  border-radius: 1px;
+  background: transparent;
+}
+
+.panel-resize:focus-visible {
+  outline: none;
+}
+
+.dock-meta {
+  font-family: var(--f-meta);
+  letter-spacing: 0.1em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+/* ── The snapshot face ────────────────────────────────────────────────────────
+   The project's saved moments as a quiet table in the dock's voice: the
+   dock-meta eyebrow and tabular dates over the reference reader's paper. */
+
+.snap-rel {
+  border-radius: var(--r-xs);
+  background: var(--wash-subtle);
+  font-family: var(--f-meta);
+  font-variant-numeric: var(--figures);
+  color: var(--ink-3);
+}
+
+/* The rail controls' focus voice: the pill is a button, and keyboard users
+   must see it take focus as clearly as the rail's steps. */
+.snap-rel:focus-visible,
+.ref-card-head:focus-visible,
+.ref-card-row:focus-visible,
+.ref-card-add:focus-visible,
+.ai-new-chat:focus-visible,
+.ref-picker-row:focus-visible,
+.ref-picker-close:focus-visible,
+.ref-row-del:focus-visible,
+.ref-row-ren:focus-visible,
+.dt-dock-button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.snap-row {
+  border-bottom-color: var(--hair);
+}
+
+.snap-row.selected {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.snap-tick {
+  color: var(--accent);
+}
+
+.snap-adopt {
+  font-family: var(--f-chrome);
+  font-weight: var(--quiet-weight);
+  letter-spacing: var(--meta-tracking);
+  color: var(--accent);
+  background: none;
+  border-radius: var(--r-sm);
+  font-variant-caps: var(--control-caps);
+}
+
+.snap-title-input {
+  font-family: var(--f-chrome);
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--accent);
+  border-radius: var(--r-sm);
+  outline: none;
+}
+
+.snap-add,
+.ref-card-add,
+.ai-new-chat {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+}
+
+.ref-card {
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--paper);
+}
+
+.ref-card-head {
+  background: transparent;
+  color: var(--row-ink);
+  font-family: var(--f-chrome);
+  font-weight: var(--head-weight);
+  font-variant-caps: var(--head-caps);
+  letter-spacing: var(--head-tracking);
+}
+
+.ref-card-row {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+}
+
+.ref-card-row[aria-current="true"] {
+  /* The app's selected voice, the shelf recipe: phos tint ground, phos text.
+     A plain tint would read as hover rather than open. */
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.ref-row-ren,
+.ref-row-del {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--ink-3);
+}
+
+/* ── The AI bar toggle ────────────────────────────────────────────────────────
+   Quiet like the delete beside it, except on a barred row, whose toggle
+   stays lit: a privacy rule the writer cannot see is one they cannot
+   trust. */
+
+.ref-row-ai:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.ref-arc {
+  color: var(--ink-3);
+}
+
+/* ── The section picker ──────────────────────────────────────────────────── */
+
+.ref-picker-row {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--f-chrome);
+}
+
+/* ── No ligatures in the reference dock ───────────────────────────────────────
+   `NotesPanel` renders through the same `ReferenceReader`, so these two
+   selectors cover every surface a reference document or a note is read or
+   edited on.
+
+   `--f-ui` (Geist) ligates `-->` into one arrow glyph, so a template's
+   `\3c !-- Hint: … -->` would show an opening marker with no visible close,
+   and working-papers material (`!=`, `->`, `1--2`) would be misstated.
+   `font-variant-ligatures: none` leaves required ligatures on, which some
+   scripts need; the feature settings cover faces that switch these on
+   through `font-feature-settings` instead. */
+
+.dock-read h1,
+.dock-read h2,
+.dock-read h3 {
+  color: var(--ink-3);
+  font-weight: var(--bold-weight);
+}
+
+/* ── A template's question and its blank ──────────────────────────────────────
+   An unfilled answer slot is an empty `<li>`, drawn over a hairline so it
+   reads as a place to write. */
+
+.dock-read strong {
+  font-weight: var(--bold-weight);
+}
+
+/* ── Editing a reference document ────────────────────────────────────────── */
+
+.dock-editbar {
+  border-color: var(--hair-soft);
+  border-radius: var(--r-sm);
+  background: var(--paper-sunk);
+}
+
+.dock-editbar button {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--ink-3);
+  /* Bare buttons take the platform's form-control font without this, as the
+     Ask face's buttons do. */
+  font-family: var(--f-chrome);
+}
+
+.dock-editbar button:hover {
+  background: var(--hover-accent);
+  color: var(--accent);
+}
+
+.dock-editbar button:focus-visible {
+  outline: var(--focus-ring);
+}
+
+.dock-editbar .dock-editbar-actions button.dock-save {
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: var(--bold-weight);
+}
+
+.dock-editbar .dock-editbar-actions button.dock-save:hover {
+  background: var(--accent);
+  color: var(--on-fill);
+}
+
+.dock-editbar .dock-editbar-actions button.dock-save:disabled:hover {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.dock-edit-btn {
+  border-color: var(--hair-soft);
+  border-radius: var(--r-sm);
+  background: var(--paper-sunk);
+  font-family: var(--f-meta);
+  letter-spacing: 0.06em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+.dock-edit-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.dock-edit-btn:focus-visible {
+  outline: var(--focus-ring);
+}
+
+.dock-edit {
+  border-color: var(--hair-soft);
+  border-radius: var(--r-sm);
+  background: var(--paper);
+  font-family: var(--f-chrome);
+  color: var(--ink);
+}
+
+.dock-edit:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-tint);
+}
+
+.dock-foot b {
+  color: var(--accent);
+  font-weight: var(--bold-weight);
+}
+
+/* ── The conversation ────────────────────────────────────────────────────── */
+
+.ai-persona {
+  border-radius: var(--r-sm);
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-family: var(--f-meta);
+  letter-spacing: 0.06em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  font-weight: var(--link-weight);
+}
+
+.ai-persona:hover:not(:disabled) {
+  background: var(--accent-tint-2);
+  color: var(--ink);
+}
+
+.ai-persona:focus-visible {
+  outline: var(--focus-ring);
+}
+
+/* ── The asking over the transcript ──────────────────────────────────────── */
+
+/* In the book's face, like every quotation of the writer's words. */
+.ai-stopped q,
+.msg-quote,
+.composer-quote {
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+  color: var(--prose-ink);
+}
+
+/* ── The persona picker ───────────────────────────────────────────────────────
+   Every rule here is scoped under `.ai-persona-dialog`: a bare
+   `.ai-persona-list` would claim a name the application half is free to
+   use. */
+
+.ai-persona-dialog .ai-persona-focus-label {
+  color: var(--ink-3);
+  font-family: var(--f-meta);
+  font-weight: normal;
+  letter-spacing: 0.06em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+}
+
+.ai-mode-end:focus-visible {
+  outline: var(--focus-ring);
+  border-radius: var(--r-sm);
+}
+
+.ai-mode-panel p {
+  color: var(--ink-3);
+}
+
+.ai-reading:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.ai-reading-head strong {
+  font-weight: var(--bold-weight);
+}
+
+.ai-model-button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.ai-text-button {
+  color: var(--ink-3);
+  background: transparent;
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+  font-variant-caps: var(--control-caps);
+  letter-spacing: var(--control-tracking);
+}
+
+.ai-refusal select {
+  color: var(--ink);
+  background: var(--paper-raised);
+  border-color: var(--hair);
+  border-radius: var(--r);
+  font-family: var(--f-chrome);
+}
+
+.ai-stop {
+  /* Every button here is bare in the markup, and without a face takes the
+     platform's form-control font. */
+  font-family: var(--f-chrome);
+  color: var(--ink-3);
+  background: transparent;
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+}
+
+.ai-stop:focus-visible {
+  outline: var(--focus-ring);
+}
+
+/* ── The turn's footer ───────────────────────────────────────────────────── */
+
+.ai-stop:hover {
+  background: var(--hover-quiet);
+  border-color: var(--ink-3);
+  color: var(--ink);
+}
+
+/* Send, in Stop's seat and shape: the two swap in place, one control in two
+   states. With something to send it takes the ink, where the pointer is
+   headed; with nothing to send it steps back to slate and takes no hover. */
+.ai-stop.is-send {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.ai-stop.is-send:disabled {
+  color: var(--ink-3);
+  border-color: var(--hair);
+}
+
+.ai-stop.is-send:disabled:hover {
+  background: transparent;
+}
+
+/* The spark is a conic gradient cut to the ring by a mask, so the icon
+   underneath is never covered. The head leads at the gradient's 0deg and
+   the tail trails clockwise: white at the head for a dark paper, gold down
+   the tail for a light one. */
+.ai-stop.is-running::after {
+  border-radius: calc(var(--r-sm) + 3px);
+  background: conic-gradient(
+    from var(--ai-spark-at),
+    #fff 0deg,
+    #ffe27a 10deg,
+    rgb(255 196 64 / 0.45) 34deg,
+    transparent 80deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-head .ui-bar-track button[data-busy="1"] svg {
+    color: #0a84ff;
+  }
+}
+
+/* ── The chat's messages ─────────────────────────────────────────────────── */
+
+/* A tint of the ink, not the sunk paper: sunk reads as a soft tint on light
+   paper but as a hole in the dark one, darker than the panel around it. */
+.msg-you .msg-body {
+  border-radius: var(--r);
+  background: var(--wash);
+  color: var(--ink);
+}
+
+.msg-assistant .msg-body {
+  color: var(--ink);
+}
+
+/* The writer's own words, so in the book's face and in ink, not
+   `.dock-read`'s slate aside. */
+.msg-assistant .dock-read blockquote {
+  color: var(--prose-ink);
+  font-family: var(--f-prose);
+  font-weight: var(--matte-prose-weight);
+}
+
+/* In the answer's face and ink. Its one mark is an inset underline,
+   the `mark.hl-repetition` grammar, clear of descenders; the hover is
+   `.ai-evidence`'s, the other control that goes to a passage. */
+.ai-cite {
+  border-radius: var(--r-xs);
+  background: none;
+  box-shadow: inset 0 -1px 0 var(--hair-firm);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+}
+
+.ai-cite:hover {
+  background: var(--accent-tint);
+  box-shadow: inset 0 -1px 0 var(--accent);
+}
+
+.ai-cite:focus-visible {
+  outline: var(--focus-ring);
+}
+
+.msg-quote {
+  border-left-color: var(--accent);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: var(--accent-tint);
+}
+
+.chip {
+  border-radius: var(--r-sm);
+  background: var(--accent-tint);
+  box-shadow: inset 0 0 0 1px var(--accent-glow);
+  color: var(--accent);
+  font-family: var(--f-chrome);
+}
+
+.chip:hover {
+  background: var(--accent-tint-2);
+  color: var(--ink);
+}
+
+.composer {
+  /* The app's field shape: `.ui-input` and `.ui-select` are `var(--r)`
+     everywhere, and this box must read as the same application as a settings
+     dialog, on every device. */
+  border-radius: var(--r);
+  /* Raised, not `--field`: the app's inputs sit sunk in raised dialogs, but
+     this one sits on a sunk tray and is where the writer acts, so it is the
+     dock's brightest surface, with a card's raised paper, firm edge and lift.
+     Stated in the theme's names, so every theme keeps a lighter field on a
+     darker tray. */
+  background: var(--paper-raised);
+  border-color: var(--hair-firm);
+  box-shadow: var(--shadow-card);
+}
+
+.ai-composer-menu {
+  /* Squared, like Stop at the other end of the field and the pill around both.
+     Borderless: it only opens a panel, and the mark is the whole control. */
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.ai-composer-menu:focus-visible {
+  outline: var(--focus-ring);
+}
+
+/* On the accent's tint, the ground used wherever something belongs to the
+   assistant. */
+.composer-quote {
+  border-radius: var(--r-sm);
+  background: var(--accent-tint);
+}
+
+.composer-quote button {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--accent);
+}
+
+/* On a tint `--wash` is not visible, so the hover darkens the ground. The
+   mark turns to `--ink`, because `--accent` on `--accent-tint-2` measures
+   under 4.5:1. */
+.composer-quote button:hover {
+  background: var(--accent-tint-2);
+  color: var(--ink);
+}
+
+.composer-pin button {
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--accent);
+}
+
+.composer-pin button:hover {
+  background: var(--accent-tint-2);
+  color: var(--ink);
+}
+
+/* ── The comparing mode ───────────────────────────────────────────────────────
+   The read-only diff against a snapshot or the rail's walk. Deletions are
+   struck through, their only shape; an insertion's tint is its only voice,
+   with no underline, so the two never read alike. */
+
+/* A textless block hunk takes the inline marks' two tokens, so it reads as
+   part of the same comparison. */
+[data-block-hunk="delete"] {
+  background: var(--mark-diff-wash-del);
+}
+
+[data-block-hunk="insert"] {
+  background: var(--mark-diff-wash-add);
+}
+
+/* Raised paper, a hairline and the lowest lift, because text over live
+   marks would be unreadable; not glass, whose blur and tint would wash the
+   colours the legend explains. Mono throughout: its only colour is the two
+   mark-ink swatches. */
+.comparing-bar {
+  background: var(--paper-raised);
+  border-color: var(--slip-edge);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-1);
+}
+
+/* In the floating chrome's glass rather than the in-panel fields' sunk
+   select, with the family's inset ring on focus, never the global
+   outline. */
+.comparing-select {
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--glass);
+  backdrop-filter: var(--frost);
+  color: var(--ink);
+  font-family: var(--f-meta);
+  letter-spacing: var(--meta-tracking);
+}
+
+.comparing-select:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.comparing-question {
+  font-family: var(--f-meta);
+  font-weight: var(--medium-weight);
+  color: var(--ink);
+}
+
+/* The sentence is slate, a tone down from the question. The swatch is the
+   mark ink the prose is drawn with, never the tint or the tag ground: it
+   keys the marks. */
+.comparing-legend {
+  font-family: var(--f-meta);
+  color: var(--ink-3);
+}
+
+.comparing-swatch-del {
+  background: var(--mark-diff-del);
+}
+
+.comparing-swatch-add {
+  background: var(--mark-diff-add);
+}
+
+/* ── The Accept layer ─────────────────────────────────────────────────────────
+   One Accept tag per hunk, growing off the tint so it reads as part of the
+   change, not margin chrome. The tag shares the tint's colour: the
+   `--mark-diff-tag-*` ground is the tint made solid over the paper, so
+   nothing ghosts through, with the `--mark-diff-*` label. No radius or
+   shadow: the tint is a hard rectangular band, and so is the tag. A replacement hunk (a touching delete and
+   insert) takes the addition's hue, since the action adopts the new text. */
+
+.df-accept {
+  font-family: var(--f-chrome);
+  font-weight: var(--strong-weight);
+  letter-spacing: var(--meta-tracking);
+  color: var(--mark-diff-add);
+  background: var(--mark-diff-tag-add);
+  font-variant-caps: var(--control-caps);
+}
+
+/* ── The board ────────────────────────────────────────────────────────────────
+   The editor's palette, a class family apart from the
+   Library's `.palette-*`. Separation inside it is by space, never by an
+   edge: no rules, boxes, borders or shadows between the wells. A well is a
+   group by the air around it and the eyebrow above it. */
+
+.board {
+  background: var(--paper-raised);
+  border-color: var(--slip-edge);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-3);
+}
+
+.board-head h2 {
+  font-family: var(--f-chrome);
+  font-weight: var(--medium-weight);
+  color: var(--ink);
+}
+
+.board-close {
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.board-filter {
+  border-color: var(--hair-soft);
+  border-radius: var(--r-sm);
+  background: var(--paper-sunk);
+  font-family: var(--f-chrome);
+  color: var(--ink);
+  outline: none;
+}
+
+/* A visible focus state, since the field takes `outline: none`. */
+.board-filter:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.board-well h3 {
+  font-family: var(--f-meta);
+  font-weight: var(--medium-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+.board-cell {
+  border-radius: var(--r);
+  background: transparent;
+  font-family: var(--f-chrome);
+  color: var(--ink);
+}
+
+.board-cell:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* ── The board as a full-screen room ──────────────────────────────────────────
+   A full-bleed surface on the phone, so it has no corners. */
+
+@media (max-width: 720px) {
+  .board {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* ── The chat's head ──────────────────────────────────────────────────────────
+   No border of its own: the dock's tab strip draws a hairline right above,
+   and a second one below would box the head into a toolbar. */
+
+.ai-chat-title {
+  border-color: var(--hair);
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+}
+
+.ai-chat-title:hover {
+  border-color: var(--ink-3);
+  background: var(--hover-accent);
+}
+
+.ai-chat-title:focus-visible {
+  outline: var(--focus-ring);
+}
+
+/* A search waits in another chat: ember on the button's mechanism,
+   the chevron and the border, never on the name, which is this chat's. */
+.ai-chat-title.is-attention {
+  border-color: var(--attention-glow);
+}
+
+.ai-chat-title.is-attention:hover {
+  border-color: var(--attention);
+  background: var(--attention-tint);
+}
+
+/* The tint answers the whole pair, the row and its `more` button. */
+.ai-switcher-row {
+  border-radius: var(--r-sm);
+}
+
+.ai-finding-head {
+  font-family: var(--f-meta);
+  letter-spacing: 0.06em;
+  text-transform: var(--label-case);
+  font-variant-caps: var(--label-caps);
+  color: var(--ink-3);
+}
+
+.ai-evidence {
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink-3);
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+}
+
+.ai-evidence:focus-visible {
+  outline: var(--focus-ring);
+}
+
+.ai-verdict > strong {
+  font-weight: var(--bold-weight);
+}
+
+.ai-map-station {
+  border-radius: var(--r-round);
+  background: var(--ink-3);
+}
+
+.ai-map-start {
+  border-radius: var(--r-round);
+  background: var(--accent);
+}
+
+.ai-jump {
+  border-color: var(--hair);
+  border-radius: var(--r-round);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-1);
+  color: var(--ink-3);
+}
+
+.ai-jump:focus-visible {
+  outline: var(--focus-ring);
+}
+
+/* ── The summary dialog ──────────────────────────────────────────────────── */
+
+.summary-wait p,
+.summary-note {
+  color: var(--ink-3);
+}
+
+/* Underlined so it reads as pressable in a line that is otherwise a
+   fact. */
+.summary-link {
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.summary-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── A beta reader's reading ──────────────────────────────────────────────────
+   The journal entry takes the findings' own marks, the quiet left rule and
+   the mono eyebrow, because the prose above it is the entry and this is only
+   its facts. */
+
+.ai-attention > span {
+  border-radius: var(--r-round);
+  border-color: var(--ink-3);
+}
+
+/* ── The editorial revision plan ──────────────────────────────────────────────
+   A done item dims and is struck through in place, so the writer sees what
+   they have got through. The plan's head takes the readings' voice. */
+
+.ai-plan > .ai-reading-summary {
+  font-variant-caps: var(--head-caps);
+  letter-spacing: var(--head-tracking);
+  font-weight: var(--link-weight);
+}
+
+.ai-plan-verdict strong {
+  font-weight: var(--bold-weight);
+  color: var(--ink);
+}
+
+.ai-transit-line {
+  color: var(--ink-3);
+}
+
+@layer paint {
+  .landing-beta,
+  .app-beta {
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+}

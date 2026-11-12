@@ -1,0 +1,12 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* The cascade's order: the frame, then the active theme's sheet over it
+   (`theme/page.ts`). A theme's rule beats the frame's whatever
+   their weights and whichever loads last, so a stylesheet that arrives
+   later, with the editor, cannot undo a theme. Every frame stylesheet comes
+   in through `layer(frame)`; one imported bare would beat every theme. */
+@layer frame, theme;
+@import "./base.css" layer(frame);

@@ -1,0 +1,4483 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── The type ─────────────────────────────────────────────────────────────────
+   Newsreader sets prose and every title, Geist the interface, and Geist Mono
+   every path, count, structure and storage label. A theme may set its book
+   in a face of its own: Vision's is Brygada 1918.
+
+   Served from this app, never from a font CDN. A CDN would hand a third party
+   a record of every visitor and would leave the app looking wrong offline, in
+   a tool whose claim is that the writer's work stays where they put it.
+
+   "Brygada 1918" carries its weight axis, 400 to 700, in one file per style,
+   cut from the source with every OpenType feature kept: its small capitals
+   and its old style figures are what Vision sets its chrome in. The files a
+   font CDN serves leave the small capitals out.
+
+   A family downloads only when a theme names it.
+
+   latin and latin-ext are separate files bound to their unicode ranges, so a
+   page of English prose never downloads the extended cut. Italian's accents all
+   live in latin.
+
+   All four are SIL Open Font License 1.1; the licences sit beside the files in
+   `public/fonts/`, as the OFL asks. */
+
+@font-face {
+  font-family: "Newsreader Optical";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/newsreader-latin-opsz-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Newsreader Optical";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/newsreader-latin-ext-opsz-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Newsreader Optical";
+  font-style: italic;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/newsreader-latin-opsz-italic.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Newsreader Optical";
+  font-style: italic;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/newsreader-latin-ext-opsz-italic.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Brygada 1918";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/brygada-vietnamese-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
+    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
+    U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: "Brygada 1918";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/brygada-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Brygada 1918";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/brygada-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Brygada 1918";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/brygada-vietnamese-wght-italic.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
+    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
+    U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: "Brygada 1918";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/brygada-latin-ext-wght-italic.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Brygada 1918";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/brygada-latin-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-mono-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ── The theme contract ───────────────────────────────────────────────────────
+   Every colour, shadow, radius, font and role is the active theme's
+   (`src/theme/`): its sheet paints, and `applyTheme` writes its tokens on the
+   root. The frame holds no value for one outside its own paint: the faces
+   above, the loading dots, the product marks and the forced-colours block.
+   The page waits for a theme; it has no look of its own.
+   `theme/contract.test.ts` holds the border.
+
+   Motion is the frame's, the same under every theme. */
+
+:root {
+  /* Motion. Every animation answers a gesture: the writer did something, and
+     the interface shows them what it did. Nothing moves unasked, and nothing
+     loops except a real wait.
+
+     Within that, a control that changes state changes shape, one object the
+     eye can follow from what it was to what it became; a cut is a puzzle.
+
+     Arrival from off-screen is refused. An element that flies in from outside
+     the window came from nowhere the writer was looking, and it reads as an
+     advertisement rather than as an answer.
+
+     Budget: a tap responds in `--t-tap`, a shape settles in `--t`, and
+     `--t-slow` is the ceiling. Past that it stops being feedback and becomes
+     a wait. `--t-bounce` overshoots, which suits a confirmation and never
+     suits a control the writer is aiming at.
+
+     Prose is a surface for sustained attention, and something moving at the
+     edge of it costs more than it explains.
+
+     Reduced motion snaps to the end state, never the start: an entrance
+     animation with `both` fills backwards and strands the element at
+     opacity 0.
+
+     Three shapes, and mixing them makes an animation never run:
+
+       --e-*  a bare curve.            animation: x 200ms var(--e-out)
+       --t-*  a duration and a curve.  transition: width var(--t)
+       --d-*  a bare duration, used as a delay.
+
+     The bare curves are tokens in their own right as well as baked into the
+     durations, because a CSS `animation` shorthand needs its easing
+     separately and cannot take it baked in: `var(--t) var(--e-out)` expands
+     to two timing functions and the whole shorthand is dropped. For the same
+     reason `var(--d-stagger) var(--e-out)` is wrong: a delay carries no
+     curve. */
+  --e-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-in: cubic-bezier(0.4, 0, 1, 1);
+  --e-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* A curve for a change that is not an answer to a gesture at all: Henosis
+     mode's fade, seconds long, which must neither start with a jump
+     nor arrive with one. The writer is not looking at it, and an ease-out's
+     first quarter would be the one thing in the room that moves. */
+  --e-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --t-tap: 110ms cubic-bezier(0.16, 1, 0.3, 1);
+  --t: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  --t-slow: 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  --t-bounce: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* The press down, faster than the spring back up: by release the aiming is
+     over, and the overshoot belongs to the release. */
+  --t-press: 90ms cubic-bezier(0.4, 0, 1, 1);
+  /* A surface arriving over content: a scrim, a menu, a tip. Shorter than a
+     tap, because it is a reveal rather than an answer to a gesture. */
+  --t-veil: 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* The character fade-in's own budget. Slightly longer than the generic
+     settle: a character fading into the ink is the page moving, and at `--t`
+     it reads as a state change rather than an arrival. */
+  --t-char-fade: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* The landing page's own two, past the ceiling and nowhere else. A
+     visitor scrolling a page is not waiting on an answer, so a block that
+     rises into view (`--t-reveal`) or a screenshot that lights up when
+     reached (`--t-stage`) can take the time a gesture's answer cannot. */
+  --t-reveal: 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  --t-stage: 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* The breath between two things that are one thing: a thumb travels, and the
+     colour lands after it. Three things moving at once read as one thing;
+     staggered by a beat, they read as cause and effect.
+
+     Each of these delays waits for a different thing:
+
+       --d-stagger  a reveal inside a morph, waiting for the box to finish.
+                    120ms is most of a 220ms box: the label arrives when there
+                    is already room for it, not while the room is being made.
+       --d-beat     the third beat of an arrival. The bar lands, the panel
+                    lands, and 90ms later the content does.
+       --d-settle   a confirmation, waiting for the eye to arrive. A green mark
+                    that appears the instant the write returns is a flicker
+                    nobody sees; a quarter-second later it is an answer.
+       --d-tip      a tooltip, waiting to find out whether it was wanted. Long
+                    enough that crossing the bar is silent; the warm group at
+                    `.ui-bar[data-tips='warm']` spends this once. */
+  --d-stagger: 120ms;
+  --d-beat: 90ms;
+  --d-settle: 260ms;
+  --d-tip: 460ms;
+  /* The structure panel's own width settle: the duration of `--t`, as a
+     phase. The facts tags wait for the column to stop moving before they
+     arrive; `--d-stagger` is for content that arrives while the box
+     is still being made, this is for content that arrives after it stops. */
+  --d-panel: 220ms;
+}
+
+/* ── The safe area ────────────────────────────────────────────────────────────
+   What the display cuts into: a notch, a rounded corner, the home indicator's
+   swipe strip. `env()` reports it, and reports 0 everywhere else, but only
+   under `viewport-fit=cover`, which `index.html` declares.
+
+   Read through variables rather than `env()` at each site, so a test can set
+   `--safe-top: 47px` on the root and measure: `env()` cannot be set, and is 0
+   in every browser, emulator and CI runner available to this project. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ── The top band ─────────────────────────────────────────────────────────────
+   Both halves draw the same header across the top, so its height is one
+   number: two would make the 34px account face jump on the way into a
+   project. The editor's height is the one.
+
+   Here rather than in either half's stylesheet because of load order:
+   `webapp.css` is eager and `editor.css` arrives with the lazy chunk, so a
+   constant owned by the editor would leave the Library's header unstyled
+   until a writer opened a project.
+
+   Outside the theme contract, like `--safe-*`: the band's height is
+   geometry. `theme/contract.test.ts` names it so the gate still catches a
+   real stray. */
+:root {
+  --header-h: 40px;
+}
+
+/* Quotation marks by the page's language, pinned rather than left to a UA's
+   table: `<html lang>` follows the UI language (`syncDocumentLang` in
+   `i18n.ts`), so an Italian page quotes with caporali, as the dock's own
+   Italian strings do, and English with curly quotes. Escapes, the HTML
+   spec's own table, so no file encoding decides a mark. */
+q {
+  quotes: "\201C" "\201D" "\2018" "\2019";
+}
+:lang(it) q {
+  quotes: "\00AB" "\00BB" "\201C" "\201D";
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Every screen in normal flow is inside the safe area by being inside this,
+   so the padding is here and not on each of them: the landing header, the
+   shelf, the settings sheet and the editor's own scroller are all
+   descendants, and none of them has to know a notch exists. Fixed surfaces
+   are not, because their containing block is the viewport, so the chrome,
+   the toasts and the scrim carry their own below.
+
+   All four are 0 without a display cutout, so this changes nothing on a
+   laptop. */
+#root {
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+/* ── Shared UI kit ────────────────────────────────────────────────────────────
+   The kit in `src/ui/`: one button, six variants. Not here: the toolbar's
+   formatting buttons, the search card's toggles and its next/previous arrows.
+   Those carry active state and live inside their own card, and folding them
+   in would make a Button with modes rather than variants. */
+
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.ui-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* Every variant's hover and press below is guarded against both: a disabled
+   or locked button that still tints, lifts or sinks under the pointer says
+   "this will work" in the one moment it will not. */
+
+.ui-btn-block {
+  width: 100%;
+}
+
+/* ── The web application's three ──────────────────────────────────────────────
+   36px, and sharing one shape. The editor's four keep their own 27px below:
+   the tree panel is built around them. */
+
+.ui-btn-primary,
+.ui-btn-outline,
+.ui-btn-ghost,
+.ui-btn-attention {
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid;
+  transition:
+    background var(--t-tap),
+    border-color var(--t-tap),
+    color var(--t-tap),
+    box-shadow var(--t-tap),
+    transform var(--t-tap);
+}
+
+/* The label size, shared with a text link standing in a row of these
+   buttons (`ui-text-link-row`), so the row reads at one size. Two classes
+   on the link, because `.ui-text-link` below inherits the sentence's size. */
+.ui-btn-primary,
+.ui-btn-outline,
+.ui-btn-ghost,
+.ui-btn-attention,
+.ui-text-link.ui-text-link-row {
+  font-size: 13.5px;
+}
+
+/* The one call to action on a page lifts a millimetre under the pointer, so
+   it reads as pressable before it is pressed. The lift meets the 1px
+   `:active` travels the other way, so the whole gesture is 2px. Reduced
+   motion drops the `transform` transition, leaving an instant 1px, as
+   `:active` behaves. */
+.ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(-1px);
+}
+
+/* Below the hover rules: `:hover` and `:active` have the same specificity,
+   so the later one wins, and a mouse is always hovering at the moment it
+   presses. Above them, this would lose to the primary's hover lift and the
+   button would stay raised under the finger instead of going down. */
+.ui-btn-primary:active:not(:disabled, [aria-disabled="true"]),
+.ui-btn-outline:active:not(:disabled, [aria-disabled="true"]),
+.ui-btn-ghost:active:not(:disabled, [aria-disabled="true"]),
+.ui-btn-attention:active:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(1px);
+}
+
+/* ── Loading inside a button ──────────────────────────────────────────────────
+   The dialog confirm's busy face. The label stays in the DOM (opacity, not
+   display, so the accessible name survives the swap) and the dots sit in the
+   same grid cell, so the button never shifts a millimetre mid-press. The
+   state is not a disabled one: the 40% of `:disabled` says "this is off",
+   while a working button is the one thing on a page that reads as busy. The
+   hover and lift rules are neutralised by `pointer-events: none`: a cursor
+   over a working button cannot hit `:hover` or `:active`. */
+.ui-btn-load {
+  display: grid;
+  place-items: center;
+}
+.ui-btn-load > * {
+  grid-area: 1 / 1;
+}
+.ui-btn-load-label,
+.ui-btn-load-dots {
+  transition: opacity var(--t-tap);
+}
+.ui-btn-load-dots {
+  opacity: 0;
+}
+.ui-btn[data-loading="1"]:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.ui-btn[data-loading="1"] {
+  pointer-events: none;
+}
+.ui-btn[data-loading="1"] .ui-btn-load-label {
+  opacity: 0;
+}
+.ui-btn[data-loading="1"] .ui-btn-load-dots {
+  opacity: 1;
+}
+
+.ui-btn-sm {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12.5px;
+}
+
+.ui-btn-square {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+/* A confirm, or the one action a panel state has. */
+.ui-btn-soft,
+.ui-btn-danger {
+  height: 27px;
+  padding: 0 12px;
+  font-size: 12px;
+  transition:
+    background var(--t-tap),
+    transform var(--t-tap);
+}
+
+.ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(-0.5px);
+}
+.ui-btn-soft:active:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(0.5px);
+  transition-duration: var(--t-press);
+}
+
+/* `soft` sets its own 27px box after `.ui-btn-sm` in this file, so the pair
+   would take the smaller one. A small soft button keeps the small size: a
+   strip whose ember `sm` button turns soft must not shrink it. */
+.ui-btn-soft.ui-btn-sm {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12.5px;
+}
+
+.ui-btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(-0.5px);
+}
+.ui-btn-danger:active:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(0.5px);
+  transition-duration: var(--t-press);
+}
+
+/* A dialog's footer holds page-scale actions, whatever variant they are, in
+   every dialog, the editor's included. */
+.ui-dialog-foot .ui-btn {
+  /* A floor, not a height, and a label that may break anywhere: "Sign in
+     again as {{email}}" carries an address with no space in it, which at
+     360px pushes the button past the screen, and once wrapped spills its
+     lines out of a fixed 36px box. Every other label is one line and
+     keeps the 36px. `max()` keeps the coarse floor's `--tap`, which this
+     rule's specificity would otherwise override. `height: auto`
+     undoes each variant's own fixed height, and `max-width` holds a long
+     label inside the foot, since `.ui-btn` never shrinks. */
+  height: auto;
+  max-width: 100%;
+  min-height: max(36px, var(--tap, 36px));
+  padding: 6px 16px;
+  overflow-wrap: anywhere;
+  text-align: center;
+  font-size: 13.5px;
+}
+
+/* The second choice standing next to a first one. */
+.ui-btn-quiet {
+  height: 27px;
+  padding: 0 12px;
+  font-size: 12px;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.ui-btn-link {
+  font-size: 11.5px;
+  transition: color var(--t-tap);
+}
+
+/* Square, for a tree row or a panel header. */
+.ui-btn-icon {
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* ── Loading dots ─────────────────────────────────────────────────────────────
+   Shared: these stand in for the editor while its own chunk is still
+   downloading, so they cannot be styled by the editor's stylesheet, which
+   arrives with the chunk they are waiting for. The document tree uses the
+   same ones for its own waits. */
+
+/* The kindling loader: three dark dots, lit one after another, left to right;
+   the order of the dots is the motion.
+
+   Geometry is one unit, `--dots-u` (1px: a 4px dot, a 3px gap, dots at 0, 7
+   and 14 units). A caller that wants the dots smaller or larger sets the unit,
+   never the dots, so the row keeps its proportions.
+
+   Colour is a palette of custom properties, not literals, so a caller can
+   re-tone the whole loader in a block: the editor's save chip points every one
+   of them at `currentColor` and stays one ember. `light-dark()` follows the
+   active theme's `color-scheme`, which is why the white-hot flash is white on
+   a dark paper and a deep cyan on a light one.
+
+   The keyframes below are generated rather than hand-written (each dot peaks
+   at 17%, 38% and 58% of the loop, then fades at 72%, 79% and 86%). A loop, so
+   it states its own rate (`motion.test.ts`). */
+.ui-dots,
+.ui-step-dot[data-state="current"],
+.ui-steps-comet {
+  --dots-u: 1px;
+  --dots-dim: color-mix(in srgb, currentColor 28%, transparent);
+  --dots-hot: light-dark(#0b9fb0, #fff);
+  --dots-cy: light-dark(rgb(14 170 190), rgb(42 218 231));
+  --dots-c0: light-dark(hsl(185 92% 42%), hsl(185 92% 62%));
+  --dots-c1: light-dark(hsl(245 92% 55%), hsl(245 92% 68%));
+  --dots-c2: light-dark(hsl(305 92% 46%), hsl(305 92% 62%));
+  --dots-c3: light-dark(hsl(5 92% 48%), hsl(5 92% 62%));
+  --dots-c4: light-dark(hsl(65 92% 38%), hsl(65 92% 62%));
+  --dots-c5: light-dark(hsl(125 92% 36%), hsl(125 92% 58%));
+  --dots-c6: light-dark(hsl(185 92% 42%), hsl(185 92% 62%));
+}
+.ui-dots {
+  display: block;
+  position: relative;
+  flex-shrink: 0;
+  width: calc(var(--dots-u) * 18);
+  height: calc(var(--dots-u) * 4);
+}
+
+.ui-dots i {
+  position: absolute;
+  top: 0;
+  width: calc(var(--dots-u) * 4);
+  height: calc(var(--dots-u) * 4);
+  animation: 3.6s linear infinite;
+}
+.ui-dots i:nth-child(1) {
+  left: 0;
+  animation-name: uiDotA;
+}
+.ui-dots i:nth-child(2) {
+  left: calc(var(--dots-u) * 7);
+  animation-name: uiDotB;
+}
+.ui-dots i:nth-child(3) {
+  left: calc(var(--dots-u) * 14);
+  animation-name: uiDotC;
+}
+
+/* On a button's fill a spectrum is the wrong voice, and its fixed hues are
+   chosen for a paper, not for an ink-coloured primary: the dots take the
+   label's own colour and still light in turn. */
+.ui-btn .ui-dots {
+  --dots-hot: currentColor;
+  --dots-cy: currentColor;
+  --dots-c0: currentColor;
+  --dots-c1: currentColor;
+  --dots-c2: currentColor;
+  --dots-c3: currentColor;
+  --dots-c4: currentColor;
+  --dots-c5: currentColor;
+  --dots-c6: currentColor;
+}
+
+@keyframes uiDotA {
+  0%,
+  13.38% {
+    background: var(--dots-dim);
+    box-shadow: none;
+  }
+  17.38% {
+    background: var(--dots-hot);
+    box-shadow: 0 0 calc(var(--dots-u) * 5) calc(var(--dots-u) * 1.5)
+      color-mix(in srgb, var(--dots-c0) 90%, transparent);
+  }
+  21.38% {
+    background: var(--dots-c0);
+    box-shadow: 0 0 calc(var(--dots-u) * 4)
+      color-mix(in srgb, var(--dots-c0) 60%, transparent);
+  }
+  29.81% {
+    background: var(--dots-c1);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.8)
+      color-mix(in srgb, var(--dots-c1) 60%, transparent);
+  }
+  38.25% {
+    background: var(--dots-c2);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.6)
+      color-mix(in srgb, var(--dots-c2) 60%, transparent);
+  }
+  46.69% {
+    background: var(--dots-c3);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.4)
+      color-mix(in srgb, var(--dots-c3) 60%, transparent);
+  }
+  55.13% {
+    background: var(--dots-c4);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.2)
+      color-mix(in srgb, var(--dots-c4) 60%, transparent);
+  }
+  63.56% {
+    background: var(--dots-c5);
+    box-shadow: 0 0 calc(var(--dots-u) * 3)
+      color-mix(in srgb, var(--dots-c5) 60%, transparent);
+  }
+  72% {
+    background: var(--dots-c6);
+    box-shadow: 0 0 calc(var(--dots-u) * 2.8)
+      color-mix(in srgb, var(--dots-c6) 60%, transparent);
+  }
+  82%,
+  100% {
+    background: var(--dots-dim);
+    box-shadow: none;
+  }
+}
+@keyframes uiDotB {
+  0%,
+  33.5% {
+    background: var(--dots-dim);
+    box-shadow: none;
+  }
+  37.5% {
+    background: var(--dots-hot);
+    box-shadow: 0 0 calc(var(--dots-u) * 5) calc(var(--dots-u) * 1.5)
+      color-mix(in srgb, var(--dots-c0) 90%, transparent);
+  }
+  41.5% {
+    background: var(--dots-c0);
+    box-shadow: 0 0 calc(var(--dots-u) * 4)
+      color-mix(in srgb, var(--dots-c0) 60%, transparent);
+  }
+  47.75% {
+    background: var(--dots-c1);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.8)
+      color-mix(in srgb, var(--dots-c1) 60%, transparent);
+  }
+  54% {
+    background: var(--dots-c2);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.6)
+      color-mix(in srgb, var(--dots-c2) 60%, transparent);
+  }
+  60.25% {
+    background: var(--dots-c3);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.4)
+      color-mix(in srgb, var(--dots-c3) 60%, transparent);
+  }
+  66.5% {
+    background: var(--dots-c4);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.2)
+      color-mix(in srgb, var(--dots-c4) 60%, transparent);
+  }
+  72.75% {
+    background: var(--dots-c5);
+    box-shadow: 0 0 calc(var(--dots-u) * 3)
+      color-mix(in srgb, var(--dots-c5) 60%, transparent);
+  }
+  79% {
+    background: var(--dots-c6);
+    box-shadow: 0 0 calc(var(--dots-u) * 2.8)
+      color-mix(in srgb, var(--dots-c6) 60%, transparent);
+  }
+  89%,
+  100% {
+    background: var(--dots-dim);
+    box-shadow: none;
+  }
+}
+@keyframes uiDotC {
+  0%,
+  53.63% {
+    background: var(--dots-dim);
+    box-shadow: none;
+  }
+  57.63% {
+    background: var(--dots-hot);
+    box-shadow: 0 0 calc(var(--dots-u) * 5) calc(var(--dots-u) * 1.5)
+      color-mix(in srgb, var(--dots-c0) 90%, transparent);
+  }
+  61.63% {
+    background: var(--dots-c0);
+    box-shadow: 0 0 calc(var(--dots-u) * 4)
+      color-mix(in srgb, var(--dots-c0) 60%, transparent);
+  }
+  65.69% {
+    background: var(--dots-c1);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.8)
+      color-mix(in srgb, var(--dots-c1) 60%, transparent);
+  }
+  69.75% {
+    background: var(--dots-c2);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.6)
+      color-mix(in srgb, var(--dots-c2) 60%, transparent);
+  }
+  73.81% {
+    background: var(--dots-c3);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.4)
+      color-mix(in srgb, var(--dots-c3) 60%, transparent);
+  }
+  77.88% {
+    background: var(--dots-c4);
+    box-shadow: 0 0 calc(var(--dots-u) * 3.2)
+      color-mix(in srgb, var(--dots-c4) 60%, transparent);
+  }
+  81.94% {
+    background: var(--dots-c5);
+    box-shadow: 0 0 calc(var(--dots-u) * 3)
+      color-mix(in srgb, var(--dots-c5) 60%, transparent);
+  }
+  86% {
+    background: var(--dots-c6);
+    box-shadow: 0 0 calc(var(--dots-u) * 2.8)
+      color-mix(in srgb, var(--dots-c6) 60%, transparent);
+  }
+  97%,
+  100% {
+    background: var(--dots-dim);
+    box-shadow: none;
+  }
+}
+
+.ui-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* ── Controls ─────────────────────────────────────────────────────────────────
+   What the web application's screens are assembled from. */
+
+.ui-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* A button that reads as a link inside a sentence: the way to act on what
+   the sentence just said ("…which you haven't written yet. Write “Promise”").
+   It keeps the sentence's size and line, so it wraps with the prose instead
+   of breaking it. `ui-text-link-ink` paints it in the text's ink rather
+   than the accent, for a link that is not the page's call to action. */
+.ui-text-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  transition: text-decoration-thickness var(--t-tap);
+}
+
+/* ── Input, with its evidence line ───────────────────────────────────────── */
+
+.ui-input-field {
+  display: grid;
+  gap: 8px;
+  /* Content packs from the top, never stretched row by row. In a two-column
+     form (the creation dialog's `create-grid`) the shorter field — the one
+     whose note takes one line — is stretched to its neighbour's height, and
+     the grid default `align-content: stretch` grows every auto row in it,
+     the label row included: the control below the label drops a few pixels
+     and two level controls read as misaligned. `start` pins the controls to
+     the same y; any leftover space stays under the note. */
+  align-content: start;
+}
+
+.ui-input-label {
+  font-size: 12.5px;
+}
+/* The label on the control's line, before it; a note sits under the control
+   it explains, aligned with it rather than with the label. */
+.ui-input-field--inline {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+}
+.ui-input-field--inline > .ui-input-note {
+  grid-column: 2;
+}
+
+.ui-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid;
+  font-size: 14px;
+  transition:
+    border-color var(--t-tap),
+    box-shadow var(--t-tap);
+}
+
+/* The same field, multi-line. `.ui-input` is built for one line and fixes
+   its height; a question rewritten in place (the dock's edit) is prose, so the
+   kit's field learns a second shape rather than the dock drawing its own. */
+textarea.ui-input {
+  display: block;
+  height: auto;
+  min-height: 76px;
+  padding: 10px 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* One line that wraps (`WrapInput`): a value the writer reads
+   whole before it is used, in a column too narrow for it on one line. At rest
+   it is the single-line field's height, so a short query sits in the same box
+   an `Input` would draw; it grows only by the lines it wraps to, and never
+   offers a grip: the height is the content's, measured in `Input.tsx`.
+   `--field-h` is the one number: the padding centres one line in it, so a
+   change of font size (the coarse floor's 16px) re-centres without a second
+   figure. The kit textarea's own 9px and 1.5 would make it 41px, not 38. */
+.ui-input.ui-input-wrap {
+  --field-h: 38px;
+  display: block;
+  height: auto;
+  min-height: var(--field-h);
+  padding: calc((var(--field-h) - 2px - 1.5em) / 2) 12px;
+  line-height: 1.5;
+  resize: none;
+  overflow: hidden;
+}
+
+/* What the input will produce, not a restatement of what was typed. */
+.ui-input-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ── Select ───────────────────────────────────────────────────────────────────
+   Same box as `.ui-input`, because it answers a question in the same column of
+   the same dialog and a second field shape there would read as a second kind of
+   thing. `appearance: none` drops the platform's own arrow, a different size
+   and colour on every platform, and the chevron is drawn over the top
+   instead. */
+
+.ui-select-wrap {
+  position: relative;
+  display: block;
+}
+
+.ui-select {
+  width: 100%;
+  height: 38px;
+  padding: 0 40px 0 12px;
+  border: 1px solid;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  transition:
+    border-color var(--t-tap),
+    box-shadow var(--t-tap);
+}
+
+.ui-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ── Segmented control ───────────────────────────────────────────────────── */
+
+.ui-seg {
+  display: inline-flex;
+  border: 1px solid;
+  overflow: hidden;
+}
+
+.ui-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.ui-seg button + button {
+  border-left: 1px solid;
+}
+.ui-seg button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ── Kbd ─────────────────────────────────────────────────────────────────── */
+
+.ui-kbd {
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border: 1px solid;
+  border-bottom-width: 2px;
+  white-space: nowrap;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+.ui-skeleton {
+  display: block;
+  animation: uiSkeleton 1.4s ease-in-out infinite;
+}
+
+@keyframes uiSkeleton {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Banner ──────────────────────────────────────────────────────────────── */
+
+.ui-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid;
+  font-size: 13.5px;
+  /* A standing banner sits above the shelf and must not glue itself to the
+     cards below it: every usage is stacked content. */
+  margin-bottom: 14px;
+}
+
+/* The sentence takes the row and the actions sit beside it, until the two no
+   longer fit, and then the actions take a line of their own under it. Without
+   the wrap, a narrow banner keeps both on one line by crushing the sentence:
+   in the editor's dock at its 340px floor "The key for this model has expired." lays
+   out three words to a line beside its buttons. `14em` is the least a
+   sentence may be squeezed to before the actions give way; on a wide shelf it
+   is never reached. */
+.ui-banner {
+  flex-wrap: wrap;
+}
+
+.ui-banner-text {
+  flex: 1 1 14em;
+  min-width: 0;
+}
+
+.ui-spacer {
+  flex: 1;
+}
+
+/* ── Disclosure ───────────────────────────────────────────────────────────────
+   A native `<details>` in the app's voice (`ui/Disclosure.tsx`): the
+   platform's triangle removed (Firefox reads `list-style`, WebKit needs its
+   own pseudo-element) and the app's chevron drawn in its place, pointing at the
+   line at rest and down at what it opened. */
+
+.ui-disclosure > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+.ui-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ui-disclosure-caret {
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+  transition: transform var(--t-tap);
+}
+.ui-disclosure[open] > summary .ui-disclosure-caret {
+  transform: none;
+}
+
+.ui-disclosure-body {
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-disclosure-caret {
+    transition: none;
+  }
+}
+
+/* ── Meter ────────────────────────────────────────────────────────────────────
+   A ring that closes or a bar that fills (`Meter.tsx` has the scale). */
+.ui-meter {
+  flex-shrink: 0;
+}
+
+/* It fills over time: the change of a reading between answers is the one
+   motion here, and it is a fact arriving, not decoration. */
+.ui-meter-ring .ui-meter-fill {
+  transition:
+    stroke-dashoffset var(--t),
+    color var(--t);
+}
+
+.ui-meter-bar {
+  display: inline-block;
+  position: relative;
+  width: 36px;
+  height: 4px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.ui-meter-bar .ui-meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  transition:
+    width var(--t),
+    color var(--t);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-meter-ring .ui-meter-fill,
+  .ui-meter-bar .ui-meter-fill {
+    transition: none;
+  }
+}
+
+/* ── AccessCard ───────────────────────────────────────────────────────────────
+   A place the writer's words can go, as a transparency statement. Name and
+   state on top, what it can and cannot do below, and, for a place with
+   controls, a body under that. */
+
+.ui-access {
+  border: 1px solid;
+  overflow: hidden;
+}
+.ui-access + .ui-access {
+  margin-top: 12px;
+}
+/* The text takes the row, and an action too long to sit beside it wraps
+   under it, lined up with the name, rather than squeezing the name and state
+   into a narrow column. */
+.ui-access-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  padding: 14px 14px;
+}
+.ui-access-sigil {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.ui-access-text {
+  flex: 1 1 12rem;
+  min-width: 0;
+  line-height: 1.3;
+}
+.ui-access-top > .ui-btn {
+  max-width: 100%;
+  height: auto;
+  min-height: 30px;
+  padding-block: 6px;
+  text-align: left;
+}
+/* The sigil's width and the gap: a wrapped action starts under the name. */
+.ui-access-text + * {
+  margin-left: calc(26px + 12px);
+}
+.ui-access-name {
+  display: block;
+  font-size: 13.5px;
+}
+.ui-access-state {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+}
+.ui-access-perms {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px;
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid;
+}
+.ui-access-perms li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.ui-access-perms svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.ui-access-body {
+  padding: 4px 14px 14px;
+  border-top: 1px solid;
+}
+
+/* ── Checklist ────────────────────────────────────────────────────────────────
+   Steps that tick themselves (`Checklist.tsx`): a title, then one row per
+   step, a mark beside the step's name, note and actions. The mark's tick is
+   always in the markup and shows only once the step is done, so a row never
+   changes its children as it ticks. */
+
+.ui-checklist {
+  border: 1px solid;
+  display: grid;
+  align-content: start;
+  overflow: hidden;
+}
+.ui-checklist-title {
+  margin: 0;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.ui-checklist-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ui-checklist-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid;
+  transition: background var(--t);
+}
+.ui-checklist-step:first-child {
+  border-top: 0;
+}
+.ui-checklist-mark {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1.5px solid;
+  transition:
+    background var(--t),
+    border-color var(--t);
+}
+.ui-checklist-mark > * {
+  opacity: 0;
+  transition: opacity var(--t);
+}
+.ui-checklist-step[data-done="1"] .ui-checklist-mark > * {
+  opacity: 1;
+}
+.ui-checklist-body {
+  min-width: 0;
+}
+.ui-checklist-name {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+.ui-checklist-note {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.ui-checklist-reason {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.ui-checklist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+/* A label longer than its row wraps inside the button rather than running
+   past the card: the row has the card's width, and a language sets the
+   label's length. */
+.ui-checklist-actions .ui-btn {
+  flex-shrink: 1;
+  max-width: 100%;
+  height: auto;
+  min-height: 30px;
+  padding-block: 6px;
+  text-align: left;
+}
+/* The ways in of the steps a complete list leaves out. They start at
+   the names' column less a small button's 12px padding, so their labels
+   line up with the names above. */
+.ui-checklist-later {
+  display: grid;
+  justify-items: start;
+  padding: 6px 8px 8px 40px;
+  border-top: 1px solid;
+}
+/* An unavailable step, once the list is complete: its name and reason in the
+   labels' column, the height of a small button. */
+.ui-checklist-unavailable {
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+/* A step pointed at from elsewhere: one tint that rises and settles, played
+   again by a new key on the element. */
+.ui-checklist-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  animation: checklist-flash var(--t-slow);
+}
+@keyframes checklist-flash {
+  30% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-checklist-step,
+  .ui-checklist-mark,
+  .ui-checklist-mark > * {
+    transition: none;
+  }
+  .ui-checklist-flash {
+    animation: none;
+  }
+}
+
+/* ── Slider ───────────────────────────────────────────────────────────────────
+   A native range input restyled (`Slider.tsx`), small: a 4px rail and a 10px
+   thumb. The rail and its fill are drawn behind the native track.
+   `--ui-slider-at` (0..1) is written inline by the component.
+
+   The thumb's position is never animated: it follows the pointer. */
+.ui-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.ui-slider-rail {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ui-slider-fill {
+  display: block;
+  height: 100%;
+}
+.ui-slider.is-whole .ui-slider-fill {
+  width: 100%;
+}
+.ui-slider-input {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+.ui-slider-input:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ui-slider-input::-webkit-slider-runnable-track {
+  height: 4px;
+}
+.ui-slider-input::-moz-range-track {
+  height: 4px;
+}
+.ui-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  /* Centred on the 4px track: (4 - 10) / 2. */
+  margin-top: -3px;
+  border: none;
+  transition: box-shadow var(--t-tap);
+}
+.ui-slider-input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border: none;
+  transition: box-shadow var(--t-tap);
+}
+
+/* The readout: over the thumb while it is held or keyboard-focused, never at
+   rest. */
+.ui-slider-readout {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  font-size: 10.5px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.ui-slider-input:active ~ .ui-slider-readout,
+.ui-slider-input:focus-visible ~ .ui-slider-readout {
+  opacity: 1;
+}
+
+/* One rule per engine: a selector list holding a pseudo-element the browser
+   does not know is dropped whole, which would take the others with it. */
+@media (prefers-reduced-motion: reduce) {
+  .ui-slider-input::-webkit-slider-thumb {
+    transition: none;
+  }
+  .ui-slider-input::-moz-range-thumb {
+    transition: none;
+  }
+  .ui-slider-readout {
+    transition: none;
+  }
+}
+
+/* ── Overlays ─────────────────────────────────────────────────────────────────
+   The scrim, and the panels that sit on it. Portalled to `<body>`, so nothing
+   here may assume an ancestor. */
+
+.ui-scrim {
+  position: fixed;
+  /* The dim reaches the physical edges (a scrim that stopped short of the
+     notch would draw a bright band around a darkened page) while its padding
+     keeps the panel inside them. Two different jobs, one element. */
+  inset: 0;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+  box-sizing: border-box;
+  z-index: 500;
+  display: grid;
+  /* One token, not `var(--t-veil) var(--e-out)`: the token already carries its
+     curve, and a second timing function drops the whole shorthand. */
+  animation: uiScrimIn var(--t-veil);
+}
+
+/* Centred, and the scrim — not the dialog — is the scroll container. A grid
+   track forces its items to full content height, which defeats a dialog's own
+   max-height + overflow and lets tall content get cut top and bottom. `margin:
+   auto` on the child centres it when it fits, and collapses to zero when it is
+   taller than the viewport, so the top stays reachable and the scrim
+   scrolls. */
+.ui-scrim-center {
+  overflow: auto;
+}
+.ui-scrim-center > * {
+  margin: auto;
+}
+.ui-scrim-end {
+  place-items: stretch end;
+  /* Pinned to the scrim's own box, both axes.
+
+     The row is the reason spelled out under `.ui-scrim-start` below: an `auto`
+     row is sized by its content and the scrim does not clip, so a sheet taller
+     than the window grows straight past the bottom of it.
+
+     The column is the same trap turned sideways, and it is the one a sheet
+     that says `width: 100%` falls into: with an `auto` column the track is
+     sized by the item's max-content, and the item's percentage then resolves
+     against that, so `100%` means "as wide as my widest content", not "as
+     wide as the screen". Both sheets on this edge (the app's settings sheet
+     and the dock's) ask for `100%` on a phone. */
+  grid-template-rows: 100%;
+  grid-template-columns: 100%;
+}
+/* The same, against the leading edge. The editor's structure panel becomes one
+   of these on the phone plane: it already lived on the left, and a panel that
+   swapped sides on a narrow window would be a different object rather than the
+   same one with more room. */
+.ui-scrim-start {
+  place-items: stretch start;
+  /* The row is pinned to the scrim's own height. An `auto` row is sized by its
+     content, and the scrim's `overflow: visible` then lets a tall panel grow
+     straight past the bottom of the window: the structure sheet's foot (the
+     recycle bin, the writing preferences) would sit below the screen with
+     nothing able to scroll to it. */
+  grid-template-rows: 100%;
+}
+/* The palette, which hangs just below the application bar rather than floating
+   mid-screen. A fixed offset rather than a fraction of the viewport: it is
+   anchored to the chrome above it, and that chrome is 54px tall whatever the
+   window is. */
+.ui-scrim-top {
+  place-items: start center;
+  padding-top: 62px;
+}
+
+@keyframes uiScrimIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* No max-height or overflow here: the scrim above is the scroll container, so
+   a tall dialog never fights its own height constraint. The sticky footer
+   inside pins to the scrim's scrollport instead. */
+.ui-dialog {
+  width: min(460px, calc(100vw - 36px));
+  border: 1px solid;
+  animation: uiDialogIn var(--t);
+}
+
+/* A wizard, and any tall form: one width, the creation wizard's 680. A fourth
+   dialog width with one consumer is a number nobody else can reason from.
+
+   Bounded by the window at every width, not only below 720 where every dialog
+   is. A step can be taller than a laptop's window (the export's contents step
+   with a long tree open) and the foot holds the only way forward, so the head
+   and foot stay and the body is what scrolls. Unbounded, the scrim would
+   scroll instead and leave the Continue button under the fold at 1366×768. */
+.ui-dialog--wizard {
+  width: min(680px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - var(--kb, 0px) - var(--safe-top) - 48px);
+}
+.ui-dialog--wizard .ui-dialog-body {
+  overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+/* ── Wizards ──────────────────────────────────────────────────────────────────
+   The creation wizard's, and the export window's (`ui/StepRail`).
+   One question per step, so a step has nothing to rule off with hairlines. */
+
+/* The journey rail. One continuous track with a station dot per step, 4px,
+   the same diameter as `.ui-dots i`, so a station is the same object family
+   as every status dot in the app. No numbers, no ticks: the phos fill is the
+   confirmation, and a tick per station is numbered-things language in icon
+   form. */
+.ui-steps {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  height: 4px;
+}
+
+.ui-steps-track {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  right: 2px;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.ui-steps-fill {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  height: 2px;
+  transform: translateY(-50%);
+  transition: width var(--t);
+}
+
+.ui-step-dot {
+  position: relative;
+  width: 4px;
+  height: 4px;
+  transition: background var(--t-tap);
+}
+
+/* The current station sparks once on `--t-bounce`, on the loader's palette.
+   Once, not a loop: a light that kept cycling while the writer reads the
+   question would read as the loader's "still working". Run, it holds
+   nothing: the dot takes the theme's paint again, which the spark ends on. */
+.ui-step-dot[data-state="current"] {
+  animation:
+    stepDotIn var(--t-bounce),
+    uiStepSpark 1.2s linear backwards;
+}
+
+@keyframes uiStepSpark {
+  0%,
+  100% {
+    background: var(--accent);
+    box-shadow: var(--shadow-accent);
+  }
+  25% {
+    background: var(--dots-hot);
+    box-shadow: 0 0 5px 1.5px
+      color-mix(in srgb, var(--dots-c0) 90%, transparent);
+  }
+  33% {
+    background: var(--dots-c0);
+    box-shadow: 0 0 4px color-mix(in srgb, var(--dots-c0) 60%, transparent);
+  }
+  43% {
+    background: var(--dots-c1);
+    box-shadow: 0 0 3.8px color-mix(in srgb, var(--dots-c1) 60%, transparent);
+  }
+  53% {
+    background: var(--dots-c2);
+    box-shadow: 0 0 3.6px color-mix(in srgb, var(--dots-c2) 60%, transparent);
+  }
+  63% {
+    background: var(--dots-c3);
+    box-shadow: 0 0 3.4px color-mix(in srgb, var(--dots-c3) 60%, transparent);
+  }
+  72% {
+    background: var(--dots-c4);
+    box-shadow: 0 0 3.2px color-mix(in srgb, var(--dots-c4) 60%, transparent);
+  }
+  80% {
+    background: var(--dots-c5);
+    box-shadow: 0 0 3px color-mix(in srgb, var(--dots-c5) 60%, transparent);
+  }
+  88% {
+    background: var(--dots-c6);
+    box-shadow: 0 0 3px color-mix(in srgb, var(--dots-c6) 60%, transparent);
+  }
+}
+/* The spark moving on: a streak over the stretch of track it crossed
+   (`StepRail` draws it once per move), a pixel thicker than the track, drawn
+   out in the direction of travel, then flickering out. It reaches the new
+   station as that station flashes, so the spark reads as having travelled
+   there rather than reappearing. Plays once and stays drawn at nothing until
+   the next move replaces it.
+
+   Going on, the fill waits for it (`data-dir` on the rail): the tail is
+   the leading edge, crossing bare track, and the fill follows it in.
+   With the fill first, the tail would run over the fill and hardly show.
+   Going back, the fill draws in under the tail. */
+.ui-steps[data-dir="on"] .ui-steps-fill {
+  transition-delay: 260ms;
+}
+.ui-steps-comet {
+  position: absolute;
+  top: calc(50% - 1.5px);
+  height: 3px;
+  pointer-events: none;
+  animation: uiStepComet 1s linear both;
+}
+.ui-steps-comet[data-dir="back"] {
+  animation-name: uiStepCometBack;
+}
+@keyframes uiStepComet {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+    animation-timing-function: var(--e-out);
+  }
+  32% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  42% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.4;
+  }
+  70% {
+    opacity: 0.75;
+  }
+  82% {
+    opacity: 0.2;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 0;
+  }
+}
+@keyframes uiStepCometBack {
+  0% {
+    clip-path: inset(0 0 0 100%);
+    opacity: 1;
+    animation-timing-function: var(--e-out);
+  }
+  32% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  42% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.4;
+  }
+  70% {
+    opacity: 0.75;
+  }
+  82% {
+    opacity: 0.2;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 0;
+  }
+}
+
+@keyframes stepDotIn {
+  from {
+    transform: scale(0.7);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* The one question of the step and, on a page that asks several (the
+   Properties window), the space between its pairs. The same 16px as
+   `.create-grid` between a pair's rows, so the space between two groups is
+   never tighter than the space inside one. */
+.ui-step {
+  display: grid;
+  gap: 16px;
+}
+
+/* The step-four recap: the investments restated at the commit moment. Same
+   register as the folder evidence, because it is the same kind of fact. */
+.ui-recap {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* A job's own progress face (`ui/JobProgress`): the creation wizard's and the
+   import window's. One segment per step of the caller's catalogue, so a ninth
+   step is one row in an array and nothing in this sheet is rewritten. */
+.ui-job {
+  animation: createCardIn var(--t-veil);
+}
+
+.ui-job-bar {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+}
+
+.ui-job-seg {
+  flex: 1;
+  height: 6px;
+  transition: background var(--t);
+}
+
+.ui-job-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 11px;
+}
+
+.ui-job-meta .ui-prog-file {
+  min-height: 1.5em;
+}
+
+.ui-job-count {
+  flex: none;
+}
+
+/* The questions that answer in pairs: Structure+Language, Type+Goal, and in
+   the Properties window Title+Author. */
+.create-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+/* A field that answers alone, across both columns: the declared tropes are
+   a list of phrases, and half a row shows two of them; the readers, once a
+   blend has taken the genre's other half. */
+.create-grid > .create-wide {
+  grid-column: 1 / -1;
+}
+
+.create-card {
+  padding: 10px 12px;
+  border: 1px solid;
+  font-size: 13px;
+  line-height: 1.5;
+  /* One token carries both the duration and the curve: a card appearing
+     when the shape changes is a surface arriving over content, the same
+     motion `--t-veil` names for a scrim or a menu. */
+  animation: createCardIn var(--t-veil);
+}
+
+@keyframes createCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.create-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.create-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 10.5px;
+}
+
+@media (max-width: 640px) {
+  .ui-dialog--wizard {
+    width: min(460px, calc(100vw - 36px));
+  }
+  .create-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ui-dialog-alert {
+  width: min(400px, calc(100vw - 36px));
+}
+
+@keyframes uiDialogIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-dialog-head {
+  padding: 20px 24px 0;
+}
+
+.ui-dialog-title {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+.ui-dialog-body {
+  padding: 20px 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.ui-dialog-foot {
+  display: flex;
+  justify-content: flex-end;
+  /* The actions are sized by their labels, so whether they fit in one row is
+     a fact about the sentence: the sign-out question's three actions
+     overflow the 398px foot in English and in Italian. Under `flex-end` the
+     excess leaves past the start edge, which does not scroll and is not
+     counted in `scrollWidth`, so the dismissal lands outside the dialog. */
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 1px solid;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+.ui-alert-body {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  display: grid;
+  gap: 10px;
+}
+
+.ui-alert-body > p {
+  margin: 0;
+}
+
+/* The list belongs to the sentence above it, so it sits closer to that
+   sentence than the body's gap would put it. */
+.ui-alert-list {
+  margin: -6px 0 0;
+  padding-left: 1.4em;
+}
+
+.ui-alert-evidence {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  border-left: 2px solid;
+  overflow-wrap: anywhere;
+  /* The evidence is a path on one line and what is in it on the next. Without
+     this the newline collapses to a space and the two run together, and it is
+     `pre-line` rather than `pre` so a long folder name still wraps. */
+  white-space: pre-line;
+}
+
+.ui-alert-problem {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Narrow frames: a dialog is easier to reach from the bottom than from the
+   middle of a phone. In the app the frame is the viewport, so this is a media
+   query rather than the container query the design prototype used.
+
+   720, not 560: this decides what a dialog is, and the rest of the app
+   changes plane at 720. At 560 a 600px frame would get the shell's narrow
+   layout and the desktop's centred dialog at once. */
+@media (max-width: 720px) {
+  /* Cancel the desktop `margin: auto` centring: a bottom sheet is aligned by
+     the scrim's place-items, and the scrim stays the scroll container. */
+  .ui-scrim-center {
+    place-items: end stretch;
+    /* And pin the column, or the `width: 100%` below means "as wide as my
+       widest content": an `auto` track is sized by the item's max-content and
+       the item's percentage then resolves against that. The same trap as in
+       `.ui-scrim-end`. */
+    grid-template-columns: 100%;
+  }
+  .ui-scrim-center > * {
+    margin: 0;
+  }
+  .ui-dialog,
+  .ui-dialog-alert {
+    width: 100%;
+    max-width: none;
+    border-bottom: 0;
+    /* A bottom sheet must be bounded by the screen. Below 720 the dialog
+       takes the full width and the sheet's corners, and at its content height
+       a landscape phone lays the writing preferences out taller than the
+       viewport, with the Prose size row off the bottom edge and nothing able
+       to scroll to it.
+
+       `dvh` rather than `vh` because the browser's own chrome retracts, and
+       `--kb` because the keyboard does not resize the layout viewport (the
+       premise of `useKeyboardInset`); without it the sheet is bounded
+       by a screen the keys are covering half of. `--safe-top` keeps the title
+       out from under a notch on the one occasion the sheet grows tall enough
+       to reach it. */
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - var(--kb, 0px) - var(--safe-top));
+  }
+  .ui-dialog-body {
+    /* The part that gives. Head and foot are the two things that must stay on
+       screen (the foot holds the actions, and a dialog whose confirm button
+       has scrolled away is worse than one that is merely tall), so the body
+       is what scrolls, and `min-height: 0` is what lets a flex child shrink
+       below its content in order to do it. */
+    overflow-y: auto;
+    min-height: 0;
+    overscroll-behavior: contain;
+  }
+  /* The foot stacks. Three actions sharing one 375px row get
+     104px each, and a `flex: 1` row cannot refuse a label that does not fit:
+     "Erase everything and sign out" overflows a 44px button and reads
+     "everything and sign", at the moment the writer most needs to read which
+     button erases their work.
+
+     Full width per row fits every label at any length. */
+  .ui-dialog-foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ui-dialog-foot .ui-btn {
+    /* Not `flex: 1`: in a column that would divide the foot's height between
+       the actions rather than give each its own. Height stays the reach
+       floor's business: the coarse block's `--tap` raises this 42 to 44. */
+    flex: none;
+    min-height: max(42px, var(--tap, 42px));
+  }
+  /* The palette stays at the top: it is a search field, and a thumb reaching
+     it is less important than the on-screen keyboard not covering the list. */
+  .ui-scrim-top {
+    padding-top: 20px;
+  }
+}
+
+.ui-dialog-lede {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ── Radio cards ──────────────────────────────────────────────────────────────
+   Where a project will live is a choice between two real places, not a
+   dropdown. A real `<input type="radio">` is hidden inside each label, so
+   arrow-key navigation and the "one of these" reading come from the
+   browser. */
+
+.picks {
+  display: grid;
+  gap: 8px;
+}
+
+.pick {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid;
+  cursor: pointer;
+  transition:
+    border-color var(--t-tap),
+    background var(--t-tap),
+    box-shadow var(--t-tap);
+}
+
+.pick-sigil {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+}
+
+.pick-name {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+
+.pick-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+}
+
+/* The consequences under a choice are sentences and a list, so they are
+   set as the alert body is, one step smaller to sit under the name. */
+.pick-more {
+  display: block;
+  margin-top: 6px;
+}
+.pick-more .ui-alert-body {
+  font-size: 13px;
+  line-height: 1.5;
+  gap: 6px;
+}
+.pick-more .ui-alert-list {
+  margin-top: -2px;
+}
+.pick:has(.pick-more) {
+  align-items: start;
+}
+
+.pick-tick {
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.pick[data-on="1"] .pick-tick {
+  opacity: 1;
+}
+
+/* A choice that is a word (a file format, a page layout) has no honest
+   sigil, and a made-up glyph per choice is decoration. The card keeps
+   its rhythm; only the sigil column goes. */
+.pick.pick-plain {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* Many short choices, two to a row, so eight formats are one glance and not a
+   scroll. One column again only where two would squeeze a name onto two
+   lines, which is narrower than the 640 of `.create-grid`: a create card
+   carries a sigil and a sentence, a plain pick a word and a short fact, so
+   two of these still fit a 375px phone, and one column there pushes the next
+   question a whole screen down. */
+.picks.picks-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 340px) {
+  .picks.picks-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── List rows ────────────────────────────────────────────────────────────────
+   One row for every list a dialog holds: chats, voices, the sources a chat
+   may read. This is the rhythm of `.ui-menu button` (30px, 6/10 padding,
+   13px), because a dialog's list and a menu's list are the same kind of
+   thing, read the same way. The selection is a trailing tick
+   (`.ui-row-tick`), the model menu's own mark. */
+.ui-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+/* A choice that exists but cannot be taken here: dimmed and inert, never
+   removed, and one weight for all of them, so an unavailable choice looks the
+   same in every dialog. A row or a locked button stays focusable: pointing
+   at it is how its reason is read. A field is disabled outright (a search row the writer
+   unticked): its words stay legible at this weight, because they are
+   what would have been sent. */
+.pick[aria-disabled="true"],
+.ui-row[aria-disabled="true"],
+.ui-btn[aria-disabled="true"],
+.ui-tick:disabled,
+.ui-tick[aria-disabled="true"],
+.ui-input:disabled,
+.ui-checklist-step[data-unavailable="1"],
+.ui-checklist-unavailable,
+.ui-access[data-unavailable="1"] {
+  opacity: 0.58;
+  cursor: default;
+}
+/* The reason a choice cannot be taken (`Reason`), dimmed with the choice
+   it explains: one size wherever it sits, a caption slot included. */
+.ui-reason {
+  font-size: 12px;
+  line-height: 1.45;
+}
+/* The row's words take the slack, which is what puts a trailing tick or
+   action at the far edge, never `space-between`, which with three children
+   centres the middle one. Cut at the end: a title is the writer's own and
+   nothing bounds it. */
+.ui-row-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* A fact about the row, after its name, at 11px, the floor the kit holds a
+   fact to. */
+.ui-row-note {
+  flex-shrink: 0;
+  font-size: 11px;
+}
+/* The selection's seat, held at width whether or not a tick is in it, so a
+   row's words measure the same in both states. */
+.ui-row-tick {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 11px;
+}
+
+/* ── Ticks ────────────────────────────────────────────────────────────────────
+   A setting that is on or off, as a row: a button with a drawn box, not a
+   native checkbox: a native one is a 12px target no coarse-pointer floor can
+   grow without turning it into a boulder. The markup is the kit's `Tick`,
+   and every row is drawn by it. It is a `role="checkbox"`, so
+   the box answers `aria-checked` alone. */
+.ui-tick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 8px;
+  border: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+.ui-tick-box {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border: 1px solid;
+  transition:
+    background var(--t-tap),
+    border-color var(--t-tap),
+    color var(--t-tap);
+}
+.ui-tick[aria-checked="mixed"] .ui-tick-box > * {
+  display: none;
+}
+.ui-tick[aria-checked="mixed"] .ui-tick-box::after {
+  content: "";
+  width: 7px;
+  /* A whole pixel: 1.5 lands between two at 1x and draws a soft smear. */
+  height: 2px;
+}
+.ui-tick-bead > * {
+  display: none;
+}
+/* A list of tick rows inside a dialog. The rows run 8px into the body's
+   gutter, so the column the eye follows down is the boxes, and they line up
+   with the fields above and below (the context dialog's arrangement, and the
+   export window's). */
+.ui-ticks {
+  display: grid;
+  gap: 1px;
+  margin-inline: -8px;
+}
+/* The box alone: a tick whose words are not its own but a
+   field beside it (a search row's query), named by `aria-label`. As tall as
+   that field at rest, so the two sit on one line; a row that grows keeps its
+   tick at the top. */
+.ui-tick.ui-tick-bare {
+  justify-content: center;
+  width: 30px;
+  height: 38px;
+  padding: 0;
+  flex-shrink: 0;
+}
+/* The small box, for a tick that must fit a 12px column (the structure
+   panel's rows). The glyph keeps its size; the box closes around it. */
+.ui-tick-sm .ui-tick-box {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── The export window ────────────────────────────────────────────────────────
+   Kit pieces only (picks, tick rows, a disclosure), so what is left is their
+   arrangement. Here rather than in `editor.css` because the
+   window opens from the Library, before the editor's stylesheet has loaded. */
+.export-area {
+  display: grid;
+}
+/* The disclosure that opens the tree sits under its row's words, not its
+   box: it belongs to the row, and reads as a second line of it. The indent is
+   the tick row's own arithmetic (its 8px padding, the 15px box, the 10px
+   gap), so it moves if `.ui-tick` does. */
+.export-choose {
+  margin: 0 0 6px calc(8px + 15px + 10px);
+}
+.export-tree {
+  display: grid;
+  gap: 1px;
+  /* A long book is a long tree, and the window must keep its head on screen. */
+  max-height: min(40vh, 280px);
+  /* Back out of the disclosure's indent by one row padding, so a top-level box
+     stands under its area's words: the tree reads as that row's children. */
+  margin-left: -8px;
+}
+/* A tree row steps in by its depth: the one number the stylesheet cannot know,
+   handed over as `--export-depth`. */
+.export-tick {
+  padding-inline-start: calc(8px + var(--export-depth, 0) * 20px);
+}
+
+/* ── The import window ────────────────────────────────────────────────────────
+   Kit pieces again (picks, tick rows, inputs), and what is left is the file
+   cards and the list of titles. Here, like the export's, because the window
+   opens from the Library before the editor's stylesheet has loaded. */
+
+.import-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* Every card one size, the picker's included, so the row reads as a set.
+   Wide enough for three full controls along the foot — and on touch, where
+   the kit widens each to `--tap`, still wide enough. */
+.import-files > li {
+  display: flex;
+  flex: none;
+  width: 140px;
+  min-height: 148px;
+}
+
+/* The picker and the drop target: the Library's empty place (`.lib-empty`),
+   dashed, where a file will be rather than a file. */
+.import-drop {
+  display: grid;
+  flex: 1;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 14px 12px;
+  border: 1px dashed;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    border-color var(--t-tap);
+}
+.import-drop-title {
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.import-file {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid;
+  transition: border-color var(--t-tap);
+}
+/* Left out: dashed like an empty place, its format and name faded — the card
+   says it will not be read before the sentence under the row says why. */
+.import-file[data-refused="1"] {
+  border-style: dashed;
+}
+.import-file[data-refused="1"] .import-file-format,
+.import-file[data-refused="1"] .import-file-name {
+  opacity: 0.55;
+}
+.import-file-body {
+  display: grid;
+  flex: 1;
+  justify-items: center;
+  align-content: start;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  text-align: center;
+}
+/* The file's format, as a tag at the start of the card's top line, its
+   remove at the end: the one fact about it the name may not say. */
+.import-file-format {
+  justify-self: start;
+  margin-bottom: 8px;
+  line-height: 18px;
+  padding: 1px 6px;
+  border: 1px solid;
+  font-size: 10px;
+}
+.import-file-name {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.import-file-meta {
+  font-size: 10.5px;
+}
+/* Remove, in the card's other corner: the one destructive act on a card.
+   Small to the eye, not to the finger: its target reaches past the disc to a
+   full `--tap`. */
+.import-file-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    box-shadow var(--t-tap);
+}
+.import-file-remove::before {
+  content: "";
+  position: absolute;
+  inset: calc((22px - var(--tap, 32px)) / 2);
+}
+.import-file-place {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 10.5px;
+}
+/* The card's foot: its place, with an arrow either side that has somewhere
+   to go. Fixed columns, so a missing arrow leaves its place empty rather
+   than sliding the number; each arrow the full width of its column. */
+.import-file-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px 4px;
+}
+.import-file-actions .ui-btn-icon {
+  width: 100%;
+  height: 32px;
+}
+.import-earlier {
+  transform: rotate(90deg);
+}
+.import-later {
+  transform: rotate(-90deg);
+}
+.import-file-why {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.import-split {
+  display: grid;
+  gap: 12px;
+}
+.import-choices {
+  margin-block: -4px;
+}
+/* What a choice does, under its words and in line with them past the box
+   (the tick's 8px, the 15px box and its 9px gap). */
+.import-choice > .ui-input-note {
+  padding: 0 8px 4px 32px;
+}
+.import-undone {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.import-outline-empty {
+  display: grid;
+  place-content: center;
+  min-height: 120px;
+  margin: 0;
+  padding: 20px;
+  border: 1px dashed;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.import-warning {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* The chapter list scrolls on its own, so the choice above it stays in
+   reach on a laptop screen — at 800px tall, with the scenes tick's line and
+   the undo line both showing, the window itself still does not scroll. */
+.import-outline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-height: min(42vh, 420px);
+  margin: 0;
+  /* A gutter on the left for a seam's word, "Merge", which stands to the
+     left of the beads' column, outside its row: without it, a Part's seam
+     has its word cut off at the list's edge. In the list's padding rather
+     than each row's, so a row lit under the pointer is lit from its bead. */
+  padding: 6px 6px 6px 40px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid;
+  list-style: none;
+  scrollbar-width: thin;
+}
+/* A Section's rows, one item of the list, so a joined group reads as the one
+   entry it will be.
+
+   The item is the grid, and each row's cells stand on a line of it (the row
+   is `display: contents`, its cells placed by `--line`): so a group's one
+   bead and one count can span all its lines and stand level at its middle,
+   and a joined line can sit closer and smaller under the name than a row.
+   The bead, the count and the split are in one column down the whole list
+   because each item's last two columns are seats of one width. */
+.import-group {
+  --depth: 0;
+  --rail-step: 18px;
+  --rail-pad: calc(4px + var(--depth) * var(--rail-step));
+  --tick-h: 34px;
+  /* A joined group's lines: the name's, a joined one's, and the room above
+     and below the group. Its lines stand closer together than any two rows
+     do, and the group further from its neighbours than a row from the next,
+     so the gap between two groups reads as the break it is and the lines of
+     one as one thing. At equal spacing a joined line would sit as near the
+     next group's name as its own. */
+  --head-h: 26px;
+  --sub-h: 18px;
+  --group-pad: 8px;
+  --bead: 14px;
+  --bead-x: calc(var(--rail-pad) + 8px + var(--bead) / 2);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  grid-template-rows: minmax(var(--tick-h), auto);
+  align-items: center;
+  column-gap: 6px;
+  min-width: 0;
+  padding: 0 8px 0 var(--rail-pad);
+  transition: background var(--t-tap);
+}
+.import-group[data-joined="1"] {
+  grid-template-rows: var(--head-h);
+  padding-block: var(--group-pad);
+}
+/* A row: its bead (the tick) on the list's line, its name, what can be done
+   to it, and its count. The list is read row by row before anything is
+   decided, so it is set roomier than a dialog's tick list: titles at reading
+   size, beads in proportion to them, and a gap between two beads that holds
+   the join's three dashes. The bead's centre is the item's padding, the
+   tick's own 8px and half its 14px bead; every line the list draws is
+   measured from it and from `--tick-h`, a row's height. An item steps in by
+   its depth in the tree it will become (`--depth`), so the list reads as
+   that tree: Parts at the margin, what they hold under them. */
+.import-row {
+  display: contents;
+}
+.import-row > :not(.import-seam) {
+  grid-row: var(--line);
+}
+/* The bead alone is the tick: the title beside it is the row's name, and a
+   click there names it rather than leaving the row out. */
+.import-row > .ui-tick {
+  /* Holds the stand-in of a bead joining it (`fuse`), placed on its own. */
+  position: relative;
+  grid-column: 1;
+  grid-row: 1 / span var(--lines);
+  width: auto;
+  height: var(--tick-h);
+  padding: 0 6px 0 8px;
+  transition:
+    background var(--t-tap),
+    transform var(--t-slow);
+}
+/* A group's bead and count stand level with the middle of its words (half
+   way from the name's line to the last joined line), not the middle of its
+   box: the name's line is taller than a joined one, so the box's middle sits
+   high, against the name. A top margin of twice the difference moves a
+   centred item down by it. */
+.import-group[data-joined="1"] .import-row > .ui-tick,
+.import-group[data-joined="1"] .import-row > .import-row-words {
+  margin-top: calc((var(--head-h) - var(--sub-h)) / 2);
+}
+.import-row .ui-tick-bead {
+  width: var(--bead);
+  height: var(--bead);
+}
+.import-row > .import-row-title,
+.import-row > .import-row-name {
+  grid-column: 2;
+}
+.import-row-name {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.import-row-tag {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.import-row > .import-kind,
+.import-row > .import-separate {
+  grid-column: 3;
+}
+.import-row > .import-open {
+  grid-column: 4;
+}
+.import-row > .import-row-words,
+.import-row > .import-row-count-seat {
+  grid-column: 5;
+  grid-row: 1 / span var(--lines);
+}
+/* The count's place, as wide on every row as a five-figure count, whether
+   the row shows one or not: the actions to its left then stand in one
+   column. A seat holds a place and nothing else. */
+.import-row-words,
+.import-row-count-seat {
+  min-width: 12ch;
+  font-size: 11.5px;
+  text-align: right;
+}
+.import-row .import-seat {
+  visibility: hidden;
+}
+/* What can be done to the row — make it the other kind, split it — in
+   words with their glyphs: there for the row under the pointer (its whole
+   Section, joined rows and all) or the keyboard, and nowhere else, so sixty
+   rows do not read as a hundred and twenty buttons. They keep their place
+   at rest, left of the count, so nothing on the row moves when they show
+   and the counts stand in one column at the list's edge. */
+.import-row .import-act {
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11.5px;
+  opacity: 0;
+  transition:
+    opacity var(--t-tap),
+    background var(--t-tap),
+    color var(--t-tap);
+}
+/* Under the pointer they wait `--d-tip` before they show, so a pointer
+   passing down the list does not light every row it crosses. They go at once
+   when it leaves; the keyboard's focus shows them at once. */
+.import-group:hover .import-act {
+  opacity: 1;
+  transition-delay: var(--d-tip), 0s, 0s;
+}
+.import-row:focus-within .import-act {
+  opacity: 1;
+  transition-delay: 0s;
+}
+/* A name reads as text until it is clicked: the field's margin takes back
+   its padding, so its words stand where a plain title's do. */
+.import-row-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+input.import-row-title {
+  width: 100%;
+  height: 26px;
+  margin-left: -6px;
+  padding: 0 6px;
+  border: 1px solid;
+  transition:
+    border-color var(--t-tap),
+    background var(--t-tap);
+}
+/* A joined row is a line of the Section's text, not a name: smaller, and
+   close under the name (closer than two rows stand), with its
+   actions at its own height. It starts where the name starts: a step in
+   reads as one step too many. It tucks up into place when the join is made,
+   and grows back to a row when it is separated. */
+.import-row[data-joined="1"] > .import-row-title {
+  height: var(--sub-h);
+  line-height: var(--sub-h);
+  font-size: 12.5px;
+  animation: import-tuck var(--t-slow) both;
+}
+.import-row[data-joined="1"] > .import-act {
+  height: var(--sub-h);
+}
+.import-row[data-unjoined="1"] > .import-row-title {
+  animation: import-untuck var(--t-slow) both;
+}
+@keyframes import-tuck {
+  from {
+    height: var(--tick-h);
+    line-height: var(--tick-h);
+    font-size: 14px;
+    color: var(--ink);
+  }
+}
+@keyframes import-untuck {
+  from {
+    height: var(--sub-h);
+    line-height: var(--sub-h);
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+}
+/* Two beads becoming one (`fuse`): the joined row's stand-in slides to the
+   group's bead and goes where they meet. It stands in the group's tick and
+   slides on the tick's own beat, so the two meet where the bead lands. No
+   bounce as they meet: the slide is the whole gesture. */
+.import-bead-ghost {
+  position: absolute;
+  width: var(--bead);
+  height: var(--bead);
+  pointer-events: none;
+  transition: transform var(--t-slow);
+}
+/* A count that moved slides from where it stood (`slideFrom`): to stand
+   level with its group's bead when a join is made, back when it is undone. */
+.import-row-words {
+  transition: transform var(--t-slow);
+}
+/* The seam: the gap between this row's bead and the one above, and the
+   control that joins them. At rest it is only the gap; hovered, a dashed
+   line shows between the two beads; pressed, the beads become one. No line
+   runs down a joined group: the one bead, the one count and the grey lines
+   under the name already say it. Placed on the item, whose first line is
+   this row's, and stretched by `drawSeams` from the bead above to this one,
+   so its dashes touch both; the place below is only where it stands until
+   it is measured.
+
+   The control is the join icon half way down it, not the whole length: a
+   seam the length of a group's half is a long strip to catch a click meant
+   for the list. The dashes stop short of it on either side, so the icon
+   stands in the line rather than over it. */
+.import-seam {
+  --join-w: 20px;
+  /* The glyph's own height at 16px (its marks span 13 of 24), so the
+     dashes run on above and below it even in a row's short gap. */
+  --join-h: 10px;
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--bead) / 2 - var(--tick-h) / 2);
+  left: calc(var(--bead-x) - var(--join-w) / 2);
+  width: var(--join-w);
+  height: calc(var(--tick-h) - var(--bead));
+  pointer-events: none;
+}
+/* Drawn rather than a dashed border, whose dash a browser sizes from the
+   line's width — at 2px, dots. Dashes 4px on and 3px off, from each bead's
+   edge to the icon: the upper half hangs from the bead above, the lower
+   rises from this row's, so each starts on a dash where it touches. */
+.import-seam::before,
+.import-seam::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--join-w) / 2 - 1px);
+  width: 2px;
+  height: max(0px, calc(50% - var(--join-h) / 2));
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.import-seam::before {
+  top: 0;
+}
+.import-seam::after {
+  bottom: 0;
+  transform: scaleY(-1);
+}
+/* The word to the left of the glyph, and the glyph centred on the seam:
+   the button runs leftward from the seam's right edge, its padding there
+   putting the glyph's middle on the beads' line. */
+.import-seam .import-join {
+  position: absolute;
+  top: calc(50% - var(--join-h) / 2);
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  min-width: 0;
+  height: var(--join-h);
+  min-height: 0;
+  padding: 0 calc((var(--join-w) - 16px) / 2) 0 4px;
+  font-size: 11.5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity var(--t-tap);
+}
+/* Over a row that could join, the seam shows between its bead and the one
+   above, the join on it: the pointer finds the control before it finds the
+   place that is the control. The keyboard's focus shows it too. */
+.import-group:hover .import-seam::before,
+.import-group:hover .import-seam::after,
+.import-group:hover .import-join {
+  opacity: 1;
+  /* After the same wait as the row's actions, and for the same reason. */
+  transition-delay: var(--d-tip);
+}
+.import-seam:has(.import-join:focus-visible)::before,
+.import-seam:has(.import-join:focus-visible)::after,
+.import-join:focus-visible {
+  opacity: 1;
+  transition-delay: 0s;
+}
+.import-outline-help {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.import-row-words {
+  flex-shrink: 0;
+  font-size: 11.5px;
+}
+/* A row, opened (`RowDialog`): its whole text, scrolling inside the dialog
+   (the one scrollbar on screen while it is open), under
+   one line saying how to split it, since a gap shows nothing at rest. */
+.import-peek-lead {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.import-peek {
+  max-height: min(58vh, 520px);
+  margin-inline: -4px;
+  padding-inline: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.55;
+  scrollbar-width: thin;
+}
+.import-peek p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-indent: 1.4em;
+}
+.import-peek p[data-first] {
+  text-indent: 0;
+}
+.import-peek p[data-align="center"] {
+  text-align: center;
+  text-indent: 0;
+}
+/* The gap between two paragraphs, where a new row can start: as thin as the
+   space between the lines at rest, overlapping them so the prose keeps its
+   spacing; under the pointer or the keyboard, the list's join drawn flat —
+   a bead, the dashes, and what it starts. A cut already made is drawn the
+   same way, always, with the new row's name. The gap is set in the prose's
+   size, so the writer's blank lines above it (`RowDialog`, in em) measure
+   the same as above a paragraph; only its name is at the UI's size. */
+.import-cut {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 14px;
+  margin-block: -7px;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  cursor: pointer;
+}
+.import-cut::before {
+  content: "";
+  order: 1;
+  flex: 1;
+  height: 2px;
+}
+.import-cut-bead {
+  width: 10px;
+  height: 10px;
+  flex: none;
+}
+.import-cut-name {
+  order: 2;
+  white-space: nowrap;
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+.import-cut:not([data-cut]) > *,
+.import-cut:not([data-cut])::before {
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.import-cut:not([data-cut]):hover > *,
+.import-cut:not([data-cut]):hover::before,
+.import-cut:not([data-cut]):focus-visible > *,
+.import-cut:not([data-cut]):focus-visible::before {
+  opacity: 1;
+}
+.import-cut[data-cut] {
+  height: auto;
+  margin-block: 10px;
+}
+
+@media (max-width: 640px) {
+  .import-group {
+    --rail-step: 14px;
+  }
+  /* A choice's note goes under its words on a phone, in line with them past
+     the box (15px and the tick's 9px gap): beside them, it cuts "Each scene
+     its own Section" short of its last word. */
+  .import-choices .ui-tick {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+  .import-choices .ui-row-note {
+    flex-basis: 100%;
+    padding-left: 24px;
+  }
+}
+
+/* ── A scrolling list inside a dialog ─────────────────────────────────────────
+   The house scrollbar, thin and without arrow buttons, which the tree, the
+   dock and the bars each state for themselves. A dialog's list
+   takes it from here rather than showing the platform's, whose arrows and
+   gutter would be the loudest thing in the dialog. */
+/* One axis only: a list scrolls down. `overflow-y: auto` alone computes the
+   other axis to `auto` as well, so one row a pixel too wide would hand the
+   writer a sideways scrollbar under the whole list. A row that is too long
+   clips its own words (`.ui-row-text`); the list never scrolls to show
+   them. */
+
+.ui-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.ui-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* ── Progress ─────────────────────────────────────────────────────────────────
+   A long job saying what it is doing. The file name is clipped rather than
+   allowed to reflow the dialog on every file. */
+
+.ui-prog {
+  display: grid;
+  gap: 8px;
+}
+
+.ui-prog-bar {
+  height: 6px;
+  overflow: hidden;
+}
+
+.ui-prog-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  transition: width 180ms linear;
+}
+
+/* Still counting the source: a moving bar that claims no fraction. */
+.ui-prog-bar-unknown i {
+  width: 34%;
+  animation: uiProgSlide 1.4s var(--e-out) infinite;
+}
+
+@keyframes uiProgSlide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(320%);
+  }
+}
+
+.ui-prog-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.ui-prog-file {
+  margin: 0;
+  min-height: 1.5em;
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── The command bar ──────────────────────────────────────────────────────────
+   One floating control surface. The container carries the border; the
+   segments carry none of their own and are separated by hairlines alone.
+   Segments with borders are a toolbar.
+
+   Here rather than in `webapp.css` because the editor gets one of these too,
+   and that half cannot reach the web application's stylesheet. */
+
+.ui-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 5px;
+  border: 1px solid;
+  animation: uiBarIn var(--t) both;
+}
+
+@keyframes uiBarIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-bar-seg {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* The divider, and the only rule between segments. Drawn short of full height,
+   so it reads as a separator rather than as a box edge. */
+.ui-bar-seg + .ui-bar-seg::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 22%;
+  bottom: 22%;
+  width: 1px;
+  transition: opacity var(--t);
+}
+
+/* An engaged segment stops being one of a row of equals. */
+.ui-bar[data-open="1"] .ui-bar-seg::before {
+  opacity: 0;
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────────
+   The primary at the leading end, and the others elsewhere. Create and find
+   sit at opposite ends: two same-sized targets side by side are a mis-click
+   hazard, and the two are different classes of action; one makes something,
+   the other narrows what already exists. */
+
+/* One number, set on the bar, because everything in the row has to agree on it:
+   the actions, the find field, and the editor's save chip and folds. The
+   Library's shelf bar runs at 38 and the editor's at 34 — the editor's bar sits
+   over a paragraph and the Library's over a shelf of cards, and the one that
+   floats above prose has to be the quieter object. A variable rather than two
+   rules so a bar can never be half-resized.
+
+   The default rides in the fallback rather than a `:root` declaration, because
+   this is layout and `:root` in this file is the theme contract: anything
+   declared there has to be a theme token, and `contract.test.ts` enforces it.
+
+   Static, never transitioned: a length animated through an unregistered
+   custom property latches its old computed value in Chrome and the morph
+   never runs. `.ui-bar-find` transitions its own `width` between two
+   resolved lengths, which is a different thing and works. */
+
+.ui-bar-act {
+  display: grid;
+  place-items: center;
+  width: var(--bar-act, 38px);
+  height: var(--bar-act, 38px);
+  flex-shrink: 0;
+  border: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap),
+    box-shadow var(--t-tap);
+}
+
+.ui-bar-act-labelled {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  padding: 0 14px 0 12px;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+.ui-bar-act svg {
+  transition: transform var(--t-bounce);
+}
+.ui-bar-act:active svg {
+  transform: scale(0.88);
+  transition-duration: var(--t-press);
+}
+.ui-bar-act:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ui-bar-act:disabled svg {
+  transform: none;
+}
+
+/* ── Track ────────────────────────────────────────────────────────────────────
+   A row of n cells with one thumb travelling under the chosen one.
+
+   The caller supplies `--track-w` (the cell width) and `data-at` (the chosen
+   index, as a number). Two numbers rather than a class per position, so a
+   two-cell track and a four-cell one are the same rule — the Library's density
+   toggle and the editor's alignment row differ only in how many cells they
+   draw.
+
+   `min-width: 0` on the buttons is required wherever a cell can be narrower
+   than its own label: a flex item's automatic minimum size is its content's
+   min-content width, so without it the box refuses to shrink and the width is
+   written and then ignored. */
+
+.ui-bar-track {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.ui-bar-track-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--track-w, 34px);
+  height: 30px;
+  /* transform, so the movement is composited and never touches layout. */
+  transform: translateX(calc(var(--track-w, 34px) * var(--track-at, 0)));
+  transition: transform var(--t);
+}
+
+.ui-bar-track button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* A cell carrying a glyph and a word lays them side by side, glyph first;
+     a cell with one of them is a single grid item and is unchanged. The tip
+     is absolutely positioned, so it takes no track. */
+  grid-auto-flow: column;
+  column-gap: 4px;
+  /* Without it two auto tracks stretch to share the cell and the glyph and
+     the word drift to its two ends. */
+  place-content: center;
+  width: var(--track-w, 34px);
+  height: 30px;
+  min-width: 0;
+  border: 0;
+  cursor: pointer;
+  /* Late: the colour lands with the thumb rather than ahead of it. */
+  transition: color var(--t) var(--d-stagger);
+}
+
+/* ── Seated ───────────────────────────────────────────────────────────────────
+   The same track, sunk into a trough, with the chosen cell raised out of it:
+   the dock's tabs, the top of a panel naming its two faces. */
+
+.ui-bar-track[data-seat="sunk"] {
+  padding: 2px;
+}
+
+.ui-bar-track[data-seat="sunk"] .ui-bar-track-thumb {
+  top: 2px;
+  left: 2px;
+  height: 26px;
+}
+
+.ui-bar-track[data-seat="sunk"] button {
+  height: 26px;
+  font-size: 11.5px;
+}
+
+/* ── Fitted ───────────────────────────────────────────────────────────────────
+   Cells as wide as their labels, plus an equal share of whatever is left: a
+   content basis grows and shrinks from each label's own width, so the air
+   around every word is the same even though the cells are not. The thumb
+   cannot be one cell times an index, so `CommandBarTrack` measures
+   the chosen cell into `--thumb-x` / `--thumb-w`. Its offset already counts
+   the trough's padding, hence `left: 0`. */
+.ui-bar-track[data-fit="1"] button {
+  width: auto;
+  flex: 1 1 auto;
+  padding-inline: 6px;
+}
+
+/* A glyph then a word is centred by its ink, not its boxes. Every glyph on
+   the 24 grid keeps about 3.5 units of air inside its box, and a word's ink
+   runs to its own edge, so a box-centred pair sits a couple of pixels right
+   of centre: 11.2px of air on the left against 9.2px on the right at 15px.
+   One pixel moves from the leading padding to the trailing one: the cell
+   keeps its width, so the thumb measured onto it does not move. */
+.ui-bar-track[data-fit="1"] button:has(> svg + span) {
+  padding-inline: 5px 7px;
+}
+
+.ui-bar-track[data-fit="1"] .ui-bar-track-thumb {
+  left: 0;
+  width: var(--thumb-w, 0);
+  transform: translateX(var(--thumb-x, 0));
+  /* Still until the first placement by `CommandBarTrack`, so it arrives
+     rather than growing from nothing. */
+  transition: none;
+}
+
+.ui-bar-track[data-fit="1"][data-placed="1"] .ui-bar-track-thumb {
+  transition:
+    transform var(--t),
+    width var(--t);
+}
+
+/* The press, answered under the finger — and the spring back on release, which
+   is the one place the overshoot belongs: the motion rule reserves it for a
+   confirmation, and by release the aiming is over. The transform is on the
+   glyph, never the button, so the hit area cannot shift mid-press. */
+.ui-bar-track button svg {
+  transition: transform var(--t-bounce);
+}
+.ui-bar-track button:active svg {
+  transform: scale(0.88);
+  transition-duration: var(--t-press);
+}
+
+/* ── Tip ──────────────────────────────────────────────────────────────────────
+   A tooltip that can hold a key. `title` cannot: it renders the shortcut as
+   parenthetical text in the platform's own font, at the platform's own delay,
+   and screen readers announce it as part of the name.
+
+   Delayed in, instant out. Once one has shown, its siblings in the same bar
+   arrive with no delay.
+
+   `aria-describedby` on the trigger, never `aria-label`, so the accessible name
+   stays the control's own word and the shortcut is supplementary. */
+
+.ui-tip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 9px);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -3px) scale(0.96);
+  transform-origin: top center;
+  transition:
+    opacity var(--t-tap),
+    transform var(--t-tap);
+}
+
+/* The portaled tip, from the editor's bar. Pinned to the viewport at
+   `document.body` so the bar's horizontal scrollport cannot clip it; the
+   inline `left`/`top` are the trigger's measured position and the shared
+   `translate(-50%)` re-centres it on the trigger. The show/hide is JS (`data
+   -open`) rather than `:hover`, because the tip is not the trigger's
+   descendant, but the fade tokens are the same ones the inline tip uses. */
+.ui-tip-portal {
+  position: fixed;
+  z-index: 700;
+}
+
+.ui-tip-portal[data-open="1"] {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* The zero-size anchor the portaled tip measures its trigger through. It is
+   the trigger's own child, which is what lets a component find its parent. */
+.ui-tip-anchor {
+  display: none;
+}
+
+/* Smaller than a standalone key: inside a tip it is an aside within an aside,
+   and at the sheet's size it crowds the words it is qualifying. */
+.ui-tip .ui-kbd {
+  padding: 1px 4px;
+  font-size: 10px;
+  border-bottom-width: 1px;
+}
+
+/* `--d-tip`, and it has to be a `--d-*`: `transition-delay: var(--t-slow)`
+   expands to a duration and a curve, which is not a valid delay, so the whole
+   declaration would drop and every tip would appear instantly. The same trap
+   the token block warns about, one shape further along. */
+[data-tip]:hover > .ui-tip,
+[data-tip]:focus-visible > .ui-tip {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+  transition-delay: var(--d-tip), var(--d-tip);
+}
+
+/* The group delay, spent. Set by the component once any tip in the group has
+   been shown, and cleared a beat after the pointer leaves. */
+[data-tips="warm"] [data-tip]:hover > .ui-tip {
+  transition-delay: 0s;
+}
+
+/* ── The editor, arriving ─────────────────────────────────────────────────────
+   The wait for the editor's chunk, drawn as the editor's own furniture minus
+   one piece: the panel down the left (carrying the dots), the measure in the
+   middle. The command bar has no stand-in: an empty bar reads as a broken
+   bar, so it does not render until the editor exists.
+
+   Here rather than in `editor.css`, and in plain numbers rather than the
+   geometry tokens, for the same reason as the dots: the stylesheet that
+   defines `--panel-w` arrives with the chunk this is standing in for. These
+   are the same numbers, written once more in the one place that can see them
+   before the editor exists. */
+
+.ed-skeleton {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ed-skeleton-panel {
+  position: absolute;
+  left: 16px;
+  top: 44px;
+  bottom: 20px;
+  width: 248px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+}
+
+.ed-skeleton-measure {
+  position: absolute;
+  top: 132px;
+  left: calc(50% + 144px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(680px, calc(100% - 360px));
+}
+
+.ed-skeleton-measure .ui-skeleton {
+  height: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-skeleton-measure .ui-skeleton {
+    animation: none;
+  }
+}
+
+/* ── Bubble ───────────────────────────────────────────────────────────────────
+   A surface that points at a selection.
+
+   Positioned by the component, in the coordinate space of whatever it is
+   anchored inside — `--tail` is the caret's offset from the bubble's own left
+   edge, so a bubble clamped against the window edge still points at the words
+   it belongs to. */
+
+.ui-bubble {
+  position: absolute;
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  padding: 4px;
+  transform-origin: bottom center;
+  animation: uiBubbleIn var(--t) both;
+}
+
+/* Flipped below the selection when there is no room above. The origin moves
+   with it, so it still grows out of the text rather than towards it. */
+.ui-bubble[data-below="1"] {
+  transform-origin: top center;
+}
+
+@keyframes uiBubbleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: var(--tail, 50%);
+  width: 12px;
+  height: 7px;
+  margin-left: -6px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.ui-bubble[data-below="1"]::after {
+  top: auto;
+  bottom: 100%;
+  clip-path: polygon(0 100%, 100% 100%, 50% 0);
+}
+
+.ui-bubble button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.ui-bubble button svg {
+  transition: transform var(--t-bounce);
+}
+.ui-bubble button:active svg {
+  transform: scale(0.88);
+  transition-duration: var(--t-press);
+}
+
+.ui-bubble hr {
+  width: 1px;
+  height: 18px;
+  align-self: center;
+  margin: 0 2px;
+  border: 0;
+}
+
+/* ── Find ─────────────────────────────────────────────────────────────────────
+   One box that changes shape. The input is mounted at all times and clipped
+   while the box is a circle; nothing is ever swapped, which is what makes this
+   a morph rather than a cut.
+
+   The open state is CSS — `:focus-within` — so collapsing on blur is free.
+   `data-query` pins it open while a query is narrowing the list, because a
+   shortened list whose control has folded away is the worst outcome here. */
+
+.ui-bar-find {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--bar-act, 38px);
+  height: var(--bar-act, 38px);
+  overflow: hidden;
+  transition:
+    width var(--t),
+    background var(--t);
+}
+
+.ui-bar-find:focus-within,
+.ui-bar-find[data-query="1"] {
+  width: var(--bar-find-w, min(300px, 52vw));
+}
+
+/* Centred in the resting square, whatever that square is — the glyph is the
+   whole control while the field is shut, so an offset measured against one bar
+   size sits visibly off-centre in the other. It keeps that position when the
+   box grows; the field opens to the right of it. */
+.ui-bar-find-sigil {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--bar-act, 38px) / 2);
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+/* Left padding clears the sigil and follows the bar's size with it. The right
+   padding clears the count, whose width is about what the count says rather
+   than how tall the bar is (the Library's reads "12 projects" and the
+   editor's reads "3/12"), so it is its own variable. */
+.ui-bar-find-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  /* The tail must clear the count and the clear command (the cluster), or
+     typed text runs under them; the default is sized for the Library's wide
+     "12 projects". */
+  padding: 0 var(--bar-find-tail, 96px) 0 calc(var(--bar-act, 38px) - 3px);
+  border: 0;
+  font-size: 13.5px;
+  opacity: 0;
+  /* The input covers the whole box, sigil included, so while this is still a
+     button it has to look like one under the pointer. Without it a collapsed
+     find hands back a text caret over what is visibly a control. */
+  cursor: pointer;
+  /* Late, once the box has most of its width. Text appearing inside a box that
+     is still growing looks squeezed. */
+  transition: opacity var(--t-tap) var(--d-stagger);
+}
+
+.ui-bar-find:focus-within .ui-bar-find-input,
+.ui-bar-find[data-query="1"] .ui-bar-find-input {
+  opacity: 1;
+  cursor: text;
+}
+
+/* What the query turned up, on the field's trailing edge. Inside rather than
+   after it: a count sitting outside the field would widen the bar on the first
+   keystroke and narrow it on the last — jitter on every character. The input's
+   right padding above is what keeps typed text from running under it.
+
+   The count and the clear command share one slot — `.ui-bar-find-tail`, below
+   — so neither needs its own position arithmetic and they can never overlap. */
+/* `.ui-bar-find-live`, the live region, has no rules. It must be present
+   before a count exists, so that a count arriving is a change rather than an
+   insertion: a region inserted together with its first content is
+   unreliably announced. The count below keeps its own element,
+   its type and its fade, because that fade is an animation on mount and the
+   container it sits in never re-mounts. */
+
+.ui-bar-find-count {
+  font-size: var(--bar-find-count-size, 11px);
+  white-space: nowrap;
+  pointer-events: none;
+  /* Faded in rather than cut in. It only exists once there is a query (the
+     count of nothing is not a fact worth a slot), so this is an animation on
+     mount rather than a transition on a state. A number that appears abruptly
+     beside a field the writer is still typing into reads as an error
+     arriving. */
+  animation: uiCountIn var(--t-tap) both;
+}
+
+@keyframes uiCountIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The trailing cluster — count and clear, one slot. The whole cluster sits
+   absolutely on the field's trailing edge, and only the button inside takes
+   the pointer: the count must never swallow a click aimed past it. */
+.ui-bar-find-tail {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* The clear command: a square like the field's own, and it never takes the
+   caret: `preventDefault` on mousedown lives in the component, so a click
+   clears the query and the writer carries on typing. */
+.ui-bar-find-clear {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* The waiting figure, at the clear button's 20x20: the two never stand
+   together, and a different size would make the field's trailing edge twitch
+   on every search. Not a button, so no cursor and no pointer. */
+
+.ui-bar-find-busy {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+/* Cancels the platform's own clear button, which draws a second glyph inside a
+   field that already has one affordance too many. */
+.ui-bar-find-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-bar {
+    animation: none;
+  }
+  .ui-bubble {
+    animation: none;
+  }
+  .ui-menu {
+    animation: none;
+  }
+  /* `both` on a fade-in fills backwards from opacity 0, so cancelling the
+     animation without also cancelling the fill strands the count invisible. */
+  .ui-bar-find-count {
+    animation: none;
+    opacity: 1;
+  }
+  .ui-bar-seg::before,
+  .ui-bar-act,
+  .ui-bar-act svg,
+  .ui-bar-track-thumb,
+  .ui-bar-track button,
+  .ui-bar-track button svg,
+  .ui-tip,
+  .ui-bubble button,
+  .ui-bubble button svg,
+  .ui-bar-find,
+  .ui-bar-find-input,
+  .ui-bar-find-clear {
+    transition: none;
+  }
+}
+
+/* ── Menu ─────────────────────────────────────────────────────────────────────
+   A popover, so it is positioned rather than placed: fixed coordinates, set
+   from the trigger's box by the component, because it is portalled to `<body>`
+   and the card it belongs to is not an ancestor it can hang from. */
+
+.ui-menu {
+  position: fixed;
+  z-index: 600;
+  min-width: 186px;
+  padding: 6px;
+  border: 1px solid;
+  /* It grows out of the corner it hangs from, so the motion reads as the
+     menu coming out of its trigger rather than as a card sliding in from
+     somewhere. The default corner is the overflow button's; a command
+     palette opens above its field and left-aligned, so its corner is the
+     other one. */
+  transform-origin: top right;
+  animation: uiMenuIn var(--t-veil);
+  /* The height is capped by its placement (`useAnchoredPosition`'s
+     `maxHeight`, the room on the side it opens to); past that it scrolls,
+     and the page under it does not scroll with it. The arrow keys move focus
+     item by item, and focus brings each one into view. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ui-menu[data-placement="above-start"] {
+  transform-origin: bottom left;
+}
+
+/* The default's mirror: same right edge, the other side of the trigger. */
+.ui-menu[data-placement="above-end"] {
+  transform-origin: bottom right;
+}
+
+@keyframes uiMenuIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Popover ──────────────────────────────────────────────────────────────────
+   The menu's panel with content instead of a list (`overlay/Popover.tsx`):
+   the same edge, layer and entrance, so a reading's panel and the model
+   button's menu beside it read as one family. Padded as a card, because
+   what it holds is read rather than picked from. */
+.ui-popover {
+  position: fixed;
+  z-index: 600;
+  padding: 12px 14px;
+  border: 1px solid;
+  transform-origin: top right;
+  animation: uiMenuIn var(--t-veil);
+}
+.ui-popover[data-placement="above-start"] {
+  transform-origin: bottom left;
+}
+.ui-popover[data-placement="above-end"] {
+  transform-origin: bottom right;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-popover {
+    animation: none;
+  }
+}
+
+/* A row never clips its own label, so `min-height`, not `height`: a remote
+   model's id carries its vendor (`anthropic/claude-sonnet-4`), which wraps
+   in a 200px popover, and a wrapped second line inside a fixed 30px box is a
+   line the writer cannot read. That tail is the part that distinguishes one
+   model from the next, so truncating to an ellipsis would hide the only thing
+   worth reading; the row grows instead.
+
+   A single-line row is 6 + ~16 + 6, under 30, so `min-height` decides its
+   height. */
+.ui-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 0;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* An item with a note under its label (the command menu): the two
+   lines stack, and the note wraps rather than ellipsing — a clipped
+   description is a description that stops before it says what the item
+   does. */
+.ui-menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.ui-menu-desc {
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: normal;
+}
+@media (max-width: 720px) {
+  .ui-menu-desc {
+    font-size: 13px;
+  }
+}
+/* A note's scope tail — its middot, keyword and gloss — held on one line:
+   a note wraps before the tail, never inside it, so the
+   keyword is never parted from its gloss. The space before it stays outside
+   the unit, as the break point (the `.composer-hint-unit` law).
+   The longest tail is well inside the column, so it cannot overflow. */
+.ui-menu-tail {
+  white-space: nowrap;
+}
+
+/* A menu item with no subject (cut/copy with nothing selected) is dimmed and
+   inert rather than removed — the row keeps its place and teaches the verb. */
+.ui-menu button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ui-menu hr {
+  border: 0;
+  border-top: 1px solid;
+  margin: 6px 4px;
+}
+
+/* A group heading, aligned to the items' own label column (10px pad + a 15px
+   icon box + 10px gap), so the heading reads as the head of the list under it
+   rather than as a row that lost its icon. */
+.ui-menu-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 2px;
+  padding: 0 10px;
+  font-size: 11.5px;
+}
+
+.ui-menu-group svg {
+  flex: none;
+  width: 15px;
+}
+
+/* The first heading is already at the top of a padded panel; a second gap
+   above it reads as a stray line. */
+.ui-menu-group:first-child {
+  margin-top: 1px;
+}
+
+/* Once a heading has drawn a glyph in the icon column, that column exists,
+   and a row that abandons it reads as misaligned rather than as a row with no
+   icon. The model menu is this shape, one ticked item among many, and the
+   headings give the eye a left edge to measure the raggedness against.
+
+   Scoped to menus that have a heading, so a menu that mixes icon and
+   icon-less rows without groups keeps its spacing. */
+.ui-menu:has(.ui-menu-group) button:not(:has(svg))::before {
+  content: "";
+  flex: none;
+  width: 15px;
+}
+
+/* ── The prose context menu ───────────────────────────────────────────────────
+   The editor's right-click menu, at the selection bubble's padding and type
+   size, so the two floating surfaces over the prose read as one family. Its
+   shortcuts are the same `.ui-kbd` key caps the command bar's tips print. */
+.ui-menu.ui-menu-inverse {
+  padding: 4px;
+}
+
+.ui-menu.ui-menu-inverse button {
+  font-size: 12.5px;
+}
+
+.ui-menu.ui-menu-inverse hr {
+  margin: 0 6px;
+}
+
+.ui-menu.ui-menu-inverse .ui-kbd {
+  margin-left: auto;
+  border-bottom-width: 1px;
+}
+
+/* ── The command palette ──────────────────────────────────────────────────────
+   The keyboard route to every project and every action around it. One list,
+   not a search box and a command list: naming what the writer wants is one
+   gesture, and splitting it would make the writer pick a mechanism first. */
+
+.palette {
+  width: min(520px, calc(100vw - 36px));
+  border: 1px solid;
+  overflow: hidden;
+  animation: paletteIn var(--t);
+}
+
+@keyframes paletteIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.palette-query {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px;
+  border-bottom: 1px solid;
+}
+
+.palette-query input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  font-size: 15px;
+}
+
+.palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.palette-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 10px;
+  border: 0;
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.palette-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-group {
+  flex-shrink: 0;
+  font-size: 10.5px;
+}
+
+.palette-row-on .palette-group {
+  opacity: 0.75;
+}
+
+.palette-none {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* ── Toast ────────────────────────────────────────────────────────────────────
+   Fixed to the foot of the window rather than to the page, so a toast about
+   the card just removed is not somewhere else on a shelf that has scrolled.
+   Above the scrim: an Undo has to stay reachable behind a sheet. */
+
+.ui-toasts {
+  position: fixed;
+  z-index: 700;
+  left: 0;
+  right: 0;
+  /* Above the home indicator's swipe strip. A toast carries an Undo, so a
+     toast inside that strip is a button competing with a system gesture. */
+  bottom: calc(16px + var(--safe-bottom));
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  pointer-events: none;
+}
+
+/* The phone treatment `.dt-toast` has in `editor.css`, clear of the bottom
+   bar and the soft keyboard, for this generic host too, or a toast posted
+   through it (the failed-save cause, among others) renders under the keys.
+   Same offset, same tokens, both global (`--kb` from the editor's viewport
+   tracking, `--bar-act` from the phone rule earlier in this file); the
+   fallbacks make this a no-op wherever neither is set. */
+@media (max-width: 720px) {
+  .ui-toasts {
+    bottom: calc(
+      var(--bar-act, 44px) + 16px + var(--kb, 0px) + var(--safe-bottom)
+    );
+  }
+}
+
+.ui-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100% - 32px);
+  padding: 10px 10px 10px 16px;
+  font-size: 13.5px;
+  animation: uiToastIn var(--t);
+}
+
+@keyframes uiToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-toast-text {
+  min-width: 0;
+}
+
+.ui-toast-undo {
+  flex-shrink: 0;
+  border: 0;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-btn,
+  .ui-row,
+  .ui-tick,
+  .ui-tick-box {
+    transition: none;
+  }
+  /* Stillness: the dots rest softly lit, which is the loader's one fact —
+     something is still working — without the motion. */
+  .ui-dots i {
+    animation: none;
+  }
+  /* A skeleton and an indeterminate bar are both saying "still working". With
+     the motion gone they have to say it some other way, so each keeps a static
+     shape rather than becoming an inert grey box that looks like a failure. */
+  .ui-skeleton {
+    animation: none;
+  }
+  .ui-prog-bar-unknown i {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+  .ui-scrim,
+  .ui-dialog,
+  .ui-menu,
+  .palette,
+  .ui-toast,
+  .create-card,
+  .ui-job {
+    animation: none;
+  }
+  /* The wizard's rail and the job's segments state themselves in colour; the
+     motions that got cancelled above leave their end-states, so the transitions
+     and the one-shot dot spring are the parts that go. */
+  .ui-btn-load-label,
+  .ui-btn-load-dots,
+  .ui-steps-fill,
+  .ui-step-dot,
+  .ui-job-seg {
+    transition: none;
+  }
+  /* The spark rests lit in the accent, its glow on, and a move is the fill
+     simply standing at the new station. */
+  .ui-step-dot[data-state="current"] {
+    animation: none;
+  }
+  .ui-steps-comet,
+  .ui-steps-comet[data-dir="back"] {
+    animation: none;
+    display: none;
+  }
+  /* A joined line tucks and untucks at once, and a count is simply where
+     it now stands. */
+  .import-row[data-joined="1"] > .import-row-title,
+  .import-row[data-unjoined="1"] > .import-row-title {
+    animation: none;
+  }
+  .import-bead-ghost {
+    display: none;
+  }
+  .import-row > .ui-tick,
+  .import-seam::before,
+  .import-seam::after,
+  .import-seam .import-join,
+  .import-row-words,
+  .import-group,
+  input.import-row-title,
+  .import-row .import-act,
+  .import-cut > *,
+  .import-cut::before {
+    transition: none;
+  }
+  /* Without the fade, the wait stays: it is there for the eye's quiet, not
+     for the motion, so the controls still arrive only on a row the pointer
+     rests on — at once when they do. */
+  .import-group:hover .import-act,
+  .import-group:hover .import-seam::before,
+  .import-group:hover .import-seam::after,
+  .import-group:hover .import-join {
+    transition: opacity 0s var(--d-tip);
+  }
+}
+
+/* ── The spine glyph ──────────────────────────────────────────────────────────
+   A project's shape, at a glance. Here rather than beside the Library because
+   the editor draws one too, on the Desk, at hero scale, and that half cannot
+   reach `webapp.css`. Same move, same reason, as the command bar.
+
+   The bars are one SVG stretched to whatever width it is given; the labels are
+   HTML positioned by percentage, because a stretched viewBox squashes its own
+   text by the factor it stretches the bars. */
+
+.spine {
+  position: relative;
+  width: 100%;
+}
+
+.spine-bars {
+  display: block;
+  width: 100%;
+}
+
+/* A project with Parts but no Sections in them yet. It gets the same slot every
+   other project gets, drawn as the track its bars will sit in: rendering
+   nothing would make one card in a row shorter than the rest for no reason a
+   writer could see. */
+.spine-empty {
+  width: 100%;
+}
+
+/* `.ui-figure-labels` is the same row for any figure drawn this way — a
+   `/map` figure's beat names, plot points and Part numbers:
+   one voice for "a label on a stretched drawing", wherever it is drawn. */
+.spine-labels,
+.spine-counts,
+.ui-figure-labels {
+  position: relative;
+  height: 14px;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.spine-labels span,
+.spine-counts span,
+.ui-figure-labels > span {
+  position: absolute;
+  top: 0;
+  /* Anchored to the group's left edge, and allowed to run past it: a Part one
+     Section wide is narrower than its own number. */
+  white-space: nowrap;
+}
+
+.spine-labels {
+  margin-bottom: 4px;
+}
+.spine-counts {
+  margin-top: 2px;
+}
+
+/* ── Reach ────────────────────────────────────────────────────────────────────
+   The last block in the file: it is a floor, and a floor only works if
+   nothing after it can undercut it.
+
+   One floor, keyed on the pointer rather than on the width. On a phone a
+   control smaller than a fingertip is a missed target, and 19x19 fails WCAG
+   2.5.8's 24x24 outright. A tablet at 1024px needs the floor and a narrow
+   desktop window does not, which is what `(pointer: coarse)` asks and what a
+   `max-width` query cannot.
+
+   `min-height` rather than a new height. Every family below keeps its own
+   number for the mouse; this raises the floor beneath it and leaves the
+   shape, the padding and the type alone. Where a control is square its width
+   is floored too, because half a target is not a target.
+
+   The 16px on fields is not a preference: WebKit zooms the page when a
+   focused input is under 16px and offers no way back but a pinch. */
+
+@media (pointer: coarse) {
+  /* The import's rows are the tap floor tall, and every line the list draws
+     is measured from the tick's height, so the seam between two beads grows
+     with them. */
+  .import-group {
+    --tick-h: var(--tap);
+    /* A joined line holds Separate and Split, which a finger must reach;
+       the name's line holds its field and its actions. */
+    --head-h: var(--tap);
+    --sub-h: var(--tap);
+  }
+  /* The join is the seam's one control, so it takes most of the taller gap
+     a finger is given between two beads. */
+  .import-seam {
+    --join-w: 28px;
+    --join-h: 26px;
+  }
+
+  /* The two numbers, declared inside the query rather than in the top-level
+     `:root`: `:root` outside a media block is the theme contract, and
+     `theme/contract.test.ts` holds it to the tokens a theme supplies. These
+     are not tokens a theme may have an opinion about: 44 is the smallest
+     target a fingertip hits reliably (and clears WCAG
+     2.5.8's 24 comfortably), 16 is the size below which WebKit zooms the page
+     on focus with no way back but a pinch. Platform floors, not design. They
+     exist only where they apply, and `editor.css` and `webapp.css` read them
+     from here. */
+  :root {
+    --tap: 44px;
+    --tap-font: 16px;
+
+    /* And the band grows to hold them: a 44px control in a 40px band bleeds
+       2px past the hairline at both ends where a titlebar exists. Derived
+       from the floor, so the two numbers can never drift. */
+    --header-h: calc(var(--tap) + 4px);
+  }
+
+  .ui-btn {
+    min-height: var(--tap);
+  }
+
+  /* Square ones need the second axis: `.ui-btn-square` is 34x34, and a
+     44x34 target is a target a finger misses from below. */
+  .ui-btn-square,
+  .ui-btn-icon {
+    min-width: var(--tap);
+  }
+
+  .ui-seg button,
+  .ui-menu button,
+  /* A dialog's list rows and its ticks: a row is the whole target. */
+  .ui-row,
+  .ui-tick,
+  .ui-bar-track button,
+  /* A disclosure's line is a control like any other, and 12px of it alone is
+     far under the floor. */
+  .ui-disclosure > summary {
+    min-height: var(--tap);
+  }
+
+  /* The track's buttons are icons in a row — a bare `min-height` would leave
+     them 32px wide and touching. */
+  .ui-bar-track button {
+    min-width: var(--tap);
+  }
+
+  /* The bar's actions size off a token, so the token is the whole edit. 38 is
+     the Library's; the editor overrides it to 34 and gets its own line in
+     `editor.css`. */
+  :root {
+    --bar-act: var(--tap);
+  }
+
+  .ui-input,
+  .ui-select,
+  .ui-bar-find-input {
+    min-height: var(--tap);
+    font-size: var(--tap-font);
+  }
+
+  /* The wrapping field's resting height is the floor, and its padding
+     re-centres from it. The bare tick is a target in both dimensions. */
+  .ui-input.ui-input-wrap {
+    --field-h: var(--tap);
+  }
+  .ui-tick.ui-tick-bare {
+    min-width: var(--tap);
+  }
+
+  /* The clear is the way back out of a query, and on a phone it is the only
+     way: there is no Escape key to fold the field with. Outside this block it
+     is a 20px target. The whole box grows, painted seat included:
+     `.ui-bar-find-tail` is absolutely positioned, so a wider button pushes
+     nothing. */
+  .ui-bar-find-clear {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+
+  /* A checklist's actions set their own 30px floor at (0,2,0), which outranks
+     the kit's `.ui-btn` above, so they are named at the same weight. */
+  .ui-checklist-actions .ui-btn {
+    min-height: var(--tap);
+  }
+
+  /* A text link standing in a row of buttons is a control in that row, so it
+     takes the row's floor rather than the height of its line. */
+  .ui-text-link.ui-text-link-row {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+
+  /* A slider is aimed at with a thumb along its whole height, not its 4px
+     track: the input takes the floor, and the rail stays centred in it. */
+  .ui-slider-input {
+    height: var(--tap);
+  }
+}
+
+/* ── Density, the shared half ─────────────────────────────────────────────────
+   The editor's own block at the foot of `editor.css` carries the reasoning;
+   these are the two components it names that do not live there. The palette
+   is a shell component the editor borrows (it is the phone's only route to
+   five of the editor's commands), and `.ui-kbd` is drawn by both
+   halves — so scoping either one to the editor would leave the same string at
+   two sizes depending on which half painted it.
+
+   The key cap earns its place in the fact voice rather than being dropped:
+   a soft keyboard cannot produce a modifier, so on this plane the chip is not
+   an instruction, it is a note about what the same command costs on a desk. */
+
+@media (max-width: 720px) {
+  .ui-kbd,
+  .palette-group {
+    font-size: 11px;
+  }
+
+  .palette-row,
+  /* The dock's face tabs — a seated track, whose own rule is (0,2,1) and so
+     has to be matched here rather than named by class alone. */
+  .ui-bar-track[data-seat="sunk"] button,
+  /* A dialog's confirm and cancel. The foot is where the writer's decision is
+     made, and it is not drawn at the desk's 13.5. */
+  .ui-dialog-foot .ui-btn,
+  /* A disclosure's line is a label, read at the label size. */
+  .ui-disclosure > summary,
+  /* A dialog's lede and a field's label: the sentence that opens a dialog
+     and the name over its field read at the label size, not the desk's 13.5
+     and 12.5. */
+  .ui-dialog-lede,
+  .ui-input-label {
+    font-size: 13px;
+  }
+}
+
+/* ── Standing statuses ────────────────────────────────────────────────────────
+   One fixed column, and every notice joins it rather than placing itself. Two
+   of these are true at once for a Drive project on a train (the connection is
+   gone and the last write did not land), and two independently positioned
+   pills would cover each other then.
+
+   `pointer-events: none` on the column is the "must not impede my work" clause
+   taken literally: these sit over the writing surface and cannot intercept a
+   tap wherever they land. A control opts back in alone: the whole pill of
+   "A newer version is ready", which goes with the reload it asks for, and a
+   dismiss button (below).
+
+   z-index 250: above the engaged chrome (130) and the dock, below the modal
+   layer (300+) — a dialog is a question the writer is answering, and a status
+   must not sit on top of one.
+
+   `width: max-content`: a fixed box at `left: 50%` otherwise shrinks to the
+   half of the viewport right of its edge, and a notice wraps there long
+   before `max-width` would wrap it. */
+.status-notices {
+  position: fixed;
+  top: calc(10px + var(--safe-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 250;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+}
+
+/* Sized to be read and then ignored: a standing fact the writer often can do
+   nothing about must not carry the presence of a prompt. */
+.status-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 10px;
+  border: 1px solid;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* A notice's dismiss opts back into clicks on its own, while the pill that
+   carries it passes them through. Sized to the 12px text so the pill keeps
+   its one-line height, which the notice's short copy fits on a desktop; the
+   coarse-pointer rule for `.ui-btn-icon` still widens its target. */
+.status-notice-dismiss {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  margin-right: -4px;
+}
+
+/* On a touch screen that floor makes the dismiss a fingertip square. Its
+   block margins give the extra height back, so the target overhangs the
+   pill and the pill keeps its one-line height. */
+@media (pointer: coarse) {
+  .status-notice-dismiss {
+    margin-block: calc((16px - var(--tap)) / 2);
+  }
+}
+
+/* "A newer version is ready" carries a Reload, so its whole pill
+   catches clicks. It is short-lived over prose: it goes with the reload it
+   asks for. */
+.status-notice.update-notice {
+  pointer-events: auto;
+}
+
+/* The demo's notice stands as long as the writer leaves it, and on a phone
+   it lies over the first lines of the manuscript, so its pill passes taps
+   through to the prose. Only its download link and its dismiss catch them. */
+.status-notice.demo-notice a {
+  pointer-events: auto;
+}
+
+/* The Library's new-release card: a notice's paint, outside the column, in
+   the bottom trailing corner, 16px in from both edges at every width, and
+   under the modal layer like the column. The toasts' phone offset clears a
+   bottom bar the Library does not have, and there it lifts the card onto
+   the shelf's own buttons. */
+.status-notice.release-notice {
+  position: fixed;
+  z-index: 250;
+  inset-inline-end: calc(16px + var(--safe-right));
+  bottom: calc(16px + var(--safe-bottom));
+  max-width: calc(100vw - 32px - var(--safe-right) - var(--safe-left));
+  text-align: start;
+}
+.status-notice.release-notice .status-notice-dismiss {
+  margin-left: 4px;
+}
+
+/* A version reads as one word, never split at a line's end. */
+.status-notice.release-notice a {
+  white-space: nowrap;
+}
+
+/* A text control after a notice's words, at the notice's own 12px so the
+   pill keeps its one-line height. */
+.status-notice-action {
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+.status-notice-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+}
+
+/* The phone plane draws its chrome at two sizes only (`phone-type.mobile.
+   spec.ts`). A standing notice is read as a label there, so its words and
+   its action leave the desk's 12px for the 13px label size. After the rules
+   above, which it overrides at the same weight. */
+@media (max-width: 720px) {
+  .status-notice,
+  .status-notice-action {
+    font-size: 13px;
+  }
+
+  /* One line on a phone: a pill that wraps grows into an oval over the
+     chapter's title (`DemoNotice`). */
+  .demo-notice-more {
+    display: none;
+  }
+}
+
+/* ── A theme switch ───────────────────────────────────────────────────────────
+   Changing theme fades the page from the old theme to the new over `--t`,
+   220ms on the curve the house eases out on: the browser holds the old picture while
+   the new theme goes on, then crossfades the two (`theme/page.ts`,
+   `fadeToTheme`). While it does, nothing transitions on its own, so the new
+   picture is the finished one, and no shape carries a name, so the page fades
+   as one. Important, because a switch outranks whatever an element or a
+   theme would otherwise do in that moment; the fade's own keyframes, since a
+   theme may switch off the browser's. */
+
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  transition: none !important;
+  view-transition-name: none !important;
+}
+
+:root[data-theme-switching]::view-transition-old(root) {
+  animation: themeFadeOut var(--t) both !important;
+}
+
+:root[data-theme-switching]::view-transition-new(root) {
+  animation: themeFadeIn var(--t) both !important;
+}
+
+@keyframes themeFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes themeFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* `fadeToTheme` starts no fade for a writer who asked for less motion; this
+   answers for the fade should one ever be started. */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme-switching]::view-transition-old(root),
+  :root[data-theme-switching]::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* Windows' forced colours repaint every ground and drop every box shadow,
+   which is how a pressed control, a chosen row or card, a seated thumb and
+   most focus rings are drawn here. An outline survives, in the system's
+   highlight, and takes no room: inside a chosen thing, outside a focused
+   one. Each declaration is `!important`: an important declaration in the
+   frame's layer outranks every theme's, so no theme's ring or ground takes
+   these back. */
+@media (forced-colors: active) {
+  [aria-pressed="true"],
+  [aria-current="true"],
+  [aria-current="page"],
+  [aria-selected="true"],
+  [data-on="1"]:is(.pick, .store-row),
+  .dt-row.active,
+  .dt-row.selected,
+  .snap-row.selected,
+  .dt-search-row.active {
+    outline: 2px solid Highlight !important;
+    outline-offset: -2px !important;
+  }
+
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+
+  /* A step's dot is its ground alone: the steps to come in the system's
+     grey, the ones taken and the current in its highlight. */
+  .ui-step-dot {
+    forced-color-adjust: none !important;
+    background: GrayText !important;
+  }
+  .ui-step-dot:is([data-state="done"], [data-state="current"]) {
+    background: Highlight !important;
+  }
+
+  /* Drawn by its ground alone, which forced colours replace with the
+     canvas: a slider's thumb and a meter's fill keep the system's text
+     colour, and a meter's track its outline. Each thumb is its own rule: a
+     list naming another engine's pseudo-element is dropped whole. */
+  .ui-slider-input::-webkit-slider-thumb {
+    forced-color-adjust: none !important;
+    background: CanvasText !important;
+  }
+  .ui-slider-input::-moz-range-thumb {
+    forced-color-adjust: none !important;
+    background: CanvasText !important;
+  }
+  .ui-meter-bar .ui-meter-fill {
+    forced-color-adjust: none !important;
+    background: CanvasText !important;
+  }
+  .ui-meter-bar {
+    outline: 1px solid CanvasText !important;
+  }
+}

@@ -1,0 +1,87 @@
+# CodeQL over the TypeScript and JavaScript (the SPA and the tools), over the
+# Go of the identity service and the desktop program, and over the workflows
+# themselves. A high or critical finding fails the job unless a comment on
+# the line above suppresses it (`tools/check-sarif.mjs`).
+#
+# The results go to the Security tab only where GitHub code scanning is
+# available, which the repository variable `CODE_SECURITY` declares: a public
+# repository, or a private one with GitHub Code Security.
+#
+# It runs only inside the CI run (`ci.yml`), weekly run included, so
+# "Required checks" waits for it and CI's concurrency group applies.
+name: CodeQL
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  # The Go extractor reads what a build compiles, so its module is built
+  # between the two CodeQL steps; the other two read the source.
+  analyze:
+    name: "CodeQL: ${{ matrix.language }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read # checks out the code
+      actions: read # reads the run's workflow, as the analysis records it
+      security-events: write # uploads the results to code scanning
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+            build-mode: none
+          - language: actions
+            build-mode: none
+          - language: go
+            build-mode: manual
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The findings check runs on Node.
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Set up Go
+        if: matrix.language == 'go'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: desktop/go.mod
+          cache-dependency-path: desktop/go.sum
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          config-file: ./.github/codeql/codeql-config.yml
+
+      # Both Go modules, and one target per operating system `build.sh`
+      # ships, so the code behind each operating system's build constraint is
+      # extracted.
+      - name: Build the identity service and the desktop program
+        if: matrix.build-mode == 'manual'
+        run: |
+          for module in identity desktop; do
+            for target in windows/amd64 darwin/arm64 linux/amd64; do
+              (cd "$module" && CGO_ENABLED=0 GOOS=${target%/*} GOARCH=${target#*/} go build ./...)
+            done
+          done
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
+        with:
+          category: /language:${{ matrix.language }}
+          output: sarif-results
+          upload: ${{ vars.CODE_SECURITY == 'true' && 'always' || 'never' }}
+
+      - name: Fail on high or critical findings
+        run: node tools/check-sarif.mjs sarif-results/*.sarif

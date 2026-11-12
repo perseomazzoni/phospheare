@@ -1,0 +1,433 @@
+# The one CI workflow: every check a pull request must pass, in one run. The
+# CodeQL scan (`codeql.yml`) runs inside it as a called workflow, so a push
+# shows one graph and one verdict. Releases are built from a tag by
+# `release.yml`; nothing here publishes.
+#
+# `ci-ok`, shown as "Required checks", is the only required status check. It
+# fails when any job it needs failed or was cancelled.
+#
+# The jobs run in two stages, and the browser suites start only when every
+# fast check passed, so a cheap failure stops the expensive jobs:
+#
+#   1. fast checks: the SPA's typecheck, unit suites, linters and build; the
+#      identity and desktop Go checks; the repository's linters and audits;
+#   2. the SPA's browser suites.
+#
+# A weekly run on main checks every dependency and query pack again: a new
+# advisory or query can find a problem in code that no change touched.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "41 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to a pull request supersedes the running checks. Runs on main
+# are never cancelled, so every commit on main keeps its own verdict, and each
+# takes a group of its own commit: GitHub keeps one pending run per group and
+# cancels the one a newer run replaces, whatever `cancel-in-progress` says.
+concurrency:
+  group: ci-${{ github.event_name == 'push' && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ── Stage 1: fast checks ────────────────────────────────────────────────────
+
+  # Within each stage-1 job the steps run cheapest first, so a formatting or
+  # lint error fails in seconds, before the minutes of the build and the
+  # tests.
+  web-checks:
+    name: "Web: format, lint, build, unit tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # npm ci at the root installs every workspace from the single lockfile.
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check --workspace @phospheare/web
+
+      # Every ESLint rule is an error; a warning fails the job.
+      - name: Lint
+        run: npm run lint --workspace @phospheare/web
+
+      # `build` is `tsc --noEmit` for the app, the scripts and the e2e specs, then
+      # `vite build`.
+      - name: Type-check and build
+        run: npm run build --workspace @phospheare/web
+
+      # The demo site's build fails when a module or a text of the full
+      # program reaches its files (`web/build/demoBoundary.ts`).
+      - name: Build the demo site through its gate
+        run: npm run build:demo --workspace @phospheare/web
+
+      # Lightning CSS lowers both builds' CSS; a lowering no browser reads
+      # (`tools/check-built-css.mjs`) fails here, before any E2E run.
+      - name: Check the built CSS
+        run: node tools/check-built-css.mjs web/dist web/dist/demo
+
+      # Fails below the coverage floor in vite.config.ts.
+      - name: Unit tests with coverage
+        run: npm run test:coverage --workspace @phospheare/web
+
+  # The identity service: Google sign-in, the writer session and the sealed
+  # Drive connections. Its module requires no third-party code, so it has no
+  # go.sum and the cache keys on go.mod.
+  identity-checks:
+    name: "Identity: format, vet, tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: identity
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Go version is the `go` line of identity/go.mod.
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: identity/go.mod
+          cache-dependency-path: identity/go.mod
+
+      # gofmt prints the files whose formatting differs; any output fails.
+      - name: Check formatting (gofmt)
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt would reformat:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
+
+      # A known vulnerability that this module's code reaches, in a dependency
+      # or in the standard library of the Go it builds with, fails the job.
+      # One in a package the code never calls is listed and passes.
+      - name: Check for known vulnerabilities (govulncheck)
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+
+      # The race detector needs cgo, and so a C compiler on the runner.
+      - name: Tests with the race detector
+        run: go test -race ./...
+
+      # The binary as it runs in service: the keyring it writes on its first
+      # start, a route answering for its origin's Host, and a clean stop on
+      # SIGTERM.
+      - name: Run the binary once
+        run: |
+          dir="$RUNNER_TEMP/identity-run"
+          rm -rf "$dir"
+          mkdir -p "$dir"
+          go build -o "$dir/identity" ./cmd/identity
+          port=18781
+          export IDENTITY_PUBLIC_ORIGINS="http://localhost:$port"
+          export IDENTITY_LISTEN="127.0.0.1:$port"
+          export IDENTITY_GOOGLE_CLIENT_ID=ci.apps.googleusercontent.com IDENTITY_GOOGLE_CLIENT_SECRET=ci
+          export IDENTITY_SEAL_KEYS_FILE="$dir/seal.keys"
+          "$dir/identity" serve > "$dir/identity.log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2> /dev/null || true; cat "$dir/identity.log"' EXIT
+          for _ in $(seq 1 30); do
+            if curl -sS -H "Host: localhost:$port" "http://127.0.0.1:$port/identity/session" > "$dir/session.json" 2> /dev/null; then break; fi
+            sleep 1
+          done
+          cat "$dir/session.json"
+          grep -q '"code":"no-session"' "$dir/session.json"
+          test "$(grep -c . "$dir/seal.keys")" = 1
+          kill -TERM "$pid"
+          wait "$pid"
+          echo "identity answered and stopped cleanly."
+
+  # The desktop program, which runs the identity service as a program and
+  # imports none of its code. Its module builds and tests without the SPA:
+  # the embed folder holds a tracked placeholder page. The supervisor's tests
+  # build the identity binary from this checkout.
+  desktop-checks:
+    name: "Desktop: format, vet, tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Go version is the `go` line of desktop/go.mod.
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: desktop/go.mod
+          cache-dependency-path: |
+            desktop/go.sum
+            identity/go.mod
+
+      # gofmt prints the files whose formatting differs; any output fails.
+      - name: Check formatting (gofmt)
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt would reformat:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
+
+      # As in the identity checks: a reached known vulnerability fails the job.
+      - name: Check for known vulnerabilities (govulncheck)
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+
+      # The race detector needs cgo, and so a C compiler on the runner. The
+      # Pebble issuance test skips itself without its two variables.
+      - name: Tests with the race detector
+        run: go test -race ./...
+
+  # Cheap checks over the whole tree, run on every change.
+  repo-checks:
+    name: "Repository: lint and audit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The linters that need no install run before Node is set up.
+      - name: Lint workflows (actionlint)
+        uses: rhysd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca # v1.7.12
+
+      - name: Audit workflow security (zizmor)
+        uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          advanced-security: false
+
+      # A secrets scan inside the workflow, whatever GitHub's own secret
+      # scanning is set to for the repository. It needs no Semgrep account or
+      # custom image.
+      - name: Scan for secrets (Semgrep)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/semgrep"
+          "$RUNNER_TEMP/semgrep/bin/python" -m pip install --disable-pip-version-check --quiet semgrep==1.182.1
+          "$RUNNER_TEMP/semgrep/bin/semgrep" scan --config p/secrets --metrics=off --disable-version-check --error
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Reads only the lockfiles and the two go.mod files, so it runs before
+      # the install.
+      - name: Check dependency licenses
+        run: npm run licenses:check
+
+      # Every source file opens with the copyright and SPDX lines.
+      - name: Check license headers
+        run: npm run headers:check
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # The repository's tools, and the scripts and expressions the workflows
+      # run, under node's own test runner.
+      - name: Test the tools and workflows
+        run: node --test tools/*.test.mjs
+
+      # Every lockfile, every severity, dev dependencies and the tool trees
+      # under `tools/` included: what CI installs runs where release
+      # credentials live. `tools/audit-exceptions.json` holds the
+      # dated exceptions.
+      - name: Audit npm dependencies
+        run: npm run audit:lockfiles
+
+  # ── Scan ────────────────────────────────────────────────────────────────────
+
+  # A called workflow is granted at most what its caller grants, so the caller
+  # grants what the scan's own job asks for. The call keeps the
+  # workspace-relative `./` form: GitHub's newer `$/` form, which zizmor asks
+  # for, fails actionlint 1.7.12, the newest release.
+  codeql:
+    name: CodeQL
+    permissions:
+      contents: read # checks out the code
+      actions: read # reads the run's workflow, as the analysis records it
+      security-events: write # uploads the results to code scanning
+    uses: ./.github/workflows/codeql.yml # zizmor: ignore[self-repository]
+
+  # ── Stage 2: browsers ───────────────────────────────────────────────────────
+
+  # The real-browser checks. jsdom measures every rect as zero,
+  # so layout is verified only here. Desktop and mobile run as separate jobs,
+  # split as playwright.config.ts splits its projects, so a failure names its
+  # plane. Neither starts a backend: the demo editor needs none, and
+  # the specs that sign in skip without `PHOSPHEARE_E2E_TOKEN`.
+  web-e2e-desktop:
+    name: "Web: E2E desktop"
+    needs: [web-checks, identity-checks, desktop-checks, repo-checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # The suites run against a bundled build rather than the dev server, which
+      # compiles every module on request and spends most of a runner's time
+      # doing it. The build keeps the test hooks (`web/.env.e2e`).
+      - name: Build the web app for E2E
+        run: npm run build:e2e
+        working-directory: web
+
+      # `--with-deps` adds the system libraries the runner image lacks.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+
+      # Ten failures say the run is broken; the rest of the suite would only
+      # spend minutes confirming it.
+      - name: Run the desktop E2E tests
+        run: npx playwright test --project=desktop --max-failures=10
+        working-directory: web
+        env:
+          E2E_BUILD: '1'
+
+      # The demo site as it is served: its build, its third-party notices,
+      # and the suite that pins what it offers and keeps.
+      - name: Build the demo site
+        run: |
+          npm run build:demo --workspace @phospheare/web
+          node tools/generate-notices.mjs --web-only --out web/dist/demo/third-party-notices.txt
+
+      - name: Run the demo site's E2E tests
+        run: npx playwright test
+        working-directory: web
+        env:
+          E2E_DEMO: '1'
+
+      - name: Upload the test report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-desktop
+          path: |
+            web/playwright-report
+            web/test-results
+          retention-days: 7
+
+  # Two device profiles: WebKit on the iPhone, Chromium on the Pixel. Half the
+  # mobile layout keys on `(pointer: coarse)`, which only a device preset
+  # sets. The other profiles in playwright.config.ts run by hand before a
+  # release (CONTRIBUTING.md).
+  web-e2e-mobile:
+    name: "Web: E2E mobile"
+    needs: [web-checks, identity-checks, desktop-checks, repo-checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # The suites run against a bundled build rather than the dev server, which
+      # compiles every module on request and spends most of a runner's time
+      # doing it. The build keeps the test hooks (`web/.env.e2e`).
+      - name: Build the web app for E2E
+        run: npm run build:e2e
+        working-directory: web
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+        working-directory: web
+
+      # It stops at ten failures, as the desktop run does.
+      - name: Run the mobile E2E tests
+        run: npx playwright test --max-failures=10 --project=iphone-14-pro --project=pixel-7
+        working-directory: web
+        env:
+          E2E_BUILD: '1'
+
+      - name: Upload the test report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-mobile
+          path: |
+            web/playwright-report
+            web/test-results
+          retention-days: 7
+
+  # ── The required check ──────────────────────────────────────────────────────
+
+  ci-ok:
+    name: Required checks
+    needs:
+      - web-checks
+      - identity-checks
+      - desktop-checks
+      - repo-checks
+      - web-e2e-desktop
+      - web-e2e-mobile
+      - codeql
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # A skipped job counts as a failure too: a job that did not run proved
+      # nothing, and this check is the one branch protection requires.
+      - name: Check every needed job passed
+        env:
+          FAILED: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}
+        run: |
+          if [ "$FAILED" = "true" ]; then
+            echo "::error::A required job failed, was cancelled or was skipped."
+            exit 1
+          fi

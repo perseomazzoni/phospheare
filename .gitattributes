@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# Fonts are binary. `text=auto` guesses, and a woff2 guessed wrong has its line
+# endings rewritten, which corrupts the file silently — it downloads fine and
+# renders as nothing.
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary

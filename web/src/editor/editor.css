@@ -1,0 +1,6588 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* ══ The editor ═════════════════════════════════════════════════════════════
+   Every rule that serves the writing surface, the document tree, the floating
+   chrome and the marks laid over prose. It arrives with the editor's lazy
+   chunk, so nothing here loads for someone only signing in or reading their
+   settings.
+
+   These rules lay the editor out and paint nothing: every colour, radius,
+   shadow and font comes from the active theme's sheet
+   (`web/src/theme/themes/<family>/theme.css`).
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* Lets height transition to and from `auto`, for the document tree's
+   expand and collapse. Unsupported browsers snap. */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+/* ── The frame's geometry ─────────────────────────────────────────────────────
+   The editor's areas are the frame's, the same under every theme: a theme
+   paints them and never moves one. The numbers the script also reads are in
+   `theme/domain/geometry.ts` (`FRAME_GEOMETRY`), and `editorCss.test.ts` fails
+   when a token and its copy there disagree.
+
+   The measure never narrows to make room for chrome: it is 680px at every width
+   the layout is designed for, and when the window runs out of room the dock
+   lies over the prose as a sheet. Only the structure panel reserves its width.
+   The one exception is the comments set as notes, below: the text gives up
+   width to the notes' column. */
+
+:root {
+  --editor-width: 680px;
+
+  /* 4px below the titlebar's foot, which is `--header-h`: declared in
+     `base.css` because the Library's header is the same band. The panel, the
+     dock and the page's sheet all stand from it. */
+  --chrome-horizon: calc(var(--header-h) + 4px);
+
+  /* The declared default, not the live value: `EditorRoute` sets `--panel-w`
+     inline on the shell in every state (the dragged width, the rail's 52).
+     `editorCss.test.ts` pins that it equals `PANEL_W` in `useNarrow.ts`. */
+  --panel-w: 248px;
+  --panel-left: 8px;
+  --panel-gutter: 40px;
+
+  /* The surface's right padding. A token because the command bar centres on the
+     prose by repeating the surface's arithmetic, and two copies of one margin
+     put the bar off the measure. The phone narrows it, below. */
+  --desk-right: 40px;
+
+  /* The sheet's gap from the panel, the window's edges and the open dock is the
+     panel's own inset. The bar's seat and height make the band above the page's
+     face: the seat is 0 where the bar stands on the titlebar's foot, and grows
+     where the text is cut and the bar sits on the page. The text starts 42
+     below the face's top whatever the seat or height, so that band is the same
+     on every plane and holds a running head. */
+  --sheet-gap: var(--panel-left);
+  --bar-seat: 0px;
+  --bar-h: 46px;
+  --face-top: calc(var(--chrome-horizon) + var(--bar-seat) + var(--bar-h));
+  --text-top: calc(var(--face-top) + 42px);
+
+  /* The prose's own size, which the writer sets (`writingPreferences.ts`). */
+  --prose-size: 19px;
+
+  /* The shell overwrites this inline from `dockWidth`; the value here is the
+     floor `MIN_DOCK_W` states, and `editorCss.test.ts` pins that the two agree.
+     The dock stands `--dock-inset` in from the window's right edge
+     (`dockInset`). */
+  --dock-w: 340px;
+  --dock-inset: 8px;
+}
+:root:is([data-under-bar="cut"], [data-under-bar="sheet"]) {
+  --bar-seat: 10px;
+}
+
+/* ── Editor shell ────────────────────────────────────────────────────────── */
+
+.editor-shell {
+  position: relative;
+  height: 100%;
+}
+
+/* ── The page's sheet ─────────────────────────────────────────────────────────
+   On the wide plane the page is one sheet, from the titlebar's foot to the
+   window's foot and from the panel to the window's edge or the open dock,
+   `--sheet-gap` from each. The command bar stands in a band at its top; the
+   rest is the page's face, where the text is. A theme that paints no sheet
+   still has it, and its areas stand where every theme's do.
+
+   It is drawn behind the prose's scroller from the same shell variables the
+   measure and the dock are placed by, so the two cannot drift. The narrow and
+   phone planes have no sheet: the dock lies over the prose there. */
+.editor-shell:not([data-phone="1"]):not([data-narrow="1"])::before {
+  content: "";
+  position: fixed;
+  top: var(--chrome-horizon);
+  left: calc(var(--panel-left) + var(--panel-w) + var(--sheet-gap));
+  right: var(--sheet-gap);
+  bottom: var(--sheet-gap);
+  border: 1px solid;
+  pointer-events: none;
+}
+/* Beside the open dock the sheet stops `--sheet-gap` short of it; under a dock
+   that covers the measure it runs on to the dock's right edge, since the prose
+   does. `--dock-overlap` is the clamp's switch. */
+.editor-shell[data-dock="1"]:not([data-phone="1"]):not(
+    [data-narrow="1"]
+  )::before {
+  right: clamp(
+    var(--dock-inset),
+    var(--dock-cover) + var(--sheet-gap) - var(--dock-overlap) * 100000,
+    var(--dock-cover) + var(--sheet-gap)
+  );
+}
+.editor-shell:is([data-henosis="full"], [data-henosis="0"]):not(
+    [data-phone="1"]
+  ):not([data-narrow="1"])::before {
+  transition:
+    top var(--t-slow),
+    left var(--t-slow),
+    right var(--t-slow);
+}
+.editor-shell[data-henosis="full"]:not([data-phone="1"]):not(
+    [data-narrow="1"]
+  )::before {
+  top: var(--sheet-gap);
+  left: var(--sheet-gap);
+  right: var(--sheet-gap);
+}
+
+/* Inset by the bar's seat so the rail never runs under the title bar. */
+.editor-shell:not([data-phone="1"]) {
+  --rail-inset-top: calc(var(--chrome-horizon) + var(--bar-seat));
+  --rail-inset-bottom: calc(var(--sheet-gap) + var(--bar-seat));
+}
+.editor-shell[data-henosis="full"]:not([data-phone="1"]) {
+  --rail-inset-top: calc(var(--sheet-gap) + var(--bar-seat));
+}
+
+/* Text under the command bar (`FrameOptions.underBar`), one of three ways.
+
+   Cut: the scroller is clipped to the face, top and foot, its fixed caret with
+   it. It stays open to the sides, so its scrollbar and a margin note beside the
+   measure are whole.
+
+   Slide: the prose scrolls on under the bar and the title bar.
+
+   Sheet: the prose scrolls on under the bar and is cut the bar's seat below the
+   chrome horizon (`--sheet-cut`) and at the sheet's foot. A theme that lifts
+   its bar keeps the cut on the seat, so the line falls inside the bar. */
+:root[data-under-bar="cut"]
+  .editor-shell:not([data-phone="1"])
+  .editor-surface {
+  clip-path: inset(var(--face-top) -100vw calc(var(--sheet-gap) + 1px));
+}
+:root[data-under-bar="sheet"]
+  .editor-shell:not([data-phone="1"])
+  .editor-surface {
+  --sheet-cut: calc(var(--chrome-horizon) + var(--bar-seat));
+  clip-path: inset(var(--sheet-cut) -100vw calc(var(--sheet-gap) + 1px));
+}
+:root:is([data-under-bar="cut"], [data-under-bar="sheet"])
+  .editor-shell[data-henosis="full"]:not([data-phone="1"])
+  .editor-surface {
+  clip-path: inset(
+    calc(var(--sheet-gap) + 1px) -100vw calc(var(--sheet-gap) + 1px)
+  );
+}
+:root:is([data-under-bar="cut"], [data-under-bar="sheet"])
+  .editor-shell:not([data-phone="1"])
+  :is(.titlebar-veil, .titlebar::before) {
+  display: none;
+}
+
+/* ── Comments as notes ────────────────────────────────────────────────────────
+   Where the frame sets the comments as notes (`FrameOptions.comments`), they
+   stand in a margin column right of the text (`ShellGeometry.notes`): a 28 gap,
+   a hairline rule and a 180 column, which `Margin` places. A ‸ marks each
+   passage's end, drawn over the text so the text does not reflow; without the
+   column's room each ‸ is the way to its thread. */
+:root[data-comments="notes"]
+  .editor-shell[data-margin="1"]:not([data-narrow="1"]):not([data-timeline]) {
+  --margin-need: calc(208px + var(--desk-right) - 16px);
+  --margin-least: var(--margin-need);
+  --margin-column: 208px;
+}
+
+/* The text gives up width to the notes: the measure is what the room leaves
+   once the column and the dock are paid, at most 680. Under 480 the notes
+   cannot stand, the comments go to their ‸, and the text keeps its 680: the
+   second term is under 480 only while the room is, and far over 680 once it is
+   not. Henosis and the history's walk show no notes. */
+:root[data-comments="notes"]
+  .editor-shell[data-margin="1"]:not([data-narrow="1"]):not(
+    [data-henosis="full"]
+  ):not([data-timeline]) {
+  --notes-room: calc(var(--shift-room) - var(--dock-cover, 0px) - 208px);
+  --editor-width: min(
+    680px,
+    max(var(--notes-room), 480px + (480px - var(--notes-room)) * 1000)
+  );
+}
+:root[data-comments="notes"] .cm-rule {
+  position: absolute;
+  width: 1px;
+}
+:root[data-comments="notes"] :is(.cm-pmark, .cm-marker[data-at="end"]) {
+  font-size: var(--prose-size);
+}
+:root[data-comments="notes"] .cm-pmark {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+}
+:root[data-comments="notes"] .cm-marker[data-at="end"] {
+  display: block;
+  width: auto;
+  height: auto;
+  transform: none;
+}
+:root[data-comments="notes"] .cm-marker[data-at="end"]::after {
+  content: "‸" / "";
+  width: auto;
+  height: auto;
+  border: 0;
+}
+:root[data-comments="notes"] .cm-marker[data-at="end"]::before {
+  content: "";
+  position: absolute;
+  inset: calc(50% - 12px);
+}
+:root[data-comments="notes"] .cm-marker[data-at="end"] .cm-face {
+  display: none;
+}
+:root[data-comments="notes"]
+  .cm-marker[data-at="end"][data-state="proposed"]::after {
+  opacity: 0.6;
+}
+/* A note carries no card and no face: the ‸ before the name stands where the
+   face would. */
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  :is(.cm-card, .cm-card[data-active="1"], .cm-card[data-state="proposed"]) {
+  padding: 0;
+  border: 0;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-byline {
+  display: block;
+  margin-bottom: 4px;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-byline
+  :is(.cm-face, .app-avatar) {
+  display: none;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-name::before {
+  content: "‸" / "";
+  margin-right: 4px;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-when {
+  margin-left: 6px;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-entry
+  + .cm-entry {
+  padding-top: 6px;
+  border-top: 1px solid;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-chapter
+  :is(.cm-add-chapter, .cm-resolved > button) {
+  min-height: 24px;
+  gap: 0;
+  opacity: 1;
+}
+:root[data-comments="notes"]
+  :is(.cm-layer[data-mode="notes"], .cm-float)
+  .cm-add-chapter
+  svg {
+  display: none;
+}
+/* The column's rule stands only while the Section has comments to show. */
+:root[data-comments="notes"] .editor-shell:not([data-margin="1"]) .cm-rule {
+  display: none;
+}
+/* The typewriter's right chevron stands as far outside the notes as the
+   left one stands outside the text. */
+:root[data-comments="notes"]
+  .editor-shell[data-margin="1"]:not([data-phone="1"])
+  .editor-surface[data-view="typewriter"]:has(.cm-layer[data-mode="notes"])
+  .type-guide-finger-right {
+  left: calc(var(--guide-right-x, 0px) + 208px);
+}
+/* A thread opened from its mark keeps the prose's gutter at its sides. */
+:root[data-comments="notes"] .cm-float {
+  padding-inline: 16px;
+}
+
+/* ── The Desk ─────────────────────────────────────────────────────────────────
+   Where the editor opens. Four bands in the order re-entry happens: what the
+   writer last wrote, the shape of the whole, what has changed, what was left
+   unfinished. It stands in the measure's own column, so the Desk and the open
+   Section are one place. */
+
+.desk {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  max-width: var(--editor-width);
+  animation: deskIn var(--t) var(--d-beat) both;
+}
+
+/* The third beat of arrival: the same +90ms the shelf gives its cards behind
+   the bar. */
+@keyframes deskIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.desk-eyebrow {
+  margin-bottom: 12px;
+  font-size: 9.5px;
+}
+
+.desk-last {
+  padding-left: 16px;
+  border-left: 2px solid;
+  font-size: 20px;
+  line-height: 1.78;
+}
+
+.desk-last-line {
+  margin: 0;
+}
+
+/* h1 and h2 alike take one subordinate size: the band quotes the line, and a
+   title must not outrank the eyebrow above it. The caret is em-based, so it
+   follows this size. */
+.desk-last-line[data-kind="h1"],
+.desk-last-line[data-kind="h2"] {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Only the fake caret's blink is borrowed: this text is not being typed. */
+.desk-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.82em;
+  margin-left: 1px;
+  vertical-align: -0.08em;
+  animation: fakeCaret 2s ease-in-out infinite;
+}
+
+.desk-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.desk-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition:
+    box-shadow var(--t-tap),
+    transform var(--t-tap);
+}
+
+.desk-primary:hover {
+  transform: translateY(-1px);
+}
+.desk-primary:active {
+  transform: translateY(1px);
+  transition-duration: var(--t-press);
+}
+
+.desk-quiet {
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.desk-ledger {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 11px;
+}
+
+.desk-thread {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.desk-thread code {
+  font-size: 11.5px;
+}
+
+/* The Library's empty state at the measure's width: padding, gap and type size
+   match `webapp.css`'s `.lib-empty`. */
+.desk-empty {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+  padding: 40px 32px;
+  border: 1px dashed;
+}
+
+.desk-empty h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.28;
+}
+
+.desk-empty p {
+  max-width: 52ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+/* Hidden rather than unmounted while the Desk stands in for it: the engine's
+   DOM lives in this element, and remounting would throw away the parse. */
+.editor-surface[data-desk="1"] .editor,
+.editor-surface[data-desk="1"] .save-gutter {
+  display: none;
+}
+
+/* Bare: the tree's state card carries the words, and this only holds the
+   surface in desk mode. */
+.ed-boot-standin {
+  flex: 1;
+}
+
+/* ── Writing surface ─────────────────────────────────────────────────────── */
+
+.editor-surface {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* On both edges, scrolling or not, so the prose centres on the same
+     arithmetic the command bar centres by (`.bar-stack`) and does not step when
+     a Section starts to scroll. */
+  scrollbar-gutter: stable both-edges;
+  display: flex;
+  justify-content: center;
+  /* Neither padding has a transition, so the prose tracks a panel drag frame
+     for frame; the `data-resizing-panel` block lists what does ease.
+
+     The paper feed lives on `.editor`, never here: Chromium sizes an absolutely
+     positioned `inset: 0` element to `max(inset height, padding sum)`, so feed
+     padding here would grow the surface past the window, slide the station
+     below the visible centre, and turn the ResizeObserver that sizes the feed
+     into a runaway loop. */
+  padding: var(--text-top) var(--desk-right) 80px;
+  padding-left: calc(var(--panel-left) + var(--panel-w) + var(--panel-gutter));
+  /* The keyboard on every plane: a 1024px tablet is a desk by width and still
+     gets a soft keyboard. `--kb` is 0 with no keyboard. */
+  padding-bottom: calc(80px + var(--kb, 0px));
+}
+
+/* ── The prose column ────────────────────────────────────────────────────── */
+
+.editor {
+  width: 100%;
+  max-width: var(--editor-width);
+  /* `dvh`, not `vh`: on a phone `vh` is the tallest the viewport gets, URL bar
+     retracted, so a `vh` feed falls short for most of a session. The keyboard
+     changes neither unit, so `--kb` is not here: the surface's own padding
+     clears the keys. */
+  min-height: calc(100dvh - var(--text-top));
+  border: none;
+  font-size: var(--prose-size);
+  line-height: 1.85;
+  white-space: pre-wrap;
+  /* The paper feed, so a Section's ends reach the station. `TypewriterView`
+     sets the vars on the surface; they default to 0 for the scroll view. */
+  padding-top: var(--feed-top, 0px);
+  padding-bottom: var(--feed-bottom, 0px);
+}
+
+/* ── Fake cursor ─────────────────────────────────────────────────────────── */
+
+.fake-cursor {
+  position: fixed;
+  width: 2px;
+  pointer-events: none;
+  /* The caret belongs to the text plane, one step above it and below the
+     floating chrome (the panels at 90, the titlebar and command bar at 100). */
+  z-index: 1;
+}
+
+.fake-cursor.blinking {
+  animation: fakeCaret 2s ease-in-out infinite;
+}
+
+@keyframes fakeCaret {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── The revision rail ────────────────────────────────────────────────────────
+   The timeline's face (Ctrl+Shift+H). `data-timeline` exists only while the
+   rail is open, and nothing else in the layout moves.
+
+   The column's dim is never an opacity, which would fade the caret, the search
+   marks and the repetition underline too.
+
+   No caret in the walk: a caret promises where the next keystroke lands, which
+   the walk cannot keep. The type-guide chevrons hide for the same reason:
+   typing lands at Now, not at the restored caret. */
+
+.editor-shell[data-timeline="1"] .fake-cursor {
+  display: none;
+}
+
+.editor-shell[data-timeline="1"] .type-guide {
+  display: none;
+}
+
+/* The rail's span inside the surface, from its top and its foot, for a theme
+   whose page is a face inside the scroller. Registered as lengths, so the
+   rail reads a theme's `calc()` resolved. */
+@property --rail-inset-top {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --rail-inset-bottom {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Left and top are inline and measured, because the prose column is
+   flex-centred and the margin width is not a constant. The head marker moves on
+   `--t`, the duration the track thumb and the chevrons use. */
+.rev-rail {
+  position: absolute;
+  width: 0;
+  pointer-events: none;
+}
+
+.rev-rail-path {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+}
+
+.rev-rail-head {
+  position: absolute;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  /* The disc's bottom edge sits on the point it marks, so at Now it rests on
+     the rail's end and never passes it. */
+  margin-top: -7px;
+  pointer-events: auto;
+  transition: top var(--t);
+}
+
+/* A 20px-square hit zone around the 7px marker. */
+.rev-rail-head::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+}
+
+/* Right of the head marker, on the sheet: the margin left of the rail is
+   narrower than the two-line stamp. It moves on the marker's motion scale, so
+   it never lags the marker. `left` leaves 8px past the marker's right edge
+   (4). */
+.rev-rail-time {
+  position: absolute;
+  left: 12px;
+  width: max-content;
+  transform: translateY(-50%);
+  padding: 4px 8px;
+  /* The foot's "Now" size (10px), not the 9.5px eyebrow reserved for static
+     headers: this stamp is read mid-walk. */
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: pre-line;
+  pointer-events: none;
+  transition: top var(--t);
+}
+
+.rev-rail-fork {
+  position: absolute;
+  left: 1px;
+  width: 5px;
+  height: 1px;
+  pointer-events: auto;
+  transition: top var(--t);
+}
+
+.rev-rail-fork::before {
+  content: "";
+  position: absolute;
+  inset: -10px -6px;
+}
+
+/* In the chrome plane over the paper. The exits chip is always visible: Cancel
+   always, Revert only off Now. */
+.rev-foot {
+  position: absolute;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.rev-now {
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+/* The step pair is the row's only in-flow content, so the row's box is the
+   pair's and the chip is placed from it. */
+.rev-row {
+  position: relative;
+  display: flex;
+}
+
+/* The up glyph is the shared down chevron turned over. */
+.rev-steps {
+  display: flex;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.rev-step {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.rev-step-up svg {
+  transform: rotate(180deg);
+}
+
+/* A disabled step button is never faded by opacity, like the chip's own
+   buttons. */
+.rev-step:disabled {
+  cursor: default;
+}
+
+/* Anchored to the pair: left edge 10px past the pair's right, bottom on the
+   row's bottom, so `railGeometry`'s pin 7px above the surface holds. It grows
+   rightward when Revert joins, and the step pair never moves. */
+.rev-chip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 100%;
+  transform: translateY(-100%);
+  display: flex;
+  overflow: hidden;
+  border: 1px solid;
+  pointer-events: auto;
+}
+
+.rev-chip button {
+  border: 0;
+  height: 27px;
+  padding: 0 14px;
+  font-size: 11.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.rev-chip button + button {
+  border-left: 1px solid;
+}
+
+.rev-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── The type guide ───────────────────────────────────────────────────────────
+   `Editor.tsx` sets the vertical position and the `--guide-*-x` custom
+   properties; the rest is the four states.
+
+   Chrome, not prose, so it animates under the editor's motion exemption. */
+.type-guide {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 160; /* Over prose and the caret (1): its own chrome-plane rule. */
+}
+
+.type-guide-finger {
+  position: absolute;
+  top: -11px; /* Half the icon's 22px, so it centres on the guide's own line. */
+  /* Fully opaque in every state: the chevrons alone say where the station is,
+     so the states speak through shape, never by fading. */
+  opacity: 1;
+  transition:
+    opacity var(--t),
+    transform var(--t);
+}
+
+.type-guide-finger-left {
+  left: var(--guide-left-x, 0px);
+  transform: rotate(
+    -90deg
+  ); /* The chevron points down by default; this points it right, inward. */
+}
+
+.type-guide-finger-right {
+  left: var(--guide-right-x, 0px);
+  transform: rotate(90deg);
+}
+
+/* Struck: the writing line just changed under a docked caret. */
+.type-guide[data-state="struck"] .type-guide-finger-left {
+  transform: rotate(-90deg) scale(1.06);
+}
+.type-guide[data-state="struck"] .type-guide-finger-right {
+  transform: rotate(90deg) scale(1.06);
+}
+
+/* Released: a live, non-collapsed selection. */
+.type-guide[data-state="released"] .type-guide-finger-left {
+  transform: rotate(-90deg) translateX(-7px);
+}
+.type-guide[data-state="released"] .type-guide-finger-right {
+  transform: rotate(90deg) translateX(7px);
+}
+
+/* Off station: the writer scrolled away. The guide marks the machine, not the
+   text, so it does not chase the caret. */
+.type-guide[data-state="offStation"] .type-guide-finger {
+  transform-origin: center;
+}
+.type-guide[data-state="offStation"] .type-guide-finger-left {
+  transform: rotate(-90deg) scale(0.94);
+}
+.type-guide[data-state="offStation"] .type-guide-finger-right {
+  transform: rotate(90deg) scale(0.94);
+}
+
+/* No vertical margin: the em-based indent alone separates paragraphs. The
+   paragraph that opens the text, or follows a title, starts flush. */
+.editor > p {
+  margin: 0;
+  text-indent: 1.4em;
+}
+.editor > p:first-child,
+.editor > :is(h1, h2) + p {
+  text-indent: 0;
+}
+
+/* In `em`, because the writer sets the prose size: 30px at the default 19px,
+   with about a line of the text under it (0.67 of its own em). No margin above:
+   a heading opens the section. */
+.editor > h1 {
+  font-size: 1.58em;
+  line-height: 1.28;
+  margin: 0 0 0.67em;
+  text-indent: 0;
+}
+
+.editor > h2 {
+  font-size: 1.16em;
+  line-height: 1.34;
+  margin: 0 0 1.16em;
+  text-indent: 0;
+}
+
+/* ── Page break ──────────────────────────────────────────────────────────── */
+
+/* The fleuron keeps the caret from landing invisibly on a bare line. */
+.editor > hr {
+  position: relative;
+  border: none;
+  border-top: 1px solid;
+  margin: 2.4em 0;
+}
+
+.editor > hr::after {
+  content: "❧";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+.editor code {
+  font-size: 0.9em;
+  padding: 1px 4px;
+}
+
+/* ── Character fade-in ────────────────────────────────────────────────────────
+   On its own token `--t-char-fade` (300ms): at `--t`'s 220ms a character fading
+   in reads as a state change rather than an arrival. */
+
+.char-fade-in {
+  animation: charFadeIn var(--t-char-fade) forwards;
+}
+
+@keyframes charFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── The caret's spring on a character ────────────────────────────────────────
+   The core puts `.caret-bounce` on the caret for one spring each time a
+   character lands. `top` and `height` stay instant: a vertical hop on a line
+   wrap would read as the page jumping. */
+
+.fake-cursor.caret-bounce {
+  transition: left var(--t-bounce);
+}
+
+.editor > p[style*="text-align:center"],
+.editor > p[style*="text-align:right"],
+.editor > h1[style*="text-align:center"],
+.editor > h1[style*="text-align:right"],
+.editor > h2[style*="text-align:center"],
+.editor > h2[style*="text-align:right"] {
+  text-indent: 0;
+}
+
+/* The two bars that bracket a selection (`SelectionBars`). They mark it and are
+   not handles, so they take no pointer. */
+.selection-bar {
+  position: fixed;
+  width: 3px;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.selection-bar-end {
+  transform: translateX(-100%);
+}
+
+/* ── Chrome ──────────────────────────────────────────────────────────────── */
+
+.chrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ── Titlebar ─────────────────────────────────────────────────────────────────
+   Where the writer is. No unsaved mark: the bar's save segment says it
+   once. */
+
+.titlebar {
+  -webkit-app-region: drag;
+  pointer-events: auto;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  user-select: none;
+  /* The nudge caption anchors to the bar's bottom edge. */
+  position: relative;
+}
+
+/* ── The titlebar's right cluster ─────────────────────────────────────────────
+   Pushed to the window's right edge, the corner the Library puts them in.
+   `no-drag` because the titlebar is a desktop-shell drag region, where a button
+   would otherwise be a handle. */
+.titlebar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+  pointer-events: auto;
+}
+
+/* The glyph alone once the window is too narrow for a 140px label, as the
+   Library's `.app-find` does: folding to the glyph keeps the route, where
+   `display: none` would remove it. The shortcut sheet's square beside it takes
+   the palette's height at either width, and anchors its own tip. */
+.ed-keys {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+@media (max-width: 720px) {
+  .ed-palette,
+  .ed-keys {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+  }
+  .ed-palette-name,
+  .ed-palette .ui-kbd {
+    display: none;
+  }
+}
+
+/* Keeps the 34px square the right cluster's spacing is tuned against, without
+   the hover tint, focus ring or pointer: there is nothing to press. */
+.ed-account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+}
+.ed-account .app-avatar {
+  width: 20px;
+  height: 20px;
+}
+.ed-account .app-avatar-initial {
+  font-size: 11px;
+}
+
+.titlebar .ed-palette .ui-kbd {
+  padding: 2px 6px;
+  border-bottom-width: 1px;
+}
+
+/* At the window's own left edge, not past the panel: indented past the panel,
+   the crumb would read as the tree's heading. */
+.titlebar-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+  pointer-events: none;
+  min-width: 0;
+  font-size: 11px;
+}
+
+.titlebar-sep {
+  opacity: 0.4;
+}
+/* A button that keeps the crumb's shape: a bordered segment would stop reading
+   as a path. */
+.titlebar-project {
+  /* `.chrome` takes no pointer, and each pressable thing in it hands itself one
+     back; `.titlebar-meta`, a label, does not, so without this no press
+     arrives. An `element.click()` does not hit-test, so
+     `e2e/vision-desk.spec.ts` presses the button in a browser. */
+  pointer-events: auto;
+  /* A flex box, so the coarse block's `min-height` has something to centre the
+     crumb in. */
+  display: inline-flex;
+  align-items: center;
+  /* A long project name is the titlebar's one unbounded segment, and unbounded
+     it crowds the palette cluster between 721 and 1000px. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  transition: color var(--t-tap);
+}
+
+/* Marked as the structure panel marks it. Only the name gives way to a narrow
+   window. */
+.titlebar-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.titlebar-file .dt-file-icon {
+  flex-shrink: 0;
+}
+.titlebar-idx {
+  flex-shrink: 0;
+}
+.titlebar-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── The way back to the library ──────────────────────────────────────────────
+   The arrow and the wordmark are one button. A one-time nudge names it on a
+   session's first visit.
+
+   The nudge is a transition, not an animation, so the reduced-motion block
+   below quiets it and the caption still arrives. */
+
+.titlebar-return {
+  -webkit-app-region: no-drag;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  /* The left is 4px narrower by the arrow's own blank edge inside its box. The
+     margin puts the hover ground's edge on the structure panel's
+     (`--panel-left` from the window), and the right keeps 4px before the path's
+     slash. */
+  padding: 0 8px 0 4px;
+  margin: 0 4px 0 calc(var(--panel-left) - 16px);
+  font-size: 11px;
+  white-space: nowrap;
+  transition:
+    color var(--t-tap),
+    background var(--t-tap),
+    box-shadow var(--t);
+}
+
+/* `aria-hidden`: the button's own `aria-label` carries the words. */
+.titlebar-return-nudge {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t);
+}
+
+.titlebar-return-nudge[data-on="1"] {
+  opacity: 1;
+}
+
+/* ── The titlebar's frost ─────────────────────────────────────────────────────
+   `.chrome` is a transparent overlay, so the titlebar stands on a frost: one
+   band from the window's left edge to its right. It has two parts, a blur and a
+   veil; these rules place them and the theme paints them.
+
+   It covers the titlebar from the window's top to the command bar's, at one
+   strength to a clean foot. No side is feathered: beyond the window's edges
+   there is no backdrop, so a blur straddling an edge would pull in empty pixels
+   that show as haze.
+
+   The blur is the titlebar's `::before` and the veil an empty `.titlebar-veil`
+   span, since an opaque fill hides its own blurred backdrop. Neither is on an
+   item: a mask there would fade the label, and a `backdrop-filter` would make
+   it a containing block for fixed descendants. Both sit at `z-index: -1` in
+   `.chrome`'s stacking context, beneath the items' text, and `.chrome` is not a
+   backdrop root, so the blur still sees the prose. */
+
+/* The way back's caption stands from the button. */
+.titlebar-return {
+  position: relative;
+}
+
+.titlebar-veil,
+.titlebar::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: 0;
+}
+
+/* ── The bar's row ────────────────────────────────────────────────────────────
+   At rest the bar's centre is the prose's centre, wherever the panel, the dock
+   and the window have put it; while the writer is in it, it holds still.
+   Centred in a padded row it would grow at both ends as a fold opens, sliding
+   controls from under the pointer.
+
+   The position is one `translate`, the one property that can name the stack's
+   own width (its percentages are the element's) beside the row's (`cqw`, the
+   row being a size container):
+
+     clamp(the left limit, the target − half the bar, the right limit − the bar)
+
+   - The target is the prose's centre, done with the surface's own tokens (the
+     panel's reserve, `--desk-right`, the measure's `--dock-shift`), so the two
+     cannot drift. While the bar is engaged it is `--bar-pin` instead, measured
+     by `EditorRoute`; the left edge holds, so a fold opens rightwards
+     (`.ed-fold-row` is pinned there).
+   - The limits are the window's, 40 in from the left edge and 24 from the
+     right. `clamp` lets the minimum win when they cross, so a bar wider than
+     the room starts there and scrolls.
+   - The panel and the dock are not limits: a sheet-edge limit would fold the
+     bar while the window still has room for it. */
+
+.bar-row {
+  display: flex;
+  container-type: inline-size;
+  pointer-events: none;
+}
+
+.bar-stack {
+  /* Doubled because the sum below is halved, so the target moves as far as the
+     prose does (`--dock-shift` is 0 unless the dock shares the width). One rule
+     owns the bar's horizontal position, and the stack takes no part in the
+     measure's own `translate`: two rules each spending the dock's travel walk
+     the bar out of the window. */
+  --bar-travel: calc(var(--dock-shift, 0px) * -2);
+  --bar-left: calc(var(--panel-left) + 32px);
+  --bar-right: calc(100cqw - 24px);
+  --bar-centre: calc(
+    (
+        var(--panel-left) + var(--panel-w) + var(--panel-gutter) + 100cqw -
+          var(--desk-right) - var(--bar-travel)
+      ) /
+      2
+  );
+  max-width: calc(var(--bar-right) - var(--bar-left));
+  translate: clamp(
+    var(--bar-left),
+    var(--bar-pin, var(--bar-centre) - 50%),
+    var(--bar-right) - 100%
+  );
+  transition: translate var(--t);
+}
+
+/* Centred on the paper (`barCentre`): the sheet's middle, the two
+   `--sheet-gap`s cancelling. The prose standing aside for a margin column
+   leaves the bar where it is. Narrow and phone draw no sheet, and keep the
+   prose's centre. */
+:root[data-bar-centre="paper"]
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"])
+  .bar-stack {
+  --bar-centre: calc(
+    (var(--panel-left) + var(--panel-w) + 100cqw - var(--dock-cover, 0px)) / 2
+  );
+}
+
+/* Leaves in a row (`leaves`): while the Dock covers the measure the bar keeps a
+   row of its own, between the panel and the window's edge, 16 from each, and
+   the Dock steps down under it (`.ed-dock` below). There the bar centres on the
+   text, the paper's centre lying under the Dock. `data-dock-over` holds while a
+   closed Dock fades. */
+:root[data-leaves="row"]
+  .editor-shell[data-dock="1"][data-dock-over="1"]:not([data-narrow="1"]):not(
+    [data-phone="1"]
+  )
+  .bar-stack {
+  --bar-left: calc(var(--panel-left) + var(--panel-w) + 16px);
+  --bar-right: calc(100cqw - 16px);
+  --bar-centre: calc(
+    (
+        var(--panel-left) + var(--panel-w) + var(--panel-gutter) + 100cqw -
+          var(--desk-right) - var(--bar-travel)
+      ) /
+      2
+  );
+}
+
+/* Pinned, the bar may grow to the window's edge: a bar resting against the
+   right limit would otherwise slide left under the pointer when a fold opens.
+   Keyed on the pin, not the engagement, so the margin returns after the folds
+   close, eased home with the pin.
+
+   No transition into the pin: an ease from the centring expression blends in
+   its `- 50%`, which moves left as a fold widens the bar. A transition runs on
+   the destination's `transition`, so the ease home is the stack's own. */
+.bar-stack[data-pinned="1"] {
+  --bar-right: 100cqw;
+  transition: none;
+}
+
+/* 34, not the Library's 38 (`--bar-act` in `base.css`): the bar is 5 + 34 + 5
+   plus its hairlines, 46 (`--bar-h`), standing on the titlebar's foot. The find
+   field's companions fit this find's count, "3/12" against the Library's "12
+   projects". */
+.bar-stack .ui-bar {
+  --bar-act: 34px;
+  --bar-find-w: min(268px, 44vw);
+  --bar-find-tail: 76px;
+  --bar-find-count-size: 10.5px;
+}
+.editor-shell:not([data-phone="1"]) .bar-stack .ui-bar {
+  margin-top: var(--bar-seat);
+}
+
+/* Half a point down from the Library's: a search field over the prose is a
+   smaller instrument than one heading a shelf. */
+.bar-stack .ui-bar-find-input {
+  font-size: 13px;
+}
+
+.bar-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  pointer-events: auto;
+}
+
+/* ── The save state ───────────────────────────────────────────────────────────
+   Six states in one box, a status until there is something to do: a Save
+   button disabled most of the time teaches the writer to ignore it. */
+
+.ed-save {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--bar-act);
+  padding: 0 12px;
+  border: 0;
+  font-size: 11px;
+  white-space: nowrap;
+  transition:
+    background var(--t),
+    color var(--t),
+    box-shadow var(--t);
+}
+
+.ed-save[data-state="clean"],
+.ed-save[data-state="saving"] {
+  cursor: default;
+}
+.ed-save[data-state="dirty"],
+.ed-save[data-state="failed"],
+.ed-save[data-state="cached"] {
+  cursor: pointer;
+}
+/* Disabled but not dimmed: the stamp is a status the writer reads. */
+.ed-save:disabled {
+  cursor: not-allowed;
+}
+
+/* The kit's loader is a spectrum, so every palette entry points back at
+   `currentColor` and the dots keep the chip's state. */
+.ed-save .ui-dots {
+  --dots-hot: currentColor;
+  --dots-cy: currentColor;
+  --dots-c0: currentColor;
+  --dots-c1: currentColor;
+  --dots-c2: currentColor;
+  --dots-c3: currentColor;
+  --dots-c4: currentColor;
+  --dots-c5: currentColor;
+  --dots-c6: currentColor;
+}
+
+.ed-track-inline {
+  margin: 0 2px;
+}
+
+/* Only the tick overshoots: it confirms after the fact. The other three glyphs
+   are states and arrive as a cut, since an in-flight state would bounce on
+   every keystroke. */
+.ed-save-glyph {
+  flex-shrink: 0;
+}
+
+/* A clean file's tick shows only in the folded chip, where the word is gone. */
+.ed-save[data-state="clean"] .ed-save-glyph {
+  display: none;
+}
+.editor-shell[data-narrow="1"] .ed-save[data-state="clean"] .ed-save-glyph,
+.bar-stack
+  .ui-bar[data-save-tight="1"]
+  .ed-save[data-state="clean"]
+  .ed-save-glyph {
+  display: block;
+}
+
+.ed-save[data-state="saved"] .ed-save-glyph {
+  animation: edTick var(--t-bounce) both;
+}
+
+/* The one loop in the editor's chrome, and the exception `base.css`'s rule
+   names: nothing loops except a real wait.
+
+   1.8s, so the turn reads as steady progress; near a second it reads as
+   urgency. Linear, because an eased rotation stalls visibly at each cycle
+   boundary.
+
+   This spins while the state is `cached`, and a project can sit in `cached`
+   offline with nothing moving. The pill covers that case, firing when the
+   writer can act (stuck, or offline with work held), which is what lets the
+   chip stay optimistic. If that division changes, this animation stops being
+   true. */
+@keyframes edPush {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ed-save[data-state="cached"] .ed-save-glyph,
+.dt-mark[data-state="cached"] {
+  animation: edPush 1.8s linear infinite;
+  /* The default, stated: the glyph is a 24-unit box scaled to 11 or 13, and any
+     other inherited `transform-origin` makes it wobble rather than turn. */
+  transform-origin: 50% 50%;
+}
+
+/* The save state and its tooltip, and nothing else: the autosave switch is a
+   writing preference, since a control revealed by a resting pointer is one a
+   finger cannot reach. */
+.ed-save-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── The bar, narrow ──────────────────────────────────────────────────────────
+   Below the plane (1016, derived in `useNarrow.ts`) the bar must fit over a
+   measure with no room to spare. The save chip drops its word and keeps its
+   colour and glyph; the block fold drops its resting label and keeps its glyph.
+   Both still open to full width under the pointer. */
+
+/* `data-narrow` folds the chip because the window is narrow; `data-save-tight`
+   because the bar's content is about to outgrow the window, so the horizontal
+   scrollbar stays the last resort. */
+.editor-shell[data-narrow="1"] .ed-save,
+.bar-stack .ui-bar[data-save-tight="1"] .ed-save {
+  padding: 0 10px;
+}
+
+.editor-shell[data-narrow="1"] .ed-save-label,
+.bar-stack .ui-bar[data-save-tight="1"] .ed-save-label {
+  display: none;
+}
+
+/* No dot behind the label: a `currentColor` dot would collapse still typing,
+   written but not sent, and a failed write into one circle with no word and no
+   hover. The glyph is drawn on every plane instead. */
+.editor-shell[data-narrow="1"] .ed-save[data-state="clean"],
+.bar-stack .ui-bar[data-save-tight="1"] .ed-save[data-state="clean"] {
+  opacity: 0.28;
+}
+
+.editor-shell[data-narrow="1"] .ed-fold-block {
+  width: 38px;
+}
+.editor-shell[data-narrow="1"] .ed-fold-block:focus-within {
+  width: 106px;
+}
+
+@keyframes edTick {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ── A face that grows ────────────────────────────────────────────────────────
+   Block type and alignment rest as their answer ("Body", or the current
+   alignment), and the row of four grows out of it under the pointer.
+
+   The pointer opens a fold only through the latched `data-open` below, never
+   through `:hover`. A fold that grows on `:hover` can push the bar past its
+   room, fold the save chip and slide itself out from under the pointer; it then
+   shuts, the chip returns, and the bar oscillates every frame. `:focus-within`
+   opens it for the keyboard.
+
+   `min-width: 0`: a flex item's automatic minimum is its min-content width, so
+   without it the box will not shrink below its word.
+
+   Literal widths, not custom properties: a transitioned length fed through an
+   unregistered custom property latches its old computed value in Chrome and the
+   morph never runs, the same family as the timing-function trap `base.css`
+   records beside the motion tokens. */
+
+.ed-fold {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  transition:
+    width var(--t),
+    background var(--t);
+}
+
+.ed-fold-face {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  transition:
+    opacity var(--t-tap),
+    color var(--t-tap);
+}
+
+.ed-fold:focus-within .ed-fold-face {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ed-fold-row {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  opacity: 0;
+  pointer-events: none;
+  /* Late, once the box has most of its width, so the cells never appear
+     squeezed. */
+  transition: opacity var(--t-tap) var(--d-stagger);
+}
+
+.ed-fold:focus-within .ed-fold-row {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Three cells of 24 plus the box's 4px of padding. At rest the box is as wide
+   as its face: `--ed-fold-rest`, written by `useFoldRestWidth` from the face's
+   laid-out width, with a 92px fallback where no box has a size (jsdom), since a
+   fixed width cuts a longer locale's label. */
+.ed-fold-block {
+  width: var(--ed-fold-rest, 92px);
+}
+.ed-fold-block:focus-within {
+  width: 106px;
+}
+
+/* Open: four 32px cells plus the box's 4px, narrower than the block row's 34,
+   since four wide cells put the bar's trailing end past the measure. */
+.ed-fold-align {
+  width: 34px;
+}
+.ed-fold-align:focus-within {
+  width: 132px;
+}
+
+/* Open: three 32px cells plus the box's 4px, its buttons sized down from the
+   bar's 34 to sit inside the box. */
+.ed-fold-comments {
+  width: 34px;
+}
+.ed-fold-comments:focus-within {
+  width: 100px;
+}
+.ed-fold-comments .ed-fold-face {
+  justify-content: center;
+  width: 34px;
+  padding: 0;
+}
+.ed-fold-comments .ed-fold-row {
+  --bar-act: 32px;
+  display: flex;
+}
+
+/* ── The bar-driven folds ─────────────────────────────────────────────────────
+   `data-open` is the latch the hook writes: a fold stays open after the pointer
+   leaves it, and everything collapses on bar exit. The `:focus-within` rules
+   above resolve to the same widths, so the two paths never fight. */
+
+.ed-fold[data-open="1"] .ed-fold-face {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ed-fold[data-open="1"] .ed-fold-row {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ed-fold-block[data-open="1"] {
+  width: 106px;
+}
+.ed-fold-align[data-open="1"] {
+  width: 132px;
+}
+.ed-fold-comments[data-open="1"] {
+  width: 100px;
+}
+.editor-shell[data-narrow="1"] .ed-fold-block[data-open="1"] {
+  width: 106px;
+}
+
+/* Widens on its own focus or the search's open state, never on hover, so it
+   does not grow under a passing pointer. `data-query` and focus override the
+   close, so a live search keeps its field. */
+
+.ed-seg-find[data-open="1"] .ui-bar-find {
+  width: var(--bar-find-w, min(300px, 52vw));
+}
+
+.ed-seg-find[data-open="1"] .ui-bar-find-input {
+  opacity: 1;
+  cursor: text;
+}
+
+/* ── A bar wider than the window ──────────────────────────────────────────────
+   The bar keeps its natural width and scrolls when the window cannot hold it,
+   so no command is unreachable. The scrollbar rides in the bar's 5px bottom
+   padding, on the app's 5px scrollbar recipe. The bar's tips are portalled, so
+   this scrollport clips nothing of theirs. */
+
+.bar-stack .ui-bar {
+  overflow-x: auto;
+  overflow-y: clip;
+  scrollbar-width: thin;
+}
+
+.bar-stack .ui-bar::-webkit-scrollbar {
+  height: 5px;
+}
+
+/* Squeezing a segment makes commands unreachable, so the bar scrolls instead.
+   `min-width: 0` stays for the find field's morph. */
+.bar-stack .ui-bar-seg {
+  flex-shrink: 0;
+}
+
+/* Above the structure panel (105) and the dock (115) while the bar is engaged
+   (the pointer inside it, or a control focused), so the bar lies over the
+   panels it overlaps. */
+.editor-shell[data-fold-engaged="1"] .chrome {
+  z-index: 130;
+}
+
+/* Except over a peek: near the plane line a peek's edge reaches under the bar,
+   and a bar engaged by focus would paint over its collapse control and fold the
+   peek from under the pointer. The panel is not lifted instead: the settings
+   card it opens is 120, and would be buried. */
+.editor-shell[data-peek="1"] .chrome {
+  z-index: 100;
+}
+
+/* ── Panels that grow from the bar ────────────────────────────────────────────
+   `grid-template-rows: 0fr → 1fr` animates to an auto height without measuring
+   it in JS; a hard-coded `max-height` target goes stale when a row is added.
+
+   `visibility` transitions last, so focus leaves at the end of the close. */
+
+.ed-drop {
+  display: grid;
+  grid-template-rows: 0fr;
+  /* A closed grid keeps its content width, and the bar-stack is as wide as its
+     widest child, so a hidden find panel would force the bar out. `width: 0`
+     while closed; reopening restores `auto`. */
+  width: 0;
+  min-width: 0;
+  margin-top: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--t),
+    margin-top var(--t),
+    opacity var(--t),
+    /* The number duplicates `--t`'s duration and cannot read it: a token
+       holding `duration curve` cannot give up its first half alone. The same
+       literal, for the same reason, as `.shelf-panel` in `webapp.css`. */
+    visibility 0s linear 220ms;
+}
+
+.ed-drop[data-open="1"] {
+  grid-template-rows: 1fr;
+  width: auto;
+  min-width: auto;
+  margin-top: 8px;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--t),
+    margin-top var(--t),
+    opacity var(--t-tap),
+    visibility 0s;
+}
+
+.ed-drop-inner {
+  overflow: hidden;
+}
+
+.ed-card {
+  padding: 10px;
+  border: 1px solid;
+}
+
+/* ── Special characters ───────────────────────────────────────────────────────
+   Drawn as keys: the panel is how a writer learns the shortcut. */
+
+.chars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chars-group {
+  display: flex;
+  gap: 4px;
+}
+
+.chars-group + .chars-group {
+  padding-left: 12px;
+  border-left: 1px solid;
+}
+
+.char-key {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid;
+  border-bottom-width: 2px;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    border-color var(--t-tap),
+    color var(--t-tap),
+    transform var(--t-bounce);
+}
+
+.char-key:active {
+  transform: translateY(1px);
+  transition-duration: var(--t-press);
+}
+
+/* ── Find ─────────────────────────────────────────────────────────────────────
+   The field is the bar's trailing segment, `.ui-bar-find`, shared with the
+   Library; the other ten controls grow below the bar.
+
+   While find is engaged the rest of the bar steps back to 0.8, never removed:
+   the bar must not change width under the pointer, and its controls stay
+   reachable, so their glyphs keep 3:1 (WCAG 1.4.11). */
+
+.ui-bar[data-focus="find"] .ui-bar-seg:not(.ed-seg-find) {
+  opacity: 0.8;
+  transition: opacity var(--t);
+}
+
+.find-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.find-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.find-row input {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid;
+  font-size: 13px;
+  transition:
+    border-color var(--t-tap),
+    box-shadow var(--t-tap);
+}
+
+.find-row input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.find-tog {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 0;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.find-tog:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.find-act {
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.find-act:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.find-count {
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+/* The phone bar has no find segment, so the field heads the panel and fills
+   its width. The bar's companions are restated because the panel is not in
+   the bar, and the tail is wider: the clear command is 44px on touch. The
+   width rule names all three states at the weight of the widest base one. */
+.find-panel > .ui-bar-find {
+  --bar-find-tail: 88px;
+  --bar-find-count-size: 10.5px;
+}
+.find-panel > .ui-bar-find,
+.find-panel > .ui-bar-find:focus-within,
+.find-panel > .ui-bar-find[data-query="1"] {
+  width: auto;
+}
+
+/* ── The shortcut sheet ───────────────────────────────────────────────────────
+   Generated from the shortcut table, so it cannot drift from what the keyboard
+   does. */
+
+/* The sheet's scrolling body, at `.sheet-pane`'s inset, since `Sheet` gives
+   its children no padding of its own. */
+.keys {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  padding: 24px 24px 32px;
+  overflow: auto;
+}
+
+.keys-group {
+  display: grid;
+  gap: 2px;
+}
+
+.keys-group h3 {
+  margin-bottom: 6px;
+  font-size: 9.5px;
+}
+
+.keys-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid;
+  font-size: 13.5px;
+}
+
+.keys-row:last-child {
+  border-bottom: 0;
+}
+.keys-row span {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+
+.editor-surface::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* ── Highlight marks ─────────────────────────────────────────────────────── */
+
+mark.hl-search-current {
+  scroll-margin-top: 140px;
+}
+
+/* The passage the assistant pointed at. Still: the prose column does not
+   animate. */
+mark.hl-evidence {
+  scroll-margin-top: 140px;
+}
+
+mark.hl-repetition {
+  position: relative;
+  cursor: default;
+}
+
+mark.hl-repetition::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-tap);
+  z-index: 300;
+}
+
+mark.hl-repetition:hover::after {
+  opacity: 1;
+}
+
+mark.hl-repetition.flip-tooltip::after {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+
+/* ── Document tree ────────────────────────────────────────────────────────────
+   Always present, never moving. Just above the chrome layer (100), so the
+   panels stack over the command bar: a panel header under the bar would be
+   unreachable, while the writer can close the panel to reach the bar. */
+
+.doc-tree {
+  position: fixed;
+  left: var(--panel-left);
+  top: var(--chrome-horizon);
+  bottom: var(--sheet-gap);
+  width: var(--panel-w);
+  z-index: 105; /* Over the command bar's chrome layer (100). */
+  display: flex;
+  flex-direction: column;
+  border: 1px solid;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Attached (the `panel` frame option): flush to the window's left edge. It
+   takes the inset as its own width and as padding, so its right edge and its
+   contents stand where the floating panel's do and nothing beside it moves. The
+   phone keeps its sheet. */
+:root[data-panel="attached"] .editor-shell:not([data-phone="1"]) .doc-tree {
+  left: 0;
+  top: var(--header-h);
+  bottom: 0;
+  width: calc(var(--panel-w) + var(--panel-left));
+  padding-left: var(--panel-left);
+  border-width: 0 1px 0 0;
+}
+/* Folded to the rail, its numbers centre on the whole strip the writer sees,
+   from the window's edge to the panel's. */
+:root[data-panel="attached"]
+  .editor-shell[data-rail="1"]:not([data-phone="1"])
+  .doc-tree {
+  padding-left: 0;
+}
+
+/* ── The find's row ──────────────────────────────────────────────────────── */
+
+.dt-find-row {
+  /* Open, it takes the line as the shape shrinks, so the two hand the row over
+     in one movement. The 10px is the air between the shape and the find, and it
+     goes with the shape, or the field opens 10px short of its own edge.
+
+     A definite basis, for two reasons. The field's children are absolutely
+     positioned, so the row's content is 0px wide and `auto` would collapse the
+     resting circle. And a percentage inside needs a definite base; with `auto`,
+     Chrome resolves the cycle as zero and the row flicks on every open and
+     close.
+
+     `--bar-act` is the head line's, inherited, so the row and the line are
+     sized from one number. */
+  flex: 0 1 var(--bar-act);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  margin-left: 10px;
+  transition:
+    flex-grow var(--t),
+    margin-left var(--t);
+}
+
+.dt-head[data-finding="1"] .dt-find-row {
+  flex-grow: 1;
+  margin-left: 0;
+}
+
+/* Always in the document at zero width and grown into place, so the field
+   slides rather than being shoved.
+
+   `visibility` on top of the width, because a 0px box still gives its glyph a
+   sliver to paint in; `visibility` is the hide that transitions, so the glyph
+   goes at the end of the fade. */
+
+.dt-find-back {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 0;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    width var(--t),
+    margin var(--t),
+    opacity var(--t),
+    visibility var(--t),
+    color var(--t-tap);
+}
+
+.dt-head[data-finding="1"] .dt-find-back {
+  width: 22px;
+  margin-right: 4px;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── The panel's find ─────────────────────────────────────────────────────────
+   The shared `CommandBarFind` control with this panel's four numbers: like
+   `.bar-stack .ui-bar` above, a scoping class carrying token overrides only.
+   The rail's hide and one e2e locator aim at it. */
+
+.dt-find {
+  /* The field fills the row, so the row's `flex-grow` is the only thing
+     animating; a percentage width of a shrinking row composes two transitions
+     and runs ahead of the spine's one. `flex-basis: 0` rather than `auto`,
+     stated: this control's children are absolutely positioned and its
+     max-content is 0 either way. */
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  /* The base rules size the open state at one class plus one pseudo-class, so
+     this matches that weight to hand the sizing to flex. Both halves, or one
+     state keeps its own width. */
+  /* 20px seat + the tail's own 6px offset + 4px of air. */
+  --bar-find-tail: 30px;
+}
+
+.dt-find:focus-within,
+.dt-find[data-query="1"] {
+  width: auto;
+}
+
+.dt-find .ui-bar-find-input {
+  /* The size of the rows it is searching, not the bar's 13.5. */
+  font-size: 12.5px;
+}
+
+.dt-find .ui-bar-find-sigil svg {
+  /* `Icon` writes `size` as an SVG presentation attribute, so CSS overrides
+     it. 13 is this panel's register (the collapse control 13, the rail's
+     structure glyph 14, the bin's 11); the bar's 16 would make the resting
+     circle the loudest glyph in the panel. */
+  width: 13px;
+  height: 13px;
+}
+
+/* ── The two bodies ───────────────────────────────────────────────────────────
+   The panel shows the tree or what the query turned up, and this one rule is
+   the switch. The head carries `data-finding` and is a preceding sibling of
+   both scrollers (the `{structure && (…)}` wrappers produce no element), so
+   `.doc-tree`, which e2e specs and a z-index assertion target, needs nothing
+   new. `data-finding` and the face's mount in `DocumentTree` are one variable,
+   written once.
+
+   `~` and not `+`: `.dt-rail` sits between the head and the scrollers' box, so
+   an adjacent combinator would be a dead rule showing both bodies.
+
+   Every rule here is a hide, and the two faces swap by the hides alone. In the
+   folded 52px rail the box both bodies share is hidden.
+
+   The hide is `visibility`, not `display`: the two bodies slide past each
+   other, and an element out of the flow cannot animate, so they share one box
+   and what leaves is a transform. `visibility` lands at the end of the fade out
+   and the start of the fade in, and takes the resting body out of the
+   accessibility tree and the tab order, which `opacity: 0` alone would not. */
+
+.dt-bodies {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  /* The panel clips too, but a body sliding out would pass over the notes and
+     the tags without a nearer clip. */
+  overflow: hidden;
+}
+
+.dt-bodies > .dt-scroll {
+  position: absolute;
+  inset: 0;
+  transition:
+    transform var(--t),
+    opacity var(--t),
+    visibility var(--t);
+}
+
+.dt-head[data-finding="1"] ~ .dt-bodies > .dt-tree-body {
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.dt-head[data-finding="0"] ~ .dt-bodies > .dt-search {
+  transform: translateX(100%);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* The face has `.dt-scroll` too, so it inherits the grip margin, the absent top
+   padding, the scrollbar rules, `flex: 1` and the rail's hide.
+   `.dt-region-label`'s padding lands the first heading at the y of the tree's
+   first heading. */
+
+.dt-search-group + .dt-search-group {
+  margin-top: 10px;
+}
+
+/* The box is `.dt-row`'s and `.dt-bin-row`'s, restated rather than shared,
+   because a result row carries no `role="treeitem"`, no `data-row` for the drag
+   layer, no indent and no `data-moving`. The glyph slot is fixed so labels line
+   up under headings whose rows have no glyph (a reference document draws
+   none). */
+
+.dt-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px 6px 12px;
+  border: 0;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+.dt-search-glyph {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+}
+
+.dt-search-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Only rows whose place varies under their heading carry it. */
+
+.dt-search-where {
+  flex-shrink: 0;
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 9.5px;
+}
+
+/* A hit in a reference document or a conversation is a two-line row, since a
+   hit must show what it found; body text has a heading line with
+   `.dt-search-occurrence` rows under it. It wraps rather than becoming a grid,
+   so the first line stays the row above it (same box, baseline and ellipsis)
+   and the excerpt is a child taking the whole width.
+
+   The panel does not widen for it: the excerpt is windowed around the match
+   (`excerptsAt`) to read at 248px, and a panel must not resize itself because
+   the writer typed. */
+
+.dt-search-row.dt-search-quote {
+  flex-wrap: wrap;
+  align-items: baseline;
+  row-gap: 2px;
+}
+
+/* Indented to the label's x (11px slot + 8px gap), not the glyph's: under the
+   glyph it would read as a fourth column.
+
+   Two lines, because a quote is 60 characters with the match 30 in, and one
+   line of the panel would end before the match. */
+
+.dt-search-excerpt {
+  flex-basis: 100%;
+  margin-left: calc(11px + 8px);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+/* ── A body source and its occurrences ────────────────────────────────────────
+   A heading line naming the node, with one quotation for every place inside it
+   that holds the query. Both have `.dt-search-row`, so the box metrics are
+   stated once; these two rules say which of them the pointer can take. */
+
+.dt-search-source + .dt-search-source {
+  margin-top: 6px;
+}
+
+/* Not a target, and never marked: every occurrence below opens this node, and
+   lighting the heading would mark the wrong thing. */
+
+.dt-search-row.dt-search-head {
+  cursor: default;
+}
+
+/* After `.dt-search-where`, so a Section reads name / its Part / its tally, and
+   the number, never truncated, ends the line. */
+
+.dt-search-tally {
+  flex-shrink: 0;
+  min-width: 12px;
+  font-size: 9.5px;
+  text-align: right;
+}
+
+/* Tighter than a name row: these come in runs, and a run at the name row's
+   rhythm pushes the other headings off the panel. The excerpt carries an 18px
+   indent, the glyph slot plus the gap.
+
+   The coarse-pointer block still floors these rows to `--tap`: on that plane
+   reach outranks density, as for `.dt-row`. */
+
+.dt-search-occurrence {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* ── Row marks ────────────────────────────────────────────────────────────────
+   Whether something is written about this node (the summary mark, last in the
+   row so nothing lands on it), and how much is written in it; the unsaved-work
+   mark sits between them. Every mark stands at rest; only the row's verbs wait
+   for the hand. */
+
+.dt-summary {
+  flex-shrink: 0;
+  padding: 0 2px;
+  border: 0;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* Always in the row, blank where there is nothing behind it, so a row's count
+   stays in its neighbours' column. `visibility: hidden` keeps the box while
+   dropping hover, clicks and cursor. */
+.dt-summary.slot {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Revealed with the panel rather than per row: a number appearing under the
+   pointer on every row is a flicker. The row's own hover and focus reveal it
+   too, for the keyboard. The leader goes with it. */
+.dt-words,
+.dt-row > .dt-lead {
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.dt-scroll:hover :is(.dt-words, .dt-lead),
+.dt-row:is(:hover, :focus-within) > :is(.dt-words, .dt-lead) {
+  opacity: 1;
+}
+.dt-words {
+  flex-shrink: 0;
+  font-size: 10px;
+}
+
+/* Pushes the count to the row's end. A theme's sheet may draw dots along it, on
+   the line's baseline. */
+.dt-lead {
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: center;
+  translate: 0 4px;
+}
+/* The slot costs its container no gap: it splits the one it adds between its
+   two sides, so a name and its count stand where they would without it. */
+.dt-row > .dt-lead {
+  margin-inline: -4px;
+}
+.dt-dock-button > .dt-lead {
+  margin-inline: -4px;
+}
+.dt-row:has(> .dt-words) > .dt-lead,
+.ref-card-lead {
+  border-bottom: 1px dotted;
+}
+
+.cm-bubbles {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.cm-bubble {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.cm-bubble-others {
+  border: 1px solid;
+}
+
+/* ── Regions ──────────────────────────────────────────────────────────────────
+   The head is a label row only: the labels under the tree hold the add command.
+
+   `.dt-region-label` is the voice the region's head and the search face's group
+   heads share, so they cannot drift. */
+
+.dt-region-head {
+  display: flex;
+  align-items: center;
+}
+
+/* A label, not a button: the structure region is the panel's reason to exist,
+   so its heading is always on. */
+.dt-region-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 6px;
+  border: 0;
+  font-size: 9.5px;
+  text-align: left;
+}
+
+/* ── The rail ─────────────────────────────────────────────────────────────────
+   The panel at 52px, a different view rather than the wide one squeezed. Both
+   views are mounted and the stylesheet picks one, so crossing the threshold
+   measures and remounts nothing. */
+
+.dt-rail {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.editor-shell[data-rail="1"] .dt-rail {
+  display: flex;
+}
+
+.dt-rail button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 30px;
+  border: 0;
+  font-size: 10px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+.dt-rail hr {
+  width: 20px;
+  height: 1px;
+  margin: 6px 0;
+  border: 0;
+}
+
+/* ── The recycle bin ─────────────────────────────────────────────────────── */
+
+.dt-bin {
+  display: grid;
+  margin-top: 4px;
+  border-top: 1px dashed;
+}
+
+.dt-bin-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px 6px;
+  border: 0;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+/* An empty bin is a label, not a toggle, so it promises no pointer or hover. */
+.dt-bin-head-flat {
+  cursor: default;
+}
+
+.dt-bin-caret {
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+  transition: transform var(--t);
+}
+
+.dt-bin[data-open="1"] .dt-bin-caret {
+  transform: none;
+}
+
+.dt-bin-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.dt-bin-n {
+  font-size: 10px;
+}
+
+/* Indented once, on the container, rather than by every row, as a Part's
+   children hang off the Part; the group headings then need no number of their
+   own. 48px sets them past the tree's chevron and number, and the row's own
+   16px below is the second half of it. */
+.dt-bin-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  padding-left: 48px;
+  transition: grid-template-rows var(--t);
+}
+.dt-bin[data-open="1"] .dt-bin-body {
+  grid-template-rows: 1fr;
+}
+.dt-bin-inner {
+  overflow: hidden;
+}
+
+/* Headings rather than folders: there is one recycle bin folder in storage, and
+   these are how it reads. */
+/* Flush with the body's own left edge, as the region label above the tree sits
+   at the edge of the rows it heads. */
+.dt-bin-group {
+  margin: 8px 10px 2px 0;
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+.dt-bin-inner > .dt-bin-group:first-child,
+.dt-bin-section:first-child .dt-bin-group {
+  margin-top: 2px;
+}
+
+/* Quiet until the row is under the pointer, like every row-local action in this
+   panel, so a long bin does not read as a column of buttons. */
+.dt-bin-restore {
+  flex: none;
+  margin-inline-start: auto;
+  padding: 1px 6px;
+  border: 0;
+  cursor: pointer;
+  font-size: inherit;
+  line-height: inherit;
+  font-size: 11px;
+  opacity: 0;
+  transition:
+    opacity var(--t),
+    color var(--t);
+}
+
+.dt-bin-row:hover .dt-bin-restore,
+.dt-bin-restore:focus-visible {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .dt-bin-restore {
+    opacity: 1;
+  }
+}
+
+/* This 16px is the row's relation to its own heading, as a Section sits under
+   its Part. The 8px gap and 13px glyph are the tree's. The head keeps a Part's
+   12px. */
+.dt-bin-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px 6px 16px;
+  border: 0;
+  font-size: 12px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: grab;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* `min-width: 0` because the row is `nowrap`, or a long title pushes the button
+   off the end instead of ellipsing. */
+.dt-bin-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dt-bin-back {
+  margin-right: -4px;
+}
+.dt-bin-row:active {
+  cursor: grabbing;
+}
+
+/* ── The head's fold ──────────────────────────────────────────────────────────
+   While the find has the panel, the field takes the shape's width on the head's
+   line, so the panel's first line is the same height in both states and the
+   results begin where the tree did.
+
+   The swap is `flex-grow` on both: the shape's goes to 0 as the row's goes to
+   1. Basis is not the lever, since `flex-basis: 0` on a shape that still grows
+   claims half the free space. The shape's basis is 0 at rest because `auto` is
+   not interpolable, and a fold against it snaps.
+
+   `overflow: hidden` because a flex item's automatic minimum is its content, or
+   the spine will not go under its own width. The 9px between the two comes down
+   on the same clock, or the field opens against 9px of nothing. */
+
+.dt-head {
+  flex-shrink: 0;
+}
+
+.dt-head[data-finding="1"] .dt-ident {
+  flex-grow: 0;
+  opacity: 0;
+  transform: translateX(-6px);
+}
+
+/* ── The panel's head ─────────────────────────────────────────────────────────
+   The project's shape and its find. The spine draws the glyph the Library's
+   card and the Desk's hero draw, at the third of its three sizes. */
+
+.dt-root {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 100%;
+  /* The box every control in this panel's trailing column agrees on: the row
+     menus, the region head's add, and the find. Declared on the row measured
+     from it, it reaches the field below as `--bar-act` and the field's flex
+     basis. `.dt-collapse` restates the arithmetic, being fixed outside the
+     panel. */
+  --bar-act: 24px;
+  /* The line is the find's box, not the spine's 22: the taller sets it.
+
+     The trailing inset is arithmetic. The panel's trailing column (every row's
+     overflow, the region head's add) runs 28px in from this edge: the
+     scroller's 6px grip clearance, the row's 10px inset, half a 24px box. The
+     find's sigil is centred in its box, so the box stops half its width short
+     of that column, or the magnifier sits outboard of every ⋮ beneath it.
+
+     No `gap`: the two things in this row want different air, and a shared one
+     would have to be cancelled for the field as it opens. */
+  padding: 8px calc(6px + 10px + 12px - var(--bar-act) / 2) 8px 12px;
+}
+
+/* Leaves in a row (the `leaves` frame option, with the bar's row): the head
+   stands on the bar's top and foot, its shape and find on the bar's centre
+   line, so the panel's rule and the bar's foot are one line across. */
+:root[data-leaves="row"]
+  .editor-shell:not([data-rail="1"]):not([data-phone="1"])
+  .dt-root {
+  min-height: calc(var(--bar-seat) + var(--bar-h));
+  padding-top: var(--bar-seat);
+  padding-bottom: 0;
+}
+
+.dt-ident {
+  /* Basis 0 rather than `auto`, which cannot be interpolated: the grow carries
+     the movement, and reads as width only against a basis that holds still. */
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  transition:
+    flex-grow var(--t),
+    opacity var(--t),
+    transform var(--t);
+}
+
+.dt-spine {
+  min-width: 0;
+}
+
+/* The sheet's close. The desk's collapse control sits on the border below. */
+.dt-close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  /* Its own margin, since `.dt-root` carries no `gap`. */
+  margin-left: 10px;
+  width: 19px;
+  height: 19px;
+  border: 0;
+  cursor: pointer;
+  /* The shared chevron points down: rotate(90deg) aims it left, toward the
+     rail, and the rail state's counterclockwise quarter-turn aims it right. */
+  transform: rotate(90deg);
+  transition:
+    transform var(--t),
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* There is no rail in a sheet, so this fires only on the narrow plane, where
+   this button is the collapse. A peek keeps the fold's chevron, as
+   `.dt-collapse` does. */
+.editor-shell[data-rail="1"] .dt-close,
+.editor-shell[data-peek="1"] .dt-close {
+  transform: rotate(-90deg);
+}
+
+/* ── The boundary's own control ───────────────────────────────────────────────
+   Half in the panel and half out, centred on the edge it moves. The panel's
+   right edge is at 256 (`--panel-left` 8 + `--panel-w` 248) and the prose
+   begins at 296, behind a 40px gutter. At the coarse floor's 44px it spans
+   234–278 and still clears the prose by 18px.
+
+   Positioned from the same two custom properties as the panel: `--panel-w`
+   becomes 52 in the rail and the handle rides that edge without a second rule.
+   `translateX(-50%)` centres any width on the edge, 22 for a mouse and 44 for a
+   finger.
+
+   Vertically it lines up with the head's first row. A constant, because this
+   element cannot be a child of that row, so `collapse-handle.spec.ts` pins it
+   against the row's measured centre.
+
+   Quiet until a pointer or focus arrives. */
+.dt-collapse {
+  position: fixed;
+  left: calc(var(--panel-left) + var(--panel-w));
+  /* The panel's top, then the centre of the head's one line: 8px of padding
+     plus half the 24px box. Written out rather than inherited because this is
+     `position: fixed` outside the panel and `--bar-act` is declared inside
+     it. */
+  top: calc(var(--chrome-horizon) + 8px + 12px);
+  z-index: 106; /* One above the panel whose edge it sits on (105). */
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid;
+  cursor: pointer;
+  /* The rotation lives with the centring because they are one transform. The
+     rail's counterclockwise quarter-turn aims it right. */
+  transform: translate(-50%, -50%) rotate(90deg);
+  /* Always on its own layer. Chrome lifts the handle onto a layer only while
+     its turn runs, and dropping it after leaves the strip beside the rail
+     unpainted: the folding rail stays drawn there a second time, over whatever
+     the page has under it. */
+  will-change: transform;
+  transition:
+    /* `left` takes the panel's width curve, so the handle stays on the
+       boundary. */
+    left var(--t),
+    transform var(--t),
+    background var(--t-tap),
+    border-color var(--t-tap),
+    color var(--t-tap);
+}
+
+.dt-collapse svg {
+  /* 3:1 against the panel's ground in every theme (WCAG 1.4.11). */
+  opacity: 0.8;
+  transition: opacity var(--t-tap);
+}
+
+.dt-collapse:hover svg,
+.dt-collapse:focus-visible svg {
+  opacity: 1;
+}
+
+/* The peek keeps the fold's chevron: the panel is drawn wide but still
+   folded. */
+.editor-shell[data-rail="1"] .dt-collapse,
+.editor-shell[data-peek="1"] .dt-collapse {
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.editor-shell[data-peek="1"] .dt-collapse {
+  left: calc(var(--panel-left) + var(--panel-open-w));
+}
+
+/* Leaves in a row: the head stands on the bar's top and foot (`.dt-root`
+   below), so the handle centres on the bar's line. */
+:root[data-leaves="row"]
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"])
+  .dt-collapse {
+  top: calc(var(--header-h) + var(--bar-seat) + var(--bar-h) / 2);
+}
+
+/* Nothing is left in the head at 52px, with the collapse on the border.
+
+   `[data-narrow="0"]`, because below 1016 the collapse is in the head, and
+   hiding the head would hide the only way out of the rail. */
+.editor-shell[data-narrow="0"][data-rail="1"] .dt-root {
+  display: none;
+}
+
+/* ── Scroll area ─────────────────────────────────────────────────────────── */
+
+.dt-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Clear of the resize grip: a scrollbar sits inside its scroller's border
+     edge whatever the padding, so it would share the grip's 6px and reaching
+     for the thumb would resize the panel. Margin, not padding, since padding
+     moves the content and not the scrollbar. Unconditional: 6px is invisible in
+     the sheet, and `.dt-scroll` is not drawn in the rail. */
+  margin-right: 6px;
+  /* No top padding: the region head's 9px opens the scroll area. */
+  padding: 0 0 6px;
+}
+
+.dt-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* ── Rows ────────────────────────────────────────────────────────────────── */
+
+/* A treegrid cell and a landing's row exist for screen readers and draw
+   nothing. */
+.dt-cell {
+  display: contents;
+}
+
+/* Height from the content, not a fixed 27px, so a wrapped title is still a
+   whole row. */
+.dt-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px 6px 12px;
+  border: none;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* On a Part the chevron expands and the label opens. */
+.dt-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+  line-height: inherit;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* The whole row opens the node. The title stays the one button (one name for a
+   screen reader, one tab stop), and its reach is stretched over the row. The
+   label is not positioned, so the stretch measures the row and the label's
+   `overflow: hidden` does not clip it.
+
+   The row's own controls sit above the stretch, so each does its one thing. A
+   press anywhere reaches the row's drag, since the stretch is inside the
+   row. */
+.dt-label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+button.dt-chevron,
+button.dt-summary,
+.dt-actions {
+  position: relative;
+  z-index: 1;
+}
+/* Anything below full opacity paints above the stretch, so a count still fading
+   in would catch the press. None of the three answers a press of its own. */
+.dt-row > .dt-words,
+.dt-row > .dt-cell > .cm-bubbles,
+.dt-row > .dt-mark {
+  pointer-events: none;
+}
+
+/* Drawn on every row at zero height, because a shape animating from `height: 0`
+   is a transition and a shape created first is not. */
+.dt-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 2px;
+  height: 0;
+  transform: translateY(-50%);
+  transition: height var(--t);
+}
+
+.dt-row.active::before {
+  height: 100%;
+}
+
+.dt-idx {
+  flex-shrink: 0;
+  font-size: 9.5px;
+}
+
+/* ── Ticking rows to move together ────────────────────────────────────────────
+   The box stands on the row's own mark (a Section's empty glyph column, a
+   top-level Part's number), and the mark fades as the box arrives, so nothing
+   in the row moves: a box pushing the row right would say it had moved into
+   something. A nested Part has no number, so its box sits in its own indent
+   (`pickInGutter`).
+
+   Hover reveals it after a beat, so sweeping the pointer down the tree does not
+   ripple boxes; focus reveals it at once. Once anything is ticked, every row of
+   that kind shows its box (`data-selecting`). Hiding never waits. */
+.dt-host {
+  position: relative;
+}
+.dt-host > :not(.dt-check) {
+  transition: opacity var(--t-tap);
+}
+.dt-check {
+  position: absolute;
+  /* Above the title's stretched reach, so a press here ticks, not opens. */
+  z-index: 1;
+  /* Centred on the mark it stands on, whatever its size: on a coarse pointer
+     the kit floors the box's button at a full tap target, and an
+     edge-anchored span would carry the box off the glyph. */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-tap);
+}
+.dt-check .ui-tick.ui-tick-bare {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+/* A 24px target around a 12px box, the reach the row's `…` has. */
+.dt-check .ui-tick.ui-tick-bare::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+/* Ticked because the Part around it is: nothing to press. */
+.dt-check .ui-tick[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Hover only where there is a hover: a phone keeps the last-tapped row in
+   `:hover`, which would leave a box up after opening a chapter. A finger
+   asks through the row menu's Select. */
+@media (hover: hover) {
+  .dt-row:hover .dt-check {
+    opacity: 1;
+  }
+  .dt-row:hover .dt-check .ui-tick {
+    pointer-events: auto;
+  }
+  .dt-row:hover .dt-host:has(.dt-check) > :not(.dt-check) {
+    opacity: 0;
+  }
+  .dt-row:hover .dt-check,
+  .dt-row:hover .dt-host:has(.dt-check) > :not(.dt-check) {
+    transition-delay: 350ms;
+  }
+}
+.dt-row:focus-within .dt-check,
+.doc-tree[data-selecting] .dt-check {
+  opacity: 1;
+}
+/* Only the box answers the pointer: the span around it sizes to the box's
+   reach and must not swallow presses meant for the row. */
+.dt-check .ui-tick {
+  pointer-events: none;
+}
+.dt-row:focus-within .dt-check .ui-tick,
+.doc-tree[data-selecting] .dt-check .ui-tick {
+  pointer-events: auto;
+}
+.dt-row:focus-within .dt-host:has(.dt-check) > :not(.dt-check),
+.doc-tree[data-selecting] .dt-host:has(.dt-check) > :not(.dt-check) {
+  opacity: 0;
+}
+/* Focus and the mode do not wait, and they win over a hover's beat when the
+   pointer is on a row the keyboard just reached. */
+.dt-row:focus-within .dt-check,
+.dt-row:focus-within .dt-host:has(.dt-check) > :not(.dt-check),
+.doc-tree[data-selecting] .dt-check,
+.doc-tree[data-selecting] .dt-host:has(.dt-check) > :not(.dt-check) {
+  transition-delay: 0s;
+}
+
+/* Reduced motion: the box and the mark swap at once. The hover's beat stays,
+   being a wait rather than a movement. A zero-length transition still honours
+   its delay. */
+@media (prefers-reduced-motion: reduce) {
+  .dt-check,
+  .dt-host > :not(.dt-check) {
+    transition-duration: 0s;
+  }
+}
+
+/* Something written here is not where the writer keeps it yet. An <Icon> rather
+   than a dot, so `dirty` and `failed` draw differently; the `pending` glyph at
+   11px measures 5px. */
+.dt-mark {
+  flex-shrink: 0;
+}
+
+/* Stays in place, faded, so the list does not reflow under the pointer while
+   the ghost is aimed. */
+.dt-row.dragging {
+  opacity: 0.4;
+}
+
+.dt-file-icon {
+  flex-shrink: 0;
+}
+
+/* ── Chevron ─────────────────────────────────────────────────────────────── */
+
+.dt-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 100%;
+  padding: 0;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform var(--t),
+    color var(--t-tap);
+}
+
+.dt-chevron.placeholder {
+  cursor: inherit;
+}
+
+/* Beside the number, the fold answers in its own box over the reach of the
+   number's tick, which would otherwise take the press. */
+.dt-row > .dt-cell > button.dt-chevron {
+  z-index: 2;
+}
+
+/* The glyph points down natively; a closed Part turns it toward the row it will
+   open. Scoped to `.dt-part` so the section placeholder glyph never rotates
+   with it. */
+.dt-part .dt-chevron {
+  transform: rotate(-90deg);
+}
+.dt-part.open .dt-chevron {
+  transform: none;
+}
+
+/* ── A row's actions ──────────────────────────────────────────────────────────
+   One control, present at rest at the row's end: three adjacent small targets
+   with a destructive one among them invite slips, and a control that waits for
+   the hand is no target on a phone. Dimmed at rest; full under the hand, for
+   the keyboard, and while its menu is open. */
+
+.dt-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dt-more {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  cursor: pointer;
+  /* The least that keeps the glyph at 3:1 on its row in every theme
+     (WCAG 1.4.11): quiet beside the titles, still a control. */
+  opacity: 0.8;
+  transition:
+    opacity var(--t-tap),
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* Full weight while in use and while its menu is open: a trigger that fades
+   under its open popover reads as though the popover belongs elsewhere. */
+.dt-row:hover .dt-more,
+.dt-more:focus-visible,
+.dt-more[aria-expanded="true"] {
+  opacity: 1;
+}
+
+/* ── Moving ───────────────────────────────────────────────────────────────────
+   The tree grows a row in every gap the node can land in, at the depth it would
+   land at. The indent is the container: a landing one step in from the row
+   above means inside that Part. */
+
+.dt-moving {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 2px 8px 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* Wraps rather than ellipses: the line is "Moving X — choose where", and an
+   ellipsis would cut the half that says what to do. `anywhere` because a
+   Part's title is the writer's, and one long word must not push Cancel off
+   the panel. */
+.dt-moving-what {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.dt-moving-stop {
+  flex-shrink: 0;
+}
+
+/* At the foot of the tree: nothing above the rows may appear while the writer
+   ticks them, or the next click lands on a shifted row. */
+.dt-moving.dt-selecting {
+  margin-top: 6px;
+}
+
+/* Pinned to the bottom of the view where the panel has the height, so the count
+   and Move… stay in reach in a long book. Rows brought into view (by Tab, or by
+   the browser) stop above the line.
+
+   Not on a short screen: a phone on its side leaves the tree about one row
+   (63px on a rotated iPhone SE), and a pinned line would cover the rows it
+   counts. */
+@media (min-height: 480px) {
+  .dt-moving.dt-selecting {
+    position: sticky;
+    bottom: 8px;
+    z-index: 2;
+  }
+  .doc-tree[data-selecting] .dt-tree-body {
+    scroll-padding-bottom: 64px;
+  }
+}
+
+/* One title a line, each cut on its own, so a long name never pushes the next
+   out of sight. */
+.dt-ghost-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 1px 0;
+  list-style: none;
+}
+.dt-ghost-list > li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dt-ghost-list > .dt-ghost-more {
+  font-size: 11.5px;
+}
+
+.dt-moving-none {
+  margin: 0 10px 8px;
+  font-size: 12px;
+}
+
+/* A class of its own, not the empty note's: one says nothing is here and this
+   one invites a query. */
+.dt-search-invite {
+  margin: 0 10px 8px;
+  font-size: 12px;
+}
+
+/* The rule out to the edge makes the depth legible: the eye reads where it
+   starts. */
+.dt-landing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 22px;
+  padding-right: 10px;
+  border: 0;
+  cursor: pointer;
+  /* One frame of arrival, so a mode appearing under the finger is seen to
+     arrive. */
+  animation: dtLandingIn var(--t);
+}
+
+.dt-landing-rule {
+  flex: 1;
+  height: 1px;
+  opacity: 0.35;
+  transition: opacity var(--t-tap);
+}
+
+.dt-landing:hover .dt-landing-rule,
+.dt-landing:focus-visible .dt-landing-rule {
+  opacity: 1;
+}
+
+@keyframes dtLandingIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Quieted rather than hidden: a vanished row would make the tree jump while the
+   writer aims. */
+.dt-row[data-moving="1"] {
+  opacity: 0.45;
+}
+
+/* ── Expand and collapse ──────────────────────────────────────────────────────
+   Height 0 → auto through `interpolate-size`: the grid 0fr → 1fr technique
+   needs a wrapper at every level, and the tree nests arbitrarily deep. The File
+   System Access API already requires Chromium; where `interpolate-size` is
+   missing this opens and closes instantly. */
+
+.dt-children {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  /* `visibility` keeps collapsed rows out of the tab order and away from
+     screen readers; delayed until the collapse finishes, it keeps the
+     animation. */
+  visibility: hidden;
+  transition:
+    height var(--t-slow),
+    opacity 180ms ease,
+    visibility 0s linear 320ms;
+}
+
+.dt-children.open {
+  height: auto;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    height var(--t-slow),
+    opacity 180ms ease,
+    visibility 0s;
+}
+
+.dt-empty {
+  padding-top: 4px;
+  padding-bottom: 6px;
+  font-size: 11.5px;
+  opacity: 0.7;
+}
+
+/* The pill is the reference shelf's `.ref-card-add` recipe with the tree's
+   density, so the two cannot drift. */
+.dt-add-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 10px 6px 0;
+}
+
+.dt-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 0;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* ── Drop indicator ───────────────────────────────────────────────────────────
+   Through its left inset it says which container the node lands in. It is never
+   rendered where the Golden Rule forbids a drop. */
+
+.dt-content {
+  position: relative;
+}
+
+.dt-drop-line {
+  position: absolute;
+  right: 8px;
+  height: 2px;
+  margin-top: -1px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.dt-drop-line::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -2px;
+  width: 6px;
+  height: 6px;
+}
+
+/* No line means no legal landing place, and the cursor should say so before
+   the writer lets go. */
+.doc-tree.dragging {
+  cursor: grabbing;
+}
+.doc-tree.dragging .dt-row {
+  cursor: grabbing;
+}
+
+.dt-ghost {
+  position: fixed;
+  z-index: 400;
+  max-width: 190px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+/* ── Inline naming ───────────────────────────────────────────────────────── */
+
+.dt-name-row {
+  padding-right: 8px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.dt-name-input {
+  width: 100%;
+  height: 23px;
+  padding: 0 6px;
+  border: none;
+  font-size: 12.5px;
+}
+
+.dt-name-error {
+  padding: 4px 2px 1px;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+/* ── States ───────────────────────────────────────────────────────────────────
+   No project, unsupported browser, reconnect, loading. */
+
+.dt-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.dt-state-title {
+  font-size: 12.5px;
+}
+
+.dt-state-hint {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* On the state block, since the buttons are the shared ones. */
+.dt-state .ui-btn-soft {
+  margin-top: 8px;
+}
+.dt-state .ui-btn-link {
+  margin-top: 2px;
+}
+
+/* ── A refused folder ─────────────────────────────────────────────────────────
+   Strict validation can lock a writer out of their own folder, so this state
+   gives the specific reason: file names and line numbers, as they appear in the
+   file. */
+
+.dt-invalid {
+  justify-content: flex-start;
+  padding-top: 24px;
+  text-align: left;
+  align-items: stretch;
+}
+
+.dt-problems {
+  margin: 4px 0 2px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dt-problems li {
+  padding: 6px 8px;
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+/* ── Undo toast ──────────────────────────────────────────────────────────── */
+
+/* Fixed to the window's bottom centre wherever it was armed: one placement for
+   every structural change. Above the dock (115), since a snapshot's toast fires
+   while the dock is open. 700 is the application's toast layer (`base.css`
+   `.ui-toasts`): an Undo stays reachable behind a sheet. */
+.dt-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 700;
+  max-width: min(420px, calc(100vw - 32px));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 10px;
+  animation: dtToastIn var(--t);
+}
+
+/* At `z-index: 700` the toast would cover the phone's bottom bar, the
+   writer's six controls, so it stands above the chrome instead.
+
+   Keyed on the width rather than `[data-phone]`: the provider renders the
+   toast as a sibling of the editor, out of the shell attribute's reach. 720
+   is the plane number `usePhone` asks `matchMedia` for. */
+
+.dt-toast-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .dt-toast {
+    bottom: calc(
+      var(--bar-act, 44px) + 32px + var(--kb, 0px) + var(--safe-bottom)
+    );
+  }
+
+  /* It wraps here: at 375px an ellipsis would cut a toast's message before
+     it can be read. */
+  .dt-toast-text {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
+
+.dt-toast-undo {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: none;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+/* ── The journal notice ───────────────────────────────────────────────────────
+   The quiet toast when a stale undo journal was dropped at open (the file
+   changed elsewhere). The undo toast's family, floating over the surface rather
+   than in the tree. No undo button: there is nothing to undo. */
+
+.rev-notice {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 90;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 8px 12px;
+  font-size: 11.5px;
+  animation: dtToastIn var(--t);
+}
+
+@keyframes dtToastIn {
+  /* The resting rule is `transform: translateX(-50%)`, and keyframe
+     transforms override it during the animation, so a translateY-only
+     keyframe would drop the offset. Both users (`.dt-toast`, `.rev-notice`)
+     are centred and fixed, so the offset lives in the keyframes. */
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.dt-error {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-top: 1px solid;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* ── Loading dots ────────────────────────────────────────────────────────── */
+
+/* The tree's loading dots are the shared `.ui-dots` (`src/ui/Dots.tsx`): the
+   same dots stand in for the editor while its chunk downloads, and a
+   stylesheet cannot dress the wait for its own arrival. */
+
+/* ── The save gutter ──────────────────────────────────────────────────────────
+   Which paragraphs are not yet on disk, in the gutter the measure leaves, so
+   the writing column stays still.
+
+   At rest it draws nothing: a gutter green down a saved chapter teaches the eye
+   to stop reading it before the day a write fails. */
+
+.save-gutter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+}
+
+/* `SaveGutter` sets `left` inline per mark: the prose column is flex-centred
+   behind the panel's padding, so its left edge moves with the panel's width and
+   the rail state. */
+.save-gutter i {
+  position: absolute;
+  width: 2px;
+  transition:
+    background var(--t-tap),
+    opacity var(--t-slow);
+}
+
+/* Lands a beat after the write returns (`--d-settle`), and the component clears
+   it. A fade rather than a movement, so a theme has no reason to refuse the
+   delay. */
+.save-gutter i[data-state="saved"] {
+  opacity: 1;
+  transition:
+    background var(--t-tap),
+    opacity var(--t-slow) var(--d-settle);
+}
+
+/* A failed write holds its mark: the work is still only in memory. */
+.save-gutter i[data-state="failed"] {
+  opacity: 1;
+  transition: none;
+}
+
+/* ── The margin's comments ────────────────────────────────────────────────────
+   A sibling layer of the prose, like the save gutter and for its reason: a
+   `<p>` touched by anything forces `patchDocument` to rebuild every
+   paragraph. The layer takes no pointer; its cards and marks do. The passages
+   are painted through the Custom Highlight API, never marks. */
+.cm-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.cm-slot {
+  position: absolute;
+  pointer-events: auto;
+  transition: top var(--t);
+}
+
+.cm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid;
+  font-size: 13px;
+  line-height: 1.45;
+  cursor: default;
+  transition:
+    border-color var(--t-tap),
+    opacity var(--t-tap);
+}
+
+/* The card brought forward (clicked, its passage holding the caret, or reached
+   by Previous/Next comment) has its actions open. Its edge is solid whatever
+   the card: a ghost's dashed edge gives way while it is forward, where the
+   proposal rule below would otherwise win. */
+.cm-card[data-active="1"] {
+  border-style: solid;
+}
+
+.cm-card[data-state="proposed"] {
+  border-style: dashed;
+  opacity: 0.82;
+}
+
+.cm-card[data-state="proposed"][data-active="1"],
+.cm-card[data-state="proposed"]:hover {
+  opacity: 1;
+}
+
+.cm-card[data-state="proposed"][data-active="1"] {
+  border-style: solid;
+}
+
+.cm-card[data-state="resolved"] {
+  opacity: 0.7;
+}
+
+.cm-kicker {
+  margin: 0;
+  font-size: 11px;
+}
+
+.cm-orphan {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+}
+
+.cm-orphan p {
+  margin: 0;
+}
+
+.cm-byline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cm-face {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  object-fit: cover;
+}
+
+.cm-byline .app-avatar {
+  flex: none;
+}
+
+.cm-face-letter {
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+}
+
+.cm-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cm-when {
+  margin-left: auto;
+  flex: none;
+  font-size: 11px;
+}
+
+.cm-body {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cm-card[data-active="0"] .cm-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cm-entry + .cm-entry {
+  padding-top: 6px;
+  border-top: 1px solid;
+}
+
+.cm-more,
+.cm-writing {
+  margin: 0;
+  font-size: 12px;
+}
+
+.cm-failed,
+.cm-trouble {
+  margin: 0;
+  font-size: 12px;
+}
+
+.cm-searched {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.cm-searched p {
+  margin: 0;
+}
+
+.cm-searched ul {
+  margin: 2px 0 0;
+  padding-left: 16px;
+}
+
+.cm-searched a {
+  overflow-wrap: anywhere;
+}
+
+.cm-asking {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.cm-buttons,
+.cm-confirm,
+.cm-composer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.cm-confirm span {
+  flex: 1 1 100%;
+  font-size: 12px;
+}
+
+.cm-composer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cm-composer-actions {
+  justify-content: flex-end;
+}
+
+.cm-input {
+  width: 100%;
+  min-height: 52px;
+  resize: vertical;
+  padding: 6px 8px;
+  border: 1px solid;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.cm-mentions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 2;
+  margin: 2px 0 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid;
+}
+
+.cm-mentions li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.cm-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.cm-chapter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cm-add-chapter {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Quiet, and still 3:1 for its glyph (WCAG 1.4.11). */
+  opacity: 0.8;
+  transition: opacity var(--t-tap);
+}
+
+.cm-add-chapter:hover,
+.cm-add-chapter:focus-visible {
+  opacity: 1;
+}
+
+.cm-resolved {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The narrow form: one mark per thread at the prose's right edge. Its button is
+   24px, for a finger. */
+.cm-marker {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transform: translate(-7px, -3px);
+}
+
+.cm-marker::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border: 1px solid;
+}
+
+.cm-marker[data-state="proposed"]::after {
+  opacity: 0.6;
+}
+
+/* A persona's thread uses the persona's face instead of the dot. A ghost's is
+   faded, like its dot. */
+.cm-marker[data-face="1"]::after {
+  content: none;
+}
+.cm-marker .cm-face {
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+}
+.cm-marker[data-state="proposed"] .cm-face {
+  opacity: 0.6;
+}
+
+.cm-marker-chapter::after {
+  content: none;
+}
+
+/* Level with its passage (`--float-top`, which `Margin` writes), and
+   lifted where the window's foot would cut it, never above the bar's band. */
+.cm-float {
+  --float-seat: clamp(96px, var(--float-top, 96px), 100dvh - 320px);
+  position: fixed;
+  right: 16px;
+  top: max(96px, var(--float-seat));
+  z-index: 70;
+  width: min(320px, calc(100vw - 32px));
+  max-height: calc(100dvh - max(96px, var(--float-seat)) - 32px);
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid;
+  pointer-events: auto;
+}
+
+.cm-float-head {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* On a phone the thread rises as a sheet over the bottom bar: squeezed between
+   the bar and the prose a reply would have no room. It rides the keyboard like
+   the bar. */
+@media (max-width: 720px) {
+  .cm-float {
+    top: auto;
+    right: 0;
+    bottom: var(--kb, 0px);
+    z-index: 120; /* Over the chrome (100) and its bottom bar. */
+    left: 0;
+    width: auto;
+    max-height: 70dvh;
+    padding-bottom: calc(8px + var(--safe-bottom));
+  }
+}
+
+/* The phone's two sizes: the facts (times, counts, the kicker) at 11, the words
+   at 13, and the field at the tap size, because iOS zooms into any smaller
+   field. */
+@media (max-width: 720px) {
+  .cm-when,
+  .cm-kicker,
+  .cm-face-letter,
+  .cm-bubble {
+    font-size: 11px;
+  }
+
+  .cm-more,
+  .cm-writing,
+  .cm-searched,
+  .cm-failed,
+  .cm-trouble,
+  .cm-confirm span {
+    font-size: 13px;
+  }
+
+  .cm-input {
+    font-size: var(--tap-font);
+  }
+}
+
+/* Below the Reference and Notes buttons: a route under a caption goes unfound.
+   The tags are the least urgent thing in the column, so they come last before
+   the foot.
+
+   Tags, not controls: the creation dialog is their editor. The goal has no tag:
+   here it would be a number with nothing to compare against. */
+
+.dt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border-top: 1px solid;
+  /* After the panel's width settle: the rail-to-wide morph is `transition:
+     width var(--t)` (220ms), and a row appearing while the column moves reads
+     as part of the motion. `--d-panel` is that settle; `both` holds the row
+     invisible through it. It restarts whenever the row is shown again, because
+     the rail hides it with `display: none`. */
+  animation: dtMetaIn var(--t-veil) both;
+  animation-delay: var(--d-panel);
+}
+
+@keyframes dtMetaIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dt-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  padding: 2px 8px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.dt-tag-v {
+  overflow-wrap: anywhere;
+}
+
+/* A window too short for the tree and the tags both, as a rotated phone's 340px
+   is: the head, the buttons and the foot take what the panel has, and the tree
+   would be left none. The tags give way, since they are no control and the
+   Properties window holds them. Two classes, so a theme that lays the tags out
+   anew does not bring them back here. */
+@media (max-height: 440px) {
+  .doc-tree .dt-meta {
+    display: none;
+  }
+}
+
+/* ── The foot ────────────────────────────────────────────────────────────── */
+
+.dt-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border-top: 1px solid;
+  font-size: 10px;
+}
+
+/* Only the two words give way, ellipsizing: the glyphs and buttons hold their
+   size. */
+.dt-foot > svg,
+.dt-foot-act {
+  flex-shrink: 0;
+}
+
+.dt-foot-where {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dt-foot-demo-hint {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dt-foot-act {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* The variant's name is two words ("once dark", "still dark"), kept on one
+   line. */
+.dt-foot-theme {
+  display: flex;
+  gap: 6px;
+  width: auto;
+  white-space: nowrap;
+  padding: 4px 6px;
+  font-size: 10px;
+}
+
+/* A popover over the prose, not a region of the panel, so the settings open
+   from the 52px rail too. The card is the panel's sibling, outside the clipped
+   aside, positioned from the gear that opens it (`left`/`bottom` inline from
+   `prefsPos`).
+
+   Mounted while shut, so closing is a morph. */
+.dt-prefs {
+  position: fixed;
+  /* Fallback until the double-rAF measure lands; the card fades in, so the
+     measured `left`/`bottom` replace these before it is seen. */
+  left: 16px;
+  bottom: 64px;
+  width: min(300px, calc(100vw - 16px));
+  z-index: 120; /* Over the panel (90), the chrome (100) and the dock (110). */
+  border: 1px solid;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--t),
+    visibility 0s linear 220ms;
+}
+
+.dt-prefs[data-open="1"] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--t-tap),
+    visibility 0s;
+}
+
+/* The height morph is on this box, not on the card: an `fr` track sizes to
+   its content only when the grid's free space is indefinite, and Chrome
+   resolves it to zero in an absolutely positioned box with `bottom` set. In
+   normal flow it sizes correctly. */
+.dt-prefs-inner {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--t);
+}
+
+.dt-prefs[data-open="1"] .dt-prefs-inner {
+  grid-template-rows: 1fr;
+}
+
+/* The padding grows with the box, or a shut card leaves 14px of paper above
+   the foot. */
+.dt-prefs-pad {
+  overflow: hidden;
+  padding: 0;
+  transition: padding var(--t);
+}
+
+.dt-prefs[data-open="1"] .dt-prefs-pad {
+  padding: 8px;
+}
+
+/* ── Offered, not honoured here ───────────────────────────────────────────────
+   Two writing preferences the phone plane ignores. Dimmed but not `disabled`,
+   since a disabled button fires no click: pressing it explains itself in the
+   toast, so it keeps its cursor. */
+.ui-tick[data-unavailable="1"],
+/* Not scoped to `.dt-prefs`: the settings are a bottom sheet on the phone,
+   outside the desk's popover. The attribute is set only by the
+   `unavailable` prop, so it is a specific enough address. */
+.ui-bar-track[data-unavailable="1"] button {
+  opacity: 0.42;
+}
+
+/* Not a tick: three steps, and the answer is which one. The ticks' row
+   rhythm, so the card reads as one list of settings. */
+.dt-size {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px;
+  font-size: 12px;
+}
+
+.dt-size > span {
+  flex: 1;
+  min-width: 0;
+}
+.dt-size .ui-bar-track button {
+  font-size: 11px;
+}
+
+/* The size track's tips appear above their cell: the row is the card's last,
+   and a tip below would be cut by the pad's `overflow: hidden`, the clip the
+   card's height morph needs. */
+.dt-size .ui-bar-track [data-tip] > .ui-tip {
+  top: auto;
+  bottom: calc(100% + 9px);
+  transform-origin: bottom center;
+  transform: translate(-50%, 3px) scale(0.96);
+}
+
+/* A native `<select>`, because a custom popup would have to escape the card's
+   clip, and the platform's listbox cannot be cut. */
+.dt-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px;
+  font-size: 12px;
+}
+
+/* A choice that depends on the tick above it stands under the tick's label:
+   the tick's 8px pad, its 15px box and its 9px gap (`.ui-tick`). */
+.dt-pick:not(.dt-pick-apart) {
+  padding-left: 32px;
+}
+
+/* The one row not about the open project (the app's language). A hairline and a
+   little air, not a heading: the row must not read as one of the prose
+   settings. */
+.dt-pick-apart {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid;
+}
+
+.dt-pick > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.dt-pick-select {
+  height: 26px;
+  min-width: 64px;
+  padding: 0 6px;
+  border: 1px solid;
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    border-color var(--t),
+    box-shadow var(--t);
+}
+
+/* ── The dock ─────────────────────────────────────────────────────────────────
+   One surface with several faces, not separate panels: one width budget.
+
+   It tops the panel ladder (115, over the structure panel's 105): where the two
+   meet, a panel under the dock's header stays reachable, and the reverse would
+   not. */
+
+.ed-dock {
+  position: fixed;
+  right: var(--dock-inset);
+  top: var(--chrome-horizon);
+  /* The panel's foot too: the two close on one line. */
+  bottom: var(--sheet-gap);
+  z-index: 115; /* Over the structure panel (105) and the bar (100). */
+  width: var(--dock-w);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(8px);
+  transition:
+    opacity var(--t),
+    transform var(--t),
+    visibility 0s linear 220ms;
+}
+
+.ed-dock[data-open="1"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity var(--t),
+    transform var(--t),
+    visibility 0s;
+}
+
+/* The paint a theme changes between the dock beside the sheet and over it
+   (`data-dock-over`) eases on the slow beat. Only once the open dock has been
+   drawn (`data-dock-settled`): a dock that opens or closes keeps one face. */
+.editor-shell[data-dock-settled="1"]:not([data-phone="1"])
+  .ed-dock[data-open="1"] {
+  transition:
+    opacity var(--t),
+    transform var(--t),
+    border-radius var(--t-slow),
+    border-color var(--t-slow),
+    background-color var(--t-slow),
+    background-size var(--t-slow),
+    box-shadow var(--t-slow),
+    visibility 0s;
+}
+
+/* Leaves in a row (the `leaves` frame option, with the bar's row): a Dock
+   that covers the measure steps down to the page's top edge, under the
+   bar's row, easing there on the frame's beat. */
+:root[data-leaves="row"]
+  .editor-shell[data-dock-over="1"]:not([data-narrow="1"]):not([data-phone="1"])
+  .ed-dock {
+  top: var(--face-top);
+}
+:root[data-leaves="row"]
+  .editor-shell[data-dock-settled="1"]:not([data-phone="1"])
+  .ed-dock[data-open="1"] {
+  transition:
+    opacity var(--t),
+    transform var(--t),
+    top var(--t),
+    border-radius var(--t-slow),
+    border-color var(--t-slow),
+    background-color var(--t-slow),
+    background-size var(--t-slow),
+    box-shadow var(--t-slow),
+    visibility 0s;
+}
+
+/* The head is the panel head's 40px: (40 - 30) / 2 above and below the 30px
+   track, so the two heads share one centre line and one foot, and the Dock's
+   face starts where the panel's "Contents" does. */
+.dock-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  flex-shrink: 0;
+}
+
+/* The exit never gives. On a phone's 375px screen with a 44px close, the tabs
+   at their design width plus the close exceed the head, and the close, last in
+   the line, would be clipped by `.ed-dock`'s `overflow: hidden`. So the tab
+   track shrinks and the close does not.
+
+   The cells are fitted (`fit`, `base.css`), not equal: each is its own word
+   plus an equal share of what is left, where equal cells overflow with a long
+   label. */
+.dock-head .ui-bar-track {
+  /* A definite basis, not `auto`: a flex container whose items carry
+     `flex-grow` reports an intrinsic width unrelated to the sum of their
+     bases, so an `auto` basis shrinks the track in a head with room to spare.
+     The design width, stated: the cells the caller asked for, plus the
+     trough's 2px a side. */
+  flex: 0 1 calc(var(--track-n, 1) * var(--track-w) + 4px);
+  min-width: 0;
+}
+
+.dock-close {
+  display: grid;
+  place-items: center;
+  /* Never squeezed. `margin-left: auto` rather than a spacer: the same end of
+     the row, with no gap to pay for. */
+  flex-shrink: 0;
+  margin-left: auto;
+  width: 19px;
+  height: 19px;
+  border: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* The resize grip along the dock's left edge: a 6px strip with a 2px line. */
+.dock-resize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 1;
+}
+
+.dock-resize::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 34px;
+  transition: background var(--t-tap);
+}
+
+/* The dock's grip mirrored onto the other edge, a near-copy rather than a
+   shared class: the same 6px strip and 2px line.
+
+   It starts 36px down: `.dt-collapse` is centred at `--chrome-horizon + 20` and
+   is 22px across, so it owns the edge down to panel-top + 31, and 5px of
+   clearance follows. */
+.panel-resize {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 1;
+}
+
+.panel-resize::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 34px;
+  transition: background var(--t-tap);
+}
+
+.dock-face {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.dock-face-empty {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.dock-meta {
+  flex-shrink: 0;
+  padding: 0 12px 8px;
+  font-size: 9.5px;
+}
+
+.dock-document-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dock-document-meta .dock-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.dock-generated-badge {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.dock-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 14px 14px;
+  scrollbar-width: thin;
+}
+
+.dock-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* ── The snapshot face ────────────────────────────────────────────────────────
+   Column one is a fixed lane where the tick and the Adopt button crossfade: the
+   swap must never shift the layout. */
+
+.snap-face {
+  position: relative;
+}
+
+.snap-table {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 96px;
+}
+
+/* The head holds only the [+], riding the tick lane's first track, centred by
+   the rows' `snap-col-adopt` span, so it lines up with the tick and the Adopt
+   button below. Outside the scroller, so it never scrolls with the list. */
+.snap-head {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid;
+}
+
+/* The relative-position badge is its own element, never inside the date button,
+   so an unparseable stamp still reads as itself (the `not-a-date` row). The
+   count must not shrink; the date ellipsizes. */
+.snap-when-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+/* The adopted row's word, for a theme that sets it at the title's end; the
+   tick says it here. */
+.snap-adopted {
+  display: none;
+}
+
+.snap-rel {
+  flex-shrink: 0;
+  align-self: center;
+  line-height: 1.4;
+  padding: 2px 6px;
+  border: none;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+/* The rows' ground runs from the Dock's inner edge to the scrollbar's
+   clearance, as the tree's does from the panel's. */
+.snap-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 12px 10px;
+  scrollbar-width: thin;
+}
+
+.snap-row {
+  display: grid;
+  /* The actions track is fixed (two 19px icon buttons + 2px gap + 2px slack),
+     never `auto`: an auto track sizes to each row's content (the adopted row
+     carries one icon button, the others two) and misaligns the cells between
+     rows. */
+  grid-template-columns: 44px minmax(104px, 1fr) minmax(0, 2fr) 42px;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  border-bottom: 1px solid;
+  font-size: 12.5px;
+}
+
+.snap-col-adopt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The tick and the Adopt button share the lane, absolutely centred, so the swap
+   never moves the date column. Adopt is revealed on hover or keyboard focus,
+   never hover only; at rest it is inert (`pointer-events: none`), so a click at
+   the row's trailing edge cannot land on it. */
+.snap-adopt {
+  font-size: 11.5px;
+  border: none;
+  padding: 4px 6px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-tap);
+}
+
+.snap-row:hover .snap-adopt,
+.snap-adopt:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.snap-when,
+.snap-title {
+  font-size: 12.5px;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.snap-when {
+  font-size: 10px;
+}
+
+.snap-title-cell {
+  min-width: 0;
+}
+
+.snap-title-input {
+  width: 100%;
+  font-size: 12.5px;
+  border: 1px solid;
+  padding: 2px 6px;
+}
+
+.snap-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-tap);
+}
+
+.snap-row:hover .snap-actions,
+.snap-actions:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The dock's one add-pill recipe, for the snapshots table's add and the
+   reference cards' adds, so the faces cannot drift. The tree's `.dt-add` states
+   its own variant. */
+/* `.ai-new-chat` is here rather than with the Ask face's rules because it is
+   the same gesture. */
+.snap-add,
+.ref-card-add,
+.ai-new-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 0;
+  font-size: 11.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* The dock's resize handle turned horizontal. It keeps the handle's contract:
+   `touch-action: none`, so a touch drag resizes instead of scrolling, and a
+   line under `:focus-visible` (in place of the browser ring) and during the
+   press. */
+.snap-divider {
+  flex-shrink: 0;
+  height: 7px;
+  cursor: row-resize;
+  touch-action: none;
+  position: relative;
+  z-index: 0;
+}
+
+.snap-divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.snap-divider:hover::before,
+.snap-divider:focus-visible::before,
+.snap-divider:active::before {
+  height: 2px;
+}
+
+.snap-preview {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid;
+}
+
+.snap-preview-empty {
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.ref-face {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.ref-top {
+  flex-shrink: 0;
+  overflow-y: auto;
+  min-height: 96px;
+  padding: 8px 10px 6px;
+  scrollbar-width: thin;
+}
+
+.ref-top::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Aligned to the start: an expanded card grows its row while the card beside it
+   keeps its own height. */
+.ref-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 8px;
+}
+
+.ref-card {
+  display: grid;
+  border: 1px solid;
+  overflow: hidden;
+}
+
+.ref-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ref-card-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* An index's dotted leader, from a shelf's name to its count. Drawn only by a
+   theme that sets the shelves as an index; here it takes no room. */
+.ref-card-lead {
+  display: none;
+}
+
+.ref-card-count {
+  flex-shrink: 0;
+  font-size: 10px;
+}
+
+.ref-card-caret {
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+  transition: transform var(--t);
+}
+
+.ref-card[data-open="1"] .ref-card-caret {
+  transform: none;
+}
+
+.ref-card-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--t);
+}
+
+.ref-card[data-open="1"] .ref-card-body {
+  grid-template-rows: 1fr;
+}
+
+.ref-card-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* No vertical padding: this element is the 0fr grid item, and bottom padding
+     floors its minimum size, leaving a clickable sliver of the first row on a
+     collapsed card. The open state carries the air; the closed state hides the
+     inner outright, so nothing clipped can be seen or hit while it folds. */
+  padding: 0 6px;
+  transition: padding-bottom var(--t);
+}
+
+.ref-card[data-open="1"] .ref-card-inner {
+  padding-bottom: 6px;
+}
+
+.ref-card[data-open="0"] .ref-card-inner {
+  visibility: hidden;
+  transition:
+    padding-bottom var(--t),
+    visibility 0s var(--t);
+}
+
+/* 30 tall, the tree's and the other lists' row. */
+.ref-card-row {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ref-card-empty {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.ref-name-row {
+  padding: 4px 2px;
+}
+
+/* A delete is never hover-only, since a phone has no hover: coarse pointers
+   always see it, fine pointers on hover or `:focus-within`. */
+.ref-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ref-row .ref-card-row {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Rename has the delete's box, so a row's two actions read as one pair. Its own
+   class, because tests and rules aim at `.ref-row-del` as the delete button. */
+.ref-row-ren,
+.ref-row-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--t),
+    color var(--t),
+    background var(--t);
+}
+
+.ref-row:hover .ref-row-del,
+.ref-row:focus-within .ref-row-del,
+.ref-row:hover .ref-row-ren,
+.ref-row:focus-within .ref-row-ren {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .ref-row-del,
+  .ref-row-ren {
+    opacity: 1;
+  }
+}
+
+/* ── The AI bar toggle ────────────────────────────────────────────────────────
+   The delete's 22px slot and quiet-until-hovered behaviour, with one
+   exception: a barred row keeps its toggle visible and lit at rest. A privacy
+   rule the writer cannot see is one they cannot trust, so `.barred`
+   overrides the reveal. */
+.ref-row-ai {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--t),
+    color var(--t),
+    background var(--t);
+}
+
+/* Revealed by the row it sits in, which has two shapes: the reference shelf
+   draws `.ref-row`, and the notes table, the snapshot table's grid, draws
+   `.snap-row`, whose `.snap-actions` fades as a group. Both are named, or the
+   notes toggle stays invisible yet focusable. */
+.ref-row:hover .ref-row-ai,
+.ref-row:focus-within .ref-row-ai,
+.snap-row:hover .ref-row-ai,
+.snap-row:focus-within .ref-row-ai,
+.ref-row-ai:focus-visible {
+  opacity: 1;
+}
+
+/* The tip opens to the left from the control's right edge, not centred:
+   centred, it hangs past the row's right side, and an absolutely positioned
+   box overflowing to the right is scrollable overflow, giving the notes table
+   a horizontal scrollbar. Overflow to the left is not scrollable, so this
+   needs no portal. */
+.ref-row-ai > .ui-tip {
+  left: auto;
+  right: 0;
+  transform: translate(0, -3px) scale(0.96);
+  max-width: 220px;
+  white-space: normal;
+}
+
+.ref-row-ai:hover > .ui-tip,
+.ref-row-ai:focus-visible > .ui-tip {
+  transform: translate(0, 0) scale(1);
+}
+
+.ref-row-ai.barred,
+.snap-row:has(.ref-row-ai.barred) .snap-actions {
+  opacity: 1;
+}
+
+.snap-row:has(.ref-row-ai.barred) .snap-actions {
+  pointer-events: auto;
+}
+
+@media (pointer: coarse) {
+  .ref-row-ai {
+    opacity: 1;
+  }
+}
+
+/* The notes rows carry a third control, the AI toggle, only where there is an
+   Assistant, and only then does the actions track widen. Without one the row
+   keeps the snapshot's 42px track, so the delete sits at the same trailing edge
+   in both faces. Keyed on the face, not on a row holding a toggle, so every
+   row, the add row included, shares one template. */
+.notes-face[data-ai-toggle="1"] .snap-row {
+  grid-template-columns: 44px minmax(104px, 1fr) minmax(0, 2fr) 64px;
+}
+
+/* The arc is indented like a child of its character, and the add affordance
+   sits in the same slot. */
+.ref-arc-row {
+  padding-left: 12px;
+}
+
+.ref-arc {
+  font-size: 11.5px;
+}
+
+.ref-arc-add {
+  margin-left: 12px;
+  font-size: 11px;
+}
+
+/* ── The section picker ───────────────────────────────────────────────────────
+   The bottom half of the reference face while a compiled group is being
+   built. */
+.ref-picker {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 10px 10px 6px;
+}
+
+.ref-picker-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ref-picker-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ref-picker-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.ref-picker-count {
+  margin: 2px 0 6px;
+  font-size: 10px;
+}
+
+.ref-picker-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  scrollbar-width: thin;
+}
+
+.ref-picker-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ref-picker-mark {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ref-picker-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ref-picker-label {
+  font-size: 12.5px;
+}
+
+.ref-picker-desc {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ref-bottom {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 1px solid;
+}
+
+.ref-bottom .dock-face {
+  flex: 1;
+}
+
+.ref-divider {
+  flex-shrink: 0;
+}
+
+/* Not a segmented control: the panel does not track which face the dock shows,
+   so neither has a selected state. */
+.dt-dock-buttons {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+}
+
+.dt-dock-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 0;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* The label yields first at the panel's 200px floor: the count is the fact
+   the button carries and the chevron is the affordance, so only the word may
+   ellipsise. */
+.dt-dock-button-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dt-dock-button-count {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 10px;
+}
+
+.dt-dock-button-chevron {
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+}
+
+/* Editing lives in this panel, so the read mode needs no read-only note; it
+   says where the file came from, in the foot. */
+
+.dock-problem,
+.ref-write-error {
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.dock-hint {
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+/* The declaration set of `.dock-problem` (grouped above), so a failed write
+   reads the same in every face; only the margin is its own. */
+.ref-write-error {
+  margin: 4px 0 2px;
+}
+
+/* A reference document and a snapshot's preview read at 13px/1.62: material
+   beside the prose must not compete with the project.
+
+   The assistant's conversation borrows this class with its own ramp (14px/1.7,
+   a measure and its own heading sizes, from `.msg` and `.msg-assistant
+   .dock-read`). The two surfaces do different jobs and keep different numbers.
+
+   The snapshot preview renders the engine's HTML (p/h1/h2/hr/strong/em/code);
+   the `h3`/`ul`/`ol`/`blockquote` rules below serve the markdown-it reference
+   reader and never match engine output. */
+.dock-read {
+  font-size: 13px;
+  line-height: 1.62;
+}
+
+.dock-read h1 {
+  font-size: 15px;
+  margin: 1.25em 0 0.5em;
+}
+.dock-read h2 {
+  font-size: 14px;
+  margin: 1.15em 0 0.45em;
+}
+.dock-read h3 {
+  font-size: 13px;
+  margin: 1em 0 0.4em;
+}
+.dock-read p,
+.dock-read ul,
+.dock-read ol {
+  margin-bottom: 0.85em;
+}
+.dock-read ul,
+.dock-read ol {
+  padding-left: 1.2em;
+}
+/* ── A template's question and its blank ──────────────────────────────────────
+   The reader splits the markdown at every note, so one field arrives as three
+   or four sibling blocks: the question's `<ul>`, the hint and example asides,
+   then a `<ul>` holding the answer slot. Because the next question follows a
+   blank line in the same fragment, that last list holds both the answer and
+   the next question.
+
+   An unfilled slot is an empty `<li>`, which must read as a place to write,
+   and one field needs a seam before the next, or a filled answer and the
+   following question read as one list. */
+
+/* It disappears once the writer types, as the `<li>` stops being empty. */
+.dock-read li:empty::after {
+  content: "";
+  display: inline-block;
+  width: 8em;
+  max-width: 100%;
+  border-bottom: 1px dashed;
+  transform: translateY(-0.25em);
+}
+
+/* The seam between one field and the next. The question is the only list
+   item whose whole content is bold, which is what `:has()` keys on; an answer
+   starting with a bold word keeps its spacing, as the strong is not the
+   item's only child.
+
+   Both shapes are needed, by markdown's looseness rule: the answer slot and
+   the next question share a fragment separated by a blank line, so
+   markdown-it renders that list loose and wraps each item in a `<p>`, while
+   the first question, alone before the first note, stays tight with no
+   `<p>`.
+
+   The shapes sit in `:where()`, so the rule weighs one class and one type
+   whichever shape matches. The build wraps a selector list holding `:has()`
+   in `:is()`, which gives every shape the loosest one's weight, and the
+   exception under a heading must win against both shapes. */
+.dock-read
+  li:where(
+    :has(> strong:only-child),
+    :has(> p:only-child > strong:only-child)
+  ) {
+  margin-top: 1.15em;
+  /* No bullet on a question: bold and a closing colon already mark it, and a
+     dot would make it an item of the answer's list. Only the answer keeps its
+     bullet. The negative margin cancels the list's `1.2em` pad, so the label
+     lines up with the hint and example asides, which are the list's
+     siblings. */
+  list-style: none;
+  margin-left: -1.2em;
+}
+
+/* Except the first under a heading, where the heading's margin is already
+   the seam. */
+.dock-read ul:first-child > li:first-child,
+.dock-read h1 + ul > li:first-child,
+.dock-read h2 + ul > li:first-child {
+  margin-top: 0;
+}
+
+.dock-read code {
+  font-size: 0.9em;
+}
+.dock-read hr {
+  border: 0;
+  border-top: 1px solid;
+  margin: 1.1em 0;
+}
+
+.dock-read blockquote {
+  padding-left: 12px;
+  border-left: 2px solid;
+}
+
+/* Template notes, `\3c !-- Hint: … -->` and friends: guidance for the writer
+   only, stripped before any document reaches a model. */
+.tpl-note {
+  margin: 0.7em 0;
+  padding: 6px 10px;
+  border-left: 2px solid;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tpl-note p,
+.tpl-note ul,
+.tpl-note ol {
+  margin-bottom: 0;
+}
+
+.tpl-note p + p,
+.tpl-note ul + p,
+.tpl-note p + ul {
+  margin-top: 0.45em;
+}
+
+/* ── Editing a reference document ─────────────────────────────────────────────
+   The textarea is the file, and the markdown syntax it shows is the file. The
+   size matches the read mode. */
+
+.dock-editbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin: 8px 14px 10px;
+  padding: 4px;
+  border: 1px solid;
+}
+
+.dock-editbar-formats {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.dock-editbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.dock-editbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border: 0;
+  cursor: pointer;
+}
+
+.dock-editbar-sep {
+  width: 1px;
+  height: 16px;
+  margin: 0 4px;
+}
+
+.dock-editbar .dock-editbar-actions button {
+  min-width: 0;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.dock-editbar .dock-editbar-actions button.dock-save:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.dock-save-error {
+  margin: -4px 14px 8px;
+}
+
+.dock-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 14px;
+  padding: 2px 8px;
+  border: 1px solid;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+/* At the read mode's type size, so editing is a change of state, not of
+   document. Spellcheck stays on: this is prose about the project. */
+.dock-edit {
+  flex: 1;
+  min-height: 0;
+  margin: 0 14px 14px;
+  padding: 4px 6px;
+  border: 1px solid;
+  resize: none;
+  font-size: 13px;
+  line-height: 1.62;
+}
+
+.dock-foot {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-top: 1px solid;
+  font-size: 9.5px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* ── Making room ──────────────────────────────────────────────────────────────
+   Two states own everything that gives way when the window runs short:
+   `data-dock` (the writer opened the dock) and `data-narrow` (the window is
+   under 1016, `useNarrow.ts`).
+
+   The measure does not give way on the wide plane: 680px at every width. The
+   structure panel folds at the writer's choice, and the dock becomes a sheet.
+
+   The fold is the writer's state (`data-rail`, or `data-peek` while the mouse
+   has the folded panel open over the prose), and no window width takes it.
+   Where an expanded panel meets the bar on a short window, the ladder (panel
+   105, dock 115, over the bar's 100) keeps the panel's header reachable. */
+
+/* `data-rail`, resolved in `EditorRoute`, is the panel's face: a peek is folded
+   but drawn wide, so it is `data-rail="0"` with `data-peek="1"`.
+
+   The width is not here: the shell emits it inline, the rail's 52 included
+   (`RAIL_PANEL_W` in `useNarrow.ts`), and an inline custom property beats a
+   rule, so a `--panel-w` here would be silently overridden. `editorCss.test.ts`
+   pins its absence. The gutter is the open panel's, so the text keeps its place
+   inside the sheet folded or open. */
+
+/* The peek: the panel is folded and the mouse over the rail has it open.
+   `--panel-w`, emitted from the fold, keeps the prose where it was; this adds
+   the width the panel is drawn at, the writer's own, and the fixed panel floats
+   over the prose. */
+.editor-shell[data-peek="1"] .doc-tree {
+  width: var(--panel-open-w);
+}
+:root[data-panel="attached"] .editor-shell[data-peek="1"] .doc-tree {
+  width: calc(var(--panel-open-w) + var(--panel-left));
+}
+
+/* The rail's own contents are in `.dt-rail`, `display: none` until this
+   point. */
+.editor-shell[data-rail='1'] .dt-find-row,
+/* The box and its children: `.dt-rail` is `flex: 1` at 52px and so is this,
+   so an emptied wrapper left standing would take half the column and push
+   the rail's numbers into the bottom half. */
+.editor-shell[data-rail='1'] .dt-bodies,
+.editor-shell[data-rail='1'] .dt-scroll,
+.editor-shell[data-rail='1'] .dt-ident,
+.editor-shell[data-rail='1'] .dt-foot-where,
+/* Three controls do not fit in 52px, and the gear opens something the rail
+   cannot otherwise reach. The settings card stays visible in the rail: it
+   floats over the prose as its own surface. */
+.editor-shell[data-rail='1'] .dt-foot-theme,
+/* The Reference and Notes buttons survive the rail in their compact face
+   (below). */
+.editor-shell[data-rail='1'] .dt-meta {
+  display: none;
+}
+
+.editor-shell[data-rail="1"] .dt-root {
+  justify-content: center;
+  padding: 12px 8px 4px;
+}
+
+/* The wide foot's 10px padding and 7px gaps leave 32px for 40px of icons, so
+   the rail foot trims both and refuses to shrink the icons. */
+.editor-shell[data-rail="1"] .dt-foot {
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+}
+
+.editor-shell[data-rail="1"] .dt-foot > svg,
+.editor-shell[data-rail="1"] .dt-foot-act {
+  flex-shrink: 0;
+}
+
+/* 34px pills like the Parts buttons, the letter R or N beside the chevron.
+   Reference stacks above Notes, the dock's order. */
+.editor-shell[data-rail="1"] .dt-dock-buttons {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  padding: 4px 0 6px;
+}
+.editor-shell[data-rail="1"] .dt-dock-button {
+  display: grid;
+  place-items: center;
+  grid-auto-flow: column;
+  gap: 1px;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+}
+.editor-shell[data-rail="1"] .dt-dock-button-glyph {
+  font-size: 10px;
+}
+
+/* The paint a theme changes for a peek over the sheet (`data-peek`) eases
+   with the width, so the panel rises as it opens and settles as it folds. */
+.doc-tree {
+  transition:
+    width var(--t),
+    border-radius var(--t),
+    border-color var(--t),
+    background-color var(--t),
+    background-size var(--t),
+    box-shadow var(--t);
+}
+
+/* The dock shares the window with the measure, so the prose moves over rather
+   than being squeezed: a composited `translate`, never a reflow of the scroller
+   each frame, and never a narrower line.
+
+   How far is one expression with two bounds:
+
+     shift = max(−dock / 2, min(0, (measure − room) / 2))
+
+   - Half the dock centres the measure in the room between the panel and the
+     dock, when that room holds it.
+   - The slack, half of what the surface's content box has over the measure, is
+     the furthest it can move before its left edge passes the panel's gutter:
+     prose under the panel would be painted over and lose its clicks.
+
+   The room is the surface's own arithmetic over `100vw` (the shell, the bar's
+   row and the window are the same width): the panel's reserve read live from
+   `--panel-w`, so a folded panel counts as 52, and `--desk-right` on the right.
+   The symmetric scrollbar gutters cancel out of the centre. Where the room is
+   too short even flush after the panel, the tail runs under the dock.
+
+   The bar follows the measure through its own target (`--bar-travel`, at
+   `.bar-stack`), never by joining this `translate`, which would spend the
+   travel twice.
+
+   `translate`, not `transform`: the Desk's arrival (`deskIn`) animates
+   `transform` and fills `both`, so its last keyframe would hold `transform:
+   none` over this rule. Narrow and phone define no shift.
+
+   The margin's comments are the shift's second reason. While the open chapter
+   has comments to show (`data-margin`), the measure and its card column are
+   centred together in the room the dock leaves (`--margin-balance`), and moved
+   further left if a card column (`--margin-need`) needs it to fit before the
+   dock or the window's edge (`--margin-target`). The reasons are one `min` (the
+   further left wins), under the same slack bound, so the measure never passes
+   under the panel.
+
+   Only when it buys the column: where even flush after the panel the room stays
+   short of a card (`--margin-least`, the margin's `MARGIN_MIN_W`), the margin
+   draws dots anyway, and the dock's reason alone moves the measure.
+   `--margin-short` is how far the slack falls short of the column, and a
+   `clamp` turns any shortfall past a hundred-thousandth of a pixel into a
+   target of 0px, which loses every `min`, and none into no change: CSS cannot
+   divide a length by a length to make a yes or no, but it can saturate one.
+
+   The column is measured as `comments/presentation/Margin.tsx` measures its own
+   room: from the measure's right edge to the dock's left (`--dock-inset` in
+   from the window's edge, `--dock-w` wide) or the surface's edge, less the
+   scrollbar's 16. The measure's right edge sits `--desk-right` plus half the
+   room's slack in from the content box's right. */
+.editor-shell:not([data-narrow="1"]) {
+  --shift-room: calc(
+    100vw - var(--panel-left) - var(--panel-w) - var(--panel-gutter) -
+      var(--desk-right)
+  );
+  --shift-slack: min(0px, calc((var(--editor-width) - var(--shift-room)) / 2));
+  --dock-shift: max(
+    var(--shift-slack),
+    min(var(--dock-target, 0px), var(--margin-reach, 0px))
+  );
+}
+/* The measure's centre moves to the middle of the panel's edge and the
+   dock's: the dock and its inset cover the right, while the surface already
+   holds the panel's gutter on the left and `--desk-right` on the right. */
+.editor-shell[data-dock="1"]:not([data-narrow="1"]) {
+  --dock-target: calc(
+    (
+        var(--desk-right) - var(--panel-gutter) - var(--dock-inset) -
+          var(--dock-w)
+      ) /
+      2
+  );
+  --dock-cover: calc(var(--dock-w) + var(--dock-inset));
+  /* How far the measure's right edge, where the shift leaves it, passes
+     under the dock's left edge: the dock covers the prose when the slack
+     bound stops the shift short of the dock's target. `--dock-over`
+     saturates it, as `--margin-reach` does its shortfall: 1px when the dock
+     covers any of the measure, 0px when it covers none. The sheet runs on
+     under a dock that covers it, and `data-dock-over` carries the fact to
+     the themes (`useDockOver.ts`). */
+  --dock-overlap: calc(
+    var(--dock-cover) - var(--desk-right) -
+      (var(--shift-room) - var(--editor-width)) / 2 + var(--dock-shift)
+  );
+  --dock-over: clamp(0px, var(--dock-overlap) * 100000, 1px);
+}
+
+/* Registered as a length, so `useDockOver.ts` reads the clamp resolved. */
+@property --dock-over {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+.editor-shell[data-margin="1"]:not([data-narrow="1"]) {
+  /* 220 for the card (`MARGIN_MIN_W`) and its inset either side (24);
+     the margin still draws cards, narrower, down to 220 of room. */
+  --margin-need: 268px;
+  --margin-least: 220px;
+  --margin-target: calc(
+    var(--desk-right) + (var(--shift-room) - var(--editor-width)) / 2 -
+      var(--dock-cover, 0px) - 16px - var(--margin-need)
+  );
+  --margin-short: calc(
+    var(--shift-slack) - var(--margin-target) -
+      (var(--margin-need) - var(--margin-least))
+  );
+  /* The prose and its card column centred together, as one block, in the
+     room the dock leaves: the column is the card's inset and its widest
+     (24 + `CARD_MAX` 300). */
+  --margin-column: 324px;
+  --margin-balance: calc((var(--dock-cover, 0px) + var(--margin-column)) / -2);
+  --margin-aim: min(var(--margin-target), var(--margin-balance));
+  --margin-reach: calc(
+    var(--margin-aim) +
+      clamp(0px, var(--margin-short) * 100000, 0px - var(--margin-aim))
+  );
+}
+.editor,
+.desk {
+  translate: var(--dock-shift, 0px) 0;
+  transition: translate var(--t);
+}
+
+/* While the dock is dragged, the measure tracks the pointer rather than
+   trailing it: the `translate` transition would make every frame a chase. No
+   selection starts during the drag. */
+.editor-shell[data-resizing-dock="1"] .editor,
+.editor-shell[data-resizing-dock="1"] .desk,
+/* The stack joins them because its `translate` follows `--dock-w` through its
+   target and its right limit; easing, the bar would chase each width while the
+   measure tracks the pointer. */
+.editor-shell[data-resizing-dock="1"] .bar-stack {
+  transition: none;
+}
+.editor-shell[data-resizing-dock="1"] {
+  user-select: none;
+}
+
+/* The same for the structure panel's drag, with its own selector set.
+
+   `.doc-tree` eases its own `width`. `.dt-collapse` is a fixed sibling that
+   rides `left: calc(--panel-left + --panel-w)` and eases it, so a rule
+   scoped to the panel's subtree would miss it. `.bar-stack` computes its
+   `translate` target from `--panel-w` and eases it. `.editor`
+   and `.desk` join because with the dock open their `--dock-shift` reads
+   `--panel-w` (the slack bound), and eased they would trail the
+   surface's unanimated padding.
+
+   `.editor-surface` is absent: its `padding-left` has no transition, so the
+   prose already tracks the pointer. */
+.editor-shell[data-resizing-panel="1"] .doc-tree,
+.editor-shell[data-resizing-panel="1"] .dt-collapse,
+.editor-shell[data-resizing-panel="1"] .editor,
+.editor-shell[data-resizing-panel="1"] .desk,
+.editor-shell[data-resizing-panel="1"] .bar-stack {
+  transition: none;
+}
+.editor-shell[data-resizing-panel="1"] {
+  user-select: none;
+}
+
+/* ── Henosis mode ─────────────────────────────────────────────────────────────
+   The writer's opt-in. `useHenosis` publishes the flow on the shell as
+   `data-henosis`, and these rules answer it under every theme.
+
+   What leaves: the structure panel and its fold, the chrome (the save chip with
+   it), the open dock, the comments' margin, and the save gutter's marks. What
+   never leaves: the prose, the caret, and the status notices, which App portals
+   outside this shell, so work held only in the working copy or a failed write
+   is still said.
+
+   - `fading`: an animation to nothing over the writer's X (`--henosis-fade`).
+     An animation, not a transition: the dock owns its opacity transition, and a
+     rule here cannot append to a transition list it does not own.
+   - `full`: hidden, not just transparent. `visibility: hidden` takes them out
+     of the Tab order and the accessibility tree with nothing unmounted, so a
+     return is instant and no panel loses its state. The prose widens to an
+     800px measure centred in the window. The editor's still column and fixed
+     measure are lifted for Henosis only.
+   - `"0"`: the way back. The chrome rises from wherever the fade had reached
+     (`--henosis-from`, read once by the hook) at `--t-slow`, and the prose
+     narrows back at the same pace. The hook then clears the attribute, so a
+     later dock or panel move eases at its own speed.
+
+   The centring is a `translate` through `--dock-shift`, never the surface's
+   padding, which is unanimated so the prose tracks a panel drag frame for
+   frame. The shift that centres the content box in the window is half the
+   difference between its two paddings. Narrow and phone define no shift and no
+   wider measure: there the chrome only leaves, and the phone never enters. */
+@keyframes henosis-fade {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes henosis-wake {
+  from {
+    opacity: var(--henosis-from, 0);
+  }
+}
+.editor-shell[data-henosis="fading"] .doc-tree,
+.editor-shell[data-henosis="fading"] .dt-collapse,
+.editor-shell[data-henosis="fading"] .chrome,
+.editor-shell[data-henosis="fading"] .cm-layer,
+.editor-shell[data-henosis="fading"] .save-gutter,
+.editor-shell[data-henosis="fading"][data-dock="1"] .ed-dock {
+  animation: henosis-fade var(--henosis-fade) var(--e-in-out) forwards;
+}
+.editor-shell[data-henosis="full"] .doc-tree,
+.editor-shell[data-henosis="full"] .dt-collapse,
+.editor-shell[data-henosis="full"] .chrome,
+.editor-shell[data-henosis="full"] .cm-layer,
+.editor-shell[data-henosis="full"] .save-gutter,
+.editor-shell[data-henosis="full"][data-dock="1"] .ed-dock,
+/* And everything inside them. `visibility` is inherited, but a child that
+   declares `visible` shows through a hidden parent, as the open tree rows
+   (`.dt-children.open`), the open preferences card, the bar's open drops and
+   find's way back do for their own folding. Later in the sheet and at least
+   as specific as each of those, so it wins. */
+.editor-shell[data-henosis="full"] .doc-tree *,
+.editor-shell[data-henosis="full"] .chrome *,
+.editor-shell[data-henosis="full"] .cm-layer *,
+.editor-shell[data-henosis="full"][data-dock="1"] .ed-dock * {
+  opacity: 0;
+  visibility: hidden;
+}
+.editor-shell[data-henosis="0"] .doc-tree,
+.editor-shell[data-henosis="0"] .dt-collapse,
+.editor-shell[data-henosis="0"] .chrome,
+.editor-shell[data-henosis="0"] .cm-layer,
+.editor-shell[data-henosis="0"] .save-gutter,
+.editor-shell[data-henosis="0"][data-dock="1"] .ed-dock {
+  animation: henosis-wake var(--t-slow);
+}
+.editor-shell[data-henosis="full"]:not([data-narrow="1"]) {
+  --editor-width: 800px;
+  --dock-shift: calc(
+    (
+        var(--desk-right) - var(--panel-left) - var(--panel-w) -
+          var(--panel-gutter)
+      ) /
+      2
+  );
+}
+.editor-shell[data-henosis="full"] .editor,
+.editor-shell[data-henosis="0"] .editor {
+  transition:
+    translate var(--t-slow),
+    max-width var(--t-slow);
+}
+
+/* ── The phone plane's chrome ─────────────────────────────────────────────────
+   One column, so the chrome goes to the bottom: the top of a 667px screen stays
+   the writer's page. The titlebar's jobs move: the way back and the crumb into
+   the structure sheet's head, the palette into the bar's own slots.
+
+   `.chrome` is `position: fixed` already, so one edge is swapped for the other
+   and the stacking does not change. */
+.editor-shell[data-phone="1"] .chrome {
+  top: auto;
+  /* Above the keyboard, not under it. The keyboard does not resize the page
+     (both engines keep the layout viewport at full height), so `bottom: 0`
+     would sit under the keys. `--kb` (`ui/useKeyboardInset.ts`) is 0 with no
+     keyboard, so this is the same rule on a desk. */
+  bottom: var(--kb, 0px);
+}
+
+.editor-shell[data-phone="1"] .titlebar {
+  display: none;
+}
+
+/* Reserves nothing for a panel that overlays here.
+
+   `env(safe-area-inset-bottom)` resolves to its `0px` fallback: the insets
+   report a real number only under `viewport-fit=cover`, which `index.html` does
+   not declare, because cover lets content under the notch and the home
+   indicator on every screen at once. The declaration is correct once cover is
+   declared. */
+.editor-shell[data-phone="1"] .bar-row {
+  padding: 0 var(--panel-left) calc(12px + var(--safe-bottom));
+}
+
+/* The stack sizes to its content elsewhere; here it must fill the row before
+   `width: 100%` on the bar means anything. Nor does it centre on a measure: the
+   page is the measure, so the desk's target and limits stand down. */
+.editor-shell[data-phone="1"] .bar-stack {
+  width: 100%;
+  max-width: none;
+  translate: none;
+}
+
+/* Space-between rather than fixed gaps, so the three pairs read as pairs at
+   every phone width. */
+.editor-shell[data-phone="1"] .ui-bar[data-phone="1"] {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.editor-shell[data-phone="1"] .ui-bar[data-phone="1"] .ui-bar-seg {
+  gap: 0;
+}
+
+/* ── The revision walk on a phone ─────────────────────────────────────────────
+   The phone has no margin for the rail, so the spine steps in off the edge and
+   the foot centres on the screen (the component drops its inline `left` on this
+   plane so this rule can). The bar stands down for the walk. */
+.editor-shell[data-phone="1"] .rev-rail {
+  /* Not `left`, which the component sets inline from the measured column: a
+     margin shifts the same box without fighting it, and 12 clears the 3px
+     the marker hangs left of the line. */
+  margin-left: 12px;
+}
+
+.editor-shell[data-phone="1"] .rev-foot {
+  left: 50%;
+}
+
+/* ── The structure panel as a sheet ───────────────────────────────────────────
+   A 248px panel over a 375px screen covers the prose, so here it is a modal on
+   the shared `Scrim`.
+
+   Portalled to `<body>` like every overlay, so these rules key on the sheet's
+   own class, not on `.editor-shell[data-phone]`.
+
+   It veils: `base.css` refuses arrival from off-screen, and a sheet is no
+   exception. The scrim's fade is the entrance. */
+.doc-tree-sheet {
+  width: min(340px, 86%);
+  /* Not `100%`: the scrim is `inset: 0` and the keyboard does not resize the
+     page, so a full-height sheet would put its foot (the recycle bin and the
+     writing preferences) under the keys its own find field raises. `--kb` is
+     `0px` without a keyboard. */
+  height: calc(100% - var(--kb, 0px));
+  min-height: 0;
+  display: flex;
+}
+
+.doc-tree-sheet .doc-tree {
+  position: static;
+  width: 100%;
+  /* Static inside the sheet, the panel must fill the sheet, with `min-height:
+     0` so the scrolling region can be shorter than its content, or the foot
+     (the recycle bin and the writing preferences) is pushed off the screen. */
+  flex: 1 1 auto;
+  min-height: 0;
+  border-left: 0;
+}
+
+/* ── The dock as a full screen ────────────────────────────────────────────────
+   Full width, not the desk's 340, which would leave a strip of a 375px screen
+   beside it.
+
+   The override `.doc-tree-sheet` also makes: the panel is `position: fixed`
+   with `top`/`bottom`/`right` on a desk, and inside the scrim it must be an
+   ordinary flex child. */
+.ed-dock-sheet {
+  width: 100%;
+  /* The keyboard does not resize the page, and the ask face's composer is at
+     the foot, so a full-height sheet would put it under the keys. `--kb` is
+     `0px` when they are down. */
+  height: calc(100% - var(--kb, 0px));
+  min-height: 0;
+  display: flex;
+}
+
+.ed-dock-sheet .ed-dock {
+  position: static;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 0;
+  /* On a desk the panel animates itself in and out, mounted while shut. Here
+     the scrim mounts it open and fades itself in, so the panel's veil would
+     run twice. */
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: none;
+}
+
+/* Nothing to resize when it is the screen, and a 6px drag strip down the
+   leading edge would catch the thumb reaching for the text. */
+.ed-dock-sheet .dock-resize {
+  display: none;
+}
+
+/* The 7px splitter is a mouse's target, and a 44px band would spend a sixth of
+   a 375px sheet on a split the default already gets right (at 375x667, 229
+   above and 366 below). The panes still scroll. */
+.ed-dock-sheet .snap-divider {
+  display: none;
+}
+
+/* The way back, with no titlebar on the phone to carry it. */
+.dt-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  min-height: var(--tap);
+  border-bottom: 1px solid;
+  font-size: 12px;
+}
+
+/* With no chrome at the top, the top padding is a margin rather than a
+   clearance. */
+.editor-shell[data-phone="1"] .editor-surface {
+  padding-top: 24px;
+  /* The foot clears the bar, the sides' margin and the keyboard's share, so the
+     last paragraph of a Section scrolls into the band above the keys. */
+  padding-bottom: calc(var(--bar-act, 44px) + 40px + var(--kb, 0px));
+}
+
+/* ── The phone's panel reserves nothing ───────────────────────────────────────
+   `.doc-tree` is `position: fixed`, so the room comes only from these two
+   `padding-left` calcs. On the phone the panel is a sheet over the prose, and
+   at 375px a reserved column would leave the prose 58px wide.
+
+   The narrow plane, between the phone and 1016, pays for the panel as the wide
+   one does, through the base calcs and `--panel-w`, so the rail never lies over
+   the first letters of a line. The measure gives way there instead, about 500px
+   beside an open panel at 800 wide: covered prose is worse than narrow prose.
+
+   Expressed on the padding rather than `--panel-w`: on the phone the panel
+   keeps its width and only stops being paid for. */
+.editor-shell[data-phone="1"] .editor-surface {
+  padding-left: var(--panel-left);
+}
+
+/* On the token, not the surface's padding, so the bar, which centres on the
+   prose by the surface's arithmetic, narrows with it. The narrow plane keeps
+   the wide one's. */
+.editor-shell[data-phone="1"] {
+  --desk-right: var(--panel-left);
+}
+
+.editor-shell[data-narrow="1"] .ed-dock {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  /* The sheet stays at the top of the panel ladder (115, from the base rule,
+     over the structure panel's 105); only the geometry changes here. */
+  /* The writer's dock width capped by the window, so a 720px dock still fits on
+     a phone-width sheet. */
+  width: min(var(--dock-w), 86%);
+  border-right: 0;
+}
+
+/* ── The comparing mode ───────────────────────────────────────────────────────
+   The read-only diff shown while a non-adopted snapshot is selected, or the
+   rail's walk is off Now. */
+
+/* A textless block hunk (an inserted or deleted blank paragraph, or a moved
+   page break) has no run for `mark.df-*` to wrap, so `applyDiffMarks`
+   (`writing/highlights.ts`) stamps the paragraph itself, or the
+   change would show as an ordinary empty line. `min-height` gives an empty
+   `<p>` something to paint the tint onto. */
+[data-block-hunk="delete"] {
+  min-height: 1em;
+}
+
+[data-block-hunk="insert"] {
+  min-height: 1em;
+}
+
+/* No caret to place and no station, so no type guide either (the history button
+   hides it through `data-timeline`). `data-diff` rides on the surface, so the
+   caret, the guide and the editor are its descendants, and the core's
+   `updateFakeCaret` hides the caret on every later path, so the first frame
+   matches the live state. */
+[data-diff="1"] .fake-cursor {
+  display: none;
+}
+
+[data-diff="1"] .type-guide {
+  display: none;
+}
+
+[data-diff="1"] .editor {
+  cursor: text;
+}
+
+/* Seated at the command bar's y, its top border on the bar's horizon. It floats
+   above the normal chrome (the dock 115, the folded structure panel 105, the
+   engaged chrome 130, the prefs card 120), so it stays whole where a panel's
+   edge reaches the paper's centre; only the modal overlays (300+) sit above
+   it. */
+.comparing-bar {
+  position: absolute;
+  /* The header's bottom edge: the bar row is gone while a diff is up, so the
+     legend's top border takes its horizon. */
+  top: var(--header-h);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 140;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px;
+  max-width: calc(100vw - 48px);
+  overflow: hidden;
+  border: 1px solid;
+  pointer-events: auto;
+}
+
+.comparing-legend-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Above the legend card, never inside it. Both are content-sized; only the
+   window clamp can clip them, and the `aria-label`s carry the full wording. */
+.comparing-lenses {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 48px);
+  pointer-events: auto;
+}
+
+.comparing-select {
+  flex: 0 1 auto;
+  min-width: 96px;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid;
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    border-color var(--t),
+    box-shadow var(--t);
+}
+
+/* The question carries the read-only meaning and keeps `role="status"`, so the
+   completion swap is announced. */
+.comparing-question {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* The em dash is part of the string, keeping the locales in parity. */
+.comparing-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.comparing-swatch {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+}
+
+/* A sentence, not a keycap chip. */
+.comparing-exit {
+  flex-shrink: 0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* ── The Accept layer ─────────────────────────────────────────────────────────
+   One hover-revealed Accept tag per hunk, flush under the tint: top edge on the
+   tint's bottom and right edge at the tint's tail (the last line's end, so a
+   multiline hunk's tag hangs from its last line). The layer is a sibling of the
+   prose: a button inside a `<p>` would be rebuilt by `patchDocument` between a
+   click's down and up. Positions are written inline per tag from the scroller's
+   content coordinates, as the save gutter does. The snapshot comparison only;
+   the rail's walk never shows an Accept.
+
+   The reveal is the fold idiom: opacity and pointer-events over `--t-tap`, with
+   an 80ms intent delay on the way in and none on the way out. `:focus-visible`
+   reveals at once. Nothing over the marks captures the pointer, so
+   drag-selection across the diff works. */
+
+.df-accept-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+}
+
+.df-accept-wrap {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* `right: 0` pins the tag's right edge to the wrap's, which the layer sets at
+   the tint's tail, so the label grows leftward, never past the tint. */
+.df-accept {
+  position: absolute;
+  right: 0;
+  font-size: 11.5px;
+  padding: 4px 6px;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--t-tap) 0ms,
+    background var(--t-tap);
+}
+
+.df-accept.revealed,
+.df-accept:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transition:
+    opacity var(--t-tap) 80ms,
+    background var(--t-tap);
+}
+
+.df-accept:focus-visible {
+  transition-delay: 0ms;
+}
+
+/* ── Reach ────────────────────────────────────────────────────────────────────
+   The editor's half of the floor `base.css` sets: the same gate and two
+   tokens, last in the file for the same reason.
+
+   Each family keeps its own shape for a mouse; only the floor moves, through
+   `min-height` and `min-width`. */
+
+@media (pointer: coarse) {
+  /* No structure panel grip here. Reach is the pointer's question and the plane
+     the window's, so this gate is CSS while the panel's `!narrow && !rail` gate
+     is JS: a 1024px tablet is on the wide plane and gets no 6px `col-resize`
+     strip, as the dock's sheet does below. `display`, not `pointer-events`, so
+     the tab stop goes too.
+
+     The remaining width control is the fold, grown to a 44px target here. */
+  .panel-resize {
+    display: none;
+  }
+
+  /* The bar's own token. `base.css` raises the default to 44; this raises the
+     editor's 34 (`.bar-stack .ui-bar`) past its own override. The bar grows
+     to 5 + 44 + 5 and its hairlines, and the band over the page's face with
+     it. */
+  :root {
+    --bar-h: calc(var(--tap) + 12px);
+  }
+  .bar-stack .ui-bar {
+    --bar-act: var(--tap);
+  }
+
+  .bar-stack .ui-bar-find-input {
+    font-size: var(--tap-font);
+  }
+
+  /* The panel's collapse, 19x19 at rest, in both shapes. The handle grows with
+     no new arithmetic, since it centres on the edge with a transform rather
+     than a width-dependent offset. */
+  .dt-collapse,
+  .dt-close,
+  .dt-foot-act,
+  .dt-more {
+    width: var(--tap);
+    height: var(--tap);
+  }
+
+  /* A row's fold and its summary button sit over the label's whole-row reach,
+     so a thumb that misses their glyphs opens the node instead. Each box
+     grows to the floor around its glyph, and the negative margins give back
+     what it grows by, so nothing in the row moves. `button` keeps the
+     Section's placeholder span out, and outranks the base chevron's size.
+     The summary's hidden slot grows too, which keeps the counts in one
+     column. */
+  button.dt-chevron {
+    min-width: var(--tap);
+    min-height: var(--tap);
+    margin-inline: calc((12px - var(--tap)) / 2);
+  }
+  /* A nested Part has no number, so its title follows the fold after the
+     row's 8px gap, and growing about the centre would lay the box over the
+     title's first letters. There the box grows across the gap and back into
+     its own indent, which is empty until the selection's boxes stand in it;
+     while they do, the box grows about its centre and leaves them the
+     indent. */
+  .doc-tree:not([data-selecting])
+    .dt-row:not(:has(> .dt-idx))
+    > .dt-cell
+    > button.dt-chevron {
+    margin-inline: calc(20px - var(--tap)) -8px;
+  }
+  .dt-summary {
+    width: var(--tap);
+    min-height: var(--tap);
+    margin-inline: calc((11px - var(--tap)) / 2);
+  }
+
+  /* The find's way back, on this plane the one explicit way back to the tree,
+     with no Escape key. Floored in the open state only: the base rule is a
+     0→22px morph, and a closed `min-width` would make the field shove instead
+     of slide. */
+  .dt-head[data-finding="1"] .dt-find-back {
+    width: var(--tap);
+    height: var(--tap);
+  }
+
+  /* Name and occurrence rows are targets and take the row floor, as `.dt-row`
+     does; the source head is not a target and keeps its text height. */
+  .dt-search-row:not(.dt-search-head) {
+    min-height: var(--tap);
+  }
+
+  /* The writing-preferences selects. At 26px and 11px they would sit under the
+     tap floor and iOS's 16px focus-zoom threshold on the phone's prefs sheet,
+     the only route to the language there. The two declarations `.ui-select`
+     receives in `base.css`. */
+  .dt-pick-select {
+    min-height: var(--tap);
+    font-size: var(--tap-font);
+  }
+
+  /* The folded rail's Part buttons, the only way to a Part while the panel is
+     folded. */
+  .dt-rail button {
+    width: var(--tap);
+    height: var(--tap);
+  }
+
+  /* The height is usually the whole target, the width being the panel's or the
+     label's. `.ui-tick` is among them, since the phone's writing-preferences
+     sheet holds tick rows. */
+  .dt-row,
+  .dt-label,
+  .dt-landing,
+  .ui-tick,
+  .dt-add,
+  .titlebar-return,
+  /* Every `.titlebar button` clears the 48px band by 2, a 44px control. The box
+     grows around the text, and the flex centring above holds it in place. */
+  .titlebar-project {
+    min-height: var(--tap);
+  }
+
+  /* The add labels' pair: with each pill floored at 44px, a 2px gap between
+     two different actions (add section, add part) invites a mis-hit. */
+  .dt-add-row {
+    gap: 8px;
+  }
+
+  /* Two that are narrow as well as short, since both collapse to a glyph when
+     the thing beside them folds. Each Reference or Notes button is 34px wide
+     in the 52px rail, so 44 fits, and Save shrinks to 25 without its label. */
+  .dt-dock-button,
+  .ed-save {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+
+  /* A third of the same family, here rather than in the 720 fold above: the
+     fold is keyed on width and this floor on the pointer, so a 700px window
+     with a mouse keeps the compact 34px square while a coarse pointer gets
+     the full target. The base rule raises the height (it is a `.ui-btn`);
+     this lifts the width the fold sets. */
+  .ed-palette {
+    min-width: var(--tap);
+  }
+
+  /* The panel's find grows to the tap floor through its token, since the
+     control sizes off `--bar-act` everywhere: set on its row, whose resting
+     width it also is, or the sigil, centred 22 in, is cut by a 24px box.
+     The tail grows with it, or typed text runs under a 44px clear. */
+  .dt-find-row {
+    --bar-act: var(--tap);
+  }
+
+  /* The rail's 52px hold the storage glyph beside a mouse's button, not
+     beside a fingertip's: on touch they stack. */
+  .editor-shell[data-rail="1"] .dt-foot {
+    flex-direction: column;
+  }
+  .dt-find {
+    --bar-find-tail: calc(var(--tap) + 10px);
+  }
+
+  /* Restated here: `base.css` floors `.ui-bar-find-input` at one class, the
+     override above is two, and specificity beats a media query, so the
+     panel's 12.5px would win on a phone and iOS would zoom on focus. The bar
+     restates it the same way. */
+  .dt-find .ui-bar-find-input,
+  .find-row input {
+    font-size: var(--tap-font);
+  }
+
+  .find-row input {
+    min-height: var(--tap);
+  }
+
+  /* A thread's mark at the prose's edge, and the chapter's own: a 24px
+     button for a mouse. On a phone that edge is the screen's, so the box
+     grows inward and about the dot's line, and the dot does not move: the
+     padding holds it in the old 24px on the right, and the transform takes
+     back the growth. A mark set at a passage's end keeps its theme's own
+     target. */
+  .cm-marker:not([data-at="end"]) {
+    min-width: var(--tap);
+    min-height: var(--tap);
+    padding-left: calc(var(--tap) - 24px);
+    transform: translate(
+      calc(-7px - (var(--tap) - 24px)),
+      calc(-3px - (var(--tap) - 24px) / 2)
+    );
+  }
+
+  /* The Undo in the structural toast: the compensating control for a change
+     already written to disk. */
+  .dt-toast-undo {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+
+  /* ── The dock's interior ────────────────────────────────────────────────────
+     Reachable on the phone through the palette, and furnished for a mouse: a
+     19px close, 25px chips and adds, a 10px reference entry.
+
+     Rows first, where a row is the target and its cells stretch inside it; then
+     the controls that are their own target. */
+  .dock-close {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+
+  /* The snapshot and notes row is the target and a strip of four cells: the
+     timestamp, the title, Adopt, and the rename/delete pair. Raising the row
+     alone would leave each cell at 18–25px inside a 44px band, so both are
+     raised. */
+  .snap-row,
+  .snap-row button,
+  .ref-card-row,
+  .ref-card-head {
+    min-height: var(--tap);
+  }
+
+  .snap-add,
+  .ref-card-add,
+  .ai-persona,
+  .dock-face .chip {
+    min-height: var(--tap);
+  }
+
+  /* The reference picker and the Desk. The picker's close is the
+     writer's only way back on a soft keyboard, and `.ref-row-del`, always
+     visible on a coarse pointer (its `@media (pointer: coarse)` rule above),
+     is a destructive target beside 44px siblings. */
+  .ref-picker-row,
+  .desk-primary,
+  .desk-quiet {
+    min-height: var(--tap);
+  }
+
+  .ref-picker-close,
+  .ref-row-del,
+  .ref-row-ren,
+  .ref-row-ai {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+
+  /* The inline create and rename fields: the reference name field and a
+     snapshot's title. At 12.5px they trip the iOS focus-zoom the two find
+     fields carry the floor for. */
+  .dt-name-input,
+  .snap-title-input {
+    font-size: var(--tap-font);
+    min-height: var(--tap);
+  }
+
+  /* The one place in the editor a writer types something that is not the
+     manuscript. 13px is under iOS's zoom threshold, so it takes the find
+     fields' floor, through `--composer-font`, so the command mirror follows. */
+  .composer {
+    --composer-font: var(--tap-font);
+  }
+  .composer textarea {
+    min-height: var(--tap);
+  }
+
+  /* The revision walk: the step pair at 27px is its only navigation once the
+     bar has stood down, and Cancel is its way out. */
+  .rev-step,
+  .rev-chip button {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+}
+
+/* ── Density ──────────────────────────────────────────────────────────────────
+   Two type sizes on the phone, not eight.
+
+   The editor's chrome uses a desk scale of 9.5, 10, 10.5, 11, 11.5, 12, 12.5
+   and 13.5: eight sizes inside 4px, a hierarchy on a large display and a
+   smudge at 375px. The phone plane has two: 13px for anything read as a
+   label, 11px for the facts (counts, indices, timestamps, key caps, and the
+   uppercase-tracked eyebrow voice). The 9.5px eyebrow does not travel.
+
+   Three things stay outside it:
+
+   - Prose. `--f-prose` and `--leading` are fixed and the writer sets the
+     size. `.dock-read` (a reference document, a snapshot's preview) is prose
+     by the same argument, and keeps its reading voice.
+   - Fields. `--tap-font` is 16px because iOS zooms the page below it;
+     a platform rule outranks a density one.
+   - Headings. A dialog's title is hierarchy, not density, and says which
+     room the writer is in.
+
+   Enumerated rather than swept with a descendant `*`: a blanket rule would
+   take the three exceptions with it, and several families size their
+   ornament in `em` (`letter-spacing: 0.14em`, `height: 0.82em`), so an
+   unchosen size would move geometry too. `phone-type.mobile.spec.ts` walks
+   every phone surface and fails on any chrome string at another size.
+
+   Unscoped: every sheet on this plane is a `Scrim`, portalled to
+   `document.body`, so an `.editor-shell` prefix would miss the structure
+   sheet, the dock and the preferences. The media query is the scope, and
+   these are the editor's own class names. */
+
+@media (max-width: 720px) {
+  /* The facts. */
+  .dt-region-label,
+  .dt-idx,
+  .dt-words,
+  .dt-bin-n,
+  .dt-tag-k,
+  .dt-tag-v,
+  .dt-dock-button-count,
+  .dt-foot-where,
+  .dt-foot-demo-hint,
+  .dt-foot-act,
+  .ref-card-count,
+  .snap-when,
+  .snap-rel,
+  .dock-meta,
+  .dock-foot,
+  /* The Desk's eyebrow and the picker's tally, the evidence voice. */
+  .desk-eyebrow,
+  .ref-picker-count,
+  /* The open thread's marker, a mono aside inside the 13px band, by the
+     descendant selector, because `.desk-thread code` (0,1,1) outranks the
+     parent's phone size whatever order the sheets load in. */
+  .desk-thread code,
+  /* The search face's stamps, a source's Part name and its tally, in the
+     voice of every other count on this plane. */
+  .dt-search-where,
+  .dt-search-tally,
+  /* The face's empty statement: "Nothing matches." is a fact about the
+     answer, like the counts, and the `_zero` branch draws it. */
+  .dt-moving-none,
+  /* The walk's Now marker is a fact: it names a position on a timeline
+     rather than an action. */
+  .rev-now {
+    font-size: 11px;
+  }
+
+  /* The Desk's own buttons: `.desk-primary` is 13.5 by its desk rule, off the
+     phone's two sizes; `.desk-quiet` is already 13. */
+  .desk-primary,
+  .dt-back,
+  .dt-label,
+  .dt-bin-name,
+  .dt-dock-button,
+  .dt-add,
+  .ui-tick,
+  .ref-card-add,
+  .ref-card-label,
+  .ref-card-row,
+  .ref-picker-title,
+  .ref-picker-label,
+  .ref-write-error,
+  .snap-add,
+  .snap-title,
+  .dock-face-empty,
+  .dock-hint,
+  /* The dock's problem voice travels with its hint sister: an error sentence a
+     phone writer must read is a label, and it renders in the reader and the
+     snapshots face alike. */
+  .dock-problem,
+  /* The Desk's bands: the invite's body and the open thread. The Desk shows on
+     every plane (`EditorRoute` renders it whenever no file is open); the
+     writer's own quotation keeps its prose voice (`.desk-last`, excluded from
+     the probe's type walk). */
+  .desk-empty p,
+  .desk-thread,
+  .dt-size,
+  /* The writing-preferences card's pick rows: the autosave-delay label and the
+     language row. The select inside keeps its own 11px (16 on
+     coarse), so sizing the row moves only the label. */
+  .dt-pick,
+  /* A search row's name, the label face of the results list, on its own class
+     rather than `.dt-search-row`, so the facts (a `.dt-search-where` is inside
+     a row too) keep their 11px. It reaches the source head rows too (label +
+     where + tally), which grow about 1px while staying text-height: the floor
+     block excludes the head, the label scale does not. */
+  .dt-search-label,
+  /* The face's own invitation: "Search the whole project." is a label, in the
+     sentence-case voice of every label on this plane. */
+  .dt-search-invite,
+  /* Both carry their own descendant rule on the desk (the walk's chip pair at
+     (0,1,1), the prose-size cells at (0,2,1)), so the leaf class alone would
+     lose to them and leave the string at its desk size. */
+  .rev-chip button,
+  .dt-size .ui-bar-track button {
+    font-size: 13px;
+  }
+}
+
+/* ── The board ────────────────────────────────────────────────────────────────
+   The editor's palette. A different component from the Library's, so a
+   different class family: nothing here touches `.palette-*`, the shelf's
+   search.
+
+   No new tokens, keyframes, motion or scrim `place` value: every number below
+   is one this stylesheet or `base.css` already uses.
+
+   Separation by space, never by an edge: no rules, boxes, borders or shadows
+   inside the board. */
+
+.board {
+  /* 680, not the palette's 520: a board needs four to six cells on a line to
+     read as a board rather than a column. It is `.ui-dialog--wizard`'s
+     width. */
+  width: min(680px, calc(100vw - 36px));
+  border: 1px solid;
+  overflow: hidden;
+  /* The palette's entrance, shared: the two are different objects arriving in
+     the same place, and one motion takes one curve. */
+  animation: paletteIn var(--t);
+}
+
+.board-inner {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+/* The same head the structure and dock sheets carry: the `.ui-dialog-foot`
+   recipe upside down, a hairline below instead of above. */
+.board-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 44px;
+  border-bottom: 1px solid;
+}
+
+.board-head h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 13.5px;
+}
+
+/* Two exits, not duplicates: the cap states the key on a desk, and the
+   button is the only exit with a soft keyboard, which has no Esc. Each
+   appears where it is the true one. */
+.board-close {
+  display: none;
+  place-items: center;
+  width: var(--tap, 30px);
+  height: var(--tap, 30px);
+  margin-right: -8px;
+  border: 0;
+  cursor: pointer;
+}
+
+.board-filter {
+  margin: 12px 14px 0;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid;
+  font-size: 13.5px;
+}
+
+.board-wells {
+  display: grid;
+  /* `.keys`' own gap: this is the shortcut sheet's arrangement made
+     pressable, and the two measure the same. */
+  gap: 24px;
+  padding: 20px 14px 16px;
+  overflow-y: auto;
+  /* `dvh`: with a retracted URL bar the static viewport height is a promise
+     the browser does not keep. `editorCss.test.ts` scans this stylesheet's
+     text for the static unit. */
+  max-height: min(520px, calc(100dvh - 200px));
+}
+
+/* `.keys-group h3` verbatim: the same eyebrow over the same six group names,
+   drawn from the same `shortcuts.group.*` strings. */
+.board-well h3 {
+  margin: 0 0 6px;
+  font-size: 9.5px;
+}
+
+.board-cells {
+  display: flex;
+  flex-wrap: wrap;
+  /* `flex-start`: a wrapped flex container defaults to `align-content:
+     stretch`, which spreads its lines over spare cross-axis height, so on
+     the phone the 6px gap would open wide and the wells stop reading as
+     groups. */
+  align-content: flex-start;
+  gap: 6px;
+}
+
+/* `.ui-bar-act-labelled` brought indoors: glyph, then the word. A cell
+   presses like a bar action because it is one. */
+.board-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px 0 10px;
+  border: 0;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+.board-cell svg {
+  transition: transform var(--t-bounce);
+}
+
+/* The glyph alone, so the press reads as the control depressing rather than
+   the cell shrinking: `.ui-bar-act`'s press. */
+.board-cell:active svg {
+  transform: scale(0.88);
+  transition: transform var(--t-press);
+}
+
+/* Never a centred box or a result count: this is not a search. */
+.board-none {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ── The board as a full-screen room ──────────────────────────────────────────
+   A full-bleed surface on the phone, with no new API: the scrim's
+   `place` union stays four values, and the change is scoped to a scrim that
+   holds a board.
+
+   `base.css`'s phone rule for `.ui-scrim-top` stands for the Library's
+   palette, which is a search field; the board opts out of it. */
+@media (max-width: 720px) {
+  .ui-scrim-top:has(.board) {
+    place-items: stretch;
+    grid-template-rows: 100%;
+    grid-template-columns: 100%;
+    padding-top: 0;
+  }
+
+  .board {
+    width: 100%;
+    /* The keyboard does not resize the page, so a full-height room
+       would put its own bottom under the keys. */
+    height: calc(100% - var(--kb, 0px));
+    border: 0;
+    /* The scrim's fade is the whole entrance: a panel that is already the page
+       has nowhere to arrive from, and travel on a full-bleed surface is
+       arrival from off-screen. */
+    animation: none;
+  }
+
+  .board-wells {
+    max-height: none;
+  }
+
+  /* Two type sizes on this plane, like every other room: 13 for
+     anything labelled, 11 for the facts. */
+  .board-head h2,
+  .board-cell {
+    font-size: 13px;
+  }
+
+  .board-well h3 {
+    font-size: 11px;
+  }
+
+  /* The cap goes and the close arrives: there is no Esc on a soft keyboard,
+     so a cap here would name an exit the writer does not have. */
+  .board-head .ui-kbd {
+    display: none;
+  }
+
+  .board-close {
+    display: grid;
+  }
+}
+
+/* Reach, not plane: a 900px touch tablet needs the floor, and a narrow
+   mouse-driven window does not, so both floors live here rather than in the
+   phone block. The field's 16px stops WebKit zooming the page on focus, on a
+   tablet as on a phone. */
+@media (pointer: coarse) {
+  .board-cell,
+  .board-filter {
+    min-height: var(--tap);
+  }
+
+  .board-filter {
+    font-size: var(--tap-font);
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-children,
+  .dt-chevron,
+  .dt-row,
+  .dt-actions,
+  .ui-btn {
+    transition: none;
+  }
+
+  /* The landings arrive at once. So does the board, which borrows the
+     palette's entrance on the desk; on the phone the scrim's fade carries it. */
+  .dt-landing,
+  .board {
+    animation: none;
+  }
+
+  /* Every morph the bar and its panels make lands on its end state in one
+     frame: a transition dropped to `none` still arrives, rather than
+     snapping to the start. */
+  .ed-save,
+  .ed-fold,
+  .ed-fold-face,
+  .ed-fold-row,
+  .ed-drop,
+  .char-key,
+  .find-tog,
+  .find-act,
+  .find-row input,
+  .desk-primary,
+  .desk-quiet,
+  .ed-dock,
+  .editor-shell[data-dock-settled="1"]:not([data-phone="1"])
+    .ed-dock[data-open="1"],
+  .dock-resize,
+  .panel-resize,
+  .dock-close,
+  .editor,
+  .dt-ident,
+  .dt-find-row,
+  .dt-bodies > .dt-scroll,
+  .dt-bin-caret,
+  .dt-bin-body,
+  .dt-bin-row,
+  .dt-summary,
+  .dt-words,
+  .titlebar-project,
+  .dt-collapse,
+  .dt-close,
+  .dt-rail button,
+  .dt-row::before,
+  .dt-foot-act,
+  .dt-prefs,
+  .dt-prefs-inner,
+  .dt-prefs-pad,
+  .ui-tick,
+  .ui-tick-box,
+  .save-gutter i,
+  .doc-tree,
+  .desk,
+  .bar-stack,
+  .titlebar-return,
+  .titlebar-return-nudge,
+  .rev-rail-head,
+  .rev-rail-fork,
+  .rev-rail-time,
+  .rev-chip button,
+  .rev-step,
+  .dock-generated-badge {
+    transition: none;
+  }
+
+  /* The caret's typing spring, answered with a still caret: it stops
+     bouncing, never disappears. */
+  .fake-cursor.caret-bounce {
+    transition: none;
+  }
+
+  /* Every animation this stylesheet starts, answered; a test fails if one is
+     added without a line here. Each lands on its end state, never its start.
+
+     The caret stops blinking rather than disappearing: it alone says where
+     typing will go, and stillness means a still caret, not no caret. */
+  .fake-cursor.blinking,
+  .char-fade-in,
+  .ed-save[data-state="saved"] .ed-save-glyph,
+  /* Stillness wins over the wait: the glyph's shape says which state this is,
+     and the word beside it says the rest, so stopping the loop loses no
+     meaning. */
+  .ed-save[data-state="cached"] .ed-save-glyph,
+  .dt-mark[data-state="cached"],
+  .desk,
+  .desk-caret,
+  .dt-toast,
+  .rev-notice,
+  .dt-meta {
+    animation: none;
+  }
+
+  /* Henosis. The fade is kept: it is light going out over seconds,
+     and nothing slides. The return lands at once, and the widening and the
+     centring snap rather than travel. */
+  .editor-shell[data-henosis="fading"] .doc-tree,
+  .editor-shell[data-henosis="fading"] .dt-collapse,
+  .editor-shell[data-henosis="fading"] .chrome,
+  .editor-shell[data-henosis="fading"] .cm-layer,
+  .editor-shell[data-henosis="fading"] .save-gutter,
+  .editor-shell[data-henosis="fading"][data-dock="1"] .ed-dock {
+    animation: henosis-fade var(--henosis-fade) var(--e-in-out) forwards;
+  }
+  .editor-shell[data-henosis="0"] .doc-tree,
+  .editor-shell[data-henosis="0"] .dt-collapse,
+  .editor-shell[data-henosis="0"] .chrome,
+  .editor-shell[data-henosis="0"] .cm-layer,
+  .editor-shell[data-henosis="0"] .save-gutter,
+  .editor-shell[data-henosis="0"][data-dock="1"] .ed-dock {
+    animation: none;
+  }
+  .editor-shell[data-henosis="full"] .editor,
+  .editor-shell[data-henosis="0"] .editor {
+    transition: none;
+  }
+}

@@ -1,0 +1,16 @@
+// The tools under scripts/ (the export matrix) and the build checks under
+// build/ import the SPA's own modules and Node's, so they get a project of
+// their own: Node's types are here and kept out of `tsconfig.json`, where a
+// browser app would otherwise see `process` and `__dirname` as if it had them. `npm run build` checks both.
+// The export matrix went unchecked once and still passed options the export
+// had dropped (review 2026-10-01).
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["scripts/**/*.ts", "build/**/*.ts", "src/**/*.d.ts"],
+  // The landing's screenshot rig is Playwright code built on `e2e/`, so
+  // `tsconfig.e2e.json` checks it with the specs.
+  "exclude": ["scripts/shots"]
+}

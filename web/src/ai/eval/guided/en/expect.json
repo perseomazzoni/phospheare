@@ -1,0 +1,56 @@
+[
+  {
+    "id": "work",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "node:section--01-the-hospital.md",
+          "node:section--03-the-night-ward.md"
+        ],
+        "words": ["doctor", "hospital", "white coat"]
+      },
+      {
+        "sources": [
+          "node:section--02-the-school.md",
+          "node:section--04-the-harbour.md"
+        ],
+        "words": ["latin", "taught", "teaching", "studied medicine"]
+      }
+    ]
+  },
+  {
+    "id": "city",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "node:section--01-the-hospital.md",
+          "node:section--03-the-night-ward.md"
+        ],
+        "words": ["turin", "via nizza"]
+      },
+      {
+        "sources": [
+          "node:section--02-the-school.md",
+          "node:section--04-the-harbour.md"
+        ],
+        "words": ["genoa"]
+      }
+    ]
+  },
+  {
+    "id": "eyes",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["node:section--01-the-hospital.md"],
+        "words": ["grey"]
+      },
+      {
+        "sources": ["node:section--03-the-night-ward.md"],
+        "words": ["brown"]
+      }
+    ]
+  }
+]

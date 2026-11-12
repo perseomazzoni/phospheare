@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "language": "en",
+  "cases": [
+    {
+      "id": "reader-horizon",
+      "kind": "alpha-reader",
+      "sources": ["section--the-gate.md"],
+      "prompt": "What do you think is happening so far, and what are you unsure about?",
+      "mustMentionAny": ["gate", "lantern"],
+      "mustNotMention": [
+        "ashen",
+        "brass",
+        "had not been asleep",
+        "did not come back"
+      ]
+    },
+    {
+      "id": "continuity",
+      "kind": "editorial",
+      "sources": ["section--the-gate.md", "section--the-road.md"],
+      "prompt": "Check continuity across these two sections and cite what you used.",
+      "mustMentionAny": ["coat", "lantern"],
+      "mustNotMention": []
+    },
+    {
+      "id": "summary",
+      "kind": "summary",
+      "sources": ["section--the-gate.md"],
+      "prompt": "Summarise this section neutrally: events, decisions and unresolved threads.",
+      "mustMentionAny": ["lantern", "coat"],
+      "mustNotMention": ["ashen", "had not been asleep"]
+    }
+  ]
+}

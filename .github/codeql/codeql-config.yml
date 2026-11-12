@@ -1,0 +1,9 @@
+# What CodeQL reads. Test code never ships, and its findings (a URL checked by
+# substring in an assertion, a timer a test sets) are not vulnerabilities.
+name: Phospheare
+
+paths-ignore:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*_test.go"
+  - web/e2e/**

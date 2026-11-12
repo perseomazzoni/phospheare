@@ -1,0 +1,2960 @@
+{
+  "app": {
+    "loading": "Caricamento…",
+    "driveLapsed": "Lo spazio di archiviazione remoto va ricollegato",
+    "offline": "Sei offline",
+    "onlyOnDevice_one": "{{count}} file non ancora sincronizzato",
+    "onlyOnDevice_other": "{{count}} file non ancora sincronizzati",
+    "onlyOnDeviceAnnounce": "Una parte del tuo lavoro non è ancora sincronizzata.",
+    "changesLost_one": "Modifiche perse in {{count}} file",
+    "changesLost_other": "Modifiche perse in {{count}} file",
+    "changesLostAnnounce": "Alcune modifiche sono andate perse prima di essere sincronizzate.",
+    "changesLostDismiss": "Chiudi"
+  },
+  "landing": {
+    "head": {
+      "beta": "Alpha",
+      "nav": "Account",
+      "logIn": "Accedi con Google",
+      "logInShort": "Accedi",
+      "withoutAccount": "Senza account",
+      "download": "Installalo"
+    },
+    "foot": {
+      "by": "Di {{author}}"
+    },
+    "hero": {
+      "title": "Dall’inizio, passando per ogni revisione, fino all’ultimo dettaglio.",
+      "lede": "Quando vuoi un parere puoi attivare un team di assistenti AI che possono aiutarti.",
+      "start": "Inizia a scrivere",
+      "try": "Prova la demo",
+      "price": "Un progetto personale · libero e open source",
+      "category": "Per i tuoi romanzi e le tue storie",
+      "note": "Open source e gratuito, un progetto aperto a tutti, senza fini di lucro · Accedi alla demo senza registrarti e decidi se fa per te · Con Google il tuo lavoro ti segue sugli altri tuoi dispositivi",
+      "shotAlt": "L’editor: la struttura del libro a sinistra, il capitolo al centro, i commenti a margine."
+    },
+    "live": {
+      "label": "Il vero editor nel tema selezionato."
+    },
+    "more": "E tutto il resto",
+    "parts": {
+      "write": {
+        "numeral": "Parte I · Ki",
+        "title": "Le parole, senza interruzioni.",
+        "short": "Scrivi",
+        "problem": "Quando arriva una frase, l’ultima cosa che vuoi fare è cercare un simbolo in un menu.",
+        "answer": "Cominciamo da qui: i caratteri giusti sotto le dita, la riga sempre in vista e una pagina che lascia spazio a ciò che stai scrivendo.",
+        "more": {
+          "engine": "Un editor progettato per la narrativa, con un motore dedicato alla scrittura, alla cronologia delle modifiche e al confronto tra stesure.",
+          "find": "Cerca e sostituisci in tutto il progetto. La ricerca avviene nel browser e il testo non ne esce mai.",
+          "goal": "Imposta un obiettivo di parole e segui i progressi del libro, Parte per Parte."
+        },
+        "eyebrow": "Scrittura"
+      },
+      "organise": {
+        "numeral": "Parte II · Shō",
+        "title": "Poi una frase diventa un romanzo.",
+        "short": "Organizza",
+        "problem": "Le scene si incontrano, i capitoli cambiano posto e il libro trova il suo ritmo.",
+        "answer": "Raccogli le Sezioni in Parti, selezionane più di una e spostale insieme. Puoi cambiare la struttura mentre la storia prende forma, anche dal telefono.",
+        "more": {
+          "rule": "La struttura segue una regola semplice: ogni Parte contiene altre Parti oppure Sezioni. Le due cose non si mescolano.",
+          "move": "Trascina una Sezione nella posizione che vuoi, oppure selezionane più di una e spostale insieme.",
+          "wizard": "Quando crei un progetto, scegli il genere e una struttura di partenza. Troverai già le Parti predisposte."
+        },
+        "eyebrow": "Struttura"
+      },
+      "help": {
+        "numeral": "Parte III · Ten",
+        "title": "Una redazione AI per tutto il libro.",
+        "short": "Aiuto editoriale",
+        "problem": "Un paragrafo non basta. I problemi di un romanzo stanno in trecento pagine.",
+        "answer": "Chiedi di ritrovare le scene, di confrontarle con le schede di riferimento e di segnalarti ciò che non torna. Poi puoi chiedere una lettera editoriale: come una scheda di valutazione, ma scritta per te e chiusa da un piano di revisione.",
+        "more": {
+          "kinds": "Cinque tipi di chat: generale, stesura, revisione editoriale, lettura alpha e lettura beta. Per ciascuna scegli la voce, il modello e il livello di creatività. Nelle letture alpha e beta decidi anche fino a quale capitolo può leggere l’assistente.",
+          "ledgers": "I comandi <f>/canon</f> e <f>/continuity</f> tengono traccia dei fatti e delle incongruenze, confrontando il manoscritto con le schede di riferimento.",
+          "pages": "L’assistente consulta i riferimenti utili al compito. Per i dialoghi legge lo stile della prosa e la lingua dell’ambientazione; <f>/canon</f> Mirai confronta il manoscritto solo con la sua scheda; <f>/blurb</f> richiede che sia già stata scritta la quarta di copertina.",
+          "ghosts": "I suggerimenti della revisione compaiono a margine: conserva quelli utili e scarta gli altri.",
+          "comments": "Aggiungi commenti a margine, rispondi nella stessa discussione e chiudila quando hai finito. Puoi anche chiedere un parere a uno degli editor AI.",
+          "checks": "Prima di interrogare il modello, l’app esegue dieci controlli sul testo nel browser: ripetizioni, verbi di percezione, verbi dichiarativi, ritmo delle frasi e altri aspetti dello stile.",
+          "search": "Prima di cercare sul web, l’assistente ti mostra la ricerca che intende fare. Puoi approvarla, modificarla o rifiutarla.",
+          "models": "Accedi con il tuo account {{provider}} e paghi solo quello che usi, entro un limite di spesa che scegli tu, fino a 5 dollari. Se preferisci lavorare sul tuo computer, puoi usare un modello locale tramite {{localProvider}}."
+        },
+        "eyebrow": "Un aiuto editoriale, quando lo chiedi"
+      },
+      "keep": {
+        "numeral": "Parte IV · Ketsu",
+        "title": "Il manoscritto resta tuo.",
+        "short": "I tuoi file",
+        "problem": "Il tuo libro non deve restare chiuso dentro l’app di qualcun altro.",
+        "answer": "Il libro è fatto di normali file. Puoi conservarli sul dispositivo, sincronizzarli con lo spazio remoto o aprirli con un altro programma, quando vuoi.",
+        "more": {
+          "local": "Salva in una cartella sul dispositivo, nello spazio remoto oppure in entrambi, mantenendo le due copie sincronizzate.",
+          "offline": "Se perdi la connessione, puoi continuare a scrivere nella scheda già aperta. Le modifiche restano in attesa e l’app ti segnala quelle non ancora sincronizzate.",
+          "import": "Importa DOCX, ODT, RTF, EPUB, Markdown, testo e HTML. I capitoli vengono riconosciuti e i commenti di revisione compaiono a margine.",
+          "export": "Esporta in DOCX, OpenDocument, PDF, RTF, EPUB, HTML, Markdown o testo semplice. Scegli l’impaginazione per il libro, il manoscritto o la copia di revisione.",
+          "open": "Il codice è disponibile con licenza AGPL: puoi leggerlo, modificarlo e installare il programma sul tuo computer."
+        },
+        "eyebrow": "File, salvataggi e formati"
+      },
+      "revise": {
+        "eyebrow": "Revisione",
+        "title": "… e se la frase migliore fosse nella versione di ieri?",
+        "problem": "Riscrivi il capitolo 12 e perdi proprio la frase che funzionava.",
+        "answer": "Affianca due versioni e scegli che cosa tenere di ciascuna. Puoi confrontare un paragrafo, una frase o una singola parola, accettando soltanto le modifiche che ti convincono.",
+        "more": {
+          "history": "La sequenza delle revisioni ti fa ripercorrere la cronologia delle modifiche e tornare a una versione precedente del testo.",
+          "snapshots": "Conserva le stesure come istantanee e confrontane due qualsiasi, in entrambe le direzioni."
+        }
+      }
+    },
+    "cards": {
+      "keys": {
+        "title": "Anche una È fa la differenza.",
+        "body": "Caporali, virgolette tipografiche, trattini lunghi, puntini di sospensione. Una scorciatoia e sono sulla pagina. Anche le maiuscole accentate, senza interrompere la frase per cercarle altrove."
+      },
+      "henosis": {
+        "title": "<f>Henosis</f>: spazio al testo",
+        "body": "Mentre scrivi, i comandi scompaiono. Quando ti fermi, ricompaiono. Puoi regolare entrambi i tempi di attesa.",
+        "alt": "Henosis mentre scrivi: i comandi svaniscono, finché resta solo la pagina."
+      },
+      "desk": {
+        "title": "Riprendi da dove eri rimasto",
+        "body": "La <f>Scrivania</f> ti accoglie con le ultime righe scritte, un pulsante per riprendere il lavoro e un riepilogo dei progressi di ogni Parte.",
+        "alt": "La Scrivania mostra le ultime righe del libro, il pulsante Continua a scrivere e i progressi delle singole Parti."
+      },
+      "compare": {
+        "title": "Il meglio di entrambe le stesure.",
+        "body": "Scegli il livello di dettaglio, osserva le differenze e accetta una modifica. Il resto del brano rimane intatto.",
+        "alt": "Un confronto tra due stesure: le parole eliminate sono barrate, quelle proposte compaiono accanto."
+      },
+      "summaries": {
+        "title": "I riassunti seguono le revisioni",
+        "body": "Chiedi il riassunto di una Sezione. Se poi modifichi il testo, l’app segnala che va aggiornato, e con un clic puoi rigenerarlo. I riassunti servono anche a <f>/where</f> per ritrovare una scena e a <f>/map</f> per ricostruire la struttura del libro.",
+        "alt": "Il riassunto di una Sezione aperto nel pannello dei riferimenti."
+      },
+      "ask": {
+        "title": "Chiedi un parere a margine",
+        "body": "Scrivi @Nova, o il nome di un altro editor AI, in un commento. La risposta arriva nella stessa discussione e riguarda proprio quel passaggio, senza dover aprire una chat.",
+        "alt": "Un commento a margine: chi scrive chiede un parere a @Spark e riceve la risposta nella stessa discussione."
+      },
+      "autosave": {
+        "title": "Scegli ogni quanto salvare",
+        "body": "Il salvataggio automatico è attivo da subito, ogni trenta secondi: puoi scegliere un intervallo da cinque secondi a cinque minuti, oppure disattivare l’autosave. Un segno accanto ai paragrafi indica le modifiche non ancora salvate; l’indicatore mostra quando il salvataggio o la sincronizzazione con lo spazio remoto sono in corso."
+      },
+      "sync": {
+        "title": "Se le copie sono diverse, scegli tu",
+        "body": "Se la copia sul dispositivo e quella nello spazio remoto non coincidono, decidi quale tenere. L’altra viene conservata in una copia di sicurezza. L’app ti avvisa anche quando una parte del lavoro esiste soltanto sul dispositivo."
+      },
+      "move": {
+        "title": "Porta il libro dove vuoi",
+        "body": "Puoi importare DOCX, ODT, RTF, EPUB, Markdown, testo e HTML, mantenendo i capitoli e i commenti di revisione. Per esportare hai a disposizione DOCX, ODT, PDF, RTF, EPUB, HTML, Markdown e testo semplice, con impaginazioni per il libro, il manoscritto o la copia di revisione."
+      },
+      "focus": {
+        "title": "Ora guarda questa frase.",
+        "body": "<f>Focus</f> attenua il testo intorno alla riga o al paragrafo su cui lavori. La pagina rimane al suo posto; la tua attenzione segue le parole che contano adesso."
+      },
+      "structure": {
+        "title": "La storia trova il suo posto.",
+        "body": "Seleziona le Sezioni da spostare e scegli dove portarle. Il resto del libro si riordina intorno a loro. Sul telefono, il comando Sposta… ti evita di trascinarle.",
+        "alt": "Spostare due Sezioni insieme: le selezioni, scegli Sposta… e indichi dove portarle."
+      }
+    },
+    "keys": {
+      "line": "[leftGuillemet][È] tardi[rightGuillemet] [emDash] disse Mirai. [leftGuillemet]O forse è proprio l[apostrophe]ora giusta[ellipsis][rightGuillemet]",
+      "label": "Scorciatoie da tastiera",
+      "capitals": "Con {{key}} scrivi È. Ci sono scorciatoie anche per À, É, Ì, Ò, Ù e le altre maiuscole accentate."
+    },
+    "compare": {
+      "before": "Bastava poco.",
+      "aOld": "Piccole",
+      "aNew": "Minuscole",
+      "mid": " scintille che nessuno ",
+      "bOld": "vedeva",
+      "bNew": "notava",
+      "after": "Poi, una dopo l’altra, diventavano fiamme.",
+      "again": "Prova di nuovo",
+      "hint": "Scegli una modifica e accettala."
+    },
+    "templates": {
+      "eyebrow": "Dietro ogni scena",
+      "title": "Un personaggio è più di un nome.",
+      "lede": "Che cosa desidera? Che cosa teme di perdere? Le schede di riferimento ti accompagnano dentro i personaggi, i loro conflitti e il mondo in cui vivono. Ogni campo offre una domanda da cui partire; le risposte possono cambiare con la storia.",
+      "switch": "Puoi escludere una scheda dalle letture dell’assistente. La scelta vale per tutte le chat.",
+      "details": "La <f>Guida</f> comprende quattordici sezioni. Trovi inoltre quindici modelli per il worldbuilding, schede personaggio e archi narrativi, in italiano e in inglese. I suggerimenti accanto ai campi ti accompagnano mentre sviluppi le risposte."
+    },
+    "team": {
+      "eyebrow": "Cominciamo da una pagina",
+      "title": "Una pagina. Quattro modi di leggerla.",
+      "lede": "Phos guarda all’equilibrio del libro. Nova lavora sulla frase, Spark sullo sviluppo della storia. Lumi la vive da lettrice. Scegli la voce e il tipo di lettura che ti servono.",
+      "attitudes": "Taglio",
+      "phos": {
+        "role": "Direttore editoriale",
+        "line": "«L’idea della luce condivisa attraversa tutto il libro. La voce la sostiene bene; vorrei però incontrare prima i personaggi che dovranno darle un significato.»"
+      },
+      "nova": {
+        "role": "Revisione dello stile",
+        "line": "«Tre frasi con lo stesso ritmo possono dare forza a un passaggio. Se lo schema torna a ogni paragrafo, però, finisce per farsi notare più di ciò che racconti.»"
+      },
+      "spark": {
+        "role": "Struttura e personaggi",
+        "line": "«Qui c’è il motore della storia: la luce si diffonde, ma qualcuno dovrà pagarne il prezzo. Chi? E che cosa rischia di perdere?»"
+      },
+      "lumi": {
+        "role": "Lettrice beta",
+        "line": "«Ho continuato a leggere per sapere che cosa sarebbe successo a Mirai. Quando ha chiesto del cane, però, mi sono dovuta fermare un attimo.»"
+      },
+      "explore": "Conosci meglio Phos, Nova, Spark e Lumi"
+    },
+    "commands": {
+      "eyebrow": "24 comandi",
+      "title": "Digita <f>/</f> e scegli che cosa fare.",
+      "lede": "Controlla la continuità, rifinisci una frase, progetta una scena o chiedi la lettera editoriale.",
+      "shared": "Disponibili nelle chat generali, di stesura e di revisione",
+      "explore": "Vedi tutti i 24 comandi"
+    },
+    "letter": {
+      "eyebrow": "Il piano di revisione",
+      "title": "Il libro cambia. Il piano lo segue.",
+      "lede": "Phos raccoglie le osservazioni in una lettera editoriale e le traduce in un piano di revisione, con interventi ordinati per priorità. Sai da dove cominciare e puoi spuntare ogni punto mentre lavori.",
+      "letter": {
+        "title": "La lettera.",
+        "body": "Punti di forza e problemi del romanzo, spiegati con esempi e citazioni dal manoscritto."
+      },
+      "plan": {
+        "title": "Il piano di revisione.",
+        "body": "Una lista di interventi indispensabili, consigliati o facoltativi. Puoi spuntarli man mano che lavori."
+      },
+      "draft": {
+        "title": "Dalla revisione alla stesura.",
+        "body": "Apri una chat di stesura a partire da un punto del piano. Puoi ragionare su come affrontarlo; decidi sempre tu cosa inserire nel libro."
+      },
+      "followup": {
+        "title": "E dopo la riscrittura?",
+        "body": "Chiedi una nuova lettura. L’assistente riesamina il piano insieme al testo e distingue i punti risolti da quelli ancora aperti o peggiorati. La prossima revisione parte da qui."
+      },
+      "planAlt": "Il vero piano di revisione: interventi indispensabili, consigliati e facoltativi, caselle da spuntare e comando per aprire una chat di stesura."
+    },
+    "mobile": {
+      "eyebrow": "Pensato per il telefono",
+      "title": "Il tuo romanzo, anche sul telefono.",
+      "lede": "Sulla rete di casa, con il computer acceso, apri il romanzo sul telefono o sul tablet. I comandi sono in basso, a portata di mano, e per riordinare i capitoli puoi usare Sposta…, senza trascinarli. Fuori casa, una scheda già aperta ti lascia continuare a scrivere: le modifiche aspettano che tu torni.",
+      "alt": {
+        "phone": "L’editor su telefono, con i comandi nella parte bassa dello schermo.",
+        "phone-desk": "La Scrivania di un progetto aperta sul telefono.",
+        "phone-library": "La Libreria aperta sul telefono."
+      }
+    },
+    "free": {
+      "eyebrow": "Software libero",
+      "title": "Tutto open source.",
+      "lede": "Usa la tua copia: il codice sorgente è pubblico, con licenza AGPL e senza nulla di nascosto, e il programma lo compili tu sul tuo computer. L’AI è facoltativa: la paghi a {{provider}} in base a quanto usi.",
+      "source": "Vedi il codice sorgente",
+      "guide": "Leggi la guida all’installazione"
+    },
+    "wear": {
+      "lastly": "E un’ultima cosa.",
+      "title": "Questo spazio può somigliarti.",
+      "lede": "Quattro temi, ognuno chiaro e scuro. Scegline uno e cambia tutta la pagina."
+    },
+    "maker": {
+      "eyebrow": "Perché esiste",
+      "one": "Ne sono sempre stato convinto: il meglio nasce quando cose in apparenza opposte lavorano insieme. Logica e intuito. Disciplina e creatività.",
+      "two": "Era il 1997. Durante l’ora di matematica scrivevo su un foglio le mie prime righe di codice: una battaglia navale in Turbo Pascal 7. A casa non avevo un computer, e non vedevo l’ora di entrare in laboratorio per scoprire se funzionava. Programmazione e gioco. Matematica e divertimento.",
+      "three": "Oggi gli opposti da tenere insieme sono il codice e la scrittura. Cercavo un programma che mi lasciasse lavorare a modo mio, e non c’era. Così ho cominciato a costruirlo. All’inizio era solo per me; poi ho pensato che sarebbe stato bello metterlo a disposizione di chi scrive e non si spaventa davanti a qualche comando da lanciare per installarlo.",
+      "four": "Portare un po’ di luce dove prima c’era buio: il nome viene da lì. Per me vuol dire capire qualcosa in più, imparare ad ascoltare, veder prendere forma qualcosa di bello.",
+      "five": "C’è anche un’altra ragione. Volevo vedere fin dove può arrivare un progetto software fatto con l’AI, senza scrivere il codice di persona. Per questo lo dico apertamente: le idee, le scelte di progetto, le prove e la caccia agli errori sono mie; il codice lo scrivono agenti AI. È un progetto personale, nato nel tempo libero, senza un’azienda alle spalle.",
+      "sign": "Perseo Mazzoni, ideatore di {{product}}.",
+      "more": "Leggi come è nato il progetto →"
+    },
+    "faq": {
+      "title": "Prima di cominciare",
+      "lede": "Qualche risposta su costi, file e funzionamento.",
+      "demo": {
+        "q": "Posso provarlo prima, per vedere com’è?",
+        "a": "Sì. La demo è l’editor completo, aperto su un romanzo di prova, e non richiede un account. Non salva niente: se ricarichi la pagina, il romanzo ricomincia da capo. L’assistente risponde con esempi già scritti; per usare un modello vero, compila il programma sul tuo computer e collega il tuo account {{provider}}, oppure un modello locale con {{localProvider}}."
+      },
+      "files": {
+        "q": "Dove viene salvato il manoscritto?",
+        "a": "In una cartella sul dispositivo, nello spazio remoto o in entrambi. Sono normali file Markdown, YAML e JSON, leggibili anche con altri programmi. Le preferenze, la <f>Libreria</f> e i dati delle schede progetto (titoli, conteggi di parole, struttura) restano sul dispositivo. Se lo spazio remoto è collegato, ne resta una copia anche nella cartella riservata all’app. Quella cartella non contiene mai il testo del manoscritto, le istantanee, i commenti o le chat."
+      },
+      "cost": {
+        "q": "Quanto costa?",
+        "a": "{{product}} è software libero: non c’è niente da comprare. L’AI non è inclusa: per usare un modello remoto accedi con il tuo account {{provider}} e paghi a {{provider}} quello che consumi, entro un limite di spesa che scegli tu, fino a 5 dollari. In alternativa puoi usare un modello locale sul tuo computer, tramite {{localProvider}}, senza pagare nessun fornitore."
+      },
+      "ai": {
+        "q": "Quale modello AI posso usare? Che cosa legge?",
+        "a": "Scegli tu il modello tra quelli disponibili. Se usi un modello remoto, i brani necessari alla richiesta vanno dal tuo dispositivo direttamente al fornitore del servizio AI, che li inoltra al gestore del modello: non esistono server centrali in mezzo. Con un modello locale tramite {{localProvider}}, il testo viene elaborato sul tuo computer; l’unica eccezione sono le ricerche web che approvi, per le quali viene inviato soltanto il testo della ricerca. L’assistente propone interventi e non modifica il manoscritto: scegli tu quali suggerimenti usare."
+      },
+      "leave": {
+        "q": "Posso passare a un altro programma?",
+        "a": "Sì. Il manoscritto è già salvato in file che puoi aprire altrove. Se ti serve un altro formato, puoi esportarlo in DOCX, OpenDocument, PDF, RTF, EPUB, HTML, Markdown o testo semplice."
+      },
+      "offline": {
+        "q": "Posso scrivere senza connessione?",
+        "a": "Sì. Il programma si avvia sul tuo computer anche senza connessione, e i libri salvati in una cartella locale non ne hanno bisogno. La connessione serve solo per accedere; le modifiche ai libri nello spazio remoto restano in coda finché non torni online."
+      },
+      "browsers": {
+        "q": "Quali browser sono compatibili?",
+        "a": "Per aprire le cartelle del dispositivo servono Chrome, Edge o un altro browser basato su Chromium. Lo spazio remoto e la demo funzionano con tutti i browser moderni."
+      },
+      "host": {
+        "q": "Posso installarlo da solo?",
+        "a": "Sì, funziona proprio così: {{product}} gira sul tuo computer. Lo compili dal codice sorgente, poi lo installi e lo configuri in autonomia. Non esistono server centrali."
+      },
+      "finished": {
+        "q": "È pronto?",
+        "a": "È in fase alpha e lo sviluppo è ancora in corso: se lo usi adesso, stai sperimentando qualcosa che è ancora in costruzione. Ogni modifica passa i test automatici e una prova nel browser, poi la rivedo io. Tieni una tua copia di quello che non puoi permetterti di perdere."
+      }
+    },
+    "close": {
+      "title": "La prossima frase è tua."
+    },
+    "motion": {
+      "pause": "Ferma le animazioni",
+      "play": "Riprendi le animazioni"
+    },
+    "demo": {
+      "title": "Tutto l’editor, a un clic. Senza account.",
+      "lede": "La demo è l’editor completo, aperto su un romanzo di prova: scrivi, sposta i capitoli, confronta le stesure, apri le schede. Non puoi rompere niente: ricarica la pagina e il romanzo torna com’era."
+    },
+    "storage": {
+      "browsers": "Puoi usare una cartella sul dispositivo, lo spazio remoto o entrambi. Per le cartelle locali serve Chrome, Edge o un altro browser basato su Chromium; lo spazio remoto funziona con tutti i browser moderni. Il programma si avvia anche senza connessione: serve solo per accedere e per lo spazio remoto. Se la perdi, continua a scrivere nella scheda già aperta."
+    },
+    "focus": {
+      "hint": "Scegli Ln per la riga o ¶ per il paragrafo, poi fai clic nel testo.",
+      "p1": "Piccoli gesti, sì. Minuscole scintille che nessuno notava. Ma ognuna accese una fiamma. E quella luce si fece più forte solo quando venne condivisa.",
+      "p2": "Col tempo, le persone cominciarono a capire una cosa semplice. Ogni essere senziente vive il mondo dal proprio centro. Un bambino prova una gioia non minore di quella di un vecchio. Un cane spera di tornare a casa. Un elefante piange i suoi morti.",
+      "p3": "Nessuna legge lo impose. Nessun profeta lo portò di città in città. Si mosse come si muove il calore in una stanza, da un corpo all’altro, finché nessuno seppe più dire dove fosse cominciato."
+    },
+    "foundation": {
+      "title": "La storia cambia. Il libro resta tuo.",
+      "files": {
+        "title": "Decidi tu dove salvarlo",
+        "body": "Il manoscritto è in formato Markdown: lo conservi sul dispositivo, nello spazio remoto o in entrambi. E puoi aprirlo anche con altri programmi."
+      },
+      "cost": {
+        "title": "Software libero",
+        "body": "Niente da comprare, nessuna funzione bloccata. L’AI è facoltativa e la paghi a {{provider}}, solo per quello che usi."
+      },
+      "mobile": {
+        "title": "Ritrovalo dove ti serve",
+        "body": "A casa, con il computer acceso, rileggi sul telefono e prendi appunti sul tablet. Con lo spazio remoto ritrovi i progetti anche sugli altri tuoi dispositivi."
+      }
+    },
+    "context": {
+      "eyebrow": "Controllo di continuità",
+      "title": "Una scelta al capitolo 3 conta anche al 30.",
+      "lede": "Mirai non sa nuotare. Lo hai scritto nella sua scheda. Molti capitoli dopo, attraversa un fiume a nuoto. L’assistente incrocia i riferimenti con il manoscritto e ti aiuta a riconoscere incongruenze come questa."
+    },
+    "captures": {
+      "template": "La scheda di Mirai nell’app: domande di approfondimento e risposte sul personaggio.",
+      "autosave": "Le preferenze di scrittura dell’app con il salvataggio automatico e l’intervallo di trenta secondi.",
+      "personas": "La scelta della voce nell’app: passando sui nomi compare ogni volto, poi si sceglie Spark e uno dei suoi tipi di lettura.",
+      "continuity": "Il pannello dell’assistente mostra una risposta di esempio su Mirai: la scheda dice che non sa nuotare, mentre al capitolo 30 attraversa un fiume a nuoto."
+    },
+    "tryIt": "Prova!",
+    "tryFull": "Provalo nell’editor completo →",
+    "groups": {
+      "focus": "Tutta la concentrazione sulla pagina."
+    },
+    "noFolders": {
+      "title": "In questo browser non puoi lavorare senza account",
+      "demo": "Oppure prova prima la demo",
+      "lead": "Senza account i progetti stanno in una cartella del dispositivo, e questo browser non sa aprirla. Funziona con:",
+      "signIn": "Oppure accedi con {{identity}} e tieni i progetti nello spazio di archiviazione remoto."
+    },
+    "withoutAccount": "Continua senza account",
+    "download": "Installalo sul tuo computer"
+  },
+  "demoNotice": {
+    "body": "Questa è una demo: nulla viene salvato.",
+    "reset": "Se ricarichi o chiudi la pagina, il romanzo di prova torna com’era.",
+    "download": "Per conservare il tuo lavoro, compila il programma sul tuo computer: codice sorgente e istruzioni sono su GitHub.",
+    "close": "Chiudi"
+  },
+  "release": {
+    "notice": "È uscita una nuova versione. <release>{{version}}</release> Se vuoi usarla, compila il nuovo sorgente.",
+    "announce": "È disponibile la versione {{version}}.",
+    "close": "Chiudi"
+  },
+  "auth": {
+    "backHome": "Torna alla pagina iniziale",
+    "popupBlocked": "Il browser ha bloccato la finestra di {{identity}}. Consenti i pop-up per questa pagina e fai di nuovo clic.",
+    "googleNotSetUp": "L’accesso con {{identity}} non è ancora configurato su questo computer. Puoi farlo dalla pagina di configurazione.",
+    "identityUnavailable": "L'accesso non risponde. Chiudi {{product}} e avvialo di nuovo, poi riprova.",
+    "googleFailed": "{{identity}} non ha completato l'accesso. Riprova.",
+    "problemTitle": "Accesso non riuscito",
+    "tryAgain": "Riprova",
+    "farewellTitle": "Account eliminato",
+    "farewellRevokePending": "{{identity}} non ha confermato la revoca dell'accesso di {{product}}. Puoi revocarlo tu: nel tuo account {{identity}} apri Sicurezza e rimuovi {{product}} dalle app di terze parti collegate."
+  },
+  "library": {
+    "title": "La tua libreria",
+    "greetingHey": "Ciao {{name}}, ecco la tua libreria!",
+    "greetingHey_plain": "Ehi, ecco la tua libreria!",
+    "greetingWelcome": "Bello ritrovarti, {{name}}!",
+    "greetingWelcome_plain": "Bello ritrovarti!",
+    "greetingGoodToSeeYou": "Bello rivederti, {{name}}!",
+    "greetingGoodToSeeYou_plain": "Bello rivederti!",
+    "greetingReady": "Da dove vuoi ripartire, {{name}}?",
+    "greetingReady_plain": "Da dove vuoi ripartire?",
+    "greetingNice": "Che bello vederti, {{name}}!",
+    "greetingNice_plain": "Che bello vederti!",
+    "count_one": "{{count}} progetto",
+    "count_other": "{{count}} progetti",
+    "countWord_one": "progetto",
+    "countWord_other": "progetti",
+    "countShown_one": "{{count}} progetto mostrato",
+    "countShown_other": "{{count}} progetti mostrati",
+    "looking": "cerco…",
+    "reading": "Lettura del progetto…",
+    "newProject": "Nuovo progetto",
+    "creating": "Creazione del progetto…",
+    "findDrive": "Trova progetti nello spazio remoto",
+    "findLocal": "Trova progetti sul tuo dispositivo",
+    "chooseLocalFolder": "Scegli la cartella locale",
+    "locateFolder": "Mostra la cartella",
+    "localFolderChosen": "Cartella locale scelta — i progetti del tuo dispositivo vengono letti da lì.",
+    "findDriveNone": "Nessun progetto nuovo nello spazio di archiviazione remoto.",
+    "findLocalDone_one": "Aggiunto {{count}} progetto dal tuo dispositivo.",
+    "findLocalDone_other": "Aggiunti {{count}} progetti dal tuo dispositivo.",
+    "findLocalNone": "Nessun progetto nuovo trovato sul tuo dispositivo.",
+    "openFailed": "Non è stato possibile aprire quella cartella.",
+    "alreadyInLibrary": "\"{{title}}\" è già nella tua libreria.",
+    "signOut": "Esci",
+    "accountFor": "Account: {{email}}",
+    "findEverything": "Cerca ovunque",
+    "findLabel": "Filtra i progetti",
+    "findPlaceholder": "Filtra i progetti…",
+    "allProjects": "Tutti i progetti",
+    "storageLabel": "Spazio",
+    "sourceSummary": "{{here}} in locale, {{there}} in remoto",
+    "filterAll": "Tutti",
+    "densityLabel": "Densità della vista",
+    "grid": "Vista a griglia",
+    "list": "Vista a elenco",
+    "diskUnsupported": "non disponibile in questo browser",
+    "driveOffHint": "Tieni una seconda copia, e apri questo progetto sugli altri tuoi dispositivi.",
+    "connect": "Collega",
+    "disconnect": "Scollega",
+    "forgetLocalFolder": "Scollega la cartella locale",
+    "connectDrive": "Collega lo spazio di archiviazione remoto",
+    "disconnectDrive": "Scollega lo spazio di archiviazione remoto",
+    "disconnectRemoteHere": "Solo da questo browser",
+    "disconnectRemoteEverywhere": "Da tutti i dispositivi",
+    "disconnectRemoteTitle": "Scollegare lo spazio di archiviazione remoto?",
+    "disconnectRemoteBody": "Dallo spazio di archiviazione remoto vengono eliminate:",
+    "disconnectRemoteFailed": "Non è stato possibile eliminare impostazioni e libreria, quindi lo spazio di archiviazione remoto è ancora collegato. Riprova tra poco.",
+    "words": "parole",
+    "shape": "{{parts}} parti · {{sections}} sezioni",
+    "ofGoal": "{{pct}}% dell'obiettivo",
+    "edited": "modificato {{when}}",
+    "locked": "Per aprirlo, scegli la cartella che contiene i tuoi progetti.",
+    "reconnect": "Scegli la cartella",
+    "goneLocal": "Non è più sul tuo dispositivo.",
+    "goneLocalHint": "Ricompare quando cerchi i progetti sul tuo dispositivo.",
+    "unknownProject": "Quel link non porta a nessuno dei tuoi progetti.",
+    "goneDrive": "Non è più nello spazio di archiviazione remoto.",
+    "unreadable": "Non è stato possibile leggere questo progetto.",
+    "remove": "Rimuovi dalla libreria",
+    "removed": "“{{title}}” rimosso dalla tua libreria. Non è stato cancellato nulla.",
+    "actionsFor": "Azioni per {{title}}",
+    "revealInDrive": "Apri in {{storage}}",
+    "syncToDrive": "Sincronizza con lo spazio remoto",
+    "synced": "Sincronizzato",
+    "syncPending": "In attesa di sincronizzazione",
+    "properties": "Proprietà",
+    "propertiesTitle": "Proprietà del progetto",
+    "titleLabel": "Titolo",
+    "propertiesReading": "Lettura del progetto…",
+    "folderKeeps": "La cartella resta",
+    "structureNote": "Non aggiunge né sposta nulla: le Parti che hai già restano come sono.",
+    "propertiesSave": "Salva",
+    "propertiesClose": "Chiudi",
+    "propertiesSaved": "Proprietà di “{{title}}” salvate.",
+    "folderBecomes": "La cartella diventa",
+    "duplicate": "Duplica",
+    "duplicateTitle": "Duplica questo progetto",
+    "duplicateLede": "Crea una copia in una nuova cartella accanto all'originale, che resta com'è. Le esportazioni già fatte non vengono copiate.",
+    "duplicateLedeDriveSource": "Crea una copia in una nuova cartella nello spazio di archiviazione locale. La copia non si sincronizza con lo spazio remoto, anche se l'originale lo fa. L'originale resta com'è e le esportazioni già fatte non vengono copiate.",
+    "duplicateConfirm": "Duplica",
+    "duplicated": "Duplicato come “{{title}}”.",
+    "duplicateCancelled": "Hai interrotto la duplicazione di “{{name}}”: nella Libreria non è stato aggiunto nulla.",
+    "copyOf": "{{title}} (copia)",
+    "deleteFolder": "Elimina",
+    "deleteFolderTitle": "Eliminare la cartella di questo progetto?",
+    "deleteFolderBody": "La cartella e tutto ciò che contiene finiscono nel cestino di {{storage}}, da dove puoi recuperarli. {{product}} non può farlo al posto tuo.",
+    "deleteFolderBodySynced": "La copia nello spazio di archiviazione remoto e tutto ciò che contiene finiscono nel cestino di {{storage}}, da dove puoi recuperarli. La cartella su questo dispositivo non viene toccata, e smette di sincronizzarsi.",
+    "deleteFolderConfirm": "Elimina la cartella",
+    "deleteFolderCancel": "Tienila",
+    "deleted": "“{{title}}” è nel cestino di {{storage}}.",
+    "copyingTitle": "Copia nello spazio remoto",
+    "copyingLede": "Copia di “{{name}}” in corso. L'originale sul tuo dispositivo non viene toccato.",
+    "copyCancelled": "Copia interrotta dopo {{done}} file su {{total}}. I file già copiati sono rimasti nella cartella di destinazione.",
+    "syncConfirmTitle": "Sincronizzare questo progetto con lo spazio di archiviazione remoto?",
+    "syncConfirmLede": "Crea una copia nello spazio di archiviazione remoto e, finché l'app è aperta, tiene le due copie allineate. Se lo modifichi in due posti prima che si sincronizzino, {{product}} ti chiederà quale versione tenere.",
+    "syncConfirmConfirm": "Sincronizza con lo spazio remoto",
+    "driveDisconnectedNote": "Al momento è solo nello spazio remoto: ricollegalo per aprirlo.",
+    "driveDisconnectedBanner": "Lo spazio di archiviazione remoto non è collegato: finché non lo ricolleghi, i progetti che tieni lì non si aprono e non si aggiornano.",
+    "localDisconnectedBanner": "La cartella locale non è stata scelta: finché non la scegli, i progetti del tuo dispositivo non si aprono e non si aggiornano.",
+    "localPermissionBanner": "{{product}} ha di nuovo bisogno del tuo permesso. Scegli la cartella per ripristinare l'accesso — il browser può ricordare la scelta, così non dovrà chiedertelo di nuovo.",
+    "signOutTitle": "Uscire?",
+    "signOutClean": "Esci e cancella tutto",
+    "signOutHeldTitle_one": "Modifiche non ancora sincronizzate in {{count}} file",
+    "signOutHeldTitle_other": "Modifiche non ancora sincronizzate in {{count}} file",
+    "signOutHeldConfirm": "Esci e perdi le modifiche",
+    "signOutProfileUnsaved": "Impostazioni e libreria restano nello spazio di archiviazione remoto, senza le ultime modifiche: quando lo ricolleghi le ritrovi come erano prima.",
+    "signOutDismiss": "Non uscire",
+    "signOutFailed": "L'uscita non è riuscita. Riprova.",
+    "signOutDisconnectFailed": "L'uscita non è riuscita: lo spazio di archiviazione remoto non si è scollegato. Non è cambiato nulla. Riprova tra poco.",
+    "signOutFailedDisconnected": "Lo spazio di archiviazione remoto è scollegato, ma l'uscita non è riuscita. Riprova.",
+    "syncingTitle": "Sincronizzazione con lo spazio remoto",
+    "syncingLede": "“{{name}}” viene copiato nello spazio di archiviazione remoto e da ora in poi resterà sincronizzato.",
+    "syncStarted": "“{{name}}” da ora si sincronizza con lo spazio di archiviazione remoto.",
+    "syncRowLost": "“{{name}}” è stato copiato nello spazio di archiviazione remoto, ma è uscito dalla tua libreria mentre la copia era in corso: la sincronizzazione non è partita.",
+    "unpair": "Disattiva la sincronizzazione",
+    "unpaired": "“{{name}}” non è più sincronizzato con lo spazio di archiviazione remoto. Entrambe le copie restano intatte.",
+    "moveToDrive": "Sposta nello spazio remoto",
+    "moveToDriveTitle": "Spostare questo progetto nello spazio di archiviazione remoto?",
+    "moveToDriveLede": "{{product}} copia il progetto nello spazio di archiviazione remoto, senza le esportazioni già fatte, e da quel momento lavora su quella copia. La cartella su questo dispositivo resta com'è, ma l'app non la aggiorna più.",
+    "moveToDriveConfirm": "Sposta nello spazio remoto",
+    "movedToDrive": "“{{name}}” spostato nello spazio di archiviazione remoto.",
+    "moveToLocal": "Sposta sul tuo dispositivo",
+    "moveToLocalTitle": "Spostare questo progetto sul tuo dispositivo?",
+    "moveToLocalBody": "{{product}} copia il progetto nella cartella dello spazio di archiviazione locale, senza le esportazioni già fatte. Una volta verificata la copia, la cartella originale finisce nel cestino di {{storage}}, da dove puoi sempre recuperarla.",
+    "moveToLocalConfirm": "Sposta sul tuo dispositivo",
+    "moveToLocalCancel": "Tienilo nello spazio remoto",
+    "movedToLocal": "“{{name}}” spostato sul tuo dispositivo.",
+    "moveToLocalOwed": "“{{name}}” ha ancora modifiche in corso di sincronizzazione con lo spazio remoto. Riprova quando la sincronizzazione sarà terminata.",
+    "movingTitle": "Spostamento del progetto",
+    "movingLede": "Copia di “{{name}}” in corso. L'originale resta dov'è finché la copia non è completa.",
+    "driveOffTitle": "Lo spazio di archiviazione remoto non è collegato.",
+    "driveOffBody": "Collega lo spazio di archiviazione remoto per aprire i progetti che tieni lì. {{product}} lavora su una copia conservata su questo dispositivo e sincronizza le modifiche con lo spazio remoto.",
+    "driveEmptyTitle": "Ancora nessun progetto nello spazio remoto.",
+    "driveEmptyBody": "Puoi creare qui nuovi progetti e tenerli nello spazio remoto, oppure {{product}} può cercare quelli che ci sono già.",
+    "localEmptyTitle": "Nessun progetto sul tuo dispositivo.",
+    "localEmptyBody": "Un progetto è una cartella. {{product}} legge la cartella che contiene tutti i tuoi progetti: scegli quella e compariranno qui.",
+    "localScannedEmptyTitle": "Ancora nessun progetto {{product}} qui.",
+    "localScannedEmptyBody": "La cartella locale è scelta, ma non contiene ancora progetti {{product}}. Crea un progetto e comparirà qui — oppure scegli una cartella diversa.",
+    "noMatchTitle": "Nessun risultato.",
+    "noMatchHere": "Lì non c'è ancora nessun progetto.",
+    "clearFilters": "Azzera ricerca e filtri",
+    "driveFailed": "Non è stato possibile collegare lo spazio di archiviazione remoto. Riprova.",
+    "driveAccountMismatch": "Questo account Google non è quello con cui accedi. Ricollega usando {{loginEmail}} per continuare.",
+    "driveScopeMissing": "L'accesso a {{storage}} non è stato concesso. Riprova, e lascia selezionata l'opzione {{storage}} nella schermata dei permessi.",
+    "driveRevokePending": "Lo spazio di archiviazione remoto è scollegato, ma {{identity}} non ha confermato la revoca dell'accesso di {{product}}. Puoi revocarlo tu: nel tuo account {{identity}} apri Sicurezza e rimuovi {{product}} dalle app di terze parti collegate.",
+    "exportToFile": "Esporta in un file",
+    "greetingFirstWelcome": "Che bello averti qui, {{name}}.",
+    "greetingFirstWelcome_plain": "Ti do il benvenuto.",
+    "greetingFirstHello": "Ciao {{name}}, cominciamo.",
+    "greetingFirstHello_plain": "Ciao, cominciamo.",
+    "greetingFirstBegin": "Una prima pagina ti aspetta, {{name}}.",
+    "greetingFirstBegin_plain": "Una prima pagina ti aspetta.",
+    "setup": {
+      "title": "Scegli dove tenere i tuoi progetti",
+      "localName": "Spazio locale",
+      "localNote": "Una cartella su questo dispositivo.",
+      "remoteName": "Spazio remoto",
+      "remoteNote": "Il tuo spazio remoto, così i progetti ti seguono sugli altri tuoi dispositivi.",
+      "addLocal": "Aggiungi anche lo spazio locale",
+      "addRemote": "Aggiungi anche lo spazio remoto"
+    },
+    "welcome": {
+      "startTitle": "Inizia il primo progetto",
+      "startBody": "I tuoi progetti compariranno come schede, con parole, avanzamento e ultima modifica.",
+      "lockNote": "Prima scegli dove tenere i tuoi progetti.",
+      "foundTitle_one": "Trovato {{count}} progetto",
+      "foundTitle_other": "Trovati {{count}} progetti",
+      "foundBody": "La tua libreria è pronta. Aprila, o inizia qualcosa di nuovo.",
+      "show": "Mostra i miei progetti",
+      "explore": "Esplora il progetto d'esempio"
+    },
+    "noMatchQueryTitle": "Nessun progetto corrisponde a “{{query}}”",
+    "noMatchSearched_one": "Ricerca fatta sul titolo e sul nome della cartella di {{count}} progetto.",
+    "noMatchSearched_other": "Ricerca fatta sui titoli e sui nomi delle cartelle di {{count}} progetti.",
+    "identityUnavailable": "L'accesso non risponde, quindi non puoi collegare lo spazio remoto. Chiudi {{product}} e avvialo di nuovo, poi riprova.",
+    "accountWithoutGoogle": "Il tuo account su questo dispositivo",
+    "driveNeedsGoogle": "Lo spazio di archiviazione remoto richiede un account {{identity}}. Per usarlo, esci e accedi con {{identity}}.",
+    "driveNeedsAccount": "Richiede un account {{identity}}",
+    "signOutLead": "Vengono eliminate:",
+    "signOutLeadConnected": "Vengono eliminati:",
+    "signOutAfter": "Non ce n'è una copia altrove: si perdono.",
+    "signOutAfterConnected": "Impostazioni e libreria restano nello spazio di archiviazione remoto: le ritrovi quando lo ricolleghi.",
+    "signOutAfterKept": "Impostazioni e libreria restano nello spazio di archiviazione remoto, come erano quando l'hai scollegato: le ritrovi quando lo ricolleghi.",
+    "signOutHeldLost": "Le modifiche si perdono.",
+    "signOutHeldLeave": "Le modifiche si sincronizzano al prossimo accesso.",
+    "signOutHeldLeaveDisconnected": "Le modifiche restano qui finché non ricolleghi lo spazio di archiviazione remoto.",
+    "disconnectRemoteAfter": "Un dispositivo nuovo ripartirà da zero.",
+    "disconnectRemoteDisconnectFailed": "Non è stato possibile scollegare lo spazio di archiviazione remoto. Riprova tra poco.",
+    "disconnectRemoteDeletedNotDisconnected": "Impostazioni e libreria sono state eliminate, ma non è stato possibile scollegare lo spazio di archiviazione remoto. Riprova tra poco.",
+    "signOutChoiceLeave": "Lascia tutto com'è",
+    "signOutChoiceClean": "Cancella tutto da questo browser",
+    "signOutLeaveSub": "Al prossimo accesso da questo browser ritrovi tutto.",
+    "signOutHeldItem_one": "le modifiche non ancora sincronizzate in {{count}} file",
+    "signOutHeldItem_other": "le modifiche non ancora sincronizzate in {{count}} file",
+    "disconnectRemoteHereSub": "Gli altri dispositivi restano collegati.",
+    "disconnectRemoteEverywhereSub": "{{product}} revoca il suo accesso al tuo account {{identity}}: dovrai ricollegarlo su ognuno. Impostazioni e libreria restano nello spazio di archiviazione remoto.",
+    "disconnectRemoteEverywhereDelete": "Da tutti i dispositivi, eliminando i dati",
+    "disconnectRemoteConfirm": "Scollega",
+    "disconnectRemoteConfirmDelete": "Scollega ed elimina",
+    "restore": {
+      "title": "Cerco i tuoi dati nello spazio di archiviazione remoto",
+      "note": "Se le trovo, le porto su questo dispositivo.",
+      "stepSearch": "Cerco impostazioni e libreria",
+      "stepLibrary": "Aggiorno la libreria",
+      "foundTitle": "Dati ritrovati",
+      "foundLead": "Dallo spazio di archiviazione remoto sono arrivate su questo dispositivo:",
+      "library_one": "la libreria ({{count}} progetto)",
+      "library_other": "la libreria ({{count}} progetti)",
+      "noneTitle": "Nessun dato da ritrovare",
+      "none": "Nello spazio di archiviazione remoto non c'erano impostazioni né libreria. Questo dispositivo continua con le sue, e da ora ne tiene una copia lì.",
+      "unreachable": "Non è stato possibile cercare i tuoi dati. Riprovo da solo appena possibile; intanto questo dispositivo continua con le sue impostazioni."
+    },
+    "findDriveTitle": "Cerco progetti nello spazio di archiviazione remoto",
+    "findDriveStepList": "Cerco i progetti",
+    "findDriveStepAdd": "Li aggiungo alla libreria",
+    "findDriveFailed": "Non è stato possibile leggere lo spazio di archiviazione remoto. Riprova tra poco.",
+    "search": {
+      "background": "Continua senza aspettare",
+      "close": "Chiudi",
+      "retry": "Riprova",
+      "count": "{{done}} di {{total}}",
+      "foundTitle": "Progetti trovati",
+      "added": "Aggiunti alla tua libreria:",
+      "more_one": "e altri {{count}}",
+      "more_other": "e altri {{count}}",
+      "noneTitle": "Nessun progetto nuovo",
+      "unreachableTitle": "Lo spazio di archiviazione remoto non risponde"
+    }
+  },
+  "sync": {
+    "conflictTitle": "“{{name}}” è stato modificato in due posti",
+    "thisComputer": "Il tuo dispositivo",
+    "googleDrive": "Spazio remoto",
+    "sideStats": "{{words}} parole, modificato {{when}}",
+    "sideWordsOnly": "{{words}} parole",
+    "unknownSide": "Nessun dettaglio disponibile",
+    "keepLocal": "Tieni la versione del tuo dispositivo",
+    "keepDrive": "Tieni la versione nello spazio remoto",
+    "resolved": "Di “{{name}}” è stata tenuta la versione {{side}}.",
+    "resolvedLocal": "del tuo dispositivo",
+    "resolvedDrive": "dello spazio remoto",
+    "resolveFailed": "Non è stato possibile risolvere il conflitto. Riprova.",
+    "remoteUnsettled": "La copia di “{{name}}” nello spazio remoto non è ancora completa: forse un altro dispositivo la sta ancora caricando. Non è cambiato nulla. Riprova tra poco.",
+    "localUnsettled": "La copia di “{{name}}” su questo dispositivo non corrisponde al suo indice, quindi non si può tenere. Non è cambiato nulla. Tieni invece la copia nello spazio remoto.",
+    "pulled": "Scaricate le modifiche di “{{name}}” dallo spazio di archiviazione remoto.",
+    "syncNow": "Sincronizza ora",
+    "upToDate": "“{{name}}” è già aggiornato.",
+    "stillUploading": "Un altro dispositivo sta ancora caricando “{{name}}”. Tra poco riprova con Sincronizza ora.",
+    "goneTitle": "Non è possibile trovare “{{name}}”: non è più nello spazio remoto",
+    "goneBody": "È stato eliminato o spostato nel cestino. La copia sul tuo dispositivo è intatta.",
+    "uploadAgain": "Caricalo di nuovo",
+    "uploadAgainFailed": "Non è stato possibile caricare di nuovo “{{name}}”. Riprova."
+  },
+  "palette": {
+    "label": "Tavolozza dei comandi",
+    "filter": "Filtra",
+    "close": "Chiudi la tavolozza",
+    "placeholder": "Vai a un progetto, o scrivi un comando…",
+    "noMatch": "Nessun risultato per “{{query}}”",
+    "groupCreate": "Crea",
+    "groupGo": "Vai",
+    "groupAccount": "Account"
+  },
+  "create": {
+    "title": "Comincia un progetto",
+    "start": {
+      "title": "Come vuoi iniziare?",
+      "blank": "Da zero",
+      "blankSub": "un progetto vuoto, con la forma che scegli tu",
+      "manuscript": "Importando un manoscritto esistente",
+      "manuscriptSub": "porta il tuo lavoro in {{product}} e continua a svilupparlo con tutti gli strumenti che ti mette a disposizione."
+    },
+    "nameLabel": "Come si chiama?",
+    "authorLabel": "Autore",
+    "namePlaceholder": "Once Dark",
+    "creates": "crea",
+    "folderStub": "il-tuo-titolo/",
+    "confirm": "Crea la cartella",
+    "whereLabel": "Dove deve stare?",
+    "localSub": "nella cartella che hai scelto · resta sul tuo dispositivo",
+    "localSubNoRoot": "scegli prima la cartella locale · da quel momento resta impostata",
+    "driveSub": "{{email}} · lo ritrovi su ogni dispositivo in cui accedi",
+    "connectDriveHint": "Collega lo spazio di archiviazione remoto nelle Impostazioni per tenere i progetti anche lì.",
+    "noDestinationHint": "Non è ancora impostato nulla — scegli la cartella locale o collega lo spazio di archiviazione remoto nelle Impostazioni.",
+    "noDestinationHintLocal": "Non è ancora impostato nulla — scegli la cartella locale nelle Impostazioni.",
+    "structureLabel": "Struttura",
+    "shape": {
+      "empty": "Nessuna struttura",
+      "threeact": "Tre atti",
+      "kishotenketsu": "Kishōtenketsu (quattro atti)",
+      "freytagspyramid": "Piramide di Freytag",
+      "herosjourney": "Viaggio dell'eroe"
+    },
+    "shapeDesc": {
+      "empty": "Nulla viene predisposto in anticipo — nessuna Parte viene creata e nessuna forma viene scelta al posto tuo.",
+      "threeact": "I Tre atti dividono la storia in Presentazione, Confronto e Risoluzione: il mondo com'era, il guaio che lo spezza, e come ritrova la sua pace.",
+      "kishotenketsu": "Il Kishōtenketsu viene dalla tradizione dell'Asia orientale e costruisce la storia in quattro atti: Ki (introduzione), Sho (sviluppo), Ten (svolta) e Ketsu (conclusione). Il suo perno è la svolta, non un conflitto centrale: Ten getta una luce nuova su quanto è venuto prima, e Ketsu ricompone il quadro.",
+      "freytagspyramid": "La Piramide di Freytag distende un arco drammatico su cinque Parti: Esposizione, Azione ascendente, Climax, Azione discendente e Scioglimento.",
+      "herosjourney": "Il Viaggio dell'eroe accompagna qualcuno fuori dal proprio mondo ordinario, attraverso prove che lo trasformano, fino al ritorno a casa come persona diversa: Partenza, Iniziazione e Ritorno."
+    },
+    "shapeFit": {
+      "empty": "Parti da una pagina bianca e lascia che sia il progetto a trovare la sua forma.",
+      "threeact": "Un'impalcatura affidabile per un romanzo che si regge sulla trama — e una buona prima struttura, se non ne hai mai usata una.",
+      "kishotenketsu": "Adatto a una scrittura quieta, che vive di personaggi.",
+      "freytagspyramid": "La mappa delle storie con un'unica grande cima di tensione — sta a pennello a gialli e drammi.",
+      "herosjourney": "Adatto ad avventura e fantasy raccontati su un unico arco completo."
+    },
+    "languageLabel": "Lingua",
+    "languageNote": "La lingua in cui scrivi — le funzionalità AI la useranno.",
+    "typeLabel": "Tipo",
+    "customTypeLabel": "Tipo personalizzato",
+    "customTypePlaceholder": "es. Sceneggiatura, Memorie…",
+    "customTypeRequired": "Dai un nome al tipo, oppure scegline uno dall'elenco.",
+    "typeName": {
+      "novel": "Romanzo",
+      "epicNovel": "Romanzo epico",
+      "shortStory": "Racconto",
+      "novella": "Romanzo breve",
+      "flashFiction": "Flash fiction",
+      "other": "Altro"
+    },
+    "typeGuide": {
+      "novel": "Un romanzo va in genere dalle 50.000 alle 110.000 parole circa.",
+      "epicNovel": "Un romanzo epico supera in genere le 110.000 parole circa.",
+      "novella": "Un romanzo breve va in genere dalle 20.000 alle 50.000 parole circa.",
+      "shortStory": "Un racconto va in genere dalle 1.000 alle 7.500 parole circa.",
+      "flashFiction": "La flash fiction resta in genere sotto le 1.000 parole."
+    },
+    "goalLabel": "Obiettivo",
+    "goalPlaceholder": "50000",
+    "goalHint": "Il numero di parole a cui punti.",
+    "goalInvalid": "Un numero intero di parole.",
+    "goalRequired": "Serve un obiettivo — è il riferimento con cui si misura il progetto.",
+    "continue": "Continua",
+    "back": "Indietro",
+    "creating": "Un attimo — sto preparando tutto.",
+    "progressCount": "{{done}} di {{total}}",
+    "failed": "Non è stato possibile creare il progetto.",
+    "recapGoal": "{{count}} parole",
+    "stepStructure": "Struttura e lingua",
+    "stepKind": "Tipo e obiettivo",
+    "stepLanguage": "Lingua",
+    "progress": {
+      "folder": "Creazione della cartella",
+      "documents": "Preparazione del manoscritto",
+      "properties": "Salvataggio delle proprietà del progetto",
+      "structure": "Costruzione della struttura",
+      "workspace": "Preparazione della cartella di lavoro",
+      "adopt": "Aggiunta alla libreria"
+    },
+    "partSetup": "Presentazione",
+    "partConfrontation": "Confronto",
+    "partResolution": "Risoluzione",
+    "partKi": "Ki",
+    "partSho": "Sho",
+    "partTen": "Ten",
+    "partKetsu": "Ketsu",
+    "partExposition": "Esposizione",
+    "partRising": "Azione ascendente",
+    "partClimax": "Climax",
+    "partFalling": "Azione discendente",
+    "partDenouement": "Scioglimento",
+    "partDeparture": "Partenza",
+    "partInitiation": "Iniziazione",
+    "partReturn": "Ritorno",
+    "stepGenre": "Genere e pubblico"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "close": "Chiudi le impostazioni",
+    "paneLook": "Come si presenta",
+    "paneWords": "Dove stanno le parole",
+    "paneEditor": "Come scrivi",
+    "paneAi": "Configura la tua AI",
+    "paneYou": "Chi sei",
+    "paneAbout": "Informazioni",
+    "aboutTagline": "The same spark",
+    "aboutNote": "Uno strumento per scrivere: il manoscritto, la sua struttura, i tuoi appunti e un assistente, in un unico posto tranquillo.",
+    "aboutVersion": "Versione {{version}}",
+    "aboutLicense": "Software libero, rilasciato con licenza GNU Affero General Public License, versione 3 o successiva.",
+    "aboutLicenseLink": "Leggi la licenza",
+    "aboutSourceLink": "Codice sorgente",
+    "storage": "Dove stanno le tue parole",
+    "driveOn": "collegato · {{email}}",
+    "driveOffHint": "Tieni una seconda copia, e apri questo progetto sugli altri tuoi dispositivi.",
+    "driveExplainer": "Collega lo spazio di archiviazione remoto per tenerci i progetti, o per sincronizzare quelli che hai su questo dispositivo. Scegli tu quali progetti sincronizzare; le modifiche arrivano nello spazio remoto finché tieni l'app aperta e c'è connessione.",
+    "driveCan": "Può leggere e scrivere solo i progetti che ha creato",
+    "driveCannotSee": "Non può vedere il resto del tuo spazio di archiviazione remoto",
+    "driveCannotCopy": "I tuoi documenti stanno nello spazio di archiviazione remoto. Questo browser ne tiene anche una copia di lavoro e le modifiche non ancora salvate lì, oltre a impostazioni e Libreria. Se usi un modello AI remoto, il testo che gli serve va da questo dispositivo al fornitore del modello AI",
+    "diskOffHint": "I tuoi progetti stanno in una cartella che è tua, sul tuo dispositivo.",
+    "diskOn": "una cartella sul tuo dispositivo",
+    "diskCan": "Può leggere e scrivere solo nella cartella che hai scelto",
+    "diskCannot": "I tuoi documenti restano nella cartella che hai scelto, su questo dispositivo; oltre a quelli, il browser conserva solo impostazioni e Libreria. Se usi un modello AI remoto, il testo che gli serve va da questo dispositivo al fornitore del modello AI",
+    "accountNote": "Accesso con Google. Impostazioni e libreria restano su questo dispositivo e, finché lo spazio di archiviazione remoto è collegato, anche lì: così le ritrovi su ogni dispositivo in cui lo colleghi.",
+    "deleteAccount": "Elimina il tuo account",
+    "deleteAccountNote": "Elimina impostazioni e libreria da questo browser e, se lo spazio di archiviazione remoto è collegato, anche da lì. I tuoi progetti non vengono toccati.",
+    "deleteAccountTitle": "Eliminare il tuo account?",
+    "deleteAccountConfirm": "Elimina il mio account",
+    "deleteAccountCancel": "Tienilo",
+    "deleteAccountFailed": "Non è stato possibile eliminare l'account. Non è cambiato nulla.",
+    "deleteAccountRevokeFailed": "Impostazioni e libreria sono state eliminate dallo spazio di archiviazione remoto, ma non è stato possibile scollegarlo: l'account non è stato eliminato. Riprova tra poco.",
+    "editor": "Il tuo editor, a modo tuo",
+    "editorHint": "Decidi come l'editor appare e si comporta per impostazione predefinita. Ogni progetto parte con queste impostazioni; puoi comunque cambiarle per un singolo progetto.",
+    "turnedOn": "attivata",
+    "turnedOff": "disattivata",
+    "theme": "Tema",
+    "themeHint": "Cambia subito e, finché lo spazio di archiviazione remoto è collegato, vale anche sugli altri dispositivi in cui lo colleghi.",
+    "themeVariant": "Chiaro o scuro",
+    "themeSystem": "come il sistema",
+    "language": "Lingua",
+    "languageHint": "Cambia subito la lingua dell'app e, finché lo spazio di archiviazione remoto è collegato, vale anche sugli altri dispositivi in cui lo colleghi. Il manoscritto non viene mai tradotto.",
+    "account": "Account",
+    "aiLocal": "Modelli AI locali",
+    "aiRemote": "Modelli AI remoti",
+    "aiLocalName": "{{localProvider}}",
+    "aiLocalState": {
+      "idle": "su questo dispositivo",
+      "checking": "connessione…",
+      "connected": "collegato · su questo dispositivo",
+      "failed": "non raggiungibile, o senza modelli di chat"
+    },
+    "aiLocalCan": "Risponde sul tuo dispositivo, senza account e senza rete",
+    "aiLocalCannot": "Non può mandare in rete quello che scrivi",
+    "aiLocalCannotCloud": "Non può usare i modelli cloud di {{localProvider}}",
+    "aiRemoteNone": "Nessun fornitore di modelli AI collegato.",
+    "aiRemoteExpires": "scade il {{date}}",
+    "aiRemoteLimit": "tetto di spesa {{amount}}",
+    "aiRemoteLimitRenews": {
+      "daily": "tetto di spesa {{amount}} al giorno",
+      "weekly": "tetto di spesa {{amount}} a settimana",
+      "monthly": "tetto di spesa {{amount}} al mese"
+    },
+    "aiRemoteChoose": "Modelli nell'elenco",
+    "aiRemoteChooseHint": "Quelli che ti vengono proposti quando scegli un modello nell'editor.",
+    "aiRemoteFilter": "Filtra i modelli",
+    "aiRemoteChosen": "{{chosen}} di {{max}} scelti",
+    "aiRemoteShowing": "Ne vedi {{shown}} su {{matched}}. Restringi la ricerca per trovare gli altri.",
+    "aiRemoteFull": "Sono tutti quelli che l'elenco può tenere. Togline uno per aggiungerne un altro.",
+    "aiRemoteReading": "Lettura del catalogo…",
+    "aiRemoteUnread": "Non è stato possibile leggere il catalogo.",
+    "aiRemoteNoMatch": "Nessun risultato.",
+    "ollamaEndpoint": "Indirizzo di {{localProvider}}",
+    "ollamaAddressDefault": "Predefinito",
+    "ollamaAddressCustom": "Personalizzato",
+    "ollamaAddressSave": "Salva",
+    "ollamaAddressInvalid": "Non è un indirizzo di questo dispositivo. Prova con {{address}}.",
+    "ollamaModel": "Modello",
+    "chooseModel": "Collegati per vedere i modelli installati",
+    "aiRemoteRequirement": "Quando ti colleghi, {{host}} crea una chiave per l'app. Ti chiederà un tetto di spesa: scegli {{amount}} o meno. Un tetto vuoto vuol dire illimitato, e la chiave viene rifiutata.",
+    "aiModelFree": "Gratuito",
+    "aiModelPrice": "{{input}} in ingresso · {{output}} in uscita, per milione di token",
+    "aiTools": "con strumenti",
+    "aiChatOnly": "solo chat",
+    "testOllama": "Prova la connessione",
+    "checkingOllama": "Controllo…",
+    "aiProbe": {
+      "verified": "uso degli strumenti verificato",
+      "unverified": "solo chat",
+      "skipped": "non su questo dispositivo — uso degli strumenti non provato"
+    },
+    "ollamaSetup": "Prima installa {{localProvider}} e scarica un modello. Per cercare e leggere nel progetto serve un modello che sappia usare gli strumenti.",
+    "aiRemoteConnected": "collegato",
+    "aiRemoteDisconnected": "non collegato",
+    "aiRemoteConnect": "Collega",
+    "aiRemoteReconnect": "Crea una nuova chiave",
+    "aiRemoteConnecting": "In attesa di approvazione…",
+    "aiRemoteTransit": "Le domande che fai all'AI vanno dal tuo dispositivo direttamente a {{host}}, senza passare da altri server.",
+    "aiRemoteBlocked": "Il browser ha bloccato la finestra di approvazione. Consenti i pop-up per questo sito, poi riprova.",
+    "aiRemoteDisconnect": "Rimuovi la chiave",
+    "aiRemoteRefusal": {
+      "management-key": "È una chiave di gestione, che può crearne altre. Collegati con una chiave normale.",
+      "no-limit": "La chiave non ha un tetto di spesa. Riprova e impostane uno di {{amount}} al massimo.",
+      "limit-too-high": "Il tetto di spesa della chiave supera {{amount}}. Riprova con uno più basso.",
+      "already-expired": "La chiave era già scaduta. Riprova.",
+      "exchange-expired": "L'approvazione è scaduta prima di essere usata. Riprova.",
+      "exchange-failed": "{{host}} non ha consegnato nessuna chiave. Non è stato salvato nulla.",
+      "unreachable": "{{host}} non risponde. Non è stato salvato nulla.",
+      "revoked": "{{host}} non accetta più questa chiave. Collegati di nuovo per averne una nuova."
+    },
+    "accountNoteWithoutGoogle": "Impostazioni e libreria restano solo su questo dispositivo. Quando esci, puoi lasciarle qui per la prossima volta oppure cancellarle.",
+    "deleteAccountLead": "L'account viene eliminato. Da questo dispositivo vengono eliminate:",
+    "deleteAccountLeadConnected": "L'account viene eliminato. Da questo dispositivo e dallo spazio di archiviazione remoto vengono eliminate:",
+    "deleteAccountAfterConnected": "{{product}} revoca il suo accesso al tuo account {{identity}}.",
+    "deleteAccountAfterKept": "Impostazioni e libreria restano nello spazio di archiviazione remoto, dove le hai lasciate: per eliminarle, ricollegalo prima di eliminare l'account.",
+    "deleteAccountRemoteFailed": "Non è stato possibile eliminare impostazioni e libreria dallo spazio di archiviazione remoto, quindi l'account non è stato eliminato. Riprova tra poco.",
+    "deleteAccountLocalFailed": "Impostazioni e libreria sono state eliminate dallo spazio di archiviazione remoto e lo spazio è scollegato, ma non è stato possibile eliminare l'account da questo dispositivo. Riprova.",
+    "aiRemoteRememberQuestion": "Vuoi che questo dispositivo si ricordi la chiave?",
+    "aiRemoteRememberNo": "No, ne creo una nuova ogni volta",
+    "aiRemoteRememberYes": "Sì, ricordala",
+    "aiRemoteRememberYesMore": "La chiave resta salvata in questo browser, cifrata in un cookie. Ne crei una nuova solo quando scade o finisce il suo tetto di spesa.",
+    "aiRemoteRememberUnavailable": "Questo dispositivo non può memorizzare la chiave.",
+    "aiRemoteRememberNoMore": "Quando chiudi l'app la chiave viene dimenticata, e la volta dopo ne crei una nuova.",
+    "aiRemoteKeys": "Gestisci le chiavi su {{host}}",
+    "aiRemoteRemoved": "La chiave rimossa funziona ancora su {{host}} finché non la elimini lì."
+  },
+  "toolbar": {
+    "normalText": "Testo normale",
+    "monospace": "Monospace",
+    "title": "Titolo (H1)",
+    "subtitle": "Sottotitolo (H2)",
+    "body": "Corpo",
+    "bold": "Grassetto",
+    "italic": "Corsivo",
+    "toggleCase": "Maiuscole/minuscole",
+    "alignLeft": "Allinea a sinistra",
+    "alignCenter": "Allinea al centro",
+    "alignRight": "Allinea a destra",
+    "justify": "Giustifica",
+    "undo": "Annulla",
+    "redo": "Ripeti",
+    "cut": "Taglia",
+    "copy": "Copia",
+    "paste": "Incolla",
+    "pastePlain": "Incolla senza formattazione",
+    "selectAll": "Seleziona tutto",
+    "searchWeb": "Cerca su internet",
+    "specialChars": "Caratteri speciali",
+    "save": "Salva",
+    "search": "Cerca",
+    "formatting": "Formattazione",
+    "pageBreak": "Interruzione di pagina",
+    "repetitionTooltip": "Testo ripetuto: evidenziato per far notare le ripetizioni involontarie",
+    "blockType": "Tipo di blocco",
+    "inlineFace": "Carattere del testo",
+    "alignment": "Allineamento",
+    "assistant": "Illumina!",
+    "assistantWaiting": "Illumina! — una ricerca attende una tua risposta",
+    "snapshot": "Istantanee",
+    "history": "Cronologia",
+    "comments": "Commenti",
+    "showComments": "Mostra i commenti",
+    "hideComments": "Nascondi i commenti",
+    "previousComment": "Commento precedente",
+    "nextComment": "Commento successivo",
+    "saved": "Salvato",
+    "comparing": "Confronto",
+    "saving": "Salvataggio",
+    "unsaved": "Non salvato",
+    "pushing": "Sincronizzazione con lo spazio remoto",
+    "notSaved": "Salvataggio non riuscito",
+    "autosave": "Salvataggio automatico",
+    "today": "Oggi"
+  },
+  "titlebar": {
+    "backToLibrary": "Torna ai tuoi progetti",
+    "back": "Indietro",
+    "toDesk": "Vai alla Scrivania",
+    "palette": "Tavolozza"
+  },
+  "search": {
+    "placeholder": "Cerca in questo testo…",
+    "caseSensitive": "Distingui maiuscole",
+    "wholeWord": "Parola intera",
+    "hyphensJoinWords": "Il trattino unisce le parole (e-mail è una parola)",
+    "prev": "Precedente",
+    "next": "Successivo",
+    "close": "Chiudi",
+    "clear": "Cancella ricerca",
+    "noResults": "Nessun risultato",
+    "replacePlaceholder": "Sostituisci con…",
+    "replace": "Sostituisci",
+    "replaceAll": "Sostituisci tutto",
+    "clearFormatting": "Sostituzione senza formattazione"
+  },
+  "dialog": {
+    "markdown": "Markdown",
+    "allFiles": "Tutti i file"
+  },
+  "confirm": {
+    "cancel": "Annulla",
+    "continue": "Continua",
+    "done": "Fatto"
+  },
+  "tree": {
+    "panelLabel": "Struttura del progetto",
+    "loading": "Lettura della cartella…",
+    "emptyDocument": "Questo progetto non contiene ancora nulla.",
+    "unsupportedTitle": "Non supportato qui",
+    "unsupportedBrowser": "Questo browser non può aprire progetti tenuti sul tuo dispositivo. Lo spazio di archiviazione remoto funziona in ogni browser.",
+    "reconnect": "Scegli la cartella",
+    "reconnectHint": "Per aprire questo progetto, scegli la cartella dei tuoi progetti.",
+    "cannotOpen": "Questa cartella non può essere aperta",
+    "tryAgain": "Riprova",
+    "partName": "Nome della Parte",
+    "sectionName": "Nome della Sezione",
+    "addSection": "Aggiungi una Sezione",
+    "addPart": "Aggiungi una Parte",
+    "rename": "Rinomina",
+    "renameOne": "Rinomina “{{title}}”",
+    "remove": "Sposta nel cestino",
+    "actionsFor": "Azioni per “{{title}}”",
+    "move": "Sposta…",
+    "movingNow": "Spostamento di “{{title}}” — scegli dove",
+    "moveFirst": "In cima",
+    "moveAfter": "Dopo “{{title}}”",
+    "moveNowhere": "Per ora non c'è altro posto dove metterla. Aggiungi prima un'altra Parte.",
+    "moveNowhereMany": "Per ora non c'è altro posto dove metterle. Aggiungi prima un'altra Parte.",
+    "dragMore_one": "e un'altra",
+    "dragMore_other": "e altre {{count}}",
+    "movingSections_one": "Spostamento di {{count}} Sezione — scegli dove",
+    "movingSections_other": "Spostamento di {{count}} Sezioni — scegli dove",
+    "movingParts_one": "Spostamento di {{count}} Parte — scegli dove",
+    "movingParts_other": "Spostamento di {{count}} Parti — scegli dove",
+    "select": "Seleziona",
+    "selectOne": "Seleziona “{{title}}”",
+    "selectedSections_one": "{{count}} Sezione selezionata",
+    "selectedSections_other": "{{count}} Sezioni selezionate",
+    "selectedParts_one": "{{count}} Parte selezionata",
+    "selectedParts_other": "{{count}} Parti selezionate",
+    "clearSelection": "Deseleziona",
+    "expand": "Espandi “{{title}}”",
+    "collapse": "Comprimi “{{title}}”",
+    "closePanel": "Chiudi il pannello",
+    "collapsePanel": "Restringi il pannello",
+    "expandPanel": "Allarga il pannello",
+    "resize": "Trascina per ridimensionare il pannello della struttura",
+    "removeConfirmTitleEmpty": "Eliminare “{{title}}”? Non contiene nulla.",
+    "removeConfirmTitle_one": "Eliminare “{{title}}” e l'elemento che contiene?",
+    "removeConfirmTitle_other": "Eliminare “{{title}}” e i {{count}} elementi che contiene?",
+    "removeConfirmTitleSection": "Eliminare la Sezione “{{title}}”?",
+    "removeConfirmBody": "I file vengono spostati nel Cestino. Da lì puoi rimetterli a posto.",
+    "findLabel": "Cerca in questo progetto",
+    "findPlaceholder": "Cerca un nome o una frase…",
+    "findCount_zero": "Nessuna corrispondenza.",
+    "findCount_one": "{{count}} corrispondenza.",
+    "findCount_other": "{{count}} corrispondenze.",
+    "structure": "Struttura",
+    "contents": "Indice",
+    "findInText": "Nel testo",
+    "findBack": "Torna all'indice",
+    "findInvite": "Cerca in tutto il progetto.",
+    "findReading": "Lettura del progetto…",
+    "reference": "Riferimenti",
+    "openSummary": "Apri il riassunto di {{title}}",
+    "writingPreferences": "Preferenze di scrittura",
+    "proseSize": "Dimensione del testo",
+    "proseSizeSmall": "Piccola",
+    "proseSizeMedium": "Media",
+    "proseSizeLarge": "Grande",
+    "typewriter": "Modalità macchina da scrivere",
+    "focus": "Focus",
+    "focusOff": "Off",
+    "focusLine": "Riga",
+    "focusParagraph": "Paragrafo",
+    "smoothCaret": "Cursore fluido",
+    "autosave": "Salvataggio automatico",
+    "autosaveEvery": "Salva automaticamente ogni",
+    "autosaveEveryValue": "ogni {{value}}",
+    "autosaveMin": "min",
+    "autosaveSec": "sec",
+    "henosis": "Modalità Henosis",
+    "henosisAfter": "Parte dopo aver scritto per",
+    "henosisFade": "I comandi svaniscono del tutto dopo",
+    "henosisAfterNote": "Scrivi per questo tempo senza fermarti e i comandi cominciano a sfumare.",
+    "henosisFadeNote": "Dall’inizio della dissolvenza: a quel punto i comandi sono spariti e la pagina si allarga.",
+    "henosisPause": "Esci da Henosis dopo una pausa di",
+    "henosisPauseNote": "Smetti di scrivere per questo tempo e i comandi tornano.",
+    "createSummary": "Crea riassunto",
+    "updateSummary": "Aggiorna riassunto"
+  },
+  "henosis": {
+    "full": "Modalità Henosis: solo la pagina",
+    "back": "I comandi sono tornati"
+  },
+  "leave": {
+    "title": "Modifiche non salvate",
+    "body": "Cosa vuoi fare prima di lasciare “{{title}}”?",
+    "bodyReference": "Hai modifiche non salvate nel file di riferimento “{{title}}”.",
+    "save": "Salva",
+    "stay": "Resta",
+    "skip": "Non salvare"
+  },
+  "name": {
+    "controlChars": "Un nome non può contenere caratteri di controllo invisibili.",
+    "tooLong": "Nome troppo lungo: al massimo {{max}} caratteri.",
+    "tooLongForFile": "Questo nome è troppo lungo per diventare il nome di un file. Prova ad accorciarlo.",
+    "illegalChars": "Un nome non può contenere \\ / : * ? \" < > |",
+    "noPrefix": "Il prefisso lo aggiunge {{product}}.",
+    "trailingDot": "Un nome non può finire con un punto.",
+    "reserved": "Windows non permette questo nome.",
+    "noFolderName": "Il nome deve contenere almeno una lettera o un numero.",
+    "folderTaken": "C'è già un progetto in “{{folder}}”.",
+    "duplicate": "Esiste già una {{kind}} chiamata “{{title}}”.",
+    "snapshotExists": "Esiste già un file di Istantanea con questo nome su disco — {{product}} non ci scriverà sopra.",
+    "snapshotSourceUnreadable": "{{product}} non è riuscito a leggere questo testo dal disco, quindi non ha creato l’istantanea. Riprova.",
+    "kindPart": "Parte",
+    "kindSection": "Sezione"
+  },
+  "structure": {
+    "atLine": "Riga {{line}}: {{detail}}",
+    "missingProperties": "Qui non c'è nessun document-properties.json.",
+    "notAProject": "Questa cartella non è un progetto {{product}}.",
+    "propertiesParse": "document-properties.json non è JSON leggibile.",
+    "propertiesField": "In document-properties.json manca “{{field}}”.",
+    "propertiesNewer": "document-properties.json è stato scritto da una versione più recente di {{product}} (formato {{version}}; questa legge fino al {{supported}}). Aggiorna {{product}} per aprire il progetto.",
+    "yamlNewer": "document-structure.yaml è stato scritto da una versione più recente di {{product}} (formato {{version}}; questa legge fino al {{supported}}). Aggiorna {{product}} per aprire il progetto.",
+    "missingCatalogue": "Qui non c'è nessun snapshots-catalogue.json: senza, {{product}} non sa quali file sono istantanee.",
+    "catalogueParse": "snapshots-catalogue.json non è leggibile.",
+    "syncUnfinished": "L’ultima sincronizzazione di questo progetto si è interrotta. Torna alla Libreria e usa Sincronizza ora sulla sua scheda.",
+    "missingStructure": "Qui non c'è nessun document-structure.yaml.",
+    "yamlParse": "document-structure.yaml non è leggibile. {{detail}}",
+    "rollbackIncomplete": "La modifica non è riuscita e il progetto non è tornato del tutto com’era. {{detail}} Riapri il progetto prima di continuare.",
+    "notAMap": "document-structure.yaml deve iniziare con “version:” e “document:”.",
+    "noDocumentList": "document-structure.yaml richiede un elenco “document:” al primo livello.",
+    "entryNotAMap": "Una voce di document-structure.yaml non è una riga “part:” o “section:”.",
+    "entryKind": "Ogni voce richiede esattamente uno tra “part:” e “section:”.",
+    "entryName": "Una voce “{{kind}}:” non è seguita da un nome.",
+    "entryId": "Una voce “{{kind}}:” non ha un id valido — un id ha la forma “EL1”.",
+    "duplicateId": "L'id “{{id}}” è usato da più di un nodo.",
+    "entryAdopted": "“{{title}}” ({{id}}) non ha un'istantanea adottata.",
+    "snapshotsEmpty": "“{{title}}” ({{id}}) non ha istantanee — ogni Parte o Sezione deve averne almeno una.",
+    "snapshotEntryBad": "Un'Istantanea di “{{title}}” ({{id}}) non è una voce leggibile.",
+    "duplicateSnapshotFile": "Il file dell'Istantanea “{{file}}” compare più di una volta.",
+    "adoptedNotListed": "L'istantanea adottata “{{adopted}}” non è nell'elenco delle istantanee del suo nodo.",
+    "sectionWithChildren": "“{{title}}” è una Sezione, quindi non può avere figli.",
+    "childrenNotAList": "I figli di “{{title}}” devono essere un elenco.",
+    "mixedChildren": "“{{owner}}” mescola Parti e Sezioni. Può contenere le une o le altre, non entrambe.",
+    "missingDocumentDir": "Manca la cartella “document”.",
+    "documentNotEmpty": "Questa cartella non ha document-properties.json, ma la sua cartella “document” contiene già Parti o Sezioni. {{product}} non le sovrascriverà.",
+    "filesMissing_one": "document-structure.yaml indica {{count}} file che non è nella cartella document: {{names}}",
+    "filesMissing_other": "document-structure.yaml indica {{count}} file che non sono nella cartella document: {{names}}",
+    "filesUnlisted_one": "La cartella document contiene {{count}} file che document-structure.yaml non elenca: {{names}}",
+    "filesUnlisted_other": "La cartella document contiene {{count}} file che document-structure.yaml non elenca: {{names}}",
+    "summaryName": "Il riassunto indicato per {{title}} non è un nome di file.",
+    "summaryMismatch": "{{title}} indica il riassunto {{value}}, ma il suo riassunto deve chiamarsi {{expected}}.",
+    "removedNotAList": "Gli elementi rimossi in document-structure.yaml devono essere un elenco."
+  },
+  "toast": {
+    "added": "Hai aggiunto “{{title}}”",
+    "renamed": "Hai rinominato in “{{title}}”",
+    "moved": "Hai spostato “{{title}}”",
+    "movedSections_one": "{{count}} Sezione spostata",
+    "movedSections_other": "{{count}} Sezioni spostate",
+    "movedParts_one": "{{count}} Parte spostata",
+    "movedParts_other": "{{count}} Parti spostate",
+    "removed": "Hai rimosso “{{title}}”",
+    "restored": "Hai ripristinato “{{title}}”",
+    "createdSnapshot": "Creata “{{title}}”",
+    "adoptedSnapshot": "Adottata “{{title}}”",
+    "deletedSnapshot": "Eliminata “{{title}}”",
+    "restoredSnapshot": "Ripristinata “{{title}}”",
+    "renamedSnapshot": "Rinominata “{{title}}” in “{{newTitle}}”",
+    "desktopOnly": "Serve uno schermo più grande: apri il progetto da computer.",
+    "settingOverride": "{{title}} è {{newTitle}} solo per questo progetto.",
+    "settingOn": "Hai attivato {{title}} solo per questo progetto.",
+    "settingOff": "Hai disattivato {{title}} solo per questo progetto.",
+    "pasteTooLong": "Troppo testo da incollare in una volta sola: importalo come file.",
+    "undo": "Annulla"
+  },
+  "snapshots": {
+    "label": "Istantanee",
+    "add": "Nuova istantanea",
+    "adopted": "Adottata",
+    "adopt": "Adotta",
+    "rename": "Rinomina",
+    "delete": "Elimina",
+    "deleteTitle": "Eliminare l'Istantanea “{{name}}”?",
+    "deleteBody": "L'istantanea finisce nel cestino. Da lì puoi rimetterla a posto, e nel resto del progetto non cambia nulla.",
+    "saveBeforeTitle": "Salvare prima “{{title}}”?",
+    "saveBeforeBody": "Un'istantanea cattura il testo salvato — ciò che non hai ancora salvato non ci sarà.",
+    "emptyNoNode": "Apri una Parte o una Sezione per vedere le sue istantanee.",
+    "previewEmpty": "Seleziona un'istantanea per vedere qui il suo testo.",
+    "direction": "Direzione del confronto",
+    "directionAdoptedFirst": "Adottata → Selezionata",
+    "directionSelectedFirst": "Selezionata → Adottata",
+    "granularity": "Granularità del confronto",
+    "granularityParagraph": "Per paragrafo",
+    "granularitySentence": "Per frase",
+    "granularityWord": "Per parola",
+    "questionAdoptedFirst": "Cosa c'era in questa istantanea selezionata che non c'è nel manoscritto attuale?",
+    "questionSelectedFirst": "Cosa ha aggiunto o rimosso il manoscritto attuale rispetto all'istantanea selezionata?",
+    "removedAdoptedFirst": "contenuto del manoscritto attuale che l'istantanea selezionata rimuove o sostituisce",
+    "addedAdoptedFirst": "contenuto dell'istantanea selezionata che si potrebbe introdurre nel manoscritto attuale",
+    "removedSelectedFirst": "contenuto che c'era in questa istantanea selezionata ma non c'è più nel manoscritto attuale",
+    "addedSelectedFirst": "contenuto che il manoscritto attuale introduce rispetto all'istantanea selezionata",
+    "escHint": "Esc per uscire",
+    "rowBack": "{{count}} indietro",
+    "rowAhead": "{{count}} avanti",
+    "accept": "accetta",
+    "acceptChange": "Accetta questa modifica",
+    "allAccepted": "Tutte le modifiche accettate.",
+    "addNewSnapshot": "Aggiungi una nuova istantanea"
+  },
+  "history": {
+    "journalCleared": "Cronologia degli annullamenti cancellata — il file è stato modificato altrove.",
+    "now": "Ora",
+    "undoTooltip": "Annulla: {{label}}",
+    "undoDefault": "Annulla",
+    "redoTooltip": "Ripeti: {{label}}",
+    "atNewest": "Al momento più recente — nessun passo va perso",
+    "parkedTooltip": "Qui è conservata una versione successiva",
+    "returnedToNow": "Tornato a Ora",
+    "revert": "Torna a questo punto",
+    "reverted": "Riportato a questo punto.",
+    "stepOlder": "Vai alla revisione precedente",
+    "stepTowardNow": "Torna verso Ora",
+    "stepsBack_one": "{{count}} passo indietro da Ora.",
+    "stepsBack_other": "{{count}} passi indietro da Ora.",
+    "railSteps_one": "Sequenza delle revisioni. {{count}} passo.",
+    "railSteps_other": "Sequenza delle revisioni. {{count}} passi."
+  },
+  "chars": {
+    "apostrophe": "Apostrofo",
+    "openDoubleQuote": "Virgolette aperte",
+    "closeDoubleQuote": "Virgolette chiuse",
+    "emDash": "Trattino lungo",
+    "enDash": "Trattino medio",
+    "ellipsis": "Punti di sospensione",
+    "leftGuillemet": "Caporali aperte «",
+    "rightGuillemet": "Caporali chiuse »"
+  },
+  "shortcuts": {
+    "title": "Scorciatoie da tastiera",
+    "group": {
+      "format": "Formattazione",
+      "block": "Blocchi",
+      "align": "Allineamento",
+      "edit": "Modifica",
+      "file": "Il file",
+      "chars": "Caratteri",
+      "places": "Luoghi"
+    }
+  },
+  "reference": {
+    "emptyNotes": "Ancora nessuna nota.",
+    "emptyGroup": "Ancora niente qui.",
+    "duplicate": "Esiste già un file chiamato “{{title}}”.",
+    "addCharacter": "Aggiungi un personaggio",
+    "namePlaceholder": "Nome",
+    "group": {
+      "guidebook": "Guida",
+      "characters": "Personaggi",
+      "arcs": "Archi dei personaggi",
+      "summaries": "Riassunti",
+      "world": "Worldbuilding",
+      "notes": "Note"
+    },
+    "addNewNote": "Aggiungi una nuova nota",
+    "deleteTitle": "Eliminare la nota “{{name}}”?",
+    "deleteBody": "La nota finisce nel cestino. Da lì puoi rimetterla a posto.",
+    "delete": "Elimina",
+    "addSection": "Aggiungi una sezione",
+    "arc": "Arco del personaggio",
+    "addArc": "Aggiungi l'arco del personaggio",
+    "pickerTitle": "Nuovo documento · {{group}}",
+    "pickerClose": "Chiudi",
+    "pickerRemaining": "{{count}} di {{total}} sezioni da compilare",
+    "deleteSectionTitle": "Eliminare la sezione “{{name}}”?",
+    "deleteSectionBody": "Tornerà disponibile nel selettore, oppure puoi recuperarla dal cestino.",
+    "deleteSummaryTitle": "Eliminare il riassunto “{{name}}”?",
+    "deleteSummaryBody": "Non si può annullare, ma l’assistente può scriverne uno nuovo.",
+    "createFailed": "Non è stato possibile aprire il documento. Riprova.",
+    "rename": "Rinomina",
+    "renameFailed": "Non è stato possibile usare quel nome. Provane un altro.",
+    "deleteFailed": "Non è stato possibile eliminare il file. Riprova.",
+    "restoreFailed": "Non è stato possibile ripristinare il file. Riprova.",
+    "aiAllowed": "Nascondi all’assistente",
+    "aiAllowedTip": "L’assistente può leggerlo. Fai clic per nasconderlo.",
+    "aiBarred": "Mostra all’assistente",
+    "aiBarredTip": "Nascosto all’assistente, in ogni chat. Fai clic per mostrarlo.",
+    "deleteCharacterTitle": "Eliminare “{{name}}”?",
+    "deleteCharacterBody": "Il personaggio finisce nel cestino. Da lì puoi rimetterlo a posto.",
+    "deleteCharacterArcBody": "Il personaggio e il suo arco finiscono insieme nel cestino. Da lì puoi rimetterli a posto.",
+    "deleteArcTitle": "Eliminare l'arco di “{{name}}”?",
+    "deleteArcBody": "Il personaggio resta; l'arco finisce nel cestino, e da lì puoi rimetterlo a posto.",
+    "section": {
+      "guidebook": {
+        "at-a-glance": "La storia a colpo d'occhio",
+        "editing-brief": "Indicazioni per la revisione",
+        "prose-style": "Stile della prosa",
+        "theme": "Nucleo tematico",
+        "view": "Lo sguardo della storia",
+        "promise": "La promessa della storia",
+        "logline": "Logline",
+        "blurb": "Quarta di copertina",
+        "query": "Presentazione editoriale",
+        "summary": "Sintesi narrativa",
+        "alignment": "Eventi e conseguenze",
+        "continuity": "Note di continuità",
+        "series": "Progetti per una serie",
+        "research": "Ricerche e fonti"
+      },
+      "world": {
+        "rules": "Regole del mondo",
+        "systems": "Magia, tecnologia e scienza",
+        "geography": "Geografia e clima",
+        "locations": "Luoghi chiave",
+        "travel": "Viaggi e distanze",
+        "timeline": "Storia e cronologia",
+        "peoples": "Popoli, specie e creature",
+        "cultures": "Culture e società",
+        "religion": "Religione e credenze",
+        "language": "Lingua, nomi e termini",
+        "economy": "Economia",
+        "factions": "Poteri e fazioni",
+        "ecology": "Flora, fauna ed ecologia",
+        "myths": "Origini e miti",
+        "conflict": "Conflitto e tensioni"
+      }
+    },
+    "sectionDesc": {
+      "guidebook": {
+        "at-a-glance": "Genere, destinatari, ambientazione e principali scelte narrative.",
+        "editing-brief": "Priorità della revisione e scelte da rispettare.",
+        "prose-style": "Voce narrativa, stile e convenzioni editoriali.",
+        "theme": "Temi, interrogativi e tesi messe alla prova dalla storia.",
+        "view": "Ciò che sanno i personaggi, ciò che scopre il lettore e quando.",
+        "promise": "Le aspettative create dall'inizio e il loro sviluppo nel romanzo.",
+        "logline": "La premessa del romanzo in una frase.",
+        "blurb": "Il testo sul retro del libro, quello che si legge prima di comprarlo.",
+        "query": "Una presentazione concisa per agenti ed editori.",
+        "summary": "Gli eventi principali, le svolte e il finale della storia.",
+        "alignment": "Cause e conseguenze degli eventi per la trama e i personaggi.",
+        "continuity": "Riferimenti ai fatti stabiliti e contraddizioni da risolvere.",
+        "series": "Il rapporto fra i volumi e gli sviluppi che attraversano la serie.",
+        "research": "Fonti, verifiche e scelte d'invenzione."
+      },
+      "world": {
+        "rules": "Possibilità, limiti e condizioni fondamentali dell'ambientazione.",
+        "systems": "Principi, possibilità e limiti di magia, tecnologia e scienza.",
+        "geography": "Territorio, risorse, confini, clima e stagioni.",
+        "locations": "I luoghi rilevanti per la trama, i personaggi e l'atmosfera.",
+        "travel": "Mezzi, percorsi, tempi e condizioni di viaggio.",
+        "timeline": "Gli eventi passati e le loro conseguenze sul presente.",
+        "peoples": "Popoli, specie e creature dell'ambientazione.",
+        "cultures": "Valori, relazioni, usanze e vita quotidiana delle persone.",
+        "religion": "Credenze, pratiche religiose e rapporti con la società.",
+        "language": "Lingue, nomi e termini: significati, grafie e pronunce.",
+        "economy": "Lavoro, risorse, scambi e distribuzione della ricchezza.",
+        "factions": "Gruppi e istituzioni: obiettivi, organizzazione e potere.",
+        "ecology": "Flora, fauna, habitat e rapporti fra esseri viventi.",
+        "myths": "Miti delle origini, leggende e rapporti fra credenze e verità.",
+        "conflict": "Origini dei conflitti, interessi in gioco e possibili sviluppi."
+      }
+    }
+  },
+  "bin": {
+    "label": "Cestino",
+    "groupStructure": "Parti e Sezioni",
+    "groupSnapshots": "Istantanee",
+    "restoreShort": "Ripristina",
+    "restore": "Ripristina “{{title}}” nel progetto",
+    "restoreRefused": "Non può tornare lì — nel progetto c’è già una Parte o Sezione con quel nome.",
+    "restoreNotWhole": "Non può tornare per conto suo — la Parte in cui si trovava è finita intera nel cestino, e intera ritorna.",
+    "dropToDelete": "Rilascia per spostare nel cestino",
+    "moveTo": "Sposta nel cestino"
+  },
+  "bubble": {
+    "label": "Selezione",
+    "everyOne": "Tutte",
+    "ask": "Illumina!",
+    "comment": "Commenta"
+  },
+  "desk": {
+    "whereYouLeftOff": "Da dove riprendere",
+    "continue": "Continua a scrivere",
+    "browse": "Apri qualcos'altro",
+    "shape": "La forma del progetto",
+    "since": "da {{when}}",
+    "lastWrite": "scritto",
+    "total": "{{total}} in tutto",
+    "overGoal": "+{{pct}}% oltre l'obiettivo",
+    "words": "parole",
+    "sections": "sezioni",
+    "threadLead": "Hai lasciato un segnalibro in",
+    "threadLeadPlain": "Hai lasciato un segnalibro",
+    "threadPos_one": "a un paragrafo dalla fine.",
+    "threadPos_other": "a {{count}} paragrafi dalla fine.",
+    "threadAtEnd": "alla fine.",
+    "emptyTitle": "Ancora niente di scritto.",
+    "countParts_one": "{{count}} parte",
+    "countParts_other": "{{count}} parti",
+    "countSections_one": "{{count}} sezione",
+    "countSections_other": "{{count}} sezioni",
+    "emptyBodyParts_one": "{{count}} parte aspetta le parole.",
+    "emptyBodyParts_other": "{{count}} parti aspettano le parole.",
+    "emptyBodySections_one": "{{count}} sezione aspetta le parole.",
+    "emptyBodySections_other": "{{count}} sezioni aspettano le parole.",
+    "emptyBody": "{{parts}} e {{sections}} aspettano le parole.",
+    "emptyInvite": "Scrivi la prima riga e la Scrivania si riempie — un ultimo paragrafo a cui tornare, un totale che cresce.",
+    "emptyInviteNoNodes": "Aggiungi una Parte dal pannello della struttura, e la Scrivania si riempie — un ultimo paragrafo a cui tornare, un totale che cresce.",
+    "start": "Inizia a scrivere — {{title}}",
+    "noPlaceToReturn": "Nessun posto a cui tornare",
+    "buildStructure": "Crea la struttura"
+  },
+  "dock": {
+    "label": "Assistente, riferimenti, note e istantanee",
+    "reference": "Riferimenti",
+    "notes": "Note",
+    "ask": "Illumina!",
+    "askWaiting": "Illumina! — una ricerca attende una tua risposta",
+    "askPlaceholder": "Chiedi qualcosa…",
+    "assistantUnavailable": "Apri un progetto prima di usare l'assistente.",
+    "unexpectedError": "Qualcosa è andato storto. Riprova.",
+    "deleteChatTitle": "Eliminare questa chat?",
+    "deleteChatBody": "“{{title}}” e i suoi piani di revisione vengono rimossi dal progetto. Il manoscritto resta intatto.",
+    "deleteChatConfirm": "Elimina la chat",
+    "removeUnreadable": "Rimuovi",
+    "preparing": "Sto preparando il contesto",
+    "resumeReview": "Riprendi la revisione · {{complete}}/{{total}}",
+    "coverage_one": "{{inspected}} su {{count}} fonte esaminata",
+    "coverage_other": "{{inspected}} su {{intended}} fonti esaminate",
+    "answeredWithoutWeb": "Risposta senza ricerche sul web",
+    "coverageUnjudged": "il controllo non ha saputo giudicarlo: leggi tu i due passi",
+    "coverageUnasked_one": "{{count}} altro fatto raccolto dal controllo è rimasto senza verifica",
+    "coverageUnasked_other": "{{count}} altri fatti raccolti dal controllo sono rimasti senza verifica",
+    "coverageDeferred": "rimandato al prossimo controllo, che riparte da qui",
+    "coverageSkip": {
+      "not-read": "non l'ho letta",
+      "pending": "non ancora raggiunta",
+      "invalidated": "è cambiata durante la revisione",
+      "failed": "non sono riuscito a leggerla",
+      "unmapped": "non ha ancora un riassunto",
+      "not-in-budget": "non c'era più spazio per leggerla",
+      "too-large": "troppo lunga per il modello",
+      "unknown": "non esaminata",
+      "unanswered": "non l'ho collocata",
+      "unsummarisable": "il modello non è riuscito a riassumerla",
+      "unextracted": "il modello non è riuscito a leggerne i fatti per il controllo"
+    },
+    "reviewTransit": {
+      "withSummaries": "Per questa revisione {{provider}} riceve da questo dispositivo titoli, riassunti e numero di parole delle Sezioni in esame, titoli e numero di parole delle loro Parti, intere Sezioni del manoscritto e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Riceve anche per intero i documenti di riferimento e le note con cui la revisione confronta il manoscritto.",
+      "sections": "Per questa revisione {{provider}} riceve da questo dispositivo intere Sezioni del manoscritto e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole.",
+      "facts": "Per questo controllo {{provider}} riceve da questo dispositivo intere Sezioni del manoscritto: tutte la prima volta, poi solo quelle che hai modificato. Riceve anche per intero le schede dei personaggi, degli archi e del mondo, e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole.",
+      "section": "Per questa revisione {{provider}} riceve da questo dispositivo l'intera Sezione e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Riceve anche per intero i documenti di riferimento e le note con cui la revisione confronta la Sezione."
+    },
+    "summariseTransit": "Per scrivere i riassunti, {{provider}} riceve prima da questo dispositivo intere Sezioni del manoscritto, i nomi dei personaggi e titolo, tipo e lingua del progetto.",
+    "how-to-say": {
+      "hint": "quello che vuoi dire",
+      "hintDescription": "Dopo /how-to-say, descrivi con parole tue quello che vuoi dire.",
+      "hintQuoteDescription": "Invia solo /how-to-say per riformulare il passaggio citato, oppure descrivi con parole tue quello che vuoi dire."
+    },
+    "verify": {
+      "hint": "l'affermazione da controllare",
+      "hintDescription": "Dopo /verify, scrivi l'affermazione che vuoi controllare sul web.",
+      "hintQuoteDescription": "Invia solo /verify per controllare il passaggio citato, oppure scrivi l'affermazione che vuoi controllare.",
+      "proposing": "Sto scegliendo cosa cercare",
+      "judging": "Sto valutando i risultati",
+      "verdict": {
+        "plausible": "Plausibile",
+        "doubtful": "Dubbia",
+        "implausible": "Improbabile",
+        "inconclusive": "Impossibile dirlo"
+      },
+      "wikipediaLimit": "Forse Wikipedia non ne parla. Collega un fornitore di modelli AI nelle Impostazioni per allargare la ricerca.",
+      "unjudged": {
+        "unchecked": "Non ho potuto controllare l'affermazione: nessuna ricerca è arrivata a termine.",
+        "nothing-found": "Non ho potuto controllare l'affermazione: la ricerca non ha trovato nulla."
+      },
+      "fix": "Come correggere",
+      "quoted": "“{{text}}”"
+    },
+    "canon": {
+      "names": "Puoi confrontare con {{names}}.",
+      "namedHint": "Per confrontare il testo con un riferimento che non è entrato nel contesto, scrivine il nome dopo {{command}}."
+    },
+    "where": {
+      "hint": "la scena che cerchi",
+      "hintDescription": "Dopo /where, descrivi con parole tue la scena che cerchi.",
+      "ranking": "Sto scorrendo i riassunti",
+      "reading_one": "Sto leggendo la Sezione più probabile",
+      "reading_other": "Sto leggendo le Sezioni più probabili: {{complete}} su {{count}}",
+      "notFound": "Quella scena non è saltata fuori",
+      "checked_one": "Letta per intero {{count}} Sezione su {{total}}.",
+      "checked_other": "Lette per intero {{count}} Sezioni su {{total}}.",
+      "noSummary_one": "{{count}} Sezione non ha ancora un riassunto e la ricerca non ha potuto tenerne conto.",
+      "noSummary_other": "{{count}} Sezioni non hanno ancora un riassunto e la ricerca non ha potuto tenerne conto.",
+      "unsummarisable_one": "Questo modello non è riuscito a riassumere {{count}} Sezione e la ricerca non ha potuto tenerne conto.",
+      "unsummarisable_other": "Questo modello non è riuscito a riassumere {{count}} Sezioni e la ricerca non ha potuto tenerne conto.",
+      "summariseMissing_one": "Riassumi {{count}} Sezione",
+      "summariseMissing_other": "Riassumi {{count}} Sezioni",
+      "searchIncomplete": "I riassunti sono pronti, ma la ricerca non ne ha ancora tenuto conto.",
+      "searchAgain": "Cerca di nuovo",
+      "remoteTransit": "Per questa ricerca {{provider}} riceve da questo dispositivo titoli e riassunti delle Sezioni in esame, alcune Sezioni intere del manoscritto e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Riceve anche i nomi e i soprannomi di personaggi e luoghi, così come li hai annotati nelle schede dei personaggi e in Luoghi chiave.",
+      "found_one": "{{count}} passaggio trovato",
+      "found_other": "{{count}} passaggi trovati"
+    },
+    "summarisePart": {
+      "from": "Tratto dai riassunti delle Sezioni di “{{title}}”.",
+      "fromWithheld": "Tratto dai riassunti delle Sezioni di “{{title}}”, tranne quelle nascoste all'assistente.",
+      "remoteTransit_one": "Per riassumere la Parte, {{provider}} riceve da questo dispositivo titoli e riassunti delle sue Sezioni, i nomi dei personaggi e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Riceve anche per intero la Sezione il cui riassunto manca o non è aggiornato.",
+      "remoteTransit_other": "Per riassumere la Parte, {{provider}} riceve da questo dispositivo titoli e riassunti delle sue Sezioni, i nomi dei personaggi e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Riceve anche per intero le {{count}} Sezioni il cui riassunto manca o non è aggiornato.",
+      "remoteTransitAny": "Per riassumere la Parte, {{provider}} riceve da questo dispositivo titoli e riassunti delle sue Sezioni, i nomi dei personaggi e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Riceve anche per intero le eventuali Sezioni il cui riassunto manca o non è aggiornato."
+    },
+    "map": {
+      "remoteTransit_one": "Per questa mappa {{provider}} riceve da questo dispositivo titoli, riassunti e numero di parole delle Sezioni in esame, titoli e numero di parole delle loro Parti e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Può ricevere anche una Sezione intera del manoscritto, se rientra nel limite del modello.",
+      "remoteTransit_other": "Per questa mappa {{provider}} riceve da questo dispositivo titoli, riassunti e numero di parole delle Sezioni in esame, titoli e numero di parole delle loro Parti e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole. Può ricevere anche fino a {{count}} Sezioni intere del manoscritto, ciascuna abbastanza breve da rientrare nel limite del modello.",
+      "stage": {
+        "ordinary-world": "Mondo ordinario",
+        "call": "Chiamata all'avventura",
+        "refusal": "Rifiuto della chiamata",
+        "mentor": "Incontro con il mentore",
+        "threshold": "Superamento della soglia",
+        "tests": "Prove, alleati, nemici",
+        "approach": "Avvicinamento alla caverna più profonda",
+        "ordeal": "Prova centrale",
+        "reward": "Ricompensa",
+        "road-back": "Via del ritorno",
+        "resurrection": "Resurrezione",
+        "elixir": "Ritorno con l'elisir"
+      },
+      "verdict": {
+        "fits": "combacia",
+        "partly": "combacia in parte",
+        "no": "non combacia"
+      },
+      "outOfOrder": "fuori sequenza",
+      "issuesParts_one": "{{count}} Parte non è del tutto al suo posto",
+      "issuesParts_other": "{{count}} Parti non sono del tutto al loro posto",
+      "issuesSections_one": "{{count}} Sezione non è del tutto al suo posto",
+      "issuesSections_other": "{{count}} Sezioni non sono del tutto al loro posto",
+      "issuesUnits_one": "{{count}} Sezione o Parte non è del tutto al suo posto",
+      "issuesUnits_other": "{{count}} tra Sezioni e Parti non sono del tutto al loro posto",
+      "alreadyWorking": "Già a posto · {{count}}",
+      "nonePlacedParts_one": "{{model}} non ha collocato l'unica Parte",
+      "nonePlacedParts_other": "{{model}} non ha collocato nessuna delle {{count}} Parti",
+      "nonePlacedSections_one": "{{model}} non ha collocato l'unica Sezione",
+      "nonePlacedSections_other": "{{model}} non ha collocato nessuna delle {{count}} Sezioni",
+      "nonePlacedUnits_one": "{{model}} non ha collocato l'unica Sezione o Parte",
+      "nonePlacedUnits_other": "{{model}} non ha collocato nessuna delle {{count}} Sezioni e Parti",
+      "considered": "Sezioni prese in esame: {{count}} su {{total}}.",
+      "noStructure": "Per confrontare questa lettura con una struttura, aggiungine una dopo il comando: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} o {{herosjourney}}.",
+      "headerStructure": "Mappa di tutto il manoscritto",
+      "headerNode": "Mappa di “{{title}}”",
+      "shapeDeclared": "struttura del progetto: {{shape}}",
+      "shapeTyped": "struttura scelta per questa mappa: {{shape}}",
+      "fit": {
+        "other": "La struttura più adatta secondo {{model}}: {{shape}}",
+        "declared": "La struttura più adatta secondo {{model}}: {{shape}}, quella del progetto",
+        "none": "La struttura più adatta secondo {{model}}: nessuna delle quattro",
+        "mapWith": "Prova con questa struttura"
+      },
+      "noSummary_one": "{{count}} Sezione non ha ancora un riassunto e la mappa non ha potuto tenerne conto.",
+      "noSummary_other": "{{count}} Sezioni non hanno ancora un riassunto e la mappa non ha potuto tenerne conto.",
+      "unsummarisable_one": "Questo modello non è riuscito a riassumere {{count}} Sezione e la mappa non ha potuto tenerne conto.",
+      "unsummarisable_other": "Questo modello non è riuscito a riassumere {{count}} Sezioni e la mappa non ha potuto tenerne conto.",
+      "summariseMissing_one": "Riassumi {{count}} Sezione e ripeti la mappatura",
+      "summariseMissing_other": "Riassumi {{count}} Sezioni e ripeti la mappatura",
+      "answerOutOfDate": "I riassunti sono pronti, ma la mappa non ne ha ancora tenuto conto.",
+      "structureChanged": "La Struttura è cambiata e questa mappa non ne tiene conto.",
+      "partGone": "La Parte di questa mappa non è più nella Struttura.",
+      "mapAgain": "Ripeti la mappatura",
+      "gone": "non è più nella Struttura",
+      "plotPoint1": "Plot Point I",
+      "plotPoint2": "Plot Point II",
+      "caption": {
+        "threeact": "Il paradigma di Syd Field, da Screenplay (1979): tre atti in proporzione 1:2:1, separati dai Plot Point I e II. Una convenzione, non una regola.",
+        "threeactShares": "Sotto, ogni Parte è disegnata in proporzione alle sue parole.",
+        "threeactSharesUnits": "Sotto, ogni Sezione o Parte è disegnata in proporzione alle sue parole.",
+        "kishotenketsu": "Il Kishōtenketsu non prescrive proporzioni: i quattro atti sono distribuiti a intervalli regolari.",
+        "freytagspyramid": "La piramide di Freytag, da Die Technik des Dramas (1863). Le tacche segnano i suoi tre momenti, da sinistra a destra: il momento eccitante, il momento tragico e il momento dell'ultima tensione. Solo il primo è necessario.",
+        "herosjourney": "Il cerchio di Joseph Campbell, da leggere in senso antiorario, con la soglia che lo taglia a metà. Le tappe seguono la numerazione di Christopher Vogler.",
+        "section": "Ogni momento è segnato nel punto in cui comincia, dalla prima all'ultima parola della Sezione."
+      },
+      "missingBeats_one": "Non compare in questa Sezione: {{beats}}.",
+      "missingBeats_other": "Non compaiono in questa Sezione: {{beats}}.",
+      "unansweredBeats_one": "{{model}} non ha collocato questo momento: {{beats}}.",
+      "unansweredBeats_other": "{{model}} non ha collocato questi momenti: {{beats}}.",
+      "nonePlacedBeats_one": "{{model}} non ha collocato l'unico momento",
+      "nonePlacedBeats_other": "{{model}} non ha collocato nessuno dei {{count}} momenti",
+      "noStructureSection": "Per segnare dove comincia ogni momento, aggiungi una struttura dopo il comando: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} o {{herosjourney}}.",
+      "remoteTransitSection": "Per questa mappa {{provider}} riceve da questo dispositivo l'intera Sezione e i dati del progetto: titolo, tipo, lingua, struttura e obiettivo di parole.",
+      "startsHere": "dove comincia",
+      "sectionChanged": "La Sezione è cambiata e questa mappa non ne tiene conto.",
+      "sectionGone": "La Sezione di questa mappa non è più nella Struttura."
+    },
+    "summarising_one": "Sto riassumendo la Sezione",
+    "summarising_other": "Sto riassumendo le Sezioni: {{complete}} su {{count}}",
+    "reviewFollowUp": {
+      "noSummary_one": "{{count}} Sezione non ha ancora un riassunto e la revisione non ha potuto tenerne conto.",
+      "noSummary_other": "{{count}} Sezioni non hanno ancora un riassunto e la revisione non ha potuto tenerne conto.",
+      "unsummarisable_one": "Questo modello non è riuscito a riassumere {{count}} Sezione e la revisione non ha potuto tenerne conto.",
+      "unsummarisable_other": "Questo modello non è riuscito a riassumere {{count}} Sezioni e la revisione non ha potuto tenerne conto.",
+      "summariseMissing_one": "Riassumi {{count}} Sezione e ripeti la revisione",
+      "summariseMissing_other": "Riassumi {{count}} Sezioni e ripeti la revisione",
+      "answerOutOfDate": "I riassunti sono pronti, ma la revisione non ne ha ancora tenuto conto.",
+      "reviewAgain": "Ripeti la revisione"
+    },
+    "jumpLatest": "Vai in fondo",
+    "jumpToAsk": "Vai alla ricerca che attende una tua risposta",
+    "cancelQueued": "Annulla la richiesta in coda",
+    "cleanChat": "Apri una chat nuova",
+    "choosePersona": "Scegli una persona",
+    "problem": {
+      "reader-contaminated": "Questo lettore ha già visto pagine oltre il suo limite di lettura. Apri una chat nuova.",
+      "reader-horizon-missing": "Prima di inviare, scegli fin dove può leggere il lettore.",
+      "persona-missing": "La persona scelta non esiste più. Scegline un'altra per continuare.",
+      "model-capability-missing": "Questo modello è solo chat — non può cercare nel progetto, aprire documenti o eseguire revisioni. Risponde con ciò che è allegato a questa chat; scegli un modello che usa gli strumenti per il resto.",
+      "summary-source-missing": "Qui non c'è ancora testo da riassumere.",
+      "summary-source-changed": "La fonte è cambiata mentre scrivevo il riassunto. Nulla è stato sostituito; riprova.",
+      "review-node-missing": "La Parte o Sezione indicata non è più nella Struttura. Riscrivi il comando e sceglila con il titolo attuale.",
+      "review-no-part": "La Sezione aperta non è dentro una Parte. Dopo il comando scrivi il titolo della Parte da rivedere, oppure {{structure}} per tutto il manoscritto.",
+      "review-no-part-no-structure": "La Sezione aperta non è dentro una Parte. Dopo il comando scrivi il titolo della Parte da rivedere, oppure {{section}} solo per questa Sezione.",
+      "review-nothing-to-read": "Qui non c'è ancora nessuna Sezione che l'assistente possa leggere, quindi non c'è niente da rivedere.",
+      "review-no-section": "Non c'è nessuna Sezione aperta da rivedere. Aprine una, oppure dopo il comando indica una Parte o tutta la Struttura.",
+      "command-unknown": "In questa chat non c'è il comando {{typed}}. Scrivi / per vedere quelli disponibili.",
+      "command-near": "In questa chat non c'è {{typed}}. Forse cercavi {{command}}?",
+      "command-elsewhere": "In questa chat non c'è {{typed}}. Il comando più vicino è {{command}}, che si usa in {{room}}.",
+      "review-outdated": "Questo piano di revisione è stato creato con modello, persona o ricetta diversi. Avvia una nuova revisione.",
+      "review-plan-too-large": "Questo piano di revisione supera il limite di archiviazione. Restringi l'ambito o escludi delle fonti.",
+      "review-reference-unknown": "Tra i personaggi, i riferimenti e le note che l'assistente può leggere, nessuno si chiama “{{name}}”. Dopo {{command}} scrivi un nome, oppure togli {{command}} e invia il resto come domanda.",
+      "review-reference-unknown-none": "Non c'è ancora nessun personaggio, riferimento o nota che l'assistente possa leggere, quindi non c'è un nome da scrivere dopo {{command}}. Togli {{command}} e invia il resto come domanda.",
+      "review-reference-missing": "Uno dei riferimenti di questa revisione non è più nel progetto, oppure ora è nascosto all'assistente. Invia {{command}} con un nome che l'assistente può leggere, oppure senza.",
+      "review-reference-empty": "Alla voce “{{name}}” non c'è ancora niente di scritto con cui fare il confronto. Scrivici qualcosa, oppure invia solo {{command}}.",
+      "review-reference-too-large": "Questo modello non ha abbastanza spazio per leggere “{{name}}” insieme al testo in esame. Per provare con la sola Sezione aperta, invia {{command}} {{section}} {{name}}, oppure scegli un modello che legge di più in una volta.",
+      "review-reference-too-large-section": "Questo modello non ha abbastanza spazio per leggere “{{name}}” insieme al testo in esame. Scegli un modello che legge di più in una volta.",
+      "run-in-progress": "C'è già una richiesta in corso. Fermala prima.",
+      "queue-full": "La coda è piena. Aspetta che una delle richieste in corso finisca, o svuota la coda.",
+      "continuation-unavailable": "La nuova chat è stata creata, ma non ho potuto produrre il riassunto del contesto. Quella precedente resta nel progetto.",
+      "delete-failed": "La chat è stata rimossa da questo elenco, ma non è stato possibile eliminare alcuni dei suoi file.",
+      "where-needs-tools": "{{model}} non può cercare nel manoscritto. Scegline un altro dalla barra qui sotto.",
+      "where-too-long": "La descrizione è troppo lunga: al massimo {{max}} caratteri.",
+      "question-too-long": "La descrizione è troppo lunga: al massimo {{max}} caratteri.",
+      "verify-needs-tools": "{{model}} non può leggere i risultati delle ricerche sul web. Scegline un altro dalla barra qui sotto.",
+      "verify-too-long": "L'affermazione è troppo lunga: al massimo {{max}} caratteri.",
+      "verify-needs-account": "Il controllo cerca sul web, e la ricerca funziona solo dopo l'accesso. Accedi per usarlo.",
+      "map-one-unit_part": "Questa Parte contiene solo “{{title}}”, e per mappare una Parte servono almeno due Sezioni o Parti. Per mappare “{{title}}”, scrivi il suo titolo dopo il comando.",
+      "map-one-unit_section": "Questa Parte contiene solo “{{title}}”, e per mappare una Parte servono almeno due Sezioni o Parti. Per mappare “{{title}}”, scrivi il suo titolo dopo il comando, oppure aprila e scrivi {{section}}.",
+      "map-no-part": "La Sezione aperta non è dentro una Parte. Dopo il comando scrivi {{section}} per mappare solo questa Sezione, oppure niente per tutto il manoscritto.",
+      "map-no-parts": "Il progetto non ha Parti, quindi per mappare il manoscritto serve una struttura. Aggiungine una dopo il comando: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} o {{herosjourney}}.",
+      "map-nothing-to-read": "Qui non c'è ancora nessuna Sezione che l'assistente possa leggere, quindi non c'è niente da mappare.",
+      "map-needs-tools": "{{model}} non può mappare il manoscritto. Scegline un altro dalla barra qui sotto.",
+      "summarise-open-section": "Questo comando riassume la Sezione aperta o un'intera Parte. Per riassumere “{{title}}”, aprila e invia il comando.",
+      "summarise-no-part": "La Sezione aperta non è dentro una Parte. Dopo il comando scrivi il titolo della Parte da riassumere, oppure {{section}} solo per questa Sezione.",
+      "summarise-no-part-no-parts": "La Sezione aperta non è dentro una Parte, e il progetto non ne ha. Per riassumere solo questa Sezione, scrivi {{section}} dopo il comando.",
+      "summarise-nothing-to-read": "Qui non c'è ancora nessuna Sezione che l'assistente possa leggere, quindi non c'è niente da riassumere.",
+      "summarise-section-failed": "Non è stato possibile scrivere il riassunto di “{{title}}”, quindi questa Parte non si può riassumere. Riprova, oppure scegli un modello che legge di più in una volta.",
+      "summarise-part-too-large": "Messi insieme, i riassunti delle Sezioni di questa Parte sono troppo lunghi perché {{model}} li legga. Scegli un modello che legge di più in una volta, oppure riassumi solo la Sezione aperta con {{section}}.",
+      "map-no-section": "Non c'è nessuna Sezione aperta. Apri quella che vuoi mappare, oppure scrivine il titolo dopo il comando.",
+      "map-no-part-no-parts": "La Sezione aperta non è dentro una Parte, e il progetto non ne ha. Per mappare solo questa Sezione, scrivi {{section}} dopo il comando.",
+      "map-section-empty": "In questa Sezione non c'è ancora testo da mappare.",
+      "map-section-too-long": "Questa Sezione è troppo lunga perché {{model}} la legga per intero, e una Sezione non si mappa a pezzi. Mappa la sua Parte con {{part}}, oppure scegli un modello che legge di più in una volta.",
+      "map-section-too-long-no-part": "Questa Sezione è troppo lunga perché {{model}} la legga per intero, e una Sezione non si mappa a pezzi. Scegli un modello che legge di più in una volta.",
+      "map-fit-failed": "{{model}} non ha indicato la struttura più adatta a questa Sezione. Per segnare dove comincia ogni momento, aggiungi una struttura dopo il comando: {{threeact}}, {{kishotenketsu}}, {{freytagspyramid}} o {{herosjourney}}.",
+      "reading-whole-book": "Questo lettore conosce già tutto il libro: non può andare avanti come chi non sa cosa succede dopo. Per una lettura in ordine, apri una nuova chat con un Lettore beta.",
+      "reading-finished": "Il lettore è arrivato alla fine del libro. Chiedigli la sua recensione con /review.",
+      "reading-journal-full": "Il diario del lettore è pieno: non ha più spazio per annotare un'altra Sezione, quindi non può andare avanti. Chiedigli la recensione di quello che ha letto con /review.",
+      "reading-empty-section": "La prossima Sezione, “{{title}}”, non ha ancora testo. Il lettore andrà avanti quando ci sarà.",
+      "reading-too-long": "“{{title}}” è troppo lunga perché {{model}} la legga tutta insieme, e il lettore non legge mai una Sezione a metà. Scegli dalla barra qui sotto un modello con un contesto più ampio.",
+      "reading-needs-tools": "{{model}} non sa compilare il diario di lettura. Scegli un altro modello dalla barra qui sotto.",
+      "predict-nothing-read": "Il lettore non ha ancora niente su cui basarsi. Fagli leggere la prima Sezione con /read-on, oppure scrivi la Quarta di copertina nella Guida.",
+      "reference-needed_one": "Per /{{command}} serve il documento “{{names}}”, che non hai ancora scritto. Scrivilo e poi riprova.",
+      "reference-needed_other": "Per /{{command}} serve almeno uno di questi documenti, e non ne hai ancora scritto nessuno: {{names}}. Scrivine uno e poi riprova."
+    },
+    "continuationHint": "Questa chat sta diventando lunga. Continua in una chat nuova: il contesto sarà un riassunto di questa, che resta nel progetto.",
+    "continueChat": "Continua in una nuova chat",
+    "evidence": {
+      "changed": "Il passaggio è cambiato dopo la risposta; non è stato selezionato.",
+      "unavailable": "Non ho potuto verificare quella citazione nella fonte attuale."
+    },
+    "severity": {
+      "observation": "Osservazione",
+      "minor": "Minore",
+      "major": "Rilevante"
+    },
+    "finding": {
+      "resolve": "Risolvi",
+      "dismiss": "Ignora",
+      "restore": "Ripristina",
+      "dismissed": "ignorata",
+      "resolved": "risolta",
+      "unverified": {
+        "all": "Nessuna delle citazioni si trova nel testo: prendila come un'osservazione da verificare.",
+        "half": "Solo un lato del confronto si trova nel testo: prendila come un'osservazione da verificare."
+      }
+    },
+    "syncing": "in sincronizzazione",
+    "retrySave": "Riprova a salvare",
+    "copyAnswer": "Copia",
+    "send": "Invia",
+    "contextUsed": "contesto {{percent}}%",
+    "creditLeft": "{{amount}} rimasti",
+    "reading": {
+      "contextTitle": "Finestra di contesto",
+      "context": "Contesto",
+      "contextUsed": "{{used}} / {{window}} ({{percent}}%)",
+      "creditTitle": "Credito",
+      "creditSpent": "Spesi",
+      "creditLeft": "Rimasti",
+      "creditLimit": "Limite",
+      "keyExpires": "Scadenza della chiave",
+      "reading": "Sta leggendo “{{title}}”",
+      "predicting": "Pensa a cosa succederà",
+      "remoteTransit": "Per andare avanti nella lettura, {{provider}} riceve da questo dispositivo la prossima Sezione per intero, la Quarta di copertina, il diario del lettore e titolo, tipo e lingua del progetto.",
+      "remoteTransitPredict": "Per una previsione, {{provider}} riceve da questo dispositivo la Quarta di copertina, il diario del lettore e titolo, tipo e lingua del progetto. Nessuna Sezione viene inviata.",
+      "attention": "Attenzione: {{score}} su 5",
+      "keepsReading": "Continuerei a leggere",
+      "putsDown": "Mi fermerei qui",
+      "understanding": "Cosa credo stia succedendo",
+      "questions": "Le mie domande",
+      "confusion": "Dove ho perso il filo",
+      "cares": "Chi mi sta a cuore",
+      "settledHere": "Le previsioni di prima",
+      "expects": "Cosa mi aspetto adesso",
+      "state": {
+        "open": "Ancora aperta",
+        "confirmed": "Si è avverata",
+        "overturned": "Smentita"
+      },
+      "soFar_one": "La lettura finora · una Sezione letta",
+      "soFar_other": "La lettura finora · {{count}} Sezioni lette",
+      "ledger": "Previsioni",
+      "prediction": "Previsione",
+      "madeAt": "Scritta dopo",
+      "outcome": "Esito",
+      "beforeReading": "Prima di cominciare"
+    },
+    "mode": {
+      "label": "Modalità",
+      "creative": "Creativa",
+      "standard": "Standard",
+      "readout": "temp {{temperature}} · ragionamento {{effort}}",
+      "readoutPlain": "temp {{temperature}}",
+      "creativeTitle": "Scrittura creativa e brainstorming",
+      "creativeGoal": "Obiettivo: generare idee originali, trame avvincenti o testi fluidi ed espressivi.",
+      "standardTitle": "Compiti standard e di routine (riassunti, traduzioni)",
+      "standardGoal": "Obiettivo: velocità, efficienza ed esecuzione diretta.",
+      "valueText": "Temperatura {{temperature}}, ragionamento {{effort}}",
+      "valueTextPlain": "Temperatura {{temperature}}",
+      "effort": {
+        "none": "spento",
+        "minimal": "minimo",
+        "low": "basso",
+        "medium": "medio",
+        "high": "alto",
+        "xhigh": "altissimo",
+        "max": "massimo"
+      }
+    },
+    "copied": "Copiato",
+    "chooseModel": "Scegli un modello",
+    "chatLabel": "Chat:",
+    "chats": "Chat",
+    "chatsWaiting": "Chat — in un'altra chat una ricerca attende una tua risposta",
+    "noChats": "Ancora nessuna chat",
+    "noChatsHint": "Avvia una chat, una sessione di lettura o una revisione editoriale.",
+    "newChat": "Nuova chat",
+    "newChatAdd": "nuova chat",
+    "askPlaceholderCommands": "Chiedi qualcosa, oppure digita / per i comandi",
+    "commands": "Comandi",
+    "commandNote": {
+      "unresolved": "Trova le questioni lasciate in sospeso",
+      "continuity": "Controlla le incongruenze",
+      "summarise": "Riassume gli eventi e i personaggi coinvolti",
+      "canon": "Verifica i fatti rispetto alle schede di riferimento",
+      "structure-and-motivation": "Esamina la posta in gioco e le motivazioni",
+      "line-editing": "Rivede lo stile e segnala i refusi",
+      "where": "Ritrova una scena a partire dalla tua descrizione",
+      "map": "Ricostruisce la struttura del libro",
+      "how-to-say": "Ti aiuta a trovare le parole che cerchi",
+      "verify": "Verifica un’affermazione con una ricerca sul web",
+      "read-on": "Prosegue la lettura e annota le proprie impressioni",
+      "predict": "Racconta cosa si aspetta dai prossimi capitoli",
+      "put-down": "Individua i punti in cui ha perso interesse",
+      "review": "Scrive una recensione di ciò che ha letto finora",
+      "blurb": "Confronta il libro con la promessa della quarta di copertina",
+      "heart": "Individua ciò che dà forza emotiva alla storia",
+      "intent": "Confronta la bozza con le intenzioni dell’autore",
+      "unstick": "Analizza il blocco e propone tre modi per superarlo",
+      "what-if": "Propone tre possibili sviluppi della storia",
+      "scene-plan": "Ti aiuta a progettare una scena, partendo dalle domande",
+      "letter": "Prepara una lettera editoriale e un piano di revisione",
+      "sensitivity": "Esamina come vengono rappresentate persone e culture",
+      "first-pages": "Valuta l’incipit dal punto di vista di un agente letterario",
+      "genre": "Valuta se il libro rispetta le aspettative del genere"
+    },
+    "noModelsInstalled": "Nessun modello disponibile",
+    "modelGroup": {
+      "device": "Modelli AI locali",
+      "remote": "Modelli AI remoti",
+      "unavailable": "Non disponibile"
+    },
+    "deleteChat": "Elimina questa chat",
+    "renameChat": "Rinomina",
+    "chatActions": "Azioni per “{{title}}”",
+    "model": "Modello per questa chat",
+    "modelShort": "modello",
+    "chatTitle": "Titolo della chat",
+    "reviewProgress_one": "Revisione in corso",
+    "reviewProgress_other": "Revisione in corso · passi fatti: {{complete}} su {{count}}",
+    "mapProgress_one": "Mappatura in corso",
+    "mapProgress_other": "Mappatura in corso · passi fatti: {{complete}} su {{count}}",
+    "context": "Contesto",
+    "contextHint": "Quello che spunti viene allegato a ogni messaggio. La Parte o la Sezione aperta nell'editor c'è sempre. Il resto, se serve, lo cerca da solo un modello che usa gli strumenti.",
+    "sourceGroup": {
+      "manuscript": "Manoscritto",
+      "reference": "Riferimenti",
+      "note": "Note",
+      "summary": "Riassunti"
+    },
+    "tokenUsage": "{{total}} token · {{input}} in ingresso / {{output}} in uscita",
+    "tokenUsageCached": "{{total}} token · {{input}} in ingresso ({{cached}} dalla cache) / {{output}} in uscita",
+    "readerScope": "Questo lettore ha letto",
+    "readerScopeUnset": "Scegli fino a dove ha letto",
+    "readerScopeWhole": "Tutto il manoscritto",
+    "readerScopeThrough": "Fino a tutto {{title}}",
+    "reviewDone_one": "Revisione conclusa: {{count}} rilievo.",
+    "reviewDone_other": "Revisione conclusa: {{count}} rilievi.",
+    "reviewDoneNone": "Revisione conclusa: nessun rilievo che il testo confermi.",
+    "reviewShort_one": "Revisione incompleta: {{count}} rilievo.",
+    "reviewShort_other": "Revisione incompleta: {{count}} rilievi.",
+    "reviewShortNone": "Revisione incompleta: nella parte letta, nessun rilievo che il testo confermi.",
+    "sourcesUsed_one": "{{count}} fonte usata",
+    "sourcesUsed_other": "{{count}} fonti usate",
+    "origin": {
+      "live-buffer": "testo non salvato",
+      "project-file": "file"
+    },
+    "stop": "Ferma",
+    "queued_one": "Una richiesta in coda",
+    "queued_other": "{{count}} richieste in coda",
+    "editQuestion": "Modifica questa domanda",
+    "editSend": "Invia",
+    "edited": "Domanda modificata. Quello che seguiva è stato tolto.",
+    "personaUnavailable": "Non disponibile",
+    "personaNotHere": "Non disponibile in questo tipo di chat. {{name}} si usa in: {{kinds}}.",
+    "chatKind": {
+      "general": "Chat generale",
+      "drafting": "Stesura",
+      "alpha-reader": "Lettore alpha",
+      "beta-reader": "Lettore beta",
+      "editorial": "Revisione editoriale"
+    },
+    "review": {
+      "unresolved": "Questioni in sospeso",
+      "continuity": "Continuità",
+      "consistency": "Coerenza con il canone",
+      "developmental": "Struttura e motivazioni",
+      "line": "Line editing e copy editing",
+      "sensitivity": "Sensitivity reading"
+    },
+    "snapshot": "Istantanee",
+    "close": "Chiudi il pannello",
+    "resize": "Trascina per ridimensionare il pannello",
+    "edit": "Modifica",
+    "aiGenerated": "Generato dall’AI · sola lettura",
+    "summaryState": {
+      "current": "Aggiornato",
+      "outdated": "Da aggiornare",
+      "unverified": "Non verificato",
+      "missing": "Mancante"
+    },
+    "save": "Salva",
+    "saving": "Salvataggio…",
+    "saveFailed": "Non è stato possibile salvare questo file.",
+    "saveFailedNamed": "Non è stato possibile salvare “{{title}}”.",
+    "list": "Elenco",
+    "discardEditTitle": "Scartare le modifiche?",
+    "discardEditBody": "Le modifiche a “{{title}}” non sono state salvate.",
+    "discardEditConfirm": "Scarta",
+    "unreadable": "Non è stato possibile leggere questo file.",
+    "pickReference": "Scegli qualcosa dallo scaffale dei Riferimenti per leggerlo qui.",
+    "pickNote": "Scegli una nota da leggere qui.",
+    "pickSection": "Apri una Sezione per farci domande.",
+    "persona": "Persona",
+    "noPersona": "Nessuna persona",
+    "you": "Tu",
+    "assistant": "Assistente",
+    "thinking": "Sto ragionando",
+    "writing": "Sto rispondendo",
+    "elapsedSeconds": "{{seconds}}s",
+    "elapsedMinutes": "{{minutes}}m {{seconds}}s",
+    "doing": {
+      "list_sources": "Sto consultando l'elenco delle fonti",
+      "grep": "Sto cercando nel progetto",
+      "grep_named": "Sto cercando nel progetto “{{subject}}”",
+      "read_source": "Sto leggendo una fonte",
+      "read_source_named": "Sto leggendo “{{subject}}”",
+      "inspect_structure": "Sto esaminando la struttura del progetto",
+      "submit_findings": "Sto annotando ciò che ho trovato",
+      "use_skill": "Sto scegliendo un metodo",
+      "use_skill_named": "Sto usando {{subject}}",
+      "leave_comments": "Sto lasciando commenti a margine"
+    },
+    "noModel": "nessun modello",
+    "yourKey": "la tua chiave",
+    "demoModel": {
+      "reply1": "L'incipit parte spedito, e funziona. Nel secondo paragrafo però ti fermi a descrivere la stanza, e la tensione che avevi creato cala. Prova a tenere un solo dettaglio, quello che il personaggio noterebbe davvero, e lascia che il resto emerga più avanti, dalle sue azioni.",
+      "reply2": "Il dialogo funziona meglio quando i personaggi dicono meno di quanto pensano. Nello scambio centrale, invece, tutti e due dichiarano apertamente quello che provano. Lascia che uno dei due glissi sulla domanda: la scena ne guadagnerà in peso.",
+      "reply3": "Una questione di continuità: in un capitolo precedente la lettera arriva di martedì, qui invece il personaggio ricorda di averla letta nel fine settimana. Se è una scelta, basta una riga che la spieghi al lettore; altrimenti si sistema in un attimo.",
+      "reply4": "Leggendo, non vedevo l'ora di andare avanti. La voce del narratore è riconoscibile e l'ultima frase della sezione colpisce nel segno. Ho perso il filo solo nel passaggio tra i due piani temporali: un riferimento più chiaro all'inizio del flashback aiuterebbe a orientarsi.",
+      "reply5": "Un piccolo ritocco: «Camminò lentamente verso la porta, sentendosi molto agitata» può diventare «Avanzò verso la porta a passi incerti». In «passi incerti» ci sono già la lentezza e l'ansia, e la frase non intralcia più la scena.",
+      "disclaimer": "Questa è una risposta preimpostata, che serve solo a mostrare come funziona la chat: nella demo non è disponibile un vero fornitore di AI."
+    },
+    "askHint": "Illumina la tua prosa: mettila alla prova con i tuoi editor e lettori. Questa chat viene salvata nel progetto.",
+    "dropQuote": "Togli la selezione citata",
+    "pinnedSources": "Allegati a ogni messaggio",
+    "unpin": "Togli “{{title}}” dagli allegati",
+    "modelError": {
+      "not-configured": "Scegli un modello nelle Impostazioni.",
+      "connection": "Il modello non è raggiungibile.",
+      "origin-or-permission": "Il modello non ha consentito la connessione all’app.",
+      "model-missing": "Quel modello non è più disponibile.",
+      "capability-missing": "Quel modello non può eseguire questa richiesta.",
+      "context-too-large": "Il contesto selezionato è troppo grande per questo modello.",
+      "resource-exhausted": "Per ora {{provider}} non accetta altre richieste con questa chiave: il limite di spesa o il credito non bastano per questa risposta. Riprova tra poco o controlla il limite della chiave.",
+      "busy": "C'è già un'altra risposta in corso con il tuo account. Aspetta che finisca, poi riprova.",
+      "invalid-response": "Il modello ha restituito una risposta che {{product}} non sa leggere.",
+      "provider-rejected": "La richiesta non è andata a buon fine. Scegli un altro modello e riprova.",
+      "no-private-host": "Nessun server di questo modello si impegna a non conservare il tuo testo né a usarlo per l'addestramento, quindi non gli è stato inviato nulla. Scegli un altro modello.",
+      "key-expired": "La chiave per questo modello è scaduta. Rinnovala per continuare.",
+      "credit-exhausted": "Hai esaurito il credito su {{provider}}.",
+      "limit-reached": "Questa chiave ha esaurito il limite di spesa impostato.",
+      "rate-limited": "Troppe richieste a questo modello in poco tempo. Aspetta un momento, poi riprova.",
+      "model-busy": "Questo modello è occupato in questo momento. Riprova tra poco, oppure scegli un altro modello.",
+      "quota-exhausted": "Le richieste gratuite di oggi presso il tuo fornitore sono finite. Scegli un altro modello o riprova domani.",
+      "account-changed": "In questo browser è entrato un altro account, quindi non è stato inviato nulla. La pagina si sta ricaricando.",
+      "timeout": "Il modello ha impiegato troppo tempo a rispondere.",
+      "interrupted": "La risposta è terminata prima di essere completa.",
+      "cancelled": "Interrotto.",
+      "output-limit": "Al modello è finito lo spazio prima di arrivare alla fine.",
+      "refusal": "Il modello ha rifiutato questa richiesta. Prova un altro modello, o chiedilo in un altro modo.",
+      "unknown": "Qualcosa è andato storto parlando con il modello."
+    },
+    "stopped": {
+      "cancelled": "Hai fermato questa risposta prima che finisse.",
+      "interrupted": "Questa risposta si è interrotta: l'editor è stato chiuso o ricaricato mentre veniva scritta.",
+      "output-limit": "Questa risposta si è interrotta: al modello è finito lo spazio prima di arrivare alla fine.",
+      "unfinished": "Questa risposta non è arrivata alla fine.",
+      "retryHint": "Riprova pone di nuovo la stessa domanda e sostituisce questa risposta."
+    },
+    "retry": {
+      "again": "Riprova",
+      "renew": "Rinnova la chiave",
+      "newKey": "Ottieni una nuova chiave",
+      "keyReady": "La chiave di questo modello è pronta.",
+      "waitForReset": "Oppure aspetta che si azzeri il {{date}}, poi riprova.",
+      "creditExhausted": "Aggiungi credito su {{provider}}, poi riprova."
+    },
+    "spend": {
+      "most": "La chiave di questo modello ha già usato gran parte del suo limite di {{limit}}.",
+      "reached": "La chiave di questo modello ha esaurito il suo limite di {{limit}}. Ottieni una nuova chiave per continuare.",
+      "reachedOrWait": "La chiave di questo modello ha esaurito il suo limite di {{limit}}. Ottieni una nuova chiave per continuare, o aspetta che si azzeri il {{date}}."
+    },
+    "renewal": {
+      "soon": "La chiave per questo modello sta per scadere.",
+      "expired": "La chiave per questo modello è scaduta."
+    },
+    "reasoning": {
+      "trimmed": "Viene conservata solo la parte più recente."
+    },
+    "traceLive": "I passi fatti finora",
+    "waiting": "In attesa di {{model}}",
+    "awaitingWriter": "In attesa di una tua risposta",
+    "working": "Sto lavorando",
+    "citation": "Apri “{{title}}”",
+    "summaryTitle": "Riassunto · {{title}}",
+    "sourceGone": "Una fonte che non è più nel progetto",
+    "unfoundQuotes_one": "Questa citazione non compare parola per parola nel testo che l’assistente ha letto:",
+    "unfoundQuotes_other": "Queste citazioni non compaiono parola per parola nel testo che l’assistente ha letto:",
+    "did": {
+      "list_sources": "Ho consultato l'elenco delle fonti",
+      "grep": "Ho cercato nel progetto",
+      "grep_named": "Ho cercato nel progetto “{{subject}}”",
+      "read_source": "Ho letto una fonte",
+      "read_source_named": "Ho letto “{{subject}}”",
+      "inspect_structure": "Ho esaminato la struttura del progetto",
+      "submit_findings": "Ho annotato ciò che ho trovato",
+      "use_skill": "Ho usato un metodo",
+      "use_skill_named": "Ho usato {{subject}}",
+      "leave_comments": "Ho lasciato commenti a margine"
+    },
+    "failed": {
+      "list_sources": "Non ho potuto consultare l'elenco delle fonti",
+      "grep": "Non ho potuto cercare nel progetto",
+      "grep_named": "Non ho potuto cercare nel progetto “{{subject}}”",
+      "read_source": "Non ho potuto leggere una fonte",
+      "read_source_named": "Non ho potuto leggere “{{subject}}”",
+      "inspect_structure": "Non ho potuto esaminare la struttura del progetto",
+      "submit_findings": "Non ho potuto annotare ciò che ho trovato",
+      "use_skill": "Non ho potuto usare un metodo",
+      "use_skill_named": "Non ho potuto usare {{subject}}",
+      "leave_comments": "Non ho potuto lasciare commenti a margine"
+    },
+    "web": {
+      "ask": {
+        "wikipedia": "Cerca su Wikipedia",
+        "web": "Cerca sul web"
+      },
+      "doing": {
+        "wikipedia": "Sto cercando su Wikipedia",
+        "web": "Sto cercando sul web"
+      },
+      "did": {
+        "wikipedia": "Ho cercato su Wikipedia {{query}}",
+        "web": "Ho cercato sul web {{query}}"
+      },
+      "failed": {
+        "wikipedia": "Non sono riuscito a cercare su Wikipedia {{query}}",
+        "web": "Non sono riuscito a cercare sul web {{query}}"
+      },
+      "declined": {
+        "wikipedia": "Non ho cercato su Wikipedia",
+        "web": "Non ho cercato sul web"
+      },
+      "note": {
+        "wikipedia_one": "Va da questo dispositivo a Wikipedia. I fatti di nicchia o recentissimi possono mancare.",
+        "wikipedia_other": "Vanno da questo dispositivo a Wikipedia. I fatti di nicchia o recentissimi possono mancare.",
+        "web_one": "Va da questo dispositivo a {{searchProvider}}, al suo motore di ricerca e al modello, e la paghi con il tuo credito.",
+        "web_other": "Vanno da questo dispositivo a {{searchProvider}}, al suo motore di ricerca e al modello, e le paghi una per una con il tuo credito."
+      },
+      "flag": "Con questa ricerca partono parole del progetto.",
+      "search": "Cerca",
+      "decline": "Non cercare",
+      "edit": "Modifica",
+      "editName": "Modifica queste ricerche",
+      "retry": "Riprova",
+      "reask": {
+        "notSent": "Non ho potuto inviare la ricerca a {{searchProvider}}, che ora non si può usare.",
+        "maybeSent": "La ricerca potrebbe essere arrivata a {{searchProvider}}, ma non è andata a buon fine."
+      },
+      "retryLede": {
+        "wait": "Troppe ricerche in poco tempo. Puoi riprovare alle {{time}}.",
+        "ready": "Troppe ricerche in poco tempo. Ora puoi riprovare."
+      },
+      "results_one": "{{count}} risultato",
+      "results_other": "{{count}} risultati",
+      "costNotReported": "costo non comunicato",
+      "sources": "Fonti dal web",
+      "newTab": "si apre in una nuova scheda"
+    },
+    "trail": {
+      "read_one": "{{count}} fonte letta",
+      "read_other": "{{count}} fonti lette",
+      "searched": "Ricerca nel progetto",
+      "web": {
+        "wikipedia": "Ricerca su Wikipedia",
+        "web": "Ricerca sul web",
+        "both": "Ricerca sul web e su Wikipedia"
+      },
+      "listed": "Elenco delle fonti consultato",
+      "structure": "Struttura esaminata",
+      "findings": "Rilievi annotati",
+      "failed_one": "{{count}} passo non riuscito",
+      "failed_other": "{{count}} passi non riusciti",
+      "thoughtFor": "{{duration}} di ragionamento",
+      "thought": "Ragionamento prima della risposta"
+    },
+    "scope": {
+      "current": "questa Sezione",
+      "quote": "il passaggio citato",
+      "cost": "può durare ore",
+      "structure": "tutta la Struttura"
+    },
+    "scopeNote": {
+      "structure": "{{structure}}: ogni Sezione",
+      "withQuote": "{{section}}: la Sezione intera",
+      "part": "{{part}}: quella dove sei",
+      "section": "{{section}}: quella aperta"
+    },
+    "writeReference": "Scrivi “{{name}}”",
+    "missingReferences_one": "Questa chat si basa sul documento “{{names}}”, che non hai ancora scritto.",
+    "missingReferences_other": "Questa chat si basa su documenti che non hai ancora scritto: {{names}}.",
+    "drafting": {
+      "question": "Di cosa hai bisogno adesso?",
+      "need": {
+        "unstick": "Non so come andare avanti",
+        "what-if": "Cosa potrebbe succedere dopo?",
+        "scene-plan": "Aiutami a impostare la scena",
+        "words": "Mi serve la parola giusta",
+        "passage": "Scrivimi un passaggio",
+        "check": "Funziona?"
+      },
+      "stoppedAt": "L'ultima riga che hai scritto:"
+    },
+    "plan": {
+      "title_one": "Piano di revisione · una voce aperta",
+      "title_other": "Piano di revisione · {{count}} voci aperte",
+      "priority": {
+        "must": "Indispensabile",
+        "should": "Consigliato",
+        "could": "Facoltativo"
+      },
+      "done": "Fatto: {{item}}",
+      "draft": "Portalo in Stesura",
+      "verdict": {
+        "resolved": "Risolto",
+        "open": "Ancora aperto",
+        "worse": "Peggiorato"
+      }
+    },
+    "focus": "Taglio",
+    "personaAbout": {
+      "10": "Direttore editoriale. Guarda il libro nel suo insieme — cosa promette, a chi si rivolge, di cosa parla — e firma la lettera editoriale.",
+      "20": "Revisione dello stile: legge frase per frase — ritmo, punto di vista, dialoghi, continuità — e cita il passaggio più breve che basta a dimostrare ciò che dice.",
+      "30": "Struttura e personaggi: ragiona per cause ed effetti — struttura, posta in gioco, personaggi, logica del mondo — e argomenta per “quindi” e “ma”.",
+      "40": "La lettrice. Legge in ordine, sa solo quello che le pagine le hanno mostrato finora e ti racconta che effetto le ha fatto leggerle."
+    },
+    "preset": {
+      "whole-book": {
+        "name": "Il libro intero",
+        "hint": "Promessa, tema e finale: il libro dice una cosa sola?"
+      },
+      "market": {
+        "name": "Il mercato",
+        "hint": "Gancio, prima pagina, categoria, lunghezza e titoli di confronto."
+      },
+      "sensitivity": {
+        "name": "Rappresentazione",
+        "hint": "Stereotipi, cliché dannosi e chi ha un ruolo attivo nella storia."
+      },
+      "authenticity": {
+        "name": "Autenticità",
+        "hint": "Competenze, traumi, epoca e punto di vista credibili."
+      },
+      "line": {
+        "name": "Riga per riga",
+        "hint": "Ritmo, ripetizioni, economia e filtri percettivi."
+      },
+      "dialogue": {
+        "name": "Dialoghi",
+        "hint": "Voci, attribuzioni, sottotesto e spiegoni in bocca ai personaggi."
+      },
+      "continuity": {
+        "name": "Continuità",
+        "hint": "Nomi, cronologia, oggetti e chi sa cosa."
+      },
+      "structure": {
+        "name": "Struttura",
+        "hint": "Cause ed effetti, svolte, posta in gioco, setup e payoff."
+      },
+      "character": {
+        "name": "Personaggi",
+        "hint": "Desiderio e bisogno, difetto, iniziativa, motivazioni e arco."
+      },
+      "worldbuilding": {
+        "name": "Worldbuilding",
+        "hint": "Regole, spiegoni, tempi e luoghi che sembrano veri."
+      },
+      "friend": {
+        "name": "Lettura amichevole",
+        "hint": "Dove batte il cuore del libro, e se è quello che intendevi."
+      },
+      "binge": {
+        "name": "Una pagina tira l'altra",
+        "hint": "Tensione, pagine saltate, confusione e voglia di indovinare."
+      },
+      "skeptic": {
+        "name": "Occhio scettico",
+        "hint": "Motivazioni, regole e premesse che devono reggere."
+      },
+      "heart": {
+        "name": "Tutto cuore",
+        "hint": "Affetto per i personaggi, i momenti più alti e ciò che resta."
+      },
+      "genre-veteran": {
+        "name": "Di casa nel genere",
+        "hint": "Conosce lo scaffale: promesse, previsioni e sorprese."
+      }
+    },
+    "nothingWritten": "Qui non c'è ancora niente di tuo: il documento verrà creato quando salverai qualcosa che hai scritto.",
+    "missingLead_one": "Questa chat si basa su un documento che non hai ancora scritto:",
+    "missingLead_other": "Questa chat si basa su documenti che non hai ancora scritto:",
+    "guide": {
+      "when": "Quando:",
+      "how": "Come:"
+    },
+    "transitLine": "Da questo dispositivo direttamente a {{provider}}",
+    "transitTitle": "Cosa arriva a {{provider}}",
+    "transitAgree": "Ho capito e accetto",
+    "personaOk": "OK",
+    "route": {
+      "open": "Apri una nuova chat: {{chat}}",
+      "openThrough": "Apri una nuova chat: {{chat}}, fino a “{{title}}”"
+    },
+    "reviewDoneMargin": "Revisione conclusa: i rilievi sono a margine del testo.",
+    "reviewShortMargin": "Revisione incompleta: i rilievi trovati sono a margine del testo.",
+    "commented_one": "{{count}} commento a margine di “{{title}}”",
+    "commented_other": "{{count}} commenti a margine di “{{title}}”"
+  },
+  "storage": {
+    "permission": "{{product}} ha bisogno del tuo permesso per leggere questa cartella.",
+    "permissionStill": "{{product}} ha ancora bisogno del tuo permesso per leggere quella cartella.",
+    "projectGone": "Questo progetto non è più sul tuo dispositivo.",
+    "remoteGone": "La copia di questo progetto nello spazio remoto non c'è più. Quella sul tuo dispositivo non è stata toccata.",
+    "folderGone": "La cartella “{{name}}” non c'è più.",
+    "fileGone": "Il file “{{name}}” non c'è più.",
+    "tooLargeFolder": "Quella cartella contiene più di {{max}} elementi — forse non è un progetto.",
+    "tooLargeDrive": "“{{name}}” è troppo grande per lo spazio di archiviazione remoto.",
+    "tooLargeFile": "“{{name}}” è troppo grande per essere aperto.",
+    "unreachable": "Non è stato possibile raggiungere lo spazio di archiviazione remoto.",
+    "disconnected": "Lo spazio di archiviazione remoto non è collegato.",
+    "browserUnsupported": "Questo browser non può aprire cartelle sul tuo dispositivo. Lo spazio di archiviazione remoto funziona in ogni browser.",
+    "localRootRequired": "Scegli prima la cartella locale nelle Impostazioni: senza, {{product}} non può farlo.",
+    "io": "Qualcosa è andato storto con quel file. Riprova.",
+    "noSpace": "Sul tuo dispositivo non c'è più spazio — non è stato possibile salvare quel file. Liberane un po' e riprova.",
+    "remoteFull": "Lo spazio di archiviazione remoto è esaurito: il file non è stato salvato. Libera un po' di spazio e riprova.",
+    "unusablePath": "“{{name}}” non è un nome valido per un file, quindi {{product}} non può salvarlo. Correggilo nel file di struttura del progetto.",
+    "demoLabel": "Documento demo",
+    "demoIsMemory": "Qui tutto resta in memoria: non viene salvato nulla."
+  },
+  "connect": {
+    "workingTitle": "Apertura",
+    "workingBody": "Si apre {{provider}} per approvare il collegamento.",
+    "failedTitle": "Non collegato",
+    "close": "Chiudi",
+    "returnedTitle": "Approvato",
+    "returnedBody": "Si torna a {{product}}. La finestra si chiude da sola.",
+    "lostBody": "Non è stato possibile riportare l'approvazione. Chiudi la finestra e collega di nuovo da {{product}}.",
+    "declinedTitle": "Collegamento non approvato",
+    "declinedBody": "Su {{provider}} il collegamento non è stato approvato e nessuna chiave è stata creata. Chiudi pure questa finestra: puoi riprovare da {{product}} quando vuoi."
+  },
+  "summary": {
+    "createTitle": "Crea riassunto",
+    "updateTitle": "Aggiorna riassunto",
+    "create": "Crea",
+    "update": "Aggiorna",
+    "retry": "Riprova",
+    "stop": "Ferma",
+    "model": "Modello",
+    "working": "Scrivo il riassunto…",
+    "loadingModels": "Cerco i modelli…",
+    "noModels": "Nessun modello disponibile. Avvia {{localProvider}}, oppure collega un fornitore di modelli AI nelle Impostazioni.",
+    "keyExpired": "La chiave per questo modello è scaduta.",
+    "renewKey": "Rinnovala per continuare.",
+    "newKey": "Ottieni una nuova chiave per continuare."
+  },
+  "genre": {
+    "label": "Genere",
+    "blendLabel": "Con elementi di",
+    "noBlend": "Nient'altro",
+    "ageLabel": "Pubblico",
+    "unsaid": "Da decidere",
+    "note": "L'assistente legge il libro alla luce di ciò che questo genere promette ai lettori. Puoi cambiarlo quando vuoi.",
+    "name": {
+      "romance": "Romance",
+      "mystery": "Giallo",
+      "thriller": "Thriller",
+      "fantasy": "Fantasy",
+      "science-fiction": "Fantascienza",
+      "horror": "Horror",
+      "literary": "Narrativa letteraria",
+      "historical": "Narrativa storica",
+      "contemporary": "Narrativa contemporanea"
+    },
+    "age": {
+      "middle-grade": "Middle grade (8–12 anni)",
+      "young-adult": "Young adult (12–18 anni)",
+      "new-adult": "New adult (18–25 anni)",
+      "adult": "Adulti"
+    },
+    "tropesLabel": "Tropi che vuoi mettere in scena",
+    "tropesPlaceholder": "Primo contatto, megacorporazioni distopiche, Terra post-apocalittica, il Prescelto, ecc."
+  },
+  "export": {
+    "title": "Esporta",
+    "lede": "Il file viene salvato nella cartella export del progetto, poi scaricato.",
+    "confirm": "Esporta",
+    "untitled": "Senza titolo",
+    "formatLabel": "Formato",
+    "format": {
+      "docx": {
+        "name": "DOCX",
+        "sub": "per agenti ed editor"
+      },
+      "odt": {
+        "name": "OpenDocument",
+        "sub": "OpenDocument, per qualsiasi suite da ufficio"
+      },
+      "pdf": {
+        "name": "PDF",
+        "sub": "pagine fisse, come in stampa"
+      },
+      "rtf": {
+        "name": "RTF",
+        "sub": "si apre con qualsiasi programma di scrittura"
+      },
+      "epub": {
+        "name": "EPUB",
+        "sub": "per e-reader e librerie online"
+      },
+      "html": {
+        "name": "Pagina web",
+        "sub": "un solo file, si apre nel browser"
+      },
+      "md": {
+        "name": "Markdown",
+        "sub": "CommonMark, per altri strumenti di scrittura"
+      },
+      "txt": {
+        "name": "Testo semplice",
+        "sub": "per i moduli di invio online"
+      }
+    },
+    "includeLabel": "Cosa includere",
+    "include": {
+      "manuscript": "Manoscritto",
+      "references": "Riferimenti",
+      "notes": "Note"
+    },
+    "nothing": "Spunta almeno una cosa da esportare.",
+    "pick": {
+      "manuscript": "Scegli Parti e Sezioni",
+      "references": "Scegli i riferimenti",
+      "notes": "Scegli le note",
+      "count": "{{on}} su {{all}}",
+      "none": "Non ce ne sono ancora",
+      "arcOf": "Arco di {{name}}",
+      "loading": "Sto leggendo i riferimenti del progetto"
+    },
+    "layoutLabel": "Impaginazione",
+    "layout": {
+      "book": {
+        "name": "Libro",
+        "sub": "impaginato come un libro stampato"
+      },
+      "manuscriptModern": {
+        "name": "Manoscritto",
+        "sub": "formato standard, in Times"
+      },
+      "manuscriptClassic": {
+        "name": "Manoscritto classico",
+        "sub": "lo stesso, in Courier"
+      },
+      "review": {
+        "name": "Copia di revisione",
+        "sub": "margine largo, righe numerate"
+      }
+    },
+    "pageLabel": "Formato pagina",
+    "page": {
+      "a4": "A4",
+      "letter": "Letter (USA)",
+      "trade": "15,2 × 22,9 cm (6 × 9 pollici)",
+      "digest": "12,7 × 20,3 cm (5 × 8 pollici)"
+    },
+    "authorLabel": "Autore",
+    "authorNote": "Resta salvato nel progetto.",
+    "variant": {
+      "story": "Impaginato come racconto, in base al tipo del progetto: “{{type}}”.",
+      "novel": "Impaginato come romanzo, con frontespizio, in base al tipo del progetto: “{{type}}”."
+    },
+    "contactLabel": "Recapiti",
+    "contactNote": "Nome, indirizzo, telefono, email, uno per riga. Valgono solo per questa esportazione.",
+    "headerLabel": "Intestazione",
+    "headerNote": "In alto a destra su ogni pagina di testo, seguita dal numero di pagina: {{header}} / 3",
+    "separatorLabel": "Tra una Sezione e l'altra",
+    "separator": {
+      "shunn": "# sulla stessa pagina",
+      "pageBreak": "Una pagina nuova"
+    },
+    "techPage": "Scheda tecnica in apertura",
+    "tocTick": "Indice",
+    "tocLocked": "Sempre presente negli EPUB",
+    "nameLabel": "Nome del file",
+    "nameEmpty": "Il nome deve contenere almeno una lettera o un numero.",
+    "error": {
+      "empty": "Tutto quello che hai spuntato è vuoto: non c'è niente da esportare.",
+      "failed": "L'esportazione non è andata a buon fine. Riprova.",
+      "nameTaken": "Nella cartella export questo nome è già preso, in tutte le sue varianti. Scegline un altro."
+    },
+    "done": {
+      "all": "Salvato nella cartella export e scaricato.",
+      "remoteSkipped": "Scaricato, ma non salvato nella cartella export dello spazio di archiviazione remoto, che non era raggiungibile.",
+      "deviceSkipped": "Scaricato. Non è stato possibile scrivere nella cartella del progetto su questo dispositivo.",
+      "noneSaved": "Scaricato, ma non salvato nella cartella export del progetto."
+    },
+    "tech": {
+      "heading": "Scheda tecnica",
+      "title": "Titolo",
+      "author": "Autore",
+      "type": "Tipo",
+      "genres": "Generi",
+      "ageCategory": "Pubblico",
+      "tropes": "Tropi",
+      "language": "Lingua",
+      "structure": "Struttura",
+      "words": "Parole",
+      "parts": "Parti",
+      "sections": "Sezioni",
+      "created": "Creato il",
+      "updated": "Ultima modifica",
+      "exported": "Esportato il",
+      "contents": "Contenuto",
+      "format": "Formato",
+      "layout": "Impaginazione"
+    },
+    "toc": {
+      "heading": "Indice"
+    },
+    "furniture": {
+      "draft": "Bozza · {{date}}",
+      "pageOf": "Pagina {{page}} di {{pages}}"
+    },
+    "manuscript": {
+      "about": "circa {{count}} parole",
+      "byline": "di {{author}}",
+      "end": "FINE"
+    },
+    "step": {
+      "format": "Che tipo di file?",
+      "contents": "Cosa ci va dentro?",
+      "pages": "Pagine e carta",
+      "finish": "Autore e nome del file"
+    },
+    "opening": "Sto aprendo il progetto",
+    "openFailed": "Non è stato possibile aprire questo progetto.",
+    "emptyBook": "In questo progetto non c'è ancora niente da esportare.",
+    "epub": {
+      "accessibilitySummary": "Solo testo, con titoli e un indice per muoversi al suo interno."
+    }
+  },
+  "import": {
+    "heading": "Importa un manoscritto",
+    "lede": "Porta qui un manoscritto che esiste già. Il tuo file viene solo letto: {{product}} ne ricava un progetto nuovo, e l'originale resta dov'è.",
+    "making": "Un attimo — sto creando il progetto.",
+    "confirm": "Importa",
+    "step": {
+      "choose": "Quali file?",
+      "chapters": "Dove si divide il manoscritto?"
+    },
+    "drop": {
+      "title": "Scegli un file",
+      "more": "Aggiungi altri file",
+      "sub": "Scegli i file, o trascinali sul riquadro · docx, odt, rtf, epub, md, txt, html"
+    },
+    "filesLabel": "File scelti",
+    "reading": "Lettura in corso",
+    "several": "Il manoscritto si legge in quest'ordine, a partire dal file 1. Sistemalo qui: nel passo successivo non si potrà più cambiare.",
+    "earlier": "Sposta {{name}} prima",
+    "later": "Sposta {{name}} dopo",
+    "remove": "Togli {{name}}",
+    "earlierTip": "Sposta prima",
+    "laterTip": "Sposta dopo",
+    "removeTip": "Togli",
+    "leftOut": "Non verrà importato",
+    "tag": {
+      "kind": "{{kind}} · resta fuori",
+      "alone": "Resta fuori",
+      "offSpine": "Fuori dall'ordine di lettura"
+    },
+    "refused": {
+      "doc": "Un file .doc, oppure protetto da password. Salvalo in .docx, senza password, e riprova.",
+      "pdf": "I PDF non si importano. Salva il manoscritto in .docx o .odt e riprova.",
+      "pages": "I file .pages non si importano. Esportalo in .docx e riprova.",
+      "gdoc": "Un .gdoc è solo un collegamento, non il documento. Scaricalo in .docx e riprova.",
+      "scrivener": "Un .scriv è la cartella di un progetto, non il manoscritto. Esportalo in .docx e riprova.",
+      "binary": "Ha il nome di un documento di testo, ma dentro non c'è testo.",
+      "unknown": "{{product}} non sa leggere questo tipo di file.",
+      "empty": "In questo file non c'è testo.",
+      "tooLarge": "Questo file è troppo grande per essere importato.",
+      "drm": "Questo ebook è protetto da DRM: il testo non si può leggere.",
+      "damaged": "Il file sembra danneggiato: non è stato possibile leggerlo.",
+      "bomb": "Decompresso, questo file diventerebbe enorme: non è stato aperto.",
+      "mixed": "Un ebook è già un libro intero: importalo da solo, senza altri file.",
+      "tooMany": "Al massimo {{max}} file per volta: questo è rimasto fuori."
+    },
+    "words_one": "{{formatted}} parola",
+    "words_other": "{{formatted}} parole",
+    "splitLabel": "Dividi in base a:",
+    "rule": {
+      "headings": "Titoli",
+      "patterns": "Titoli con numero",
+      "typography": "Righe in grassetto o centrate",
+      "pageBreaks": "Interruzioni di pagina",
+      "files": "File e indice",
+      "separator": "Una riga che scelgo io",
+      "none": "Niente — lascialo intero"
+    },
+    "ruleNote": {
+      "headings": "Divide il manoscritto dove compare uno stile di titolo, come Titolo 1 o Titolo 2. Il titolo diventa il nome della sezione.",
+      "patterns": "Divide il manoscritto quando una riga contiene solo un titolo numerato, come “Capitolo 3”, “Parte prima” o “IV”. I numeri dentro una frase non creano divisioni.",
+      "typography": "Divide il manoscritto alle righe brevi che risaltano a colpo d’occhio: testo in grassetto, centrato, più grande del resto o tutto in maiuscolo.",
+      "pageBreaks": "Divide il manoscritto a ogni interruzione di pagina. Se la nuova pagina si apre con una riga breve, quella diventa il titolo della sezione; altrimenti la sezione resta senza titolo.",
+      "files": "Divide il contenuto dove comincia un nuovo file, oppure a ogni voce dell’indice dell’ebook.",
+      "separator": "Divide il manoscritto a ogni riga che comincia con il testo che scrivi. Se la riga contiene solo quel testo, la sezione resta senza titolo; se è più lunga, diventa il titolo.",
+      "none": "Non divide il manoscritto: tutto il testo viene importato come un unico blocco."
+    },
+    "separatorLabel": "Scrivi la riga che divide il manoscritto",
+    "separatorPlaceholder": "Per esempio: ###",
+    "listLabel": "Dove si divide",
+    "beadsHelp": "Pallino pieno: viene importato. Vuoto: resta fuori. Fai clic per cambiare, e fai clic su un titolo per rinominarlo. Passa col puntatore su una voce per farne una Parte o una Sezione, dividerla, unirla a quella sopra o staccarla.",
+    "outlineEmpty": {
+      "type": "Scrivi la riga qui sopra: qui compariranno i punti in cui divide il manoscritto.",
+      "noMatch": "Nessuna riga del manoscritto corrisponde a “{{text}}”.",
+      "whole": "Non c’è nessuna divisione: il manoscritto entra come un unico blocco."
+    },
+    "title": {
+      "untitled": "Senza titolo",
+      "scene": "{{title}}, scena {{n}}",
+      "matter": {
+        "titlePage": "Frontespizio",
+        "techPage": "Scheda tecnica",
+        "copyright": "Copyright",
+        "toc": "Indice",
+        "alsoBy": "Dello stesso autore",
+        "dedication": "Dedica",
+        "epigraph": "Epigrafe",
+        "foreword": "Prefazione",
+        "preface": "Premessa",
+        "introduction": "Introduzione",
+        "prologue": "Prologo",
+        "epilogue": "Epilogo",
+        "afterword": "Postfazione",
+        "acknowledgments": "Ringraziamenti",
+        "about": "Nota sull'autore",
+        "appendix": "Appendice",
+        "glossary": "Glossario",
+        "bibliography": "Bibliografia",
+        "notes": "Note",
+        "index": "Indice analitico"
+      },
+      "split": "{{title}} divisione {{n}}",
+      "shared": "{{title}} - {{n}}"
+    },
+    "open": "Dividi",
+    "openLabel": "Dividi “{{title}}”",
+    "join": "Unisci alla voce sopra",
+    "merge": "Unisci",
+    "separate": "Separa",
+    "separateLabel": "Separa “{{title}}” dalla voce sopra",
+    "joinLabel": "Unisci “{{title}}” alla voce sopra",
+    "renameLabel": "Nome di “{{title}}”",
+    "includeLabel": "Importa “{{title}}”",
+    "uncutLabel": "Riunisci “{{title}}” alla voce sopra",
+    "splitHere": "Dividi qui",
+    "splitHereLabel": "Inizia una nuova voce da “{{text}}”",
+    "scenes": "Ogni scena una Sezione",
+    "scenesByMark_one": "{{count}} scena, separata da {{mark}}",
+    "scenesByMark_other": "{{count}} scene, separate da {{mark}}",
+    "scenesByBlank_one": "{{count}} scena, separata da righe vuote",
+    "scenesByBlank_other": "{{count}} scene, separate da righe vuote",
+    "underline": "Le parole sottolineate diventano corsivo",
+    "comments": "I commenti vanno a margine",
+    "undone_one": "Cambiando la divisione, {{count}} modifica all'elenco è andata persa.",
+    "undone_other": "Cambiando la divisione, {{count}} modifiche all'elenco sono andate perse.",
+    "undo": "Annulla",
+    "losses": "Questo file contiene {{list}}. {{product}} per ora non può conservarli, quindi non saranno nel progetto. Anche qualche dettaglio di formattazione potrebbe cambiare.",
+    "loss": {
+      "footnotes_one": "{{count}} nota a piè di pagina",
+      "footnotes_other": "{{count}} note a piè di pagina",
+      "endnotes_one": "{{count}} nota finale",
+      "endnotes_other": "{{count}} note finali",
+      "images_one": "{{count}} immagine",
+      "images_other": "{{count}} immagini",
+      "textBoxes_one": "{{count}} casella di testo",
+      "textBoxes_other": "{{count}} caselle di testo"
+    },
+    "splitLead": "Fai clic tra due paragrafi per dividere lì la voce. Fai clic su una linea di divisione per riunirla.",
+    "make": {
+      "part": "Fanne una Parte",
+      "section": "Fanne una Sezione"
+    },
+    "makeLabel": {
+      "part": "Fai di “{{title}}” una Parte",
+      "section": "Fai di “{{title}}” una Sezione"
+    },
+    "scenesNote": "Ogni capitolo con stacchi di scena diventa una Parte, e ogni sua scena una Sezione al suo interno. I capitoli senza stacchi restano come sono."
+  },
+  "comments": {
+    "you": "Tu",
+    "unknownAuthor": "Qualcuno",
+    "suggested": "Proposta",
+    "ghostLabel": "Commento proposto",
+    "threadLabel": "Commento",
+    "orphan": "Il testo a cui si riferiva è cambiato.",
+    "answers_one": "{{count}} risposta",
+    "answers_other": "{{count}} risposte",
+    "writing": "{{name}} sta scrivendo…",
+    "doing": "{{name}}: {{doing}}",
+    "searched": {
+      "wikipedia": "Ho cercato su Wikipedia {{query}}",
+      "web": "Ho cercato sul web {{query}}"
+    },
+    "replyFailed": "Nessuna risposta da {{name}}.",
+    "retry": "Riprova",
+    "placeholder": "Un commento su questo passaggio",
+    "chapterPlaceholder": "Un commento sul capitolo",
+    "replyPlaceholder": "Rispondi, o chiama qualcuno con @",
+    "add": "Commenta",
+    "send": "Invia",
+    "cancel": "Annulla",
+    "keep": "Tieni",
+    "reply": "Rispondi",
+    "dismiss": "Scarta",
+    "resolve": "Risolvi",
+    "reopen": "Riapri",
+    "remove": "Elimina",
+    "removeConfirm": "Eliminare il commento e le risposte?",
+    "reattach": "Collega alla selezione",
+    "onChapter": "Commenta il capitolo",
+    "resolvedCount_one": "{{count}} risolto",
+    "resolvedCount_other": "{{count}} risolti",
+    "damaged": "Il file dei commenti di questo capitolo non si riesce a leggere: resta com'è.",
+    "unavailable": "In questo momento i commenti del capitolo non sono raggiungibili.",
+    "chapterMarker": "Commenti sul capitolo",
+    "markerLabel": "Commento di {{name}}",
+    "panelLabel": "Commento",
+    "close": "Chiudi",
+    "countLabel": "Commenti: {{list}}",
+    "countBy": "{{count}} di {{name}}",
+    "countOthers_one": "{{count}} tuo o di un editor",
+    "countOthers_other": "{{count}} tuoi o degli editor"
+  },
+  "legal": {
+    "menu": "Note legali",
+    "close": "Chiudi",
+    "links": {
+      "label": "Documenti legali",
+      "notice": "Note legali",
+      "privacy": "Privacy",
+      "terms": "Uso e licenza"
+    },
+    "page": {
+      "updated": "Ultimo aggiornamento: {{updated}}"
+    },
+    "landing": {
+      "title": "Garanzia e responsabilità",
+      "body": "{{product}} è fornito «così com’è», senza garanzie, nei limiti consentiti dalla legge e salvo quanto dichiarato per iscritto. Restano ferme le tutele inderogabili. Conserva una copia di sicurezza dei tuoi testi.",
+      "more": "Leggi le note legali"
+    },
+    "notice": {
+      "title": "Note legali",
+      "lede": "L’esclusione di garanzia e i limiti di responsabilità previsti dalla licenza.",
+      "asIs": {
+        "title": "Software fornito «così com’è»",
+        "body": "{{publisherName}} (di seguito «Autore») pubblica {{product}} come software libero con licenza GNU Affero General Public License, versione 3 o successiva («AGPL»). È un progetto personale, a titolo gratuito e al di fuori di qualsiasi attività commerciale o professionale. Nei limiti consentiti dalla legge e salvo quanto dichiarato per iscritto, il programma è fornito «così com’è», senza garanzie espresse o implicite, comprese quelle di commerciabilità e di idoneità a uno scopo specifico. Entro questi limiti, chi usa il programma si assume i rischi legati alla qualità e al funzionamento del programma e gli eventuali costi di assistenza, riparazione o correzione."
+      },
+      "liability": {
+        "title": "Limitazione di responsabilità",
+        "body": "Salvo quanto previsto dalla legge o pattuito per iscritto, l’Autore, i titolari dei diritti d’autore e chi modifica o distribuisce il programma secondo la licenza non rispondono dei danni che derivano dall’uso del programma o dall’impossibilità di usarlo. Rientrano in questa limitazione la perdita o il danneggiamento di testi, file e dati, l’interruzione del lavoro e il mancato guadagno. La limitazione vale anche se la parte chiamata a rispondere era stata informata della possibilità di quei danni."
+      },
+      "writing": {
+        "title": "I tuoi testi",
+        "body": "Il programma salva i testi dove scegli di tenerli, sul dispositivo o nello spazio di archiviazione remoto. La disponibilità e l’integrità dei dati non sono garantite. Conserva una copia di sicurezza dei testi in un luogo separato."
+      },
+      "ai": {
+        "title": "Intelligenza artificiale",
+        "body": "L’assistente è facoltativo. I modelli locali funzionano sul tuo computer, mentre quelli remoti sono gestiti da fornitori esterni. Il modello lo scegli tu, tra quelli locali che hai installato e quelli remoti disponibili con la tua chiave. L’Autore non fornisce i modelli, non li sceglie al posto tuo e non vede le richieste né le risposte. Per i modelli remoti valgono le condizioni del fornitore che scegli. Le risposte possono contenere errori, essere incomplete o risultare inadatte al tuo scopo. Verificale prima di usarle, soprattutto se intendi pubblicarle o condividerle. Se pubblichi un testo generato o modificato dall’AI per informare il pubblico su questioni di interesse pubblico, il Regolamento (UE) 2024/1689 può richiederti di indicare che l’AI ha generato o modificato il testo. Una delle eccezioni riguarda i testi sottoposti a revisione umana o a controllo editoriale, a condizione che una persona fisica o giuridica abbia la responsabilità editoriale della pubblicazione. Questi obblighi non si applicano alle persone fisiche che usano l’AI per un’attività puramente personale e non professionale (art. 2, par. 10)."
+      },
+      "thirdParty": {
+        "title": "Servizi di terzi",
+        "body": "Servizi come {{identity}}, {{ai}}, {{homeDns}} e {{certificates}} sono soggetti alle condizioni dei rispettivi fornitori, che ne stabiliscono anche i costi e descrivono il trattamento dei dati nelle proprie informative. I fornitori possono modificare o interrompere i servizi. Nei limiti previsti dalla legge, l’Autore non risponde del loro funzionamento."
+      },
+      "law": {
+        "title": "Limiti di legge",
+        "body": "Le esclusioni e le limitazioni valgono nei limiti consentiti dalla legge. Restano ferme le responsabilità inderogabili, comprese quelle per dolo o colpa grave, e i diritti inderogabili dei consumatori. L’eventuale invalidità di una disposizione lascia ferme le altre nei limiti consentiti dalla legge."
+      },
+      "license": {
+        "title": "La licenza",
+        "copyright": "Copyright (C) 2026 {{publisherName}}.",
+        "body": "La licenza AGPL disciplina il programma, comprese la garanzia e la responsabilità. Queste note ne riepilogano le disposizioni. Il testo integrale della licenza è disponibile su {{licenseText}} e accompagna il codice sorgente e ogni versione pubblicata. Il codice sorgente è disponibile su {{publisherRepository}}. Le licenze dei componenti di terzi inclusi nel programma sono raccolte in {{thirdPartyNotices}}."
+      },
+      "closing": "Puoi eseguire, studiare, modificare e condividere il programma secondo la licenza. L’uso del programma non richiede l’accettazione di queste note."
+    },
+    "privacy": {
+      "title": "Come il programma tratta i dati personali",
+      "lede": "Dove la tua installazione conserva i dati e quali servizi facoltativi li ricevono.",
+      "controller": {
+        "title": "Chi pubblica il programma e chi tratta i dati",
+        "body": "{{publisherName}} (di seguito «Autore») pubblica {{product}} come progetto personale, a titolo gratuito e al di fuori di qualsiasi attività commerciale o professionale. Puoi scaricare il codice sorgente da {{publisherRepository}}, compilare il programma e usarlo sui tuoi dispositivi. L’Autore non gestisce la tua installazione e non riceve dal programma registri di funzionamento (log), dati di telemetria, credenziali o manoscritti. Per l’accesso con {{identity}} e per autorizzare il collegamento allo spazio di archiviazione remoto, il programma usa il progetto {{identity}} Cloud creato da chi ha configurato la tua installazione.",
+        "roles": "L’Autore non è titolare del trattamento dei dati presenti nella tua installazione: non ne determina le finalità né i mezzi e non li riceve. A decidere è chi gestisce l’installazione. Se usi il programma per attività esclusivamente personali o domestiche, il Regolamento (UE) 2016/679 (GDPR) non si applica a quell’uso (art. 2, par. 2, lett. c). Se gestisci l’installazione per altre persone o per lavoro, puoi essere tu il titolare del trattamento dei loro dati. In quel caso spetta a te verificare come funziona il programma, anche esaminando il codice sorgente, qualunque versione tu usi, compresa quella pubblicata dall’Autore. Questa pagina riguarda la versione pubblicata dall’Autore; le versioni modificate da altri possono comportarsi diversamente. In ogni caso è una descrizione, non una garanzia: ti aiuta a scegliere con cognizione di causa, ma non sostituisce la tua verifica. Per il sito della demo vale l’informativa pubblicata sul sito."
+      },
+      "notCollected": {
+        "title": "Cosa non raccoglie l’Autore",
+        "body": "Il programma conserva sui tuoi dispositivi l’account locale, le preferenze e le copie di lavoro. Non usa strumenti di analisi, pubblicità o profilazione e non invia dati di telemetria all’Autore. Le funzioni che attivi comunicano con i rispettivi fornitori direttamente dalla tua installazione, senza passare da alcun servizio dell’Autore. I dati che invii di tua iniziativa a GitHub, ad esempio in una segnalazione, sono una comunicazione distinta: non includere credenziali o manoscritti privati."
+      },
+      "data": {
+        "title": "Quali dati tratta il programma",
+        "intro": "«Questo browser» e «questo dispositivo» sono quelli con cui stai leggendo questa pagina. Quello che questa pagina dice di loro vale per ogni browser e ogni dispositivo con cui usi il programma: ognuno conserva i propri dati.",
+        "table": {
+          "columns": {
+            "what": "Dati",
+            "why": "A cosa servono",
+            "where": "Dove sono conservati o inviati"
+          },
+          "rows": {
+            "account": {
+              "what": "Dati dell’account locale. Il browser genera un identificativo. Se accedi con {{identity}}, l’account locale contiene anche l’identificativo verificato, il nome, l’indirizzo email e l’immagine del profilo del tuo account {{identity}}",
+              "why": "Identificare l’account in uso e tenere separato il lavoro di ciascun account",
+              "where": "In questo browser, su questo dispositivo"
+            },
+            "sessions": {
+              "what": "Account attivo nel browser",
+              "why": "Mantenere l’accesso in tutte le schede del browser",
+              "where": "In questo browser, su questo dispositivo"
+            },
+            "preferences": {
+              "what": "Preferenze, tra cui tema, lingua, impostazioni dell’editor e scelta dei modelli di AI",
+              "why": "Ritrovare le tue impostazioni, anche nelle altre installazioni se colleghi lo spazio remoto",
+              "where": "In questo browser, su questo dispositivo. Quando colleghi lo spazio remoto, il programma salva una copia delle preferenze anche nella cartella riservata all’applicazione"
+            },
+            "library": {
+              "what": "Dati della libreria, tra cui titoli di libri, Parti e Sezioni, conteggi delle parole, obiettivi e percorsi dei file",
+              "why": "Mostrare la libreria e ritrovare i tuoi progetti",
+              "where": "In questo browser, su questo dispositivo. Quando colleghi lo spazio remoto, il programma salva una copia della libreria anche nella cartella riservata all’applicazione"
+            },
+            "documents": {
+              "what": "Libri, Parti, Sezioni, note e relative versioni",
+              "why": "Salvare i tuoi testi e permetterti di ritrovarli",
+              "where": "Nella cartella che scegli su questo dispositivo o, se usi lo spazio remoto, nella cartella del programma in quello spazio"
+            },
+            "storage": {
+              "what": "Credenziale per lo spazio di archiviazione remoto, identificativo e indirizzo email dell’account collegato",
+              "why": "Leggere e salvare i file nello spazio remoto",
+              "where": "In un cookie del browser. Il servizio di identità dell’installazione cifra i dati ed è l’unico che può decifrarli"
+            },
+            "ai": {
+              "what": "Chiave {{ai}}, limite di spesa e importo già speso, secondo i dati restituiti da {{ai}}",
+              "why": "Usare i modelli remoti e verificare quanto hai speso rispetto al limite",
+              "where": "Nella memoria temporanea della pagina aperta nel browser, finché non la chiudi. Se scegli di salvare la chiave, il browser la invia al servizio di identità dell’installazione, che la cifra e la conserva in un cookie"
+            },
+            "transit": {
+              "what": "Testi inviati all’assistente e ricerche sul web",
+              "why": "Rispondere alla tua richiesta",
+              "where": "Dal tuo dispositivo direttamente al servizio che hai scelto, senza passare dall’Autore"
+            },
+            "desktop": {
+              "what": "Impostazioni dell’app desktop, tra cui porte, nome di dominio per la rete di casa, dati dell’account {{homeDns}} (email e credenziale di accesso) e certificato del dominio",
+              "why": "Usare il programma anche dagli altri dispositivi della rete di casa",
+              "where": "Sul computer che esegue l’app desktop"
+            }
+          }
+        },
+        "required": "Puoi usare {{product}} senza un account {{identity}}. Con {{identity}} o senza, il programma crea un account locale, che resta in questo browser. L’accesso con {{identity}} serve a identificarti ed è necessario se vuoi collegare lo spazio di archiviazione remoto. Il collegamento è una scelta separata. La demo è accessibile senza account."
+      },
+      "retention": {
+        "title": "Per quanto tempo sono conservati i dati",
+        "list": {
+          "account": "L’account locale, le preferenze, la libreria e i collegamenti restano nel browser finché non scegli di cancellarli. Quando esci puoi scegliere se conservare questi dati.",
+          "sessions": "Il browser mantiene l’accesso fino all’uscita. Il cookie di sessione scade dopo 30 giorni. Se a quel punto non sei uscito, il servizio di identità ne crea uno nuovo.",
+          "removed": "Quando rimuovi un progetto dalla libreria, il progetto sparisce subito dall’elenco. Il programma conserva una traccia della rimozione nei dati della libreria associata all’account locale, così il progetto non ricompare dopo la sincronizzazione.",
+          "aiKey": "Il browser tiene la chiave {{ai}} in memoria finché non esci o non chiudi la scheda del browser. Se scegli di farla ricordare, la chiave è salvata, cifrata, in un cookie: si applicano le durate indicate nella sezione «Cookie e memoria del browser».",
+          "sync": "Dopo l’uscita, le copie di preferenze e libreria restano nello spazio remoto. Il programma può recuperarle quando ricolleghi quello stesso spazio."
+        },
+        "deletion": "Quando scolleghi lo spazio di archiviazione remoto, il programma ti chiede da dove. Se scegli «Solo da questo browser», gli altri dispositivi restano collegati. Se scegli «Da tutti i dispositivi», il programma chiede a {{identity}} di revocare l’accesso allo spazio remoto. Nella stessa finestra puoi anche far cancellare dallo spazio remoto le copie delle preferenze e della libreria.",
+        "cleanup": "Prima di uscire, il programma salva il lavoro aperto e ti avvisa se restano modifiche da sincronizzare. Se scegli di cancellare i dati da questo browser, il programma tenta di rimuovere i dati locali e le credenziali dell’account. L’uscita può completarsi anche se il browser non riesce a rimuovere tutti i dati locali.",
+        "deleteAccount": "Con «Elimina il tuo account» nelle Impostazioni rimuovi l’account da questo browser. Se lo spazio remoto è collegato, il programma cancella prima le copie remote delle preferenze e della libreria e chiede a {{identity}} di revocare l’accesso. Se qualcosa non riesce, l’eliminazione si ferma. Il programma ti dice che cosa ha già eliminato e che cosa è rimasto. Puoi riprovare. I libri restano nelle cartelle che hai scelto.",
+        "revoke": "L’eliminazione dell’account prosegue anche se {{identity}} non conferma la revoca. In quel caso, rimuovi l’accesso del programma dal tuo account {{identity}}. Per revocare la chiave {{ai}}, usa il tuo account presso quel servizio. Rimuovere il cookie non revoca la chiave."
+      },
+      "recipients": {
+        "title": "Destinatari dei dati",
+        "list": {
+          "identity": "{{identity}} gestisce l’accesso e lo spazio di archiviazione remoto attraverso il progetto {{identity}} Cloud della tua installazione. Per l’accesso, il programma chiede solo i dati di base del profilo (openid, email e profile). Quando colleghi lo spazio remoto, il programma chiede l’autorizzazione a usare soltanto i file che crea o apre e una cartella riservata all’applicazione, mai il resto del tuo spazio. Anche l’immagine del profilo proviene da {{identity}}.",
+          "ai": "{{ai}} inoltra al fornitore del modello la tua richiesta, che contiene i testi, il contesto e i dati tecnici necessari. Il programma chiede a {{ai}} di scegliere solo fornitori che dichiarano di non conservare i testi né di usarli per l’addestramento. {{ai}} e gli altri servizi coinvolti possono comunque conservare i dati. Le rispettive informative spiegano anche come vengono trattate le ricerche.",
+          "search": "Quando la ricerca passa da {{encyclopedia}}, il servizio riceve la frase che hai approvato e i dati tecnici della connessione. Per le ricerche tramite {{ai}}, il programma invia al fornitore del modello la frase approvata e un’istruzione di ricerca. {{ai}} fa la ricerca con {{webSearch}}, un motore di ricerca sul web. Il modello può riformulare la frase che {{ai}} invia a {{webSearch}}. Il manoscritto resta escluso dalla richiesta di ricerca.",
+          "home": "Se configuri l’accesso dalla rete di casa, {{homeDns}} riceve il nome di dominio scelto e l’indirizzo del computer nella rete locale, che pubblica nel DNS. Se crei un account durante la configurazione, {{homeDns}} riceve anche l’indirizzo email e la password. {{certificates}} riceve il nome di dominio per rilasciare il certificato. Il nome compare nei registri pubblici di Certificate Transparency. Entrambi i servizi vedono anche l’indirizzo IP di origine delle richieste che ricevono. {{certificates}} conserva gli indirizzi IP di origine. La sua informativa indica per quanto tempo ({{certificatesPrivacy}}).",
+          "updates": "{{updates}} riceve l’indirizzo IP della connessione quando la libreria cerca una nuova versione o quando avvii il controllo dall’app desktop. La libreria riutilizza il risultato per 24 ore se il browser riesce a conservarlo."
+        },
+        "independent": "Il ruolo di ciascun fornitore dipende dal trattamento e dagli accordi applicabili. Per sapere come usa i dati, consulta la sua informativa e le condizioni del tuo account. L’Autore non gestisce i collegamenti a questi servizi e non riceve i dati scambiati."
+      },
+      "transfers": {
+        "title": "Trasferimenti al di fuori dello Spazio economico europeo",
+        "body": "I servizi collegati possono trattare dati al di fuori dello Spazio economico europeo (SEE). Paesi, destinatari e garanzie variano a seconda del servizio, del modello e degli accordi applicabili. Prima di inviare informazioni personali o riservate, consulta le informative dei fornitori. Le richieste partono dalla tua installazione e vanno direttamente a questi servizi. Non passano dall’Autore, che non le riceve e non le vede."
+      },
+      "cookies": {
+        "title": "Cookie e memoria del browser",
+        "intro": "Il programma usa cookie tecnici per mantenere la sessione e completare nello stesso browser l’accesso con {{identity}} o il collegamento allo spazio remoto. Un cookie persistente mantiene il collegamento allo spazio remoto. Se scegli di salvare la chiave {{ai}}, un altro cookie conserva la chiave in forma cifrata. L’art. 5, par. 3, della direttiva 2002/58/CE e, in Italia, l’art. 122 del Codice in materia di protezione dei dati personali (d.lgs. 196/2003) non richiedono il consenso quando la memorizzazione è strettamente necessaria per fornire una funzione richiesta espressamente dall’utente. Il programma non usa cookie di tracciamento. I fornitori esterni descrivono i propri cookie nelle rispettive informative.",
+        "table": {
+          "columns": {
+            "name": "Cookie",
+            "purpose": "A cosa serve",
+            "lifetime": "Durata"
+          },
+          "rows": {
+            "session": {
+              "name": "{{sessionCookie}}",
+              "purpose": "Associare all’account attivo i collegamenti e le credenziali gestiti dal servizio di identità",
+              "lifetime": "Fino all’uscita o alla scadenza dopo 30 giorni"
+            },
+            "signIn": {
+              "name": "{{flowCookie}}",
+              "purpose": "Conservare in forma cifrata i dati della procedura e completare l’accesso con {{identity}} o il collegamento allo spazio remoto nel browser che ha avviato la richiesta",
+              "lifetime": "10 minuti"
+            },
+            "storageConnect": {
+              "name": "{{connectionCookie}}",
+              "purpose": "Conservare la credenziale cifrata per accedere allo spazio remoto",
+              "lifetime": "Fino allo scollegamento, al massimo 400 giorni"
+            },
+            "aiKey": {
+              "name": "{{keyCookie}}",
+              "purpose": "Conservare la chiave {{ai}} in forma cifrata, se scegli di salvarla",
+              "lifetime": "Fino allo scollegamento o all’uscita con cancellazione, al massimo 400 giorni"
+            }
+          }
+        },
+        "device": "Il browser conserva l’account locale, le preferenze, la libreria, le copie di lavoro dei file remoti e le modifiche in attesa di salvataggio. Il risultato del controllo aggiornamenti e il numero di versione dell’ultimo avviso che hai chiuso riguardano l’intera installazione e restano nel browser anche dopo l’eliminazione di un account. Il browser conserva anche il codice che lo associa alla sessione con il servizio di identità, la scelta di salvare la chiave {{ai}}, l’ultimo tema usato e l’indirizzo dei tuoi modelli AI locali."
+      },
+      "rights": {
+        "title": "A chi rivolgerti per i tuoi dati",
+        "body": "Per cancellare i dati locali, puoi scegliere la cancellazione all’uscita oppure usare «Elimina il tuo account» nelle Impostazioni. Per i dati trattati dai servizi esterni, usa le opzioni dei tuoi account o i recapiti indicati nelle loro informative. Se usi una copia di {{product}} installata e gestita da un’altra persona, rivolgiti a lei. L’Autore non riceve dal programma i dati degli account o i manoscritti e quindi non può fornirli, rettificarli o cancellarli.",
+        "delete": "Se scrivi all’Autore a {{privacyContact}}, ai tuoi messaggi si applica l’informativa del sito. Non includere nei messaggi dati personali oltre a quelli necessari per risponderti, né credenziali, manoscritti o dati di altre persone.",
+        "complaint": "Se ritieni che chi tratta i tuoi dati violi il GDPR, puoi presentare reclamo all’autorità di controllo competente. In Italia puoi rivolgerti al Garante per la protezione dei dati personali ({{supervisor}})."
+      },
+      "automated": {
+        "title": "Decisioni automatizzate",
+        "body": "L’Autore e il programma non usano i tuoi dati per analizzare o prevedere il tuo comportamento, i tuoi interessi o le tue abitudini (profilazione). Nessun sistema automatico prende decisioni che producono effetti giuridici che ti riguardano o che incidono in modo analogo significativamente sulla tua persona (art. 22 del GDPR)."
+      },
+      "changes": {
+        "title": "Modifiche",
+        "body": "Questa pagina riporta la data dell’ultimo aggiornamento ed è consultabile dal programma. Se l’Autore inizierà a raccogliere dati, pubblicherà un’informativa prima di avviare il trattamento."
+      }
+    },
+    "terms": {
+      "title": "Uso e licenza",
+      "lede": "Informazioni sulla licenza e sull’uso del programma.",
+      "scope": {
+        "title": "Che cosa riguarda questa pagina",
+        "body": "{{publisherName}} (di seguito «Autore») pubblica {{product}} come progetto personale, a titolo gratuito e al di fuori di qualsiasi attività commerciale o professionale. Puoi compilare, installare ed eseguire il programma sui tuoi dispositivi. L’uso e la distribuzione del programma sono disciplinati dalla licenza AGPL, versione 3 o successiva. Questa pagina e le Note legali ne riepilogano le disposizioni. I diritti previsti dalla licenza si esercitano senza dover accettare altre condizioni."
+      },
+      "account": {
+        "title": "Account locale e accesso con {{identity}}",
+        "body": "Puoi usare il programma anche senza un account {{identity}}. Il browser conserva comunque un account locale. L’accesso con {{identity}} non comporta la cifratura dei file locali.",
+        "storage": "Per usare lo spazio di archiviazione remoto, devi accedere con {{identity}} e autorizzare il collegamento. L’accesso e l’autorizzazione avvengono tramite il progetto {{identity}} Cloud configurato per la tua installazione. Il programma usa lo spazio remoto per sincronizzare le preferenze e la libreria tra le tue installazioni.",
+        "providers": "Ogni fornitore esterno stabilisce le condizioni d’uso del proprio servizio e gli eventuali requisiti di età."
+      },
+      "free": {
+        "title": "Costi",
+        "body": "L’Autore distribuisce il programma gratuitamente. Se usi l’assistente con un modello remoto, si applicano le tariffe del tuo account {{ai}}."
+      },
+      "writing": {
+        "title": "I tuoi testi",
+        "body": "Il programma non invia i tuoi testi all’Autore. L’uso del programma non attribuisce all’Autore alcun diritto su ciò che scrivi. La legge e i diritti di terzi si applicano anche ai testi prodotti con l’AI o importati da altre fonti. Con «Importa» puoi portare nel programma file come documenti ed EPUB. Se un file contiene un’opera di altri, importalo solo se la legge lo consente o se hai il permesso del titolare dei diritti."
+      },
+      "use": {
+        "title": "Uso",
+        "body": "La licenza consente di eseguire il programma. Se modifichi il programma e lo rendi accessibile ad altre persone attraverso una rete, la licenza ti obbliga a offrire loro il codice sorgente della tua versione (sezione 13). Se distribuisci il programma, modificato o no, devi farlo alle condizioni della licenza e mettere a disposizione il codice sorgente. Se accedi a testi, file o account altrui, rispetta la legge e le condizioni d’uso dei servizi che utilizzi."
+      },
+      "warranty": {
+        "title": "Garanzia e responsabilità",
+        "body": "La licenza e le Note legali descrivono le esclusioni di garanzia e le limitazioni di responsabilità. Restano fermi gli accordi scritti, la responsabilità per dolo o colpa grave e le altre tutele inderogabili. Conserva una copia di sicurezza dei tuoi testi."
+      },
+      "aiKey": {
+        "title": "La tua chiave {{ai}}",
+        "body": "Per collegare {{ai}}, serve una chiave con un limite di spesa impostato presso il servizio. Il browser tiene la chiave in memoria finché la pagina resta aperta e la usa per autenticare le richieste a {{ai}}. Se scegli di salvarla, il servizio di identità della tua installazione la cifra e la conserva in un cookie. Finché il programma è aperto, chiunque abbia accesso al tuo profilo del browser può usare la chiave salvata.",
+        "spending": "Se il limite si rinnova ogni giorno, settimana o mese, all’inizio di ogni periodo puoi spendere di nuovo fino all’importo impostato. Se usi chiavi personali di altri fornitori, gli importi fatturati da quei fornitori contano per il limite solo se attivi l’opzione su {{ai}}.",
+        "revocation": "Puoi revocare la chiave dal tuo account {{ai}}. Per gli addebiti valgono le condizioni del tuo account. L’Autore non riceve questi pagamenti e non li rimborsa. Per i danni vale la limitazione di responsabilità delle Note legali."
+      },
+      "suspension": {
+        "title": "Versioni e assistenza",
+        "body": "L’Autore può modificare il programma o interrompere la pubblicazione di nuove versioni e aggiornamenti, in tutto o in parte, in qualsiasi momento e senza preavviso. Non è tenuto a fornire assistenza. Puoi conservare e usare le versioni già in tuo possesso secondo la licenza."
+      },
+      "changes": {
+        "title": "Modifiche a questa pagina",
+        "body": "Gli aggiornamenti sono pubblicati in questa pagina con la data dell’ultima modifica. I diritti previsti dalla licenza non dipendono da questa pagina."
+      },
+      "language": {
+        "title": "Lingua",
+        "body": "Questa pagina, le Note legali e la pagina sui dati personali sono disponibili in italiano e in inglese. In caso di differenze prevale la versione italiana. Per la licenza fa fede il testo originale in inglese."
+      }
+    },
+    "siteNotice": {
+      "title": "Note legali",
+      "lede": "Informazioni sulla demo, sul codice sorgente e sui limiti di garanzia e responsabilità.",
+      "site": {
+        "title": "Questo sito",
+        "body": "{{publisherName}} (di seguito «Autore») gestisce questo sito nell’ambito di un progetto personale, a titolo gratuito e al di fuori di qualsiasi attività commerciale o professionale. Il sito presenta {{product}} e ospita una demo dell’editor con un romanzo di esempio. Il sito ospita solo la demo: il codice sorgente del programma completo è su GitHub ({{publisherRepository}}); chi vuole il programma lo compila da lì e lo usa sul proprio computer."
+      },
+      "nothingSaved": {
+        "title": "Le modifiche nella demo",
+        "body": "I testi che scrivi nella demo restano nella pagina aperta. Se chiudi o ricarichi la pagina, perdi le modifiche. Il sito non riceve questi testi. Per conservare il tuo lavoro, usa il programma sul tuo computer."
+      },
+      "assistant": {
+        "title": "L’assistente della demo",
+        "body": "L’assistente usa risposte predefinite per mostrarti come funziona. Le richieste che scrivi nella demo restano nel browser."
+      },
+      "asIs": {
+        "title": "Garanzia e responsabilità",
+        "body": "Il sito e la demo sono forniti «così come sono», senza garanzie espresse o implicite. L’Autore non risponde dei danni derivanti dall’uso del sito o della demo o dall’impossibilità di usarli. Le esclusioni di garanzia e responsabilità valgono nei limiti consentiti dalla legge e salvo quanto dichiarato o pattuito per iscritto. L’Autore può aggiornare, sospendere o chiudere il sito."
+      },
+      "law": {
+        "title": "Limiti di legge",
+        "body": "Le esclusioni e le limitazioni valgono nei limiti consentiti dalla legge. Restano ferme le responsabilità inderogabili, comprese quelle per dolo o colpa grave, e i diritti inderogabili dei consumatori. L’eventuale invalidità di una disposizione lascia ferme le altre nei limiti consentiti dalla legge."
+      },
+      "license": {
+        "title": "Licenza e codice sorgente",
+        "body": "{{product}} e la demo sono distribuiti con licenza GNU Affero General Public License, versione 3 o successiva. Il testo integrale della licenza è in {{siteLicense}}. Puoi scaricare il codice sorgente e gli script di compilazione da {{siteSource}}. Le licenze dei componenti di terzi inclusi in questo sito sono raccolte in {{thirdPartyNotices}}."
+      },
+      "links": {
+        "title": "Altri siti",
+        "body": "Per i siti esterni valgono le condizioni d’uso e le informative dei rispettivi gestori."
+      },
+      "language": {
+        "title": "Lingua",
+        "body": "Le pagine legali di questo sito sono disponibili in italiano e in inglese. In caso di differenze prevale la versione italiana. Per la licenza fa fede il testo originale in inglese."
+      }
+    },
+    "sitePrivacy": {
+      "title": "Informativa sul trattamento dei dati personali",
+      "lede": "Come vengono trattati i dati della tua visita e a chi puoi rivolgerti.",
+      "controller": {
+        "title": "Chi pubblica questo sito",
+        "body": "{{publisherName}} (di seguito «Autore») pubblica questo sito su {{host}} Pages. Il sito è statico, senza account né moduli. L’Autore è titolare del trattamento per due attività: la pubblicazione del sito tramite {{host}}, che riceve i dati tecnici della tua visita, e la gestione dei messaggi che riceve. {{host}} tratta per finalità proprie, come titolare autonomo, i registri di accesso (log) descritti nella sezione seguente. L’Autore non ha accesso a questi registri."
+      },
+      "logs": {
+        "title": "Registri di accesso (log)",
+        "body": "Per mostrarti una pagina, il tuo browser si collega a {{host}}, che riceve il tuo indirizzo IP e i dati tecnici della richiesta. L’Autore ha scelto questo servizio per rendere disponibile il sito: la base giuridica è il suo legittimo interesse a pubblicarlo (art. 6, par. 1, lett. f, del Regolamento (UE) 2016/679, di seguito «GDPR»). {{host}} registra e conserva l’indirizzo IP per proteggere il proprio servizio, anche se non hai effettuato l’accesso a {{host}}.",
+        "basis": "{{host}} indica la sicurezza del servizio come legittimo interesse e descrive i criteri di conservazione nella propria informativa, disponibile su {{hostPrivacy}}."
+      },
+      "browser": {
+        "title": "Dati conservati nel browser",
+        "body": "Il sito non imposta cookie e non usa l’archiviazione persistente del browser. Per la durata della sessione, il browser ricorda se hai visto il suggerimento per uscire dalla demo, la tua posizione nella pagina e l’ora dell’ultimo tentativo di ricaricamento automatico dopo un errore. Il tema e la lingua che scegli restano in memoria finché la pagina è aperta."
+      },
+      "notCollected": {
+        "title": "Contenuti della demo e tracciamento",
+        "body": "I testi che scrivi nella demo e le richieste all’assistente restano nel browser. Il sito ospita direttamente i caratteri e le immagini e non usa strumenti di analisi del traffico, pubblicità, tracciamento o profilazione. Nessun sistema automatico prende decisioni che producono effetti giuridici che ti riguardano o che incidono in modo analogo significativamente sulla tua persona (art. 22 del GDPR)."
+      },
+      "transfers": {
+        "title": "Trasferimenti al di fuori dello Spazio economico europeo",
+        "body": "La visita comporta l’invio dei dati tecnici a {{host}}, negli Stati Uniti, sulla base della decisione di adeguatezza per il quadro UE-USA per la protezione dei dati personali. {{host}} dichiara di trattare dati negli Stati Uniti e in altri paesi. Nella propria informativa descrive il quadro UE-USA per la protezione dei dati personali, applicato ai trasferimenti coperti dalla certificazione, e indica che, per i trasferimenti verso paesi privi di una decisione di adeguatezza, in genere ricorre alle clausole contrattuali tipo della Commissione europea. L’informativa è disponibile su {{hostPrivacy}}. Per i messaggi all’Autore, {{mail}} conserva la casella di posta in Svizzera, paese per il quale la Commissione europea ha adottato una decisione di adeguatezza."
+      },
+      "rights": {
+        "title": "I tuoi diritti",
+        "body": "Per i registri di accesso, puoi usare i recapiti indicati nell’informativa di {{host}}. Per le richieste sul trattamento svolto dall’Autore, usa l’indirizzo nella sezione «Messaggi all’Autore». Il GDPR prevede, a seconda dei casi, il diritto di accesso, rettifica, cancellazione, limitazione del trattamento e portabilità dei dati, oltre al diritto di opposizione.",
+        "complaint": "Se ritieni che un trattamento violi il GDPR, puoi presentare reclamo all’autorità di controllo competente. In Italia puoi rivolgerti al Garante per la protezione dei dati personali ({{supervisor}})."
+      },
+      "changes": {
+        "title": "Modifiche",
+        "body": "La data in alto indica l’ultimo aggiornamento. L’Autore pubblicherà in questa pagina le eventuali modifiche ai trattamenti descritti, prima che abbiano effetto."
+      },
+      "objection": {
+        "title": "Diritto di opposizione",
+        "body": "Questo diritto riguarda i trattamenti che l’Autore svolge sulla base del legittimo interesse: la pubblicazione del sito tramite {{host}} e i dati personali contenuti nei messaggi che invii all’Autore, anche quando segnalano un problema. Puoi opporti in qualsiasi momento, per motivi legati alla tua situazione particolare: scrivi a {{privacyContact}}. L’Autore smette allora di trattare quei dati, salvo che dimostri motivi legittimi cogenti che prevalgono sui tuoi interessi, diritti e libertà, o che i dati servano per accertare, esercitare o difendere un diritto in sede giudiziaria. L’opposizione non riguarda i dati che l’Autore tratta per adempiere a un obbligo di legge, per esempio per rispondere a una richiesta di esercizio dei diritti previsti dal GDPR. L’Autore non conserva i dati della tua visita. Per i registri di accesso trattati da {{host}}, rivolgiti a {{host}}: l’Autore non ha accesso a quei registri."
+      },
+      "contact": {
+        "title": "Messaggi all’Autore",
+        "body": "Puoi scrivere all’Autore all’indirizzo {{privacyContact}}. Per gestire la richiesta, l’Autore tratta il tuo indirizzo email e le informazioni che invii. Non includere dati personali oltre a quelli necessari per risponderti, né credenziali, manoscritti o dati di altre persone. Per le richieste ordinarie, la base giuridica è il legittimo interesse a rispondere (art. 6, par. 1, lett. f, del GDPR). Se scrivi per esercitare un diritto previsto dal GDPR, il trattamento è necessario per adempiere a un obbligo di legge (art. 6, par. 1, lett. c).",
+        "optional": "Scrivere all’Autore è una tua scelta: nessuna legge e nessun contratto te lo chiede. Senza il tuo indirizzo email e le informazioni che servono, l’Autore non può risponderti.",
+        "provider": "La casella di posta dell’Autore è fornita da {{mail}}, società con sede in Svizzera, che tratta i messaggi per conto dell’Autore, come responsabile del trattamento (art. 28 del GDPR).",
+        "retention": "L’Autore conserva i messaggi per il tempo necessario a gestire la richiesta. Se occorre, può conservarli più a lungo per adempiere a un obbligo di legge o far valere i propri diritti."
+      }
+    }
+  },
+  "fault": {
+    "stale-build": {
+      "title": "È pronta una nuova versione",
+      "hint": "Questa pagina viene da una versione precedente a quella che c'è ora, e una parte della vecchia non c'è più. Ricarica la pagina per continuare con quella nuova."
+    },
+    "not-found": {
+      "title": "Pagina non trovata",
+      "hint": "A questo indirizzo non c'è niente. Forse il link è scritto male, o la pagina è stata spostata."
+    },
+    "unreachable": {
+      "title": "{{product}} non è raggiungibile",
+      "hint": "Controlla la connessione e che {{product}} sia avviato, poi ricarica la pagina."
+    },
+    "unexpected": {
+      "title": "Qualcosa è andato storto",
+      "hint": "La pagina ha avuto un problema da cui non è riuscita a riprendersi. Di solito basta ricaricarla."
+    },
+    "boot": {
+      "title": "{{product}} non è riuscito ad avviarsi",
+      "hint": "Ricarica la pagina. Se ancora non parte, prova con un altro browser. Se il problema resta, segnalalo su GitHub."
+    },
+    "reload": "Ricarica",
+    "backToLibrary": "Torna alla Libreria",
+    "backHome": "Torna alla pagina iniziale",
+    "updateNotice": "È pronta una nuova versione.",
+    "updateNoticeAction": "Ricarica"
+  },
+  "accountData": {
+    "settings": "le impostazioni",
+    "library": "la libreria",
+    "connection": "il collegamento allo spazio di archiviazione remoto",
+    "unsynced": "le modifiche non ancora sincronizzate",
+    "projectsUntouched": "I tuoi progetti non vengono toccati."
+  }
+}

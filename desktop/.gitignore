@@ -1,0 +1,10 @@
+# Release archives written by build.sh.
+/dist/
+
+# build.sh copies the built SPA here for the embed; only the placeholder is
+# tracked.
+/internal/adapters/web/webdist/*
+!/internal/adapters/web/webdist/index.html
+
+# build.sh writes the Windows resources here for the link.
+/cmd/once-dark-studio-desktop/*.syso

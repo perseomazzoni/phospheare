@@ -1,0 +1,56 @@
+[
+  {
+    "id": "work",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "node:section--01-l-ospedale.md",
+          "node:section--03-il-reparto.md"
+        ],
+        "words": ["medico", "ospedale", "camice"]
+      },
+      {
+        "sources": [
+          "node:section--02-la-scuola.md",
+          "node:section--04-il-porto.md"
+        ],
+        "words": ["latino", "insegnava", "medicina"]
+      }
+    ]
+  },
+  {
+    "id": "city",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "node:section--01-l-ospedale.md",
+          "node:section--03-il-reparto.md"
+        ],
+        "words": ["torino", "via nizza"]
+      },
+      {
+        "sources": [
+          "node:section--02-la-scuola.md",
+          "node:section--04-il-porto.md"
+        ],
+        "words": ["genova"]
+      }
+    ]
+  },
+  {
+    "id": "eyes",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["node:section--01-l-ospedale.md"],
+        "words": ["grigio", "grigi"]
+      },
+      {
+        "sources": ["node:section--03-il-reparto.md"],
+        "words": ["castani"]
+      }
+    ]
+  }
+]

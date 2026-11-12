@@ -1,0 +1,104 @@
+{
+  "surfaces": {
+    "section": {
+      "width": 2560,
+      "height": 1600
+    },
+    "autosave": {
+      "width": 602,
+      "height": 384
+    },
+    "desk": {
+      "width": 2560,
+      "height": 1600
+    },
+    "henosis-1": {
+      "width": 2560,
+      "height": 1600
+    },
+    "henosis-2": {
+      "width": 2560,
+      "height": 1600
+    },
+    "henosis-3": {
+      "width": 2560,
+      "height": 1600
+    },
+    "henosis-4": {
+      "width": 2560,
+      "height": 1600
+    },
+    "henosis-5": {
+      "width": 2560,
+      "height": 1600
+    },
+    "structure-1": {
+      "width": 2074,
+      "height": 1440
+    },
+    "structure-2": {
+      "width": 2074,
+      "height": 1440
+    },
+    "structure-3": {
+      "width": 2074,
+      "height": 1440
+    },
+    "structure-4": {
+      "width": 2074,
+      "height": 1440
+    },
+    "reference": {
+      "width": 1200,
+      "height": 1314
+    },
+    "summaries": {
+      "width": 1196,
+      "height": 990
+    },
+    "comments": {
+      "width": 2060,
+      "height": 586
+    },
+    "letter": {
+      "width": 1200,
+      "height": 1206
+    },
+    "personas-1": {
+      "width": 950,
+      "height": 1260
+    },
+    "personas-2": {
+      "width": 950,
+      "height": 1260
+    },
+    "personas-3": {
+      "width": 950,
+      "height": 1260
+    },
+    "personas-4": {
+      "width": 950,
+      "height": 1260
+    },
+    "personas-5": {
+      "width": 950,
+      "height": 1260
+    },
+    "continuity": {
+      "width": 1200,
+      "height": 694
+    },
+    "phone": {
+      "width": 780,
+      "height": 1688
+    },
+    "phone-desk": {
+      "width": 780,
+      "height": 1688
+    },
+    "phone-library": {
+      "width": 780,
+      "height": 1688
+    }
+  }
+}

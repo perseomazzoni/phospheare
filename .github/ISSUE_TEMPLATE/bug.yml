@@ -1,0 +1,49 @@
+name: Bug report
+description: Something does not work as it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected to see instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the demo editor
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and operating system
+      placeholder: Chrome 141 on Windows 11
+    validations:
+      required: true
+  - type: dropdown
+    id: storage
+    attributes:
+      label: Where the project is stored
+      options:
+        - Local Storage (a folder on this device)
+        - Remote Storage (Google Drive)
+        - Both (synced)
+        - The demo editor
+        - Not relevant
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: The release, or the commit you built from.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output or screenshots
+      description: Anything from the browser console, or a screenshot. Remove anything private from your manuscript first.

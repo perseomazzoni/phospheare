@@ -1,0 +1,209 @@
+[
+  {
+    "id": "age-claim",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "reference:character--ilse.md",
+          "node:section--01-the-quay.md"
+        ],
+        "words": ["twenty-six"]
+      },
+      {
+        "sources": ["node:section--02-the-clerk.md"],
+        "words": ["thirty"]
+      }
+    ]
+  },
+  {
+    "id": "age-slip",
+    "explained": false,
+    "sides": [
+      {
+        "sources": [
+          "reference:character--ilse.md",
+          "node:section--01-the-quay.md"
+        ],
+        "words": ["twenty-six"]
+      },
+      {
+        "sources": ["node:section--05-the-flood-mark.md"],
+        "words": ["twenty-two"]
+      }
+    ]
+  },
+  {
+    "id": "scar",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:character--ilse.md"],
+        "words": ["left hand"]
+      },
+      {
+        "sources": ["node:section--03-the-night-boat.md"],
+        "words": ["right hand"]
+      }
+    ]
+  },
+  {
+    "id": "mother",
+    "explained": true,
+    "sides": [
+      {
+        "sources": ["reference:character--ilse.md"],
+        "words": ["drowned"]
+      },
+      {
+        "sources": ["node:section--05-the-flood-mark.md"],
+        "words": ["another name", "capital"]
+      }
+    ]
+  },
+  {
+    "id": "night-rule",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--rules.md"],
+        "words": ["no boat crosses", "at night"]
+      },
+      {
+        "sources": ["node:section--03-the-night-boat.md"],
+        "words": ["midnight", "saltmarsh"]
+      }
+    ]
+  },
+  {
+    "id": "night-exception",
+    "explained": true,
+    "sides": [
+      {
+        "sources": ["reference:world--rules.md"],
+        "words": ["no boat crosses", "at night"]
+      },
+      {
+        "sources": ["node:section--02-the-clerk.md"],
+        "words": ["that night", "across the strait"]
+      }
+    ]
+  },
+  {
+    "id": "flood-belief",
+    "explained": true,
+    "sides": [
+      {
+        "sources": ["reference:world--timeline.md"],
+        "words": ["dam"]
+      },
+      {
+        "sources": ["node:section--01-the-quay.md"],
+        "words": ["god sent"]
+      }
+    ]
+  },
+  {
+    "id": "flood-year",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--timeline.md"],
+        "words": ["1904", "old dam", "high-water mark"]
+      },
+      {
+        "sources": ["node:section--05-the-flood-mark.md"],
+        "words": ["1906"]
+      }
+    ]
+  },
+  {
+    "id": "limp",
+    "explained": true,
+    "sides": [
+      {
+        "sources": [
+          "reference:character--tomas.md",
+          "node:section--01-the-quay.md"
+        ],
+        "words": ["limp"]
+      },
+      {
+        "sources": ["node:section--04-the-pier.md"],
+        "words": ["two at a time", "ran up"]
+      }
+    ]
+  },
+  {
+    "id": "tom-eyes",
+    "explained": false,
+    "known": "loss",
+    "sides": [
+      {
+        "sources": ["reference:character--tomas.md"],
+        "words": ["blue"]
+      },
+      {
+        "sources": ["node:section--02-the-clerk.md"],
+        "words": ["green eyes"]
+      }
+    ]
+  },
+  {
+    "id": "ferry-colour",
+    "explained": false,
+    "known": "loss",
+    "sides": [
+      {
+        "sources": ["reference:notes--ferry.md"],
+        "words": ["red"]
+      },
+      {
+        "sources": ["node:section--02-the-clerk.md"],
+        "words": ["blue hull"]
+      }
+    ]
+  },
+  {
+    "id": "tom-knows",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:character--ilse.md"],
+        "words": ["section 5"]
+      },
+      {
+        "sources": ["node:section--03-the-night-boat.md"],
+        "words": ["already knew"]
+      }
+    ]
+  },
+  {
+    "id": "lantern-knows",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--myths.md"],
+        "words": ["section 5"]
+      },
+      {
+        "sources": ["node:section--04-the-pier.md"],
+        "words": ["always known"]
+      }
+    ]
+  },
+  {
+    "id": "bell-reveal",
+    "explained": false,
+    "sides": [
+      {
+        "sources": ["reference:world--systems.md"],
+        "words": ["section 4"]
+      },
+      {
+        "sources": ["node:section--02-the-clerk.md"],
+        "words": ["had not come home"]
+      }
+    ]
+  }
+]

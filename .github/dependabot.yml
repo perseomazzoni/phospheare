@@ -1,0 +1,82 @@
+# A release is adopted after a week, so a compromised version is usually
+# pulled before it reaches the lockfile.
+#
+# Version updates come monthly and are never rebased by Dependabot itself:
+# each rebase reruns every check, and a merge to main would rebase them all.
+# A comment of `@dependabot rebase` brings one up to date before it is
+# merged. A security fix does not wait for
+# the month: Dependabot security updates open it as soon as an advisory
+# names a fixed version.
+#
+# Update PR titles are Conventional Commits. A dependency update is
+# `chore(deps)`, which git-cliff's default configuration leaves out of the
+# release notes; an update of the workflows' actions and tools is `ci(deps)`,
+# listed under its miscellaneous tasks.
+version: 2
+
+updates:
+  # The root lockfile installs every npm workspace.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: chore
+      include: scope
+    rebase-strategy: disabled
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+    # The Node types follow the Node major in .nvmrc, which moves by hand.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
+
+  # The Go modules of the identity service and the desktop program.
+  # `tools/go-modules.mjs` records each module's license, so a new module
+  # fails the license check until it is added there.
+  - package-ecosystem: gomod
+    directories: [/identity, /desktop]
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: chore
+      include: scope
+    rebase-strategy: disabled
+    groups:
+      gomod-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci
+      include: scope
+    rebase-strategy: disabled
+    groups:
+      actions:
+        patterns: ['*']
+
+  # The command-line tools the workflows run, one lockfile per job that
+  # installs them: git-cliff for the release notes.
+  - package-ecosystem: npm
+    directories: ["/tools/changelog"]
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci
+      include: scope
+    rebase-strategy: disabled
+    groups:
+      workflow-tools:
+        patterns: ["*"]

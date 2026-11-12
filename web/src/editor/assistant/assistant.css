@@ -1,0 +1,2459 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* ══ The assistant ══════════════════════════════════════════════════════════
+   The Dock's assistant face: the conversation, the composer, the chat's head
+   and its records. `frame.css` imports it after `editor.css`, in the same
+   layer, so this sheet wins over `editor.css` at equal weight. An editor-wide
+   state that must win over a rule here, such as a phone size or reduced
+   motion, is written in this sheet's last section, after the rule.
+
+   These rules lay the assistant out and paint nothing, like `editor.css`.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* ── The conversation ────────────────────────────────────────────────────── */
+
+/* A persona's face; the size is the caller's: 18px in the chip that names the
+   voice, the face size `.app-avatar` uses for the writer, and 128px in the
+   picker.
+
+   No opacity: `.ai-persona:disabled` is `opacity: 0.5`, and a dimmed face would
+   read as disabled.
+
+   `pointer-events: none`: both parents are buttons, and an image inside one
+   would start a drag instead of a press. */
+.ai-face {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.ai-persona {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Asymmetric for the face: a round edge against 8px of flat tint reads as a
+     hole on the left. The declared 24px height holds: 24 less 4px of padding is
+     a 20px content box, and an 18px face centres in it. */
+  padding: 2px 8px 2px 4px;
+  border: 0;
+  font-size: 9.5px;
+  cursor: pointer;
+  transition: background var(--t-tap);
+}
+
+/* The ellipsis is on the name, because a flex container does not truncate its
+   own text.
+
+   The height is declared, not inherited from the type: this chip is 9.5px and
+   the chat title button beside it 12.5px, and their own line boxes would
+   differ. 24px is the add pill's height at the other end of the row;
+   `box-sizing` is border-box globally, so the button's border is inside the
+   same number. */
+.ai-persona,
+.ai-chat-title {
+  height: 24px;
+}
+.ai-persona {
+  flex-shrink: 0;
+  max-width: 140px;
+  min-width: 0;
+}
+/* `.ai-face` carries its own `flex-shrink: 0`, so it is not named here. */
+.ai-persona svg {
+  flex-shrink: 0;
+}
+.ai-persona span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-persona:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ai-workspace {
+  min-height: 0;
+}
+
+/* ── The asking floats over the transcript ────────────────────────────────────
+   Everything that is not the conversation (a refusal, the composer, the
+   chatbar) is one block over the transcript, which keeps the panel's whole
+   height and continues underneath, as the prose does under the command bar.
+
+   `.ai-stage` is only the positioning parent. It cannot be `.ai-workspace`,
+   because the foot is a sibling of the stage, and an absolute child of the
+   workspace would lie over that too. */
+.ai-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.ai-asking {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /* Over the transcript, under `.ed-dock`'s own chrome. The scroller
+     establishes no stacking context of its own, so 1 is enough. */
+  z-index: 1;
+  padding-top: 8px;
+  border-top: 1px solid;
+}
+
+/* The sentences above the composer, on the gutter the bar and the composer row
+   keep, inset 14px like the field under them. `.ai-refusal` keeps its own rule
+   for its flex layout, with the same numbers. */
+.ai-asking > .dock-hint,
+.ai-asking > .dock-problem {
+  padding: 0 14px 6px;
+}
+/* The drafting room's first question is a group, not a line, so the rule
+   above does not reach it: the same gutter, with its own bottom margin. */
+.ai-asking > .ai-need {
+  padding: 0 14px;
+}
+/* Where the writer stopped: their own last line, one line tall at most. */
+.ai-stopped q {
+  font-size: 1.07em;
+}
+
+/* The Library's `Banner tone="attention"`. Only its place is decided here, with
+   the dock's spacing instead of the shelf's 14px `margin-bottom`. */
+.ai-asking > .ui-banner {
+  margin: 0 14px 8px;
+}
+
+.ai-asking > .ai-remedy-row {
+  padding: 0 14px 8px;
+}
+
+/* ── The persona picker ───────────────────────────────────────────────────────
+   Every rule here is scoped under `.ai-persona-dialog`: this sheet loads on
+   every page the editor runs on, and a bare `.ai-persona-list` would claim a
+   name the application half is free to use. */
+
+/* This rule is `.ui-dialog-body` for this dialog, since both classes are on one
+   element, so no separate body override can win by order.
+
+   The portrait and the list are one row, centred against each other; the
+   description spans both columns under them.
+
+   The column gap is 14, not 22, because a row is a plate with 8px of its own
+   padding: 14 + 8 puts the names 22px off the face, the body's side padding. */
+.ai-persona-dialog .ai-persona-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 16px;
+}
+
+/* One column when the folder has no voices, so the line that says so is not
+   indented past a face that is not there. */
+.ai-persona-dialog .ai-persona-card[data-faced="0"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ai-persona-dialog .ai-persona-description {
+  grid-column: 1 / -1;
+}
+
+/* 128px: at 18px the faces are coloured dots, and a writer picking a voice
+   chooses between the faces as much as the names. */
+.ai-persona-dialog .ai-persona-portrait {
+  width: 128px;
+  height: 128px;
+}
+
+.ai-persona-dialog .ai-persona-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A voice's row is the kit's `.ui-row`; only a blocked voice's words are this
+   dialog's own. */
+
+/* Held taller whenever any voice in the list can carry a reason: the dialog
+   is centred, and a box growing only while an unavailable row is pointed at
+   would re-centre the dialog and slide the list from under the pointer. */
+.ai-persona-dialog .ai-persona-card[data-reasons="1"] .ai-persona-description {
+  min-height: 6.2em;
+}
+
+.ai-persona-dialog .ai-persona-why {
+  display: block;
+  margin-top: 4px;
+}
+
+/* Two lines of room, held: the box changes under the pointer, and resizing
+   too would make the list jump from the cursor reading it. */
+.ai-persona-dialog .ai-persona-description {
+  min-height: 2.9em;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* The selected voice's focus: a second list in the kit's rows, across the whole
+   card. */
+.ai-persona-dialog .ai-persona-focus {
+  grid-column: 1 / -1;
+  padding-top: 10px;
+  border-top: 1px solid;
+}
+
+.ai-persona-dialog .ai-persona-focus-label {
+  margin: 0 0 4px;
+  font-size: 9.5px;
+}
+
+.ai-persona-dialog .ai-preset-hint {
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Room between the links, so two never read as one run. The group is no box:
+   each link flows as a word in the sentence that leads into them and wraps on
+   its own. A link never breaks inside itself. */
+.ai-write-links {
+  display: inline;
+}
+.ai-write-links > * {
+  white-space: nowrap;
+}
+.ai-write-links > :not(:last-child) {
+  margin-inline-end: 14px;
+}
+
+/* The chat's Mode (`AiModeBar.tsx`). No label is drawn: "Mode" is the slider's
+   accessible name.
+
+   No `min-width: 0`: the Mode's floor is its captions and the track's 32px, and
+   a box allowed below it spills the captions over the model's name. */
+.ai-mode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 1 auto;
+}
+.ai-mode-track {
+  /* 88px at ease, the one part of the bar that shrinks smoothly, down to
+     32px, still enough to aim at, before anything else gives way. */
+  flex: 0 1 88px;
+  min-width: 32px;
+}
+.ai-mode-end {
+  flex-shrink: 0;
+  padding: 2px 0;
+  line-height: 1;
+  border: none;
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--t-tap);
+}
+.ai-mode-panel {
+  gap: 6px;
+}
+.ai-mode-panel p {
+  margin: 0;
+  line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-mode-end {
+    transition: none;
+  }
+}
+
+/* No hairline of its own: `.dock-foot` supplies the one this end needs, and two
+   would box the composer. */
+.ai-chatbar {
+  /* A size container: the bar stays one line at every dock width, and its
+     parts give way in order (the readings' words, then the model's name)
+     instead of wrapping. Queried on the bar, not the viewport, because the
+     dock is resizable. */
+  container: ai-chatbar / inline-size;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+  padding: 0 14px 10px;
+}
+
+/* Syncing, in the controls' place. The controls stay laid out and go invisible
+   (`visibility` also takes them out of the tab order and the accessibility
+   tree), so the bar keeps its height and the composer does not move.
+
+   Not while focus is inside the bar: a writer adjusting the Mode or picking a
+   model caused the save being synced, and keeps the controls. */
+.ai-chatbar[data-syncing]:not(:focus-within) > :not(.ai-chatbar-status) {
+  visibility: hidden;
+}
+.ai-chatbar[data-syncing]:focus-within > .ai-chatbar-status {
+  display: none;
+}
+.ai-chatbar-status {
+  position: absolute;
+  /* The bar's content box: its padding is the gutter the controls sit in. */
+  inset: 0 14px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 10px;
+}
+/* At the label's scale: 4px dots beside a 10px label would outweigh the
+   word. */
+.ai-chatbar-status .ui-dots {
+  --dots-u: 0.75px;
+  transform: translateY(1px);
+}
+
+/* `margin-inline-start: auto` rather than `justify-content: flex-end` on the
+   bar: the margin belongs to the thing pushed, so anything added on the bar's
+   left lands there without touching the bar's rule. */
+.ai-chatbar-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Shrinkable, since it holds the Mode: the track is what gives. Its floor
+     is its parts', so past it the readings give way and the bar overflows,
+     which is what turns the name into "model". */
+  flex-shrink: 1;
+  margin-inline-start: auto;
+}
+
+/* The bar's readings (`AiReadings.tsx`), on the leading end, apart from the
+   buttons that change an answer. Shrinkable and cut at the end, unlike the
+   choosing buttons the writer needs at the 340px dock floor; a reading loses
+   its tail, never its meter. */
+.ai-chatbar-facts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+.ai-reading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 0;
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: color var(--t-tap);
+}
+.ai-reading-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Narrow: a wide card over a 340px dock would cover the chat. */
+.ai-reading-panel {
+  display: grid;
+  gap: 14px;
+  width: 240px;
+  font-size: 12px;
+}
+.ai-reading-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ai-reading-panel .ai-reading-wide {
+  width: 100%;
+  height: 6px;
+}
+.ai-reading-figures {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.ai-reading-figures > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ai-reading-figures dd {
+  margin: 0;
+}
+
+/* The model, named in full: the tail is where the size lives, so a truncated id
+   names a model nobody has. It does not wrap either, since the bar must not
+   change height with the model's name.
+
+   `flex-shrink: 0`: at the 340px dock floor this and the readings are what the
+   bar is for. */
+.ai-model-button {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 2px 4px;
+  border: 0;
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: color var(--t-tap);
+}
+/* The button's short spelling, kept out of the DOM text so the button still
+   reads as the model's name everywhere it is read. */
+.ai-model-button::after {
+  content: attr(data-short);
+  display: none;
+}
+
+/* The bar's order of giving way, narrowest last. First the readings keep
+   their meters and drop their words; each still opens its panel with the
+   figures. Then the model's name, shown in full or not at all, becomes the
+   word "model" (the name stays in the title and in the menu it opens). The
+   Mode's track shrinks continuously on its own flex basis throughout.
+
+   The name's switch is measured (`modelNameShort.ts` sets
+   `data-name-short`), since only the bar knows how long the name is. The
+   400px query is the floor under it. */
+@container ai-chatbar (max-width: 520px) {
+  .ai-reading-text {
+    display: none;
+  }
+}
+.ai-chatbar[data-name-short] .ai-model-name {
+  display: none;
+}
+.ai-chatbar[data-name-short] .ai-model-button::after {
+  display: inline;
+}
+@container ai-chatbar (max-width: 400px) {
+  .ai-model-name {
+    display: none;
+  }
+  .ai-model-button::after {
+    display: inline;
+  }
+}
+
+.ai-text-button {
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  /* Not 10px, which is under every floor here: this is a control the writer
+     presses (retry, continue, clean chat, the settings button), not a
+     caption. */
+  font-size: 12px;
+}
+
+.ai-rename {
+  display: grid;
+  gap: 12px;
+}
+.ai-rename-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ai-refusal select {
+  min-width: 0;
+  height: 30px;
+  border: 1px solid;
+  font-size: 12.5px;
+}
+
+.ai-stop {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 30px;
+  font-size: 12.5px;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+/* Its look comes from `.snap-add`, which it carries in the markup.
+
+   `margin-inline-start: auto` rather than `space-between` on the head: the head
+   holds three things and the middle one grows, so pushing only this one to the
+   end survives a chat with no persona. */
+.ai-new-chat {
+  flex-shrink: 0;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* The rows and the evidence switch run 8px into the body's gutter on both
+   sides, so a tick's box, not its row's padding, lines up with the lede and the
+   field above. */
+.ai-source-list {
+  display: grid;
+  gap: 14px;
+  /* A long book is a long list, and a dialog taller than the window would put
+     its own head off screen. */
+  max-height: min(46vh, 320px);
+  margin-inline: -8px;
+}
+.ai-source-group {
+  display: grid;
+  gap: 1px;
+}
+/* At the eyebrow's size (`.desk-eyebrow`), aligned with the rows' words rather
+   than their boxes. */
+.ai-source-group-title {
+  margin: 0 0 4px;
+  padding-inline: 8px;
+  font-size: 9.5px;
+}
+
+.ai-messages {
+  content-visibility: auto;
+  /* The transcript is the panel's first child, so without this the first
+     message is flush against the dock's head. `.dock-scroll` leaves the top
+     at 0 for faces that open on a heading of their own. */
+  padding-top: 12px;
+  /* The asking stack lies over the foot of this scroller, so the last message
+     needs that much room below it to scroll clear of the composer. The panel
+     measures `--ai-asking-h` onto `.ai-stage`, since the composer grows with
+     the question, the suggestions wrap, and a refusal row comes and goes. The
+     fallback is the resting height, for first paint, a browser with no
+     ResizeObserver, and jsdom. */
+  padding-bottom: calc(var(--ai-asking-h, 96px) + 8px);
+}
+
+/* How the answer was reached, folded above it; the fold is the kit's.
+
+   The same margin open and shut, so toggling never moves the answer.
+
+   Rule widths tell the speakers apart: 1px for the model's working, 2px for the
+   answer's blockquote and for the writer's quotation. Thoughts are plain text
+   with their own line breaks (`pre-wrap`), drawn as text nodes and never
+   through the Markdown renderer.
+
+   No height cap and no inner scroll, which would trap the wheel and run a
+   second follow-the-bottom rule against the transcript's. */
+.ai-trace,
+.ai-trace-line {
+  margin: 0 0 10px;
+}
+.ai-trace > summary {
+  /* A block row rather than the kit's inline one, so the live line inside it
+     has a width to ellipsize against. */
+  display: flex;
+  max-width: 100%;
+}
+.ai-trace > summary > span {
+  min-width: 0;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+.ai-trace-line {
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+/* Aligned with the content: the 1px rail plus 10px. */
+.ai-trace-note {
+  margin: 0 0 6px;
+  padding-left: 12px;
+  font-size: 11px;
+}
+.ai-trace-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 10px;
+  border-left: 1px solid;
+}
+.ai-trace-step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ai-trace-thought {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* Placement only: a tool row is `.ai-evidence`, so going to a passage looks the
+   same everywhere. Its glyph separates it from a thought by shape, not colour
+   alone. */
+.ai-trace-row {
+  margin-top: 0;
+  align-items: center;
+}
+.ai-trace-row.is-fact {
+  cursor: default;
+}
+/* A web row's facts on a second line, under the words: at 280px the
+   engine and the query take the first. 17px is the glyph's 11 plus
+   `.ai-evidence`'s 6px gap. */
+.ai-trace-row.is-web {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.ai-trace-row.is-web small {
+  flex-basis: 100%;
+  padding-inline-start: 17px;
+}
+
+/* ── The turn's footer ────────────────────────────────────────────────────────
+   Present at rest, shown on hover. The height is always held: a transcript
+   reflowing as the pointer crosses it would move while read. Only the opacity
+   travels.
+
+   `:focus-within` and the `(hover: none)` keeper below are needed: a keyboard
+   must not focus something invisible, nor a phone be unable to summon it.
+   `[open]` joins them as `.dt-more` stays lit under its popover.
+
+   No `pointer-events: none` at rest, unlike the tree rows' opacity-0 controls:
+   the whole message is the hover target, so this is visible before the pointer
+   can reach it. */
+.ai-turn-meta {
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+
+.msg:hover .ai-turn-meta,
+.msg:focus-within .ai-turn-meta,
+.ai-turn-meta[open] {
+  opacity: 1;
+}
+
+/* Its height is held at the icon's, Copy or not: the button appears once the
+   answer stops moving, and a row growing then would jump every answer below
+   (`--tap` included, as `.msg-you-actions` holds it). What the caret opens
+   flows under the facts, the meta being the row's second flex item. */
+.ai-turn-foot {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: max(19px, var(--tap, 0px));
+  margin-top: 6px;
+}
+.ai-turn-foot > .ai-turn-meta {
+  flex: 1;
+  min-width: 0;
+}
+.ai-turn-foot > .ai-turn-meta > summary,
+.ai-turn-foot > div.ai-turn-meta {
+  min-height: max(19px, var(--tap, 0px));
+  align-items: center;
+}
+.ai-turn-foot > div.ai-turn-meta {
+  display: flex;
+}
+/* Centred on the same held height as Copy and the facts, so the swap moves
+   nothing, and always lit, as it says the run is alive. */
+.ai-turn-foot > .is-inline {
+  flex: 1;
+  min-height: max(19px, var(--tap, 0px));
+}
+/* The same reveal as the facts beside it, so the row arrives as one. */
+.ai-turn-copy {
+  flex-shrink: 0;
+  opacity: 0;
+  transition:
+    opacity var(--t-tap),
+    background var(--t-tap),
+    color var(--t-tap);
+}
+.msg:hover .ai-turn-copy,
+.msg:focus-within .ai-turn-copy {
+  opacity: 1;
+}
+
+.ai-turn-meta > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  cursor: pointer;
+  /* Both halves of removing the native triangle: Firefox reads `list-style`,
+     WebKit needs its own pseudo-element. The markup draws the app's own
+     chevron instead. */
+  list-style: none;
+}
+.ai-turn-meta > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ai-turn-facts {
+  font-size: 9.5px;
+}
+
+/* The chevron is the app's one expand glyph, borrowed rather than drawn
+   again. */
+.ai-turn-caret {
+  flex-shrink: 0;
+  align-self: center;
+  transform: rotate(-90deg);
+  transition: transform var(--t-tap);
+}
+.ai-turn-meta[open] > summary .ai-turn-caret {
+  transform: none;
+}
+
+/* Full width because `.ai-turn-meta` is a block. As a flex row, Chrome would
+   put a `<details>`'s content inside an anonymous `::details-content` box, so
+   `flex-basis` would never reach this element and the panel would shrink to its
+   longest source path. Only the summary is a row. */
+.ai-turn-detail {
+  font-size: 9.5px;
+}
+
+.ai-turn-detail span {
+  display: block;
+  padding-top: 4px;
+}
+
+.ai-turn-detail-head {
+  margin: 8px 0 0;
+}
+.ai-turn-detail > :first-child {
+  margin-top: 0;
+}
+
+/* Smaller than the icon buttons it borrows its geometry from: Stop exists only
+   while a run is in flight, and a large box appearing and vanishing beside the
+   field must be re-read each time. */
+.ai-stop {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  /* Stop keeps a visible border where the `@` does not, because it
+     interrupts work in flight and must look like a control. */
+  border: 1px solid;
+  transition:
+    background var(--t-tap),
+    border-color var(--t-tap),
+    color var(--t-tap);
+}
+.ai-stop.is-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Stop, while the writer waits for an answer: the panel's one moving thing
+   during a run, on the control that ends the run, so the wait and the way out
+   are one object.
+
+   Two layers. The rainbow is the button's own border and a soft glow of the
+   same colour, stepped through one keyframe list. The spark is `::after`, a 3px
+   ring that straddles the border, whose start angle is a registered property
+   turned from 360deg down to 0, which runs a conic sweep counterclockwise.
+
+   Both are loops, so they state their own rates (`motion.test.ts`). */
+@property --ai-spark-at {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.ai-stop.is-running {
+  position: relative;
+  animation: aiStopRainbow 6s linear infinite;
+}
+.ai-stop.is-running::after {
+  --ai-spark-at: 360deg;
+  content: "";
+  position: absolute;
+  inset: -3px;
+  padding: 4px;
+  pointer-events: none;
+  animation:
+    aiStopSpark 1.6s linear infinite,
+    aiStopFlicker 0.9s linear infinite;
+}
+@keyframes aiStopRainbow {
+  0%,
+  100% {
+    border-color: #ff453a;
+    box-shadow: 0 0 6px -1px #ff453a;
+  }
+  16% {
+    border-color: #ff9f0a;
+    box-shadow: 0 0 6px -1px #ff9f0a;
+  }
+  33% {
+    border-color: #ffd60a;
+    box-shadow: 0 0 6px -1px #ffd60a;
+  }
+  50% {
+    border-color: #30d158;
+    box-shadow: 0 0 6px -1px #30d158;
+  }
+  66% {
+    border-color: #0a84ff;
+    box-shadow: 0 0 6px -1px #0a84ff;
+  }
+  83% {
+    border-color: #bf5af2;
+    box-shadow: 0 0 6px -1px #bf5af2;
+  }
+}
+@keyframes aiStopSpark {
+  from {
+    --ai-spark-at: 360deg;
+  }
+  to {
+    --ai-spark-at: 0deg;
+  }
+}
+@keyframes aiStopFlicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  22% {
+    opacity: 0.7;
+  }
+  38% {
+    opacity: 1;
+  }
+  61% {
+    opacity: 0.82;
+  }
+  74% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Stillness: no cycling edge and no travelling spark. The square still
+     says Stop. */
+  .ai-stop.is-running {
+    animation: none;
+  }
+  .ai-stop.is-running::after {
+    display: none;
+    animation: none;
+  }
+}
+
+/* While a chat answers and the writer is on another face of the dock, the Ask
+   tab's spark steps through the Stop button's rainbow at its rate, so the two
+   read as one signal. `data-busy` is never drawn on the chosen cell, where Stop
+   itself is in view. */
+.dock-head .ui-bar-track button[data-busy="1"] svg {
+  animation: aiSparkRainbow 6s linear infinite;
+}
+@keyframes aiSparkRainbow {
+  0%,
+  100% {
+    color: #ff453a;
+    filter: drop-shadow(0 0 2px #ff453a);
+  }
+  16% {
+    color: #ff9f0a;
+    filter: drop-shadow(0 0 2px #ff9f0a);
+  }
+  33% {
+    color: #ffd60a;
+    filter: drop-shadow(0 0 2px #ffd60a);
+  }
+  50% {
+    color: #30d158;
+    filter: drop-shadow(0 0 2px #30d158);
+  }
+  66% {
+    color: #0a84ff;
+    filter: drop-shadow(0 0 2px #0a84ff);
+  }
+  83% {
+    color: #bf5af2;
+    filter: drop-shadow(0 0 2px #bf5af2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Stillness, but not silence: the spark holds one colour of the rainbow,
+     so the tab still says an answer is on its way. */
+  .dock-head .ui-bar-track button[data-busy="1"] svg {
+    animation: none;
+  }
+}
+
+.ai-empty {
+  flex: 1;
+}
+
+/* ── The chat's ramp ──────────────────────────────────────────────────────────
+   14px/1.7, not the dock's 13px/1.62: the chat is the app's only long-form
+   reading surface, and at the interface's size it would tire at width.
+
+   The landing page's body copy is 14.5px/1.6, and 14/1.7 sits just inside it
+   while leaving the dock's labels and facts below it. `.msg-assistant
+   .dock-read` inherits both numbers from here. */
+.msg {
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* An answer followed by a new question is a bigger break than a question
+   followed by its answer: a turn ending, against a turn in progress. 28, not
+   8, because adjacent block margins collapse to the larger, so the rule
+   states the total; a test pins it. */
+.msg-assistant + .msg-you {
+  margin-top: 28px;
+}
+
+/* At the transcript's full width, so a long question is not edited inside a 90%
+   bubble. */
+.msg-edit {
+  display: grid;
+  gap: 8px;
+}
+.msg-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* The question's one row: the pencil, revealed on hover and focus, and always
+   shown where there is no hover (`(hover: none)` is its keeper).
+
+   Its height is held, pencil or not: a run starting withdraws the pencil, and a
+   collapsing row would pull the answer up under the writer's eyes. As the only
+   row under a question, it keeps the question-to-answer gap near 29px against
+   about 60px after an answer. Under a coarse pointer the pencil leaves the row
+   for the bubble's side (below), since a 44px row would put a question nearer
+   the answer before it than its own. */
+.msg-you {
+  margin-bottom: 8px;
+}
+.msg-you-actions {
+  display: flex;
+  justify-content: flex-end;
+  /* Held, pencil or not, so the row does not jump the answers above as a
+     run withdraws the pencil. Not an invisible 44px hit area over a 19px
+     row: the answer's fold button sits right below. */
+  min-height: 19px;
+  margin-top: 2px;
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.msg-you:hover .msg-you-actions,
+.msg-you:focus-within .msg-you-actions {
+  opacity: 1;
+}
+@media (hover: none) {
+  .msg-you-actions {
+    opacity: 1;
+  }
+}
+
+/* Under a coarse pointer the pencil is floored at the tap size and sits at the
+   bubble's leading side, bottoms aligned, instead of in a 44px row under it.
+   The bubble stays against the trailing edge, so a run withdrawing the pencil
+   moves nothing. A long question shrinks its bubble rather than pushing the
+   pencil out: its words break anywhere (`overflow-wrap` below). */
+@media (pointer: coarse) {
+  .msg-you {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+  .msg-you > .msg-edit {
+    flex: 1;
+  }
+  /* Two classes on the turn: the bubble's own rule below sets the auto
+     margin at (0,2,0), which would push the pencil to the far edge. */
+  .msg.msg-you .msg-body {
+    min-width: 0;
+    margin-inline-start: 0;
+  }
+  .msg-you-actions {
+    order: -1;
+    flex-shrink: 0;
+    min-height: 0;
+    margin-top: 0;
+  }
+}
+
+/* The question takes the width its words need, against the trailing edge.
+   `margin-inline-start`, because the text direction decides which edge is the
+   writer's side.
+
+   The cap is a percentage because the dock is drag-resizable: a JS width would
+   need a ResizeObserver recomputing through React on every pointermove of a
+   drag, and would still be a frame stale. 90% resolves against `.ai-messages`'
+   content box (280px at the 340px dock floor, 622px at 720), which requires the
+   scroller to stay a block container; as a flex column, `.msg` would be a flex
+   item and this would resolve against something else.
+
+   `overflow-wrap` because `fit-content` around one unbreakable token (a URL, a
+   path) sizes to it past the cap; `pre-wrap` because Shift+Enter writes a line
+   break, and this is the one place in the panel that renders raw text. */
+.msg-you .msg-body {
+  width: fit-content;
+  max-width: 90%;
+  margin-inline-start: auto;
+  padding: 10px 14px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+/* The transcript never scrolls sideways: one line wider than the dock (an ASCII
+   diagram, a table, an unbreakable URL) would widen the scroller, since
+   `overflow-y: auto` makes the other axis `auto` too.
+
+   So each wide thing holds its own width: a long word breaks where it must, and
+   a fenced block and a table scroll inside their own box, since wrapping a
+   diagram destroys it. `overflow-x: hidden` here is the backstop for anything
+   else a model emits: clipped is wrong, but a transcript moving under the
+   writer's hand is worse. */
+.ai-messages {
+  overflow-x: hidden;
+}
+.msg-assistant .dock-read pre,
+.msg-assistant .dock-read table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-wrap: normal;
+}
+.msg-assistant .dock-read pre {
+  margin: 0.8em 0;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.msg-assistant .dock-read pre code {
+  font-size: inherit;
+}
+
+/* A long cell beside a short one must keep its row, so every cell is ruled and
+   top-aligned. The collapse is inherited, so it reaches the anonymous table box
+   the `display: block` above puts inside. */
+.msg-assistant .dock-read table {
+  margin: 0.8em 0;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.msg-assistant .dock-read th,
+.msg-assistant .dock-read td {
+  padding: 6px 10px;
+  border: 1px solid;
+  text-align: left;
+  vertical-align: top;
+}
+
+/* A quotation in an answer is the writer's own words (the rooms ask the
+   model to set a quoted sentence as a blockquote, `policy.ts`), so it takes
+   the size of every quotation of the writer's words. */
+.msg-assistant .dock-read blockquote {
+  margin: 0.8em 0;
+  font-size: 1.07em;
+}
+
+/* The reference reader's prose rules, borrowed for the answer, and only the
+   prose rules: `.dock-read` declares 13px/1.62, and this keeps the chat at
+   14/1.7. `editorCss.test.ts` pins it. */
+.msg-assistant .dock-read {
+  font-size: inherit;
+  line-height: inherit;
+  /* A long word breaks where it must, rather than widening the transcript
+     (`.ai-messages`, below). */
+  overflow-wrap: anywhere;
+}
+
+.msg-assistant .dock-read > :first-child {
+  margin-top: 0;
+}
+.msg-assistant .dock-read > :last-child {
+  margin-bottom: 0;
+}
+
+/* `.dock-read`'s headings are absolute pixels (15/14/13) sized against a 13px
+   body, so at the chat's 14px `h3` would be smaller than its text and `h2`
+   equal to it. Relative here, so they track the ramp above. */
+.msg-assistant .dock-read h1 {
+  font-size: 1.28em;
+}
+.msg-assistant .dock-read h2 {
+  font-size: 1.14em;
+}
+.msg-assistant .dock-read h3 {
+  font-size: 1em;
+}
+
+/* `.dock-read` gives list items no space between them, which suits a reference
+   template's fields. In an answer each item is its own thought, so this
+   chat-only rule spaces them. */
+.msg-assistant .dock-read li + li {
+  margin-top: 0.35em;
+}
+
+/* `.dock-read` draws a dashed rule under an empty `<li>`, a slot in a
+   reference template. In an answer an empty item is a model artefact, and
+   the rule would read as somewhere to type. */
+.msg .dock-read li:empty::after {
+  content: none;
+}
+
+/* The same for the question-label rule: in an answer a bold-only item is a
+   model writing `- **tired**`, and stays an item with its bullet, its indent
+   and the answer's gap between items, restated because this reset outranks the
+   plain `li + li` rule above. */
+.msg .dock-read li:has(> strong:only-child),
+.msg .dock-read li:has(> p:only-child > strong:only-child) {
+  list-style: inherit;
+  margin-left: 0;
+  margin-top: 0;
+}
+
+.msg-assistant .dock-read li + li:has(> strong:only-child),
+.msg-assistant .dock-read li + li:has(> p:only-child > strong:only-child) {
+  margin-top: 0.35em;
+}
+
+/* What the run is doing, at the size of the quote and the turn's facts: a fact
+   about the machine, which must not read as the answer starting.
+
+   `min-height` holds two lines: the line changes every few seconds and wraps at
+   a narrow dock, and a row changing height under a scroller following a stream
+   would push the answer being read. */
+.ai-activity {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 2.9em;
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+.ai-activity-row {
+  margin: 0;
+}
+
+/* One line, cut rather than wrapped, so a live line above the answer does not
+   push the prose as it streams. Only the words are cut, at their end; the dots
+   and the clock never shrink. When the words drop out as the answer streams,
+   the line keeps its height. */
+.ai-activity.is-inline {
+  align-items: center;
+  min-height: 1.45em;
+  min-width: 0;
+  white-space: nowrap;
+}
+.ai-activity-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ai-activity .ui-dots,
+.ai-elapsed {
+  flex-shrink: 0;
+}
+
+/* Dimmer than the sentence: a number changing every second must be the quieter,
+   or the eye tracks it instead of the transcript. */
+.ai-elapsed {
+  opacity: 0.6;
+}
+
+/* Set apart from the words when there are words: without them (the answer
+   streaming) the margin would add to the row's gap and leave a hole between
+   the dots and the clock. */
+.ai-activity-label + .ai-elapsed {
+  margin-inline-start: 6px;
+}
+
+.ai-activity .ui-dots {
+  /* Centred in the first line, not the block: `align-items: flex-start` puts
+     it at the top, and a 4px dot against a 10.5px line needs the half-line
+     back to sit on the text. */
+  margin-top: 0.5em;
+}
+.ai-activity.is-inline .ui-dots {
+  margin-top: 0;
+}
+
+/* A citation, drawn as the source's title. Not a chip, which would break the
+   reading line. A button, not a link, since it moves within the app. */
+.ai-cite {
+  display: inline;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--t-tap),
+    box-shadow var(--t-tap);
+}
+/* A web citation is not a control: the sources list's row is the link.
+   `line-height: 0` keeps the raised figure from opening a gap between the
+   sentence's lines. */
+.ai-web-mark {
+  font-size: 10.5px;
+  line-height: 0;
+}
+
+.msg-quote {
+  display: block;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-left: 2px solid;
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+
+.chip {
+  height: 25px;
+  padding: 0 10px;
+  border: 0;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    transform var(--t-tap);
+}
+
+.chip:hover {
+  transform: translateY(-0.5px);
+}
+.chip:active {
+  transform: translateY(0.5px);
+  transition-duration: var(--t-press);
+}
+
+/* The asking row: the pill, with the whole width. The wrapper sets the
+   gutter, the one padding on this stack that differs from the bar's. */
+.ai-composer-row {
+  flex-shrink: 0;
+  display: flex;
+  padding: 0 14px 8px;
+}
+
+/* Grid rather than flex, because the quote is a full-width row above a
+   three-cell row. `align-items: end`, so the spark and Stop stay on the last
+   line as the field grows rather than floating to its middle. */
+.composer {
+  /* The field's type size, in one place both its layers read: the textarea
+     and the command mirror under it. The coarse-pointer floor below
+     changes this, so the two cannot drift and the caret stays on its
+     letters. */
+  --composer-font: 13px;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "pins pins pins"
+    "quote quote quote"
+    "spark field stop";
+  align-items: end;
+  /* Centred at the resting height: the row is taller than these 30px buttons,
+     so `end` would leave room above and none below. `AiComposer` writes
+     `data-grown` from the measure it already takes. */
+  flex: 1;
+  min-width: 0;
+  gap: 0 4px;
+  padding: 4px 6px;
+  border: 1px solid;
+  transition:
+    border-color var(--t-tap),
+    box-shadow var(--t-tap);
+}
+
+.composer[data-grown="0"] .ai-composer-menu,
+.composer[data-grown="0"] .ai-stop {
+  align-self: center;
+}
+
+.composer-pins {
+  grid-area: pins;
+}
+.composer-quote {
+  grid-area: quote;
+}
+.ai-composer-menu {
+  grid-area: spark;
+}
+.composer textarea {
+  grid-area: field;
+}
+.ai-stop {
+  grid-area: stop;
+}
+
+/* What this chat can see. Two tests and an e2e select on the class name. */
+.ai-composer-menu {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* One line at rest, and as many as the text needs after that, with no
+   ceiling and no scrollbar: the field never hides the writer's sentence to
+   save its own height, and a scroll track in a 30px box draws as a number
+   stepper on Windows.
+
+   The composer's measure (`AiComposer.tsx`) writes the height, and one line
+   of text with its padding is the least it writes, so under a mouse no floor
+   is needed. `overflow: hidden` rather than `visible`: the measure sets the
+   exact height, so any overflow is a subpixel that would paint outside the
+   pill's rounded edge. */
+.composer textarea {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  overflow: hidden;
+  resize: none;
+  font-size: var(--composer-font);
+  line-height: 1.5;
+}
+
+/* A command as it is typed (`AiComposer`'s header): `/where [a moment in the
+   story]`. The mirror sits in the field's cell, under it, on the field's
+   metrics (size through `--composer-font`, line height, padding, wrapping),
+   since a mirror a pixel off puts the caret a pixel off its letter. Nothing
+   transitions: the mirror is a reading of what was typed, not an event. */
+.composer-mirror {
+  grid-area: field;
+  align-self: stretch;
+  padding: 8px 10px;
+  font-size: var(--composer-font);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  pointer-events: none;
+}
+.composer textarea.has-command {
+  overflow-wrap: break-word;
+}
+/* A bracketed ghost never splits; it wraps whole, since the longest commands
+   outrun a 340px dock. Only the brackets are the unit: the
+   space before them is the parent's pre-wrap text, the field's own break
+   point, so a wrap never moves a typed glyph. A completion (`ructure`) wraps
+   with the word it completes. */
+.composer-hint-unit {
+  white-space: nowrap;
+}
+
+.composer-quote {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  /* No side margin: the pill's 6px of padding is the inset, so this box's
+     left edge meets the `@` below it. Only the gap under it is set here. */
+  margin: 0 0 6px;
+  padding: 6px 6px 6px 8px;
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+.composer-quote span {
+  flex: 1;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.composer-quote button {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* Above the quote, because a pin outlives the question. They wrap rather than
+   scroll, so no pin is hidden. */
+.composer-pins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  /* No side margin, as for the quote: the pill's padding is the inset, and
+     the chips' left edge meets the `@` below it. */
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.composer-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  /* A long title clips inside its chip rather than claiming the row at the
+     340px dock floor. */
+  max-width: 100%;
+  /* A floor, not a height: the phone reads the chip at the label size. */
+  min-height: 22px;
+  padding: 0 4px 0 8px;
+  font-size: 11px;
+}
+
+.composer-pin > svg {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.composer-pin span {
+  min-width: 0;
+  max-width: 18ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composer-pin button {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  transition:
+    background var(--t-tap),
+    color var(--t-tap);
+}
+
+/* ── The assistant surface ────────────────────────────────────────────────────
+   Findings are a plain list in the message, severity is a word and never a
+   colour, refusals live in the composer strip, and the foot carries
+   durability. No raised cards or badges. */
+
+/* ── The chat's head ──────────────────────────────────────────────────────────
+   No border of its own: the dock's tab strip draws a hairline right above, and
+   a second 30px below would box the head into a toolbar. */
+.ai-chathead {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  /* 8px off the dock's head, where the reference cards and the notes table's
+     add pill sit, so every face hangs at the same height.
+
+     The two sides are different gutters. The first thing on this line is a
+     tinted pill right under the tab strip's pills, so its left edge is the
+     tab's: 12px, the dock head's 10px plus the strip's 2px. Everything below
+     (the composer, the bar) takes the dock's 14px, and the right end keeps
+     it so the add pill finishes where they do. */
+  padding: 8px 14px 8px 12px;
+}
+
+/* Without it a title alone reads as the panel's heading rather than the button
+   that opens a list of chats. The colon lives in the string, since a locale
+   decides its own spacing around one. */
+.ai-chathead-label {
+  flex-shrink: 0;
+  /* The auto margin is on the label, where the right-hand group begins, or
+     "Chat:" would sit beside the persona. */
+  margin-inline-start: auto;
+  font-size: 11.5px;
+}
+
+/* The line's giving element: the persona is capped at 120px and the new-chat
+   button is its label's width, so a long chat name is what truncates. */
+.ai-chat-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 1 auto;
+  /* Capped, so at a wide dock a long chat name does not become the whole
+     line. A percentage, because the dock is resizable: a pixel number would
+     bind at the 340px floor and stop binding where the button grows too
+     wide. */
+  max-width: 60%;
+  min-width: 0;
+  text-align: left;
+  padding: 2px 8px;
+  border: 1px solid;
+  font-size: inherit;
+  line-height: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color var(--t-tap);
+}
+/* The ellipsis lives on the text, not the button: the button is a flex
+   container, where `text-overflow` does nothing. */
+.ai-chat-title-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-chat-title svg {
+  flex-shrink: 0;
+}
+
+/* The scrim scrolls a dialog (`base.css`), but a long list would make a box
+   taller than the window, so the list scrolls inside its own height (the kit's
+   `.ui-scroll`) and the dialog keeps its shape.
+
+   The row's `more` button shows on hover and focus and always under a finger,
+   as in the snapshot table and the tree. */
+.ai-switcher-list {
+  max-height: min(46vh, 320px);
+}
+.ai-switcher-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-inline-end: 6px;
+  transition: background var(--t-tap);
+}
+/* The kit row is `width: 100%`, too wide beside the `more` button, so the list
+   would scroll sideways. Here the row takes what the button leaves and may
+   shrink below its words, so the title is what gets cut. */
+.ai-switcher-row .ui-row {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+.ai-switcher-more {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--t-tap);
+}
+.ai-switcher-row:hover .ai-switcher-more,
+.ai-switcher-row:focus-within .ai-switcher-more,
+.ai-switcher-more[aria-expanded="true"] {
+  opacity: 1;
+}
+@media (hover: none) {
+  .ai-switcher-more {
+    opacity: 1;
+  }
+}
+/* The row whose run waits on the writer: `.ui-row-tick`'s seat. */
+.ai-switcher-waiting {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 11px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-switcher-row,
+  .ai-switcher-more {
+    transition: none;
+  }
+}
+
+.ai-unreadable {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid;
+}
+.ai-unreadable-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.ai-findings {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ai-finding {
+  border-left: 2px solid;
+  padding-left: 10px;
+}
+.ai-finding-head {
+  display: block;
+  font-size: 9.5px;
+}
+.ai-finding-title {
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+.ai-finding-body {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.62;
+}
+.ai-evidence {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  min-height: 28px;
+  margin-top: 6px;
+  padding: 4px 6px;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+/* A quote with no passage to land on: the same words, and no sign of a link. */
+.ai-evidence.is-still {
+  margin-bottom: 0;
+  cursor: default;
+}
+.ai-evidence span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-evidence small,
+/* A Hero's Journey Section's Part, and a gone node's marker, beside a title:
+   the evidence row's small voice, not a near-copy of it. */
+.ai-map-part {
+  flex-shrink: 0;
+  font-size: 9.5px;
+}
+/* No card or heading: the rows are the answer. A passage gets two lines where a
+   finding's quote gets one, since the quote is what the writer chooses
+   between. */
+.ai-located-list,
+.ai-web-sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ai-located-list .ai-evidence span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+}
+/* Its number sits in a 2ch seat, so 9 and 10 align. The host is never
+   end-clipped, which would hide the domain, so it may shrink and wrap, and the
+   title yields its width first. Every row is one height: `1lh` is the title's
+   line, so the floor follows the label size on the ≤720 plane (without `lh`,
+   the family's 28px floor). On the plain class, before the coarse block, so the
+   `--tap` floor wins on a coarse pointer. */
+.ai-web-source {
+  min-height: calc(1lh + 8px);
+}
+/* A title-less row: its host holds the title's seat. The number and the host
+   are the same size, so centring keeps their baselines together, where
+   baseline alignment would top-seat both in the taller row. */
+.ai-web-source:not(:has(> span)) {
+  align-items: center;
+}
+.ai-web-n {
+  min-width: 2ch;
+  text-align: end;
+}
+/* The words a `/verify` source was quoted for, under its row:
+   outside the link, at the title's x (the row's padding, an empty seat of
+   the number's width in its face, and the row's gap), so the quote hangs
+   under its source. Never clamped and never a `span` (the evidence family
+   ellipsizes spans): a quote cut short is a different quote. */
+.ai-web-quote {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding-inline: 6px;
+}
+.ai-web-quote::before {
+  content: "";
+  flex: none;
+  width: 2ch;
+  font-size: 9.5px;
+}
+.ai-web-quote > q {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+/* Through the anchor, because `.ai-evidence small` pins `flex-shrink: 0` at
+   a higher specificity than the bare class. */
+.ai-web-source > .ai-web-site {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+/* One class for every fixed sentence of an answer, `/where`'s and `/map`'s
+   alike. */
+.ai-lede {
+  margin: 0;
+}
+/* `/map`'s degree of fit and `/verify`'s verdict are one family: a glyph with a
+   word beside it, never colour alone. The modifier names the degree drawn, not
+   the meaning. */
+.ai-map-row .ai-finding-head,
+.ai-verdict {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ai-mark {
+  flex-shrink: 0;
+}
+.ai-verify + .dock-read {
+  margin-top: 10px;
+}
+/* The ask: in the live line's slot, so it takes the line's width.
+   One number inside it, the kit field's 7px (`.ui-input-field`), so lede,
+   label, field, note and actions keep the single-row field's rhythm. */
+.ai-turn-foot > .ai-ask {
+  flex: 1;
+  min-width: 0;
+}
+.ai-ask {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.ai-ask > .ai-finding-actions {
+  justify-self: start;
+  margin-top: 0;
+}
+.ai-ask-rows {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/* A floated legend is not the "rendered legend": it becomes a grid item, so
+   the 7px gap applies under it like every other part. Its accessible name
+   is unaffected. */
+.ai-ask-rows > legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+/* The kit tick's geometry: the box sits 7.5px into the bare tick, so a 2px
+   gap puts the field at 32px, where `.ui-tick` puts its words. */
+.ai-ask-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+.ai-ask-row > .ui-input-field {
+  flex: 1;
+  min-width: 0;
+}
+/* A query shown as text: whole, since it is what the writer consents to, and
+   wrapped anywhere, never clipped. A flag belongs to its query: 2px (the
+   `.ai-finding-title` step), the line-height's leading doing the rest. */
+.ai-ask-query-row {
+  display: grid;
+  gap: 2px;
+}
+.ai-ask-query {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.ai-ask-queries {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* The finding row's grammar with no Resolve, since a placement is a reading,
+   not a task. */
+.ai-map {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ai-map > .ai-findings,
+.ai-map > .dock-hint,
+.ai-map-working .ai-findings {
+  margin: 0;
+}
+
+/* The `/map` figure: the published convention as one line, the
+   writer's nodes as the rows' own discs on it. Lines are SVG stretched to
+   the width, held at 1px by `vector-effect`; every label, dot and disc is
+   HTML by percentage (`AiMapFigure.tsx`). No motion. The container
+   query puts the Hero's Journey caption beside its circle once there is room
+   for both. */
+.ai-map {
+  container: ai-map / inline-size;
+}
+.ai-map-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+.ai-map-drawing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* A Structure that has moved since the map: the drawing dims to the stale
+   project's literal. */
+/* The whole figure, caption and key too; the rows below keep full contrast. */
+.ai-map-figure.is-stale {
+  opacity: 0.62;
+}
+.ai-map-line,
+.ai-map-fields {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.ai-map-figure.is-threeact .ai-map-line {
+  height: 8px;
+}
+.ai-map-fields {
+  height: 22px;
+}
+.ai-map-rule,
+.ai-map-tick,
+.ai-map-force,
+.ai-map-arrow {
+  vector-effect: non-scaling-stroke;
+}
+.ai-map-field {
+  vector-effect: non-scaling-stroke;
+}
+/* The writer's row sits 12px under Field's, so the two read as a
+   comparison, not as one drawing. */
+.ai-map-parts {
+  margin-top: 12px;
+}
+.ai-map-parts > span > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+/* On a bar: a box from the field's left edge to the figure's. The auto margin
+   keeps the label at the box's start while it fits; once it does not (a last
+   Part a few % wide), free space is negative, the margin drops to 0, and
+   `flex-end` overflows it leftward, so it ends at the figure's edge. */
+.ai-map-parts > .is-on-field {
+  display: flex;
+  justify-content: flex-end;
+}
+.ai-map-parts > .is-on-field > span {
+  margin-right: auto;
+}
+.ai-map-track,
+.ai-map-pyramid {
+  position: relative;
+}
+.ai-map-track,
+.ai-map-track .ai-map-line {
+  height: 16px;
+}
+/* Inset by a station's radius: the base's corners carry a dot centred on
+   them, and at 0% and 100% half of it would hang past the dock's edge and
+   scroll the answer sideways. */
+.ai-map-pyramid {
+  margin-inline: 2px;
+}
+.ai-map-pyramid .ai-map-line {
+  position: absolute;
+  left: 0;
+}
+.ai-map-station {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+}
+/* Inset by a disc's radius, as the pyramid is by a station's: a beat that
+   begins on the first word would hang half a disc past the dock's edge. The
+   ruler says where, never how well. */
+.ai-map-ruler {
+  position: relative;
+  height: 16px;
+  margin-inline: 4px;
+}
+.ai-map-ruler .ai-map-line {
+  height: 16px;
+}
+/* The numbers and Field's labels share the line's 4px inset, so a label
+   sits over its own tick rather than up to 4px beside it. */
+.ai-map-figure.is-ruler .ui-figure-labels {
+  margin-inline: 4px;
+}
+.ai-map-start {
+  position: absolute;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+}
+/* Discs on one place, centred on it, four to a line. */
+.ai-map-marks {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  max-width: 54px;
+  line-height: 0;
+}
+.ai-map-circle {
+  position: relative;
+  width: min(100%, 240px);
+  aspect-ratio: 1;
+}
+/* The circle's own drawing only: the discs on it are SVGs too, and this rule
+   would size each to its 0×0 point. */
+.ai-map-circle > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ai-map-number,
+.ai-map-point {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.ai-map-point {
+  line-height: 0;
+}
+.ai-map-number {
+  font-size: 11px;
+  line-height: 14px;
+}
+.ai-map-figure figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+.ai-map-legend {
+  margin: 0;
+  padding-left: 2em;
+}
+.ai-map-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+}
+.ai-map-key > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+@container ai-map (min-width: 520px) {
+  .ai-map-figure.is-herosjourney {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+    gap: 16px;
+  }
+}
+/* The widening block under a `/where` answer or a wide review: the
+   note, the relay line, the button. Its lines are `.dock-hint`, at 12.5px,
+   with the note's spacing, as is a `/where` answer's "read in
+   full" line outside the block. */
+.ai-located > .dock-hint,
+.ai-verify > .dock-hint,
+.ai-widen > .dock-hint {
+  margin: 4px 0 0;
+}
+.ai-finding-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.ai-finding.is-closed {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ai-review-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 9.5px;
+}
+
+.ai-refusal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 6px;
+}
+
+/* The remedies under a failed turn. Only spacing here: the turn supplies the
+   gutter, the banner's shelf margin gives way to the gap a turn's parts keep,
+   and two inline buttons need space between them. */
+.ai-turn-failed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+.msg > .ai-turn-failed,
+.msg > .ui-banner {
+  margin: 8px 0 0;
+}
+
+/* Its parent, `.dock-scroll.ai-messages`, is a block container, where
+   `align-self` is inert, so a fixed-size box with `margin-inline: auto` does
+   the centring. Making the scroller a flex column instead would relayout every
+   message and move the base the bubbles' 90% cap resolves against. */
+.ai-jump {
+  position: sticky;
+  /* Zero, which is not the bottom of the panel. A sticky box is constrained
+     by the nearest scrollport's content box, not its padding box, so this
+     scroller's `padding-bottom` of `--ai-asking-h + 8px` already lifts the
+     sticky rectangle clear of the asking stack, and `bottom: 0` lands the
+     button 8px above the composer. Adding the height here would count it
+     twice. */
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-inline: auto;
+  padding: 0;
+  border: 1px solid;
+  cursor: pointer;
+  transition:
+    color var(--t-tap),
+    border-color var(--t-tap);
+}
+
+.dock-foot.is-failed {
+  font-size: 12.5px;
+}
+
+/* ── The assistant's states and floors ────────────────────────────────────────
+   The assistant's controls follow the editor's rules: the tap floor on
+   coarse pointers, the facts at 11px on the phone plane, and no meaning
+   carried by colour alone. */
+
+/* A revealed search hit changes in place, with no travel. */
+.msg.is-revealed {
+  transition: background var(--t-tap);
+}
+
+@media (pointer: coarse) {
+  /* Controls take the floor. `--tap-font` is not applied to buttons: it is
+     16px because iOS zooms a field below it, and a button's label is read,
+     not typed into. */
+  .ai-chat-title,
+  .ai-switcher-more,
+  .ai-evidence,
+  .ai-cite,
+  .ai-jump,
+  .ai-text-button,
+  .ai-finding-actions .ui-btn,
+  /* The `+`, the composer's `@`, the model button, the run controls inside the
+     review dialog, Stop and the rename pair. The chat kinds are `.ui-menu`
+     items, which `base.css` floors for the whole app. */
+  .ai-new-chat,
+  .ai-composer-menu,
+  .ai-model-button,
+  .ai-reading,
+  .ai-stop,
+  /* The persona chip is a 22px button, the smallest target on this surface. */
+  .ai-persona,
+  /* The Mode's two captions, each the button that opens its end's panel. */
+  .ai-mode-end {
+    min-height: var(--tap);
+  }
+  /* The Mode's track keeps the floor's width too, so a narrow bar never
+     shrinks it under a thumb. */
+  .ai-mode-track {
+    min-width: var(--tap);
+  }
+  /* The missing line's "Write …" links lead to the reference face, set
+     in a sentence: each takes the floor, as a text link in a row of buttons
+     does (`.ui-text-link-row`). */
+  .ai-write-links > .ui-text-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+  /* A web source row: symmetric padding fills the tap floor, so the content
+     box is one line. Its titled rows keep the title-to-host baseline and sit
+     in the band's middle, as its title-less row does. The rest of the
+     evidence family is filed apart, because `/where`'s two-line rows would
+     grow under this. */
+  .ai-web-source {
+    padding-block: calc((var(--tap) - 1lh) / 2);
+  }
+  /* 44px of height inside a 340px bar leaves the title 140px, which is still
+     a usable button; 120px of chip would not be. */
+  .ai-persona {
+    max-width: 104px;
+  }
+  .ai-switcher-more,
+  .ai-new-chat,
+  .ai-composer-menu,
+  /* Here as well as in the min-height list above: a 28px circle floored to
+     44px tall alone would be a 28x44 capsule. */
+  .ai-jump,
+  .ai-stop,
+  /* A chevron button whose name gives way on a narrow bar, and two captions
+     a word wide. */
+  .ai-model-button,
+  .ai-mode-end {
+    min-width: var(--tap);
+  }
+  /* The reference face's own chrome (the edit button, and the edit bar's
+     format buttons and verbs), reachable from the Reference button on a
+     phone. */
+  .dock-edit-btn,
+  .dock-editbar button {
+    min-height: var(--tap);
+  }
+  /* The fields keep the platform floor, both halves: the dock's selects are
+     opened with a thumb, and iOS zooms the page below 16px, the pair
+     `.ui-select` and `.dt-pick-select` carry. The kit `Input` and `Select`
+     are floored by `base.css`. */
+  .ai-refusal select {
+    min-height: var(--tap);
+    font-size: var(--tap-font);
+  }
+  /* The composer's floor through its one size, so its mirror follows. */
+  .composer {
+    --composer-font: var(--tap-font);
+  }
+  .composer textarea {
+    min-height: var(--tap);
+  }
+}
+
+@media (max-width: 720px) {
+  /* The facts, at the phone plane's fact size, like the editor's other 9.5px
+     voices. The turn's fact line (the agent's name, the token count, the
+     receipts, the time) and what its caret opens stay here: they are read
+     after the answer, not as a label on it. */
+  .ai-finding-head,
+  .ai-finding.is-closed .ai-finding-head,
+  .ai-evidence small,
+  .ai-web-mark,
+  /* The quote's empty seat must stay the number's width, or it drifts
+     off the title's x on the phone plane. */
+  .ai-web-quote::before,
+  .ai-map-part,
+  .ai-review-link,
+  .ai-turn-facts,
+  .ai-turn-detail,
+  .ai-trace-note,
+  .ai-trace-line,
+  .ai-trace > summary > span,
+  .ai-model-button,
+  .ai-unreadable-row,
+  /* The chat head's one label, kept smaller than the title it names. */
+  .ai-chathead-label {
+    font-size: 11px;
+  }
+  /* The chat title button, the switcher's rows, the assistant's text button
+     (retry, continue, the settings button), the dock's bare buttons (the run
+     controls and rename) and the context panel's source titles are labels,
+     at the label size. The composer's quotation, the writer's own text, reads
+     at the label size too, and so does `.dock-foot.is-failed`, so the failure
+     sentence is not smaller than its recovery buttons. */
+  .ai-chat-title,
+  .ai-text-button,
+  .ai-stop,
+  .ai-evidence,
+  .ai-trace-thought,
+  .msg-quote,
+  .composer-quote,
+  .composer-pin,
+  .dock-foot.is-failed,
+  /* The reference face's verbs and its edit button are labels; the authority
+     pair and the generated badge are facts. */
+  .dock-editbar button,
+  .dock-edit-btn {
+    font-size: 13px;
+  }
+  .dock-generated-badge {
+    font-size: 11px;
+  }
+}
+
+/* Where there is no hover, a turn's facts are present at rest, the keeper
+   `.project-more` also carries. */
+@media (hover: none) {
+  .msg .ai-turn-meta {
+    opacity: 1;
+  }
+  .msg .ai-turn-copy {
+    opacity: 1;
+  }
+}
+
+/* ── The summary dialog ───────────────────────────────────────────────────────
+   The waiting state is the dialog's whole body: the page is held under the
+   scrim while a summary is written, and the dots are the one thing saying why.
+   Larger than the tree's own, because here they are the content. */
+.summary-wait {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 14px 0 6px;
+}
+.summary-wait .ui-dots {
+  --dots-u: 1.75px;
+}
+.summary-wait p,
+.summary-note {
+  margin: 0;
+  font-size: 13px;
+}
+.summary-note.is-error {
+  margin-top: 10px;
+}
+/* A link, because it reads as part of the instruction ("Renew it to
+   continue"). */
+.summary-link {
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+/* ── A beta reader's reading ──────────────────────────────────────────────────
+   Inside the answer in the findings' own rhythm, because the prose above it is
+   the entry and this is only its facts. The curve and the ledger fold away:
+   consulted, not read, so closed they cost one line. */
+.ai-journal {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  border-left: 2px solid;
+  padding-left: 10px;
+}
+.ai-journal-verdict {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12.5px;
+}
+.ai-journal-list {
+  margin: 2px 0 0;
+  padding-left: 16px;
+  font-size: 13px;
+  line-height: 1.62;
+}
+/* Attention as five dots, filled to the score: a glyph and the words beside
+   it in the accessible name, never the colour alone. */
+.ai-attention {
+  display: inline-flex;
+  gap: 4px;
+}
+.ai-attention > span {
+  width: 6px;
+  height: 6px;
+  border: 1px solid;
+}
+/* The reading-so-far fold (`AiReadingSoFar`), in its own `ai-so-far-*`
+   family, apart from `.ai-reading`, the chat bar's readings' class, whose
+   context and credit buttons must not take its margin, hairline and padding. */
+.ai-so-far {
+  margin: 0 0 12px;
+  border-bottom: 1px solid;
+  padding-bottom: 8px;
+}
+.ai-so-far-summary {
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.ai-so-far-curve {
+  margin: 10px 0 0;
+}
+.ai-so-far-curve svg {
+  display: block;
+  width: 100%;
+  height: 64px;
+  overflow: visible;
+}
+.ai-so-far-curve polyline {
+  vector-effect: non-scaling-stroke;
+}
+.ai-so-far-curve circle.is-put-down {
+  vector-effect: non-scaling-stroke;
+}
+.ai-ledger {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.ai-ledger caption {
+  text-align: left;
+  margin-bottom: 4px;
+}
+.ai-ledger th {
+  text-align: left;
+  border-bottom: 1px solid;
+  padding: 4px 6px 4px 0;
+}
+.ai-ledger td {
+  vertical-align: top;
+  border-bottom: 1px solid;
+  padding: 4px 6px 4px 0;
+}
+.ai-ledger-note {
+  display: block;
+}
+
+/* ── The drafting room ────────────────────────────────────────────────────────
+   The need question sits where the quiet hints do, above the field. */
+.ai-need {
+  margin: 0 0 8px;
+}
+.ai-need-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+/* ── The editorial revision plan ──────────────────────────────────────────────
+   A done item keeps its place, so the writer sees what they have got through. A
+   record over the transcript, not a chip in the bar, at the Dock's full
+   width. */
+.ai-reading.ai-plan {
+  display: block;
+  padding: 0;
+  cursor: auto;
+}
+.ai-plan > .ai-reading-summary {
+  cursor: pointer;
+}
+.ai-plan-group {
+  margin-top: 10px;
+}
+
+/* A link, the kit's `ui-text-link` as for the Write links, because it goes
+   somewhere rather than acting on this answer. */
+.ai-route-row {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+}
+.ai-plan-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ai-plan-list > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 8px;
+}
+/* The next letter's verdict on the item, on its own line under
+   the row and in from its edge by the tick's width, so it reads as a note on
+   the item's words. */
+.ai-plan-verdict {
+  flex-basis: 100%;
+  margin: 0 0 2px 24px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.ai-plan-item {
+  flex: 1;
+  text-align: left;
+}
+
+.ai-guide {
+  display: grid;
+  gap: 2px;
+}
+
+.ai-guide p {
+  margin: 0;
+}
+
+/* The shield is the product's own mark for what leaves the machine
+   (`appIcons.words`). */
+.ai-transit-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── The editor's states, for the assistant ───────────────────────────────────
+   The assistant's answers to the phone plane's sizes and to reduced motion,
+   written after every rule above so they win at the same weight. */
+
+@media (max-width: 720px) {
+  .ai-persona {
+    font-size: 11px;
+  }
+  .chip {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A transition dropped to `none` still arrives at its end state. */
+  .ai-persona,
+  .ai-composer-menu,
+  .ai-model-button,
+  .chip,
+  .composer,
+  .composer-quote button,
+  .composer-pin button,
+  .ai-chat-title,
+  .ai-evidence,
+  .ai-cite,
+  .ai-jump,
+  .ai-turn-meta,
+  .ai-turn-copy,
+  .ai-turn-caret,
+  .ai-new-chat,
+  .ai-finding,
+  .msg.is-revealed {
+    transition: none;
+  }
+}

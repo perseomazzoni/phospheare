@@ -1,0 +1,3259 @@
+/* Copyright (C) 2026 Perseo Mazzoni
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software under the GNU Affero General Public License, version 3 or
+   later; the full text is in `LICENSE`. */
+
+/* Radiant: the paint the app uses under this theme, then the theme's
+   own touches over it. The `paint` layer paints every rule of the frame's
+   (`styles/base.css`, `editor/editor.css`, `webapp/webapp.css`), which
+   paints nothing itself: first the rules every theme shares
+   (`shared.css`), then this sheet's own. The `tune` layer stands over it
+   whatever either rule's weight. It paints and never sizes, places, hides
+   or moves (`themes/sheets.test.ts`). */
+
+@layer paint, tune;
+
+@layer paint {
+  /* ── The kit ─────────────────────────────────────────────────────────────── */
+
+  /* ── The web application's three ─────────────────────────────────────────── */
+
+  .ui-btn-primary,
+  .ui-btn-outline,
+  .ui-btn-ghost,
+  .ui-btn-attention {
+    border-color: transparent;
+    border-radius: var(--r-lg);
+    font-weight: var(--strong-weight);
+  }
+
+  /* Every button takes one of the Desk's faces: the primary lit, a second
+     choice on the raised chip, a quiet one bare until the pointer tints
+     it, all at the Desk's 8px corner. */
+  .ui-btn-primary {
+    background: var(--radiant-primary);
+    color: var(--paper);
+    box-shadow: var(--radiant-primary-lift);
+  }
+
+  .ui-btn-primary:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow: var(--radiant-primary-lift), var(--shadow-accent);
+  }
+
+  .ui-btn-outline {
+    background: var(--radiant-chip);
+    color: var(--ink);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .ui-btn-outline:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--radiant-chip-hover);
+  }
+
+  .ui-btn-ghost {
+    color: var(--ink-3);
+  }
+
+  .ui-btn-ghost:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .ui-btn-attention {
+    background: var(--attention-tint);
+    color: var(--attention);
+    box-shadow: inset 0 0 0 1px var(--attention-glow);
+  }
+
+  .ui-btn-attention:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow:
+      inset 0 0 0 1px var(--attention-glow),
+      0 0 0 3px var(--attention-tint);
+  }
+
+  /* ── Loading inside a button ─────────────────────────────────────────────── */
+
+  .ui-btn-soft,
+  .ui-btn-danger {
+    border-radius: var(--r-lg);
+    font-weight: var(--medium-weight);
+  }
+
+  .ui-btn-soft {
+    background: var(--radiant-chip);
+    color: var(--ink);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .ui-btn-soft:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--radiant-chip-hover);
+  }
+
+  .ui-btn-danger {
+    background: var(--radiant-danger);
+    color: var(--on-fill);
+    box-shadow: var(--radiant-danger-lift);
+  }
+
+  .ui-btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+    box-shadow:
+      var(--radiant-danger-lift),
+      0 0 0 3px var(--danger-tint);
+  }
+
+  .ui-dialog-foot .ui-btn {
+    border-radius: var(--r-lg);
+    font-weight: var(--strong-weight);
+  }
+
+  .ui-btn-quiet {
+    border-radius: var(--r-lg);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-quiet:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-link {
+    color: var(--ink-3);
+    font-weight: var(--link-weight);
+  }
+
+  .ui-btn-link:hover:not(:disabled, [aria-disabled="true"]) {
+    color: var(--ink-3);
+  }
+
+  .ui-btn-icon {
+    border-radius: var(--r-lg);
+    color: var(--ink-3);
+  }
+
+  .ui-btn-icon:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .ui-btn-icon:focus-visible {
+    outline: 1px solid var(--accent-glow);
+    outline-offset: -1px;
+  }
+
+  /* ── Loading dots ────────────────────────────────────────────────────────── */
+
+  .ui-dots i {
+    border-radius: 50%;
+    background: var(--dots-dim);
+  }
+
+  /* ── Controls ────────────────────────────────────────────────────────────── */
+
+  .ui-text-link {
+    background: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .ui-text-link-ink {
+    color: var(--ink);
+  }
+
+  /* ── Input, with its evidence line ───────────────────────────────────────── */
+
+  .ui-input {
+    border-color: var(--field-edge);
+    border-bottom-color: var(--field-foot);
+    border-radius: var(--field-radius);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  .ui-input-bad {
+    border-color: var(--danger);
+  }
+
+  .ui-input-note {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .ui-input-note-bad {
+    color: var(--danger);
+  }
+
+  .ui-input-note-flag {
+    color: var(--ink);
+  }
+
+  /* ── Select ──────────────────────────────────────────────────────────────── */
+
+  .ui-select {
+    border-color: var(--field-edge);
+    border-bottom-color: var(--field-foot);
+    border-radius: var(--field-radius);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  /* ── Segmented control ───────────────────────────────────────────────────── */
+
+  .ui-seg {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+  }
+
+  .ui-seg button:hover:not(:disabled) {
+    color: var(--ink);
+  }
+
+  .ui-seg button[aria-pressed="true"] {
+    background: var(--radiant-chip);
+    color: var(--press-ink);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  /* ── Kbd ─────────────────────────────────────────────────────────────────── */
+
+  .ui-kbd {
+    font-family: var(--f-mono);
+    font-weight: var(--name-weight);
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    color: var(--ink-3);
+    font-variant-caps: normal;
+    letter-spacing: normal;
+  }
+
+  /* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+  .ui-skeleton {
+    border-radius: var(--r-xs);
+    background: linear-gradient(
+      90deg,
+      var(--paper-sunk),
+      var(--hair-soft),
+      var(--paper-sunk)
+    );
+    background-size: 200% 100%;
+  }
+
+  /* ── Banner ──────────────────────────────────────────────────────────────── */
+
+  .ui-banner {
+    border-color: var(--hair);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+
+  .ui-banner-attention {
+    border-color: var(--attention-tint);
+    background: var(--attention-tint);
+    color: var(--attention);
+  }
+
+  .ui-banner-problem {
+    border-color: var(--danger-tint);
+    background: var(--danger-tint);
+    color: var(--danger);
+  }
+
+  .ui-banner-quiet {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* ── Meter ───────────────────────────────────────────────────────────────── */
+
+  .ui-meter-bar {
+    border-radius: var(--r-round);
+    background: var(--hair);
+  }
+
+  /* ── AccessCard ──────────────────────────────────────────────────────────── */
+
+  .ui-access {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+  }
+
+  .ui-access-perms {
+    border-top-color: var(--hair-soft);
+    background: var(--paper);
+  }
+
+  /* ── Slider ──────────────────────────────────────────────────────────────── */
+
+  .ui-slider-rail {
+    border-radius: var(--r-round);
+    background: var(--hair);
+  }
+
+  .ui-slider-fill {
+    border-radius: inherit;
+    background: linear-gradient(
+      to right,
+      var(--ui-slider-from, var(--accent)),
+      color-mix(
+        in oklch,
+        var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+        var(--ui-slider-from, var(--accent))
+      )
+    );
+  }
+
+  .ui-slider-input {
+    background: transparent;
+  }
+
+  .ui-slider-input::-webkit-slider-thumb {
+    border-radius: 50%;
+    background: color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    );
+    box-shadow: 0 0 0 2px var(--paper-raised);
+  }
+
+  .ui-slider-input::-moz-range-thumb {
+    border-radius: 50%;
+    background: color-mix(
+      in oklch,
+      var(--ui-slider-to, var(--accent)) calc(var(--ui-slider-at, 0) * 100%),
+      var(--ui-slider-from, var(--accent))
+    );
+    box-shadow: 0 0 0 2px var(--paper-raised);
+  }
+
+  .ui-slider-input:active::-webkit-slider-thumb,
+  .ui-slider-input:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+
+  .ui-slider-input:active::-moz-range-thumb,
+  .ui-slider-input:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--paper-raised),
+      0 0 0 5px var(--accent-tint);
+  }
+
+  .ui-slider-readout {
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 1px var(--hair);
+    font-family: var(--f-meta);
+    font-variant-numeric: var(--figures);
+    color: var(--ink-3);
+  }
+
+  /* ── Overlays ────────────────────────────────────────────────────────────── */
+
+  .ui-scrim {
+    background: var(--scrim);
+  }
+
+  .ui-dialog {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* ── Wizards ─────────────────────────────────────────────────────────────── */
+
+  .ui-steps-track {
+    border-radius: var(--r-xs);
+    background: var(--hair);
+  }
+
+  .ui-steps-fill {
+    border-radius: var(--r-xs);
+    background: var(--accent);
+  }
+
+  .ui-step-dot {
+    border-radius: var(--r-round);
+    background: var(--ink-3);
+  }
+
+  .ui-steps-comet {
+    border-radius: var(--r-round);
+    background:
+      repeating-linear-gradient(
+        to right,
+        transparent 0 7px,
+        color-mix(in srgb, var(--dots-hot) 85%, transparent) 7px 9px,
+        transparent 9px 15px
+      ),
+      linear-gradient(
+        to right,
+        transparent,
+        var(--dots-cy) 55%,
+        var(--dots-hot)
+      );
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--dots-c0) 70%, transparent);
+  }
+
+  .ui-job-seg {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+  }
+
+  .create-card {
+    border-color: var(--hair-soft);
+    border-radius: var(--radiant-r-raised);
+    background: var(--paper);
+    color: var(--ink-3);
+  }
+
+  .create-chip {
+    border-radius: var(--r-round);
+    background: var(--paper-sunk);
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .ui-dialog-foot {
+    border-top-color: var(--hair-soft);
+    background: var(--paper);
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+  }
+
+  .ui-alert-evidence {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    background: var(--paper-sunk);
+    border-left-color: var(--danger);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  }
+
+  @media (max-width: 720px) {
+    .ui-dialog,
+    .ui-dialog-alert {
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+
+    .ui-dialog-foot {
+      border-radius: 0;
+    }
+  }
+
+  /* ── Radio cards ─────────────────────────────────────────────────────────── */
+
+  .pick {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper);
+  }
+
+  /* The chosen card and storage row stand on the raised chip, as the chosen
+     row does; the third ink holds 4.5:1 on it, where it does not on the
+     night's pressed tint. */
+  .pick[data-on="1"] {
+    border-color: transparent;
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .pick:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .pick-sub {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .pick-tick {
+    color: var(--accent);
+  }
+
+  /* ── List rows ───────────────────────────────────────────────────────────── */
+
+  .ui-row {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-row-note {
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+  }
+
+  .ui-row-tick {
+    color: var(--accent);
+  }
+
+  /* ── Ticks ───────────────────────────────────────────────────────────────── */
+
+  .ui-tick {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-tick-box {
+    border-color: var(--hair-firm);
+    border-radius: var(--r);
+    color: transparent;
+  }
+
+  .ui-tick-box.ui-tick-bead {
+    border-radius: 50%;
+  }
+
+  /* ── The import window ───────────────────────────────────────────────────── */
+
+  .import-file-remove {
+    border-color: var(--danger);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--danger);
+  }
+
+  .import-file-remove:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--danger-glow);
+  }
+
+  .import-group {
+    --bead-c: var(--leaf);
+    border-radius: var(--r-sm);
+  }
+
+  input.import-row-title {
+    border-color: transparent;
+    border-radius: var(--r-lg);
+    background: transparent;
+  }
+
+  input.import-row-title:focus {
+    border-color: var(--hair-firm);
+    background: var(--paper);
+    outline: none;
+  }
+
+  .import-bead-ghost {
+    border-radius: 50%;
+    background: var(--bead-c);
+  }
+
+  .import-seam .import-join {
+    font-family: var(--f-chrome);
+    font-weight: var(--bold-weight);
+    color: var(--ink-3);
+    background: transparent;
+  }
+
+  .import-peek {
+    font-family: var(--f-prose);
+    color: var(--ink);
+    scrollbar-color: var(--scroll-thumb) transparent;
+  }
+
+  .import-cut-bead {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .import-cut:focus-visible {
+    outline: none;
+  }
+
+  /* ── Progress ────────────────────────────────────────────────────────────── */
+
+  .ui-prog-bar {
+    border-radius: var(--r-xs);
+    background: var(--paper-sunk);
+  }
+
+  .ui-prog-bar i {
+    border-radius: var(--r-xs);
+    background: var(--accent);
+  }
+
+  /* ── The command bar ─────────────────────────────────────────────────────── */
+
+  .ui-bar {
+    border-color: var(--bar-edge);
+    border-radius: var(--bar-radius);
+    background: var(--bar-ground);
+    box-shadow: var(--bar-shadow);
+    backdrop-filter: var(--bar-frost);
+  }
+
+  /* ── Actions ─────────────────────────────────────────────────────────────── */
+
+  .ui-bar-act {
+    border-radius: var(--r-round);
+  }
+
+  .ui-bar-act-solid {
+    background: var(--radiant-primary);
+    color: var(--paper);
+    box-shadow: var(--radiant-primary-lift);
+  }
+
+  .ui-bar-act-solid:hover:not(:disabled) {
+    box-shadow: var(--radiant-primary-lift), var(--shadow-accent);
+  }
+
+  .ui-bar-act-quiet {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ui-bar-act[aria-pressed="true"] {
+    background: var(--radiant-chip);
+    color: var(--press-ink);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .ui-bar-act[aria-pressed="true"]:hover:not(:disabled) {
+    background: var(--radiant-chip-hover);
+  }
+
+  .ui-bar-act[data-attention="1"] {
+    color: var(--attention);
+    box-shadow: inset 0 0 0 1px var(--attention-glow);
+  }
+
+  /* ── Track ───────────────────────────────────────────────────────────────── */
+
+  .ui-bar-track-thumb {
+    border-radius: var(--r-round);
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .ui-bar-track button {
+    border-radius: var(--r-round);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-bar-track button[aria-pressed="true"] {
+    color: var(--press-ink);
+  }
+
+  .ui-bar-track button[data-attention="1"] {
+    color: var(--attention);
+  }
+
+  /* ── Seated ──────────────────────────────────────────────────────────────── */
+
+  .ui-bar-track[data-seat="sunk"] {
+    border-radius: var(--r-round);
+    background: var(--seat-trough);
+  }
+
+  /* ── Tip ─────────────────────────────────────────────────────────────────── */
+
+  .ui-tip {
+    border-radius: var(--r-lg);
+    background: var(--tip-solid);
+    box-shadow: 0 0 0 1px var(--tip-edge);
+    color: var(--tip-ink);
+  }
+
+  /* ── Bubble ──────────────────────────────────────────────────────────────── */
+
+  .ui-bubble {
+    border-radius: var(--r-lg);
+    background: var(--inverse-solid);
+    color: var(--inverse-ink);
+    box-shadow: var(--shadow-3);
+  }
+
+  .ui-bubble::after {
+    background: var(--inverse-solid);
+  }
+
+  .ui-bubble button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--inverse-ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-bubble button:hover {
+    background: var(--inverse-raised);
+    color: var(--inverse-ink-strong);
+  }
+
+  .ui-bubble button[aria-pressed="true"] {
+    color: var(--inverse-ink-strong);
+  }
+
+  .ui-bubble hr {
+    background: var(--inverse-raised);
+  }
+
+  /* ── Find ────────────────────────────────────────────────────────────────── */
+
+  .ui-bar-find {
+    border-radius: var(--r-round);
+    color: var(--ink);
+  }
+
+  .ui-bar-find-input {
+    outline: none;
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .ui-bar-find-count {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ui-bar-find-clear {
+    border-radius: var(--r-round);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ui-bar-find-busy {
+    color: var(--ink-3);
+  }
+
+  /* ── Menu ────────────────────────────────────────────────────────────────── */
+
+  .ui-menu {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--radiant-r-raised);
+    box-shadow: var(--shadow-2);
+  }
+
+  /* ── Popover ─────────────────────────────────────────────────────────────── */
+
+  .ui-popover {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--radiant-r-raised);
+    box-shadow: var(--shadow-2);
+  }
+
+  .ui-menu button {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .ui-menu button:hover,
+  .ui-menu button:focus-visible {
+    background: var(--accent-tint);
+    color: var(--accent);
+    outline: none;
+  }
+
+  .ui-menu button.ui-menu-danger {
+    color: var(--danger);
+  }
+
+  .ui-menu button:disabled {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .ui-menu-group {
+    color: var(--ink-dim);
+    font-family: var(--f-chrome);
+  }
+
+  /* ── The prose context menu ──────────────────────────────────────────────── */
+
+  .ui-menu.ui-menu-inverse button {
+    color: var(--tip-ink);
+  }
+
+  .ui-menu.ui-menu-inverse button:hover,
+  .ui-menu.ui-menu-inverse button:focus-visible {
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+  }
+
+  .ui-menu.ui-menu-inverse button:disabled {
+    background: transparent;
+    color: var(--tip-ink);
+  }
+
+  /* ── The command palette ─────────────────────────────────────────────────── */
+
+  .palette {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  .palette-query input {
+    outline: none;
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .palette-row {
+    border-radius: var(--r-lg);
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .palette-row-on {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .palette-row-on .palette-group {
+    color: var(--accent);
+  }
+
+  /* ── Toast ───────────────────────────────────────────────────────────────── */
+
+  .ui-toast {
+    background: var(--tip-solid);
+    color: var(--tip-ink);
+    border-radius: var(--radiant-r-raised);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+  }
+
+  .ui-toast-undo {
+    border-radius: var(--r-sm);
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    font-family: var(--f-chrome);
+    font-weight: var(--label-weight);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-dots i {
+      background: var(--dots-cy);
+      box-shadow: 0 0 calc(var(--dots-u) * 3)
+        color-mix(in srgb, var(--dots-cy) 50%, transparent);
+    }
+
+    .ui-skeleton {
+      background: var(--paper-sunk);
+    }
+  }
+
+  /* ══ Landing ═════════════════════════════════════════════════════════════════
+     The page at `/`: the display face for the promise, the glass of the
+     app's own panes round a page of prose, and the accent only as light: the
+     glow under the live page, the caret, a picture lit. */
+
+  /* ── Landing: the hero ────────────────────────────────────────────────────── */
+
+  .landing-hero {
+    background: radial-gradient(
+      60% 45% at 50% 78%,
+      var(--accent-glow),
+      transparent 72%
+    );
+  }
+
+  /* The hero's glow, on the finale's layer half as tall again as the section:
+     the same size and place, measured on the taller box. */
+  .landing-finale::before {
+    background: radial-gradient(
+      60% 30% at 50% 52%,
+      var(--accent-glow),
+      transparent 72%
+    );
+  }
+
+  /* ── Landing: screenshots and the foot ────────────────────────────────────── */
+
+  .landing-foot a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  /* ── Landing: headings ────────────────────────────────────────────────────── */
+
+  .landing-eyebrow,
+  .landing-palette-group h4,
+  .landing-persona-role {
+    color: var(--accent);
+    font-family: var(--f-meta);
+    font-weight: var(--label-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+
+  .landing-part-title,
+  .landing-h2,
+  .landing-promise h3,
+  .landing-persona-name {
+    color: var(--ink);
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+  }
+
+  .landing-part-problem,
+  .landing-section-lede,
+  .landing-promise p,
+  .landing-card-body,
+  .landing-more ul,
+  .landing-faq details p {
+    color: var(--ink-2);
+  }
+
+  /* ── Landing: the editorial team ──────────────────────────────────────────── */
+
+  .landing-chips button {
+    background: transparent;
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-2);
+    font-family: var(--f-ui);
+  }
+
+  .landing-chips button:hover {
+    color: var(--ink);
+  }
+
+  .landing-chips button[aria-pressed="true"] {
+    background: var(--press-ground);
+    border-color: var(--accent);
+    color: var(--press-ink);
+  }
+
+  /* ── Reach ───────────────────────────────────────────────────────────────── */
+
+  @media (pointer: coarse) {
+    .ui-input,
+    .ui-select,
+    .ui-seg {
+      border-color: var(--hair-firm);
+    }
+  }
+
+  /* ── Standing statuses ───────────────────────────────────────────────────── */
+
+  .status-notice-dismiss {
+    color: currentColor;
+  }
+
+  .status-notice-dot {
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ── The Library ─────────────────────────────────────────────────────────── */
+
+  /* ── The application bar ─────────────────────────────────────────────────── */
+
+  .app {
+    background-color: var(--paper);
+    background-image: var(--radiant-light), var(--grain), var(--ground);
+    background-attachment: fixed;
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      background-image: var(--grain);
+    }
+  }
+
+  .app-top {
+    border-bottom-color: var(--hair-soft);
+  }
+
+  .app-wordmark {
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--name-tracking);
+  }
+
+  .app-avatar {
+    border-radius: 50%;
+  }
+
+  /* ── The Library ─────────────────────────────────────────────────────────── */
+
+  .lib-title {
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+  }
+
+  /* ── Storage ─────────────────────────────────────────────────────────────── */
+
+  .shelf-storage-face {
+    border-radius: var(--r-round);
+    background: var(--wash-subtle);
+    color: var(--ink-3);
+  }
+
+  .shelf-storage-face:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .shelf-scope {
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    color: var(--ink);
+  }
+
+  .shelf-tally {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── The storage panel's rows ────────────────────────────────────────────── */
+
+  .store-row {
+    border-radius: var(--r-lg);
+  }
+
+  .store-row[data-on="1"] {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .store-note {
+    font-family: var(--f-meta);
+    font-weight: normal;
+    color: var(--ink-3);
+  }
+
+  /* ── The shelf ───────────────────────────────────────────────────────────── */
+
+  .project {
+    border-color: var(--hair-firm);
+    border-radius: var(--r);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+  }
+
+  .project::before {
+    border-left-color: transparent;
+  }
+
+  .project-title {
+    font-family: var(--f-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--name-tracking);
+  }
+
+  .project-open:hover {
+    color: var(--accent);
+  }
+
+  .project-where {
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+    color: var(--ink-3);
+  }
+
+  .project-stats {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .project-stats b {
+    color: var(--ink);
+    font-weight: var(--bold-weight);
+  }
+
+  .project-stats > span + span::before {
+    color: var(--hair);
+  }
+
+  .project-more {
+    border-radius: var(--r-round);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .project-more:hover {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink);
+  }
+
+  .project-spine :is(.spine-bars, .spine-empty) {
+    clip-path: inset(0 round var(--r-round));
+  }
+
+  /* ── First run, and no match ─────────────────────────────────────────────── */
+
+  .lib-empty {
+    border-color: var(--hair);
+    border-radius: var(--radiant-r-raised);
+  }
+
+  .lib-empty p {
+    color: var(--ink-3);
+  }
+
+  /* The setup card and the start panel are one weight: raised paper on one
+     hair, so the page reads set up, then begin. */
+  .ui-checklist,
+  .welcome-start {
+    border-color: var(--hair);
+    border-radius: var(--radiant-r-raised);
+    background: var(--paper-raised);
+  }
+
+  .ui-checklist-flash {
+    background: var(--accent-tint-2);
+  }
+
+  .welcome-start p {
+    color: var(--ink-3);
+  }
+
+  /* ── The settings sheet ──────────────────────────────────────────────────── */
+
+  .sheet {
+    background: var(--paper);
+    border-left-color: var(--hair);
+    box-shadow: var(--shadow-3);
+  }
+
+  .sheet-nav button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    font-weight: var(--quiet-weight);
+  }
+
+  .sheet-nav button:hover {
+    background: var(--hover-sunk);
+    color: var(--ink);
+  }
+
+  .sheet-nav button[aria-current="true"] {
+    background: var(--accent-tint);
+    color: var(--accent);
+  }
+
+  .sheet-pane h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--bold-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── About ───────────────────────────────────────────────────────────────── */
+
+  .about-emblem {
+    border-radius: 50%;
+  }
+
+  .about-foot a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+  }
+
+  /* ── Name-and-answer settings ────────────────────────────────────────────── */
+
+  .ai-settings-pairs input,
+  .ai-settings-pairs select {
+    color: var(--ink);
+    background: var(--field);
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .ai-address-field input {
+    font-family: var(--f-mono);
+  }
+
+  .ai-address-field input[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  /* ── Inside an AI card ───────────────────────────────────────────────────── */
+
+  .ui-access-body h4 {
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .ai-remote-chosen button {
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+  }
+
+  .ai-remote-chosen button:hover,
+  .ai-remote-chosen button:focus-visible {
+    background: var(--accent-tint);
+    outline: none;
+  }
+
+  .ai-remote-filter {
+    color: var(--ink);
+    background: var(--field);
+    border-color: var(--hair);
+    border-radius: var(--r);
+  }
+
+  .ai-connection-status.is-connected {
+    color: var(--accent);
+  }
+
+  .ai-connection-status.is-failed,
+  .ai-connection-status.is-unverified {
+    color: var(--danger);
+  }
+
+  /* ── Theme tiles ─────────────────────────────────────────────────────────── */
+
+  .tile {
+    border-color: var(--hair);
+    border-radius: var(--radiant-r-raised);
+    background: var(--paper-raised);
+  }
+
+  /* ── Reach ───────────────────────────────────────────────────────────────── */
+
+  @media (pointer: coarse) {
+    .ai-settings-pairs input,
+    .ai-settings-pairs select {
+      border-color: var(--hair-firm);
+    }
+  }
+
+  /* ── Books between crop marks ────────────────────────────────────────────── */
+
+  :root[data-crop="1"] .project,
+  :root[data-crop="1"] .ui-access {
+    --crop-ink: var(--ink-3);
+    border-color: transparent;
+    border-radius: 0;
+    background:
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left top / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right top / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) left bottom / 1px 14px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 14px 1px
+        no-repeat,
+      linear-gradient(var(--crop-ink), var(--crop-ink)) right bottom / 1px 14px
+        no-repeat;
+  }
+
+  :root[data-crop="1"] .project {
+    box-shadow: none;
+  }
+
+  :root[data-crop="1"] .project:is(:hover, :focus-within) {
+    --crop-ink: var(--ink);
+  }
+
+  :root[data-crop="1"] .project.project-gone:is(:hover, :focus-within) {
+    --crop-ink: var(--ink-3);
+  }
+
+  :root[data-crop="1"] .project::before {
+    border-radius: 0;
+    filter: none;
+  }
+
+  :root[data-crop="1"] .project .project-where {
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    letter-spacing: var(--label-tracking);
+  }
+
+  :root[data-crop="1"] .projects-list .project,
+  :root[data-crop="1"] .projects-list .project:is(:hover, :focus-within) {
+    background: none;
+    border-color: var(--hair);
+  }
+
+  /* ── The editor ──────────────────────────────────────────────────────────── */
+
+  /* ── Editor shell ────────────────────────────────────────────────────────── */
+
+  .editor-shell {
+    background-color: var(--canvas);
+    background-image: var(--radiant-light), var(--grain), var(--ground-quiet);
+    background-attachment: fixed;
+  }
+
+  /* ── The page's sheet ────────────────────────────────────────────────────── */
+
+  /* Below the frame's cut (`--sheet-cut`) the prose fades in over a short
+     band, so a line passing under the bar thins away rather than shearing.
+     In Henosis the bar leaves, and the cut alone stands. */
+  :root[data-under-bar="sheet"]
+    .editor-shell:not([data-phone="1"])
+    .editor-surface {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent var(--sheet-cut),
+      #000 calc(var(--sheet-cut) + 16px)
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent var(--sheet-cut),
+      #000 calc(var(--sheet-cut) + 16px)
+    );
+  }
+  :root[data-under-bar="sheet"]
+    .editor-shell[data-henosis="full"]:not([data-phone="1"])
+    .editor-surface {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  /* The page is paper from the panel's edge to the Dock's or the window's,
+     and on past the window's foot. Its sides have no edge or shadow of its
+     own: the panel and the Dock draw those, so their grips stand on the
+     page's edge. The frame stands the sheet `--sheet-gap` in from each side;
+     shadows spread by the gap and dropped by it fill the gap at the sides
+     and the foot, and carry the sheet's head across it: the top edge, and on
+     the night the lit line under it, drawn as stripes of the ground rather
+     than a border, so no corner joint breaks the line where the gap begins.
+     The edge's shadow is 1px wider than the fill, so it rims the 12px top
+     corners and meets the panels' edges where those corners end. */
+  /* The landing's demos stand on the same page as the editor. */
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"])::before,
+  .landing-sheet {
+    border-color: transparent;
+    border-radius: max(0px, calc(var(--radiant-r-raised) - var(--sheet-gap)))
+      max(0px, calc(var(--radiant-r-raised) - var(--sheet-gap))) 0 0;
+    background: var(--radiant-page-ground);
+    background-origin: border-box;
+    box-shadow: var(--radiant-page);
+  }
+
+  /* The page's edges: the panel's and the Dock's border columns, drawn
+     from below the page's rounded head down, so the line runs on from the
+     corner's rim. The shadow the page casts on them lies inside, as
+     gradients: a straight falloff along the edge below the head, and beside
+     the head a ring centred where the page's corner is, so the shadow
+     follows the curve. */
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"]) .doc-tree {
+    /* The attached panel starts at the title bar's foot, the page at the
+       chrome's horizon below it; the head's ring and the edge below it
+       start where the page does. */
+    --radiant-panel-drop: calc(var(--chrome-horizon) - var(--header-h));
+    border-right-color: transparent;
+    background-image:
+      linear-gradient(var(--radiant-page-edge), var(--radiant-page-edge)),
+      radial-gradient(
+        circle at calc(100% + var(--radiant-r-raised)) var(--radiant-r-raised),
+        var(--radiant-cast-ring)
+      ),
+      linear-gradient(to left, var(--radiant-cast-falloff)),
+      var(--radiant-light);
+    background-size:
+      1px calc(100% - var(--radiant-r-raised) - var(--radiant-panel-drop)),
+      var(--radiant-cast-width) var(--radiant-r-raised),
+      var(--radiant-cast-width)
+        calc(100% - var(--radiant-r-raised) - var(--radiant-panel-drop)),
+      auto;
+    background-position:
+      right bottom,
+      right 0 top var(--radiant-panel-drop),
+      right bottom,
+      0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+    background-origin: border-box, border-box, border-box, padding-box;
+    background-attachment: scroll, scroll, scroll, fixed;
+  }
+
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"]) .ed-dock {
+    border-left-color: transparent;
+    background-image:
+      linear-gradient(var(--radiant-page-edge), var(--radiant-page-edge)),
+      radial-gradient(
+        circle at calc(var(--radiant-r-raised) * -1) var(--radiant-r-raised),
+        var(--radiant-cast-ring)
+      ),
+      linear-gradient(to right, var(--radiant-cast-falloff)),
+      var(--radiant-light);
+    background-size:
+      1px calc(100% - var(--radiant-r-raised)),
+      var(--radiant-cast-width) var(--radiant-r-raised),
+      var(--radiant-cast-width) calc(100% - var(--radiant-r-raised)),
+      auto;
+    background-position:
+      left bottom,
+      left top,
+      left bottom,
+      0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+    background-origin: border-box, border-box, border-box, padding-box;
+    background-attachment: scroll, scroll, scroll, fixed;
+  }
+
+  /* The Dock's own grounds that reach its edge, the asking and a
+     Snapshot's preview, cover its background, so each carries the page's
+     shadow on as well: the same falloff, drawn from the Dock's border box,
+     1px left of their own. */
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"])
+    .ed-dock
+    :is(.ai-asking, .snap-preview) {
+    background-image: linear-gradient(to right, var(--radiant-cast-falloff));
+    background-size: var(--radiant-cast-width) 100%;
+    background-position: -1px 0;
+    background-repeat: no-repeat;
+  }
+
+  .editor-shell[data-dock-over="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .ed-dock
+    :is(.ai-asking, .snap-preview) {
+    background-size: 0 100%;
+  }
+
+  /* A Dock that covers the measure lies over the page, which runs on
+     beneath it: a raised card with its own edge and corners, casting its
+     shadow on the paper, its grip on its edge. The page's edge and shadow
+     beside it narrow to nothing rather than leave, so the frame's ease
+     carries the change. */
+  .editor-shell[data-dock-over="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .ed-dock {
+    border-color: var(--radiant-page-edge);
+    border-radius: var(--radiant-r-raised);
+    background-color: var(--paper-raised);
+    background-size:
+      0 calc(100% - var(--radiant-r-raised)),
+      0 var(--radiant-r-raised),
+      0 calc(100% - var(--radiant-r-raised)),
+      auto;
+    box-shadow: var(--radiant-dock-lift);
+  }
+
+  /* A folded panel peeking open over the page is the same card, attached
+     to the window's edge and the title bar: its own edge and its one free
+     corner, casting its shadow on the paper to its right. */
+  .editor-shell[data-peek="1"]:not([data-phone="1"]):not([data-narrow="1"])
+    .doc-tree {
+    border-color: var(--radiant-page-edge);
+    border-radius: 0 var(--radiant-r-raised) 0 0;
+    background-color: var(--paper-raised);
+    background-size:
+      0 calc(100% - var(--radiant-r-raised)),
+      0 var(--radiant-r-raised),
+      0 calc(100% - var(--radiant-r-raised)),
+      auto;
+    box-shadow: var(--radiant-panel-lift);
+  }
+
+  /* Under a covering Dock's card the frame ends the sheet at the Dock's
+     right edge, so the page fills the gaps on its left and at its foot only:
+     shadows spread by half the gap, moved left and down by half. Spread by
+     half, the left corner takes half the gap off its own radius rather than
+     all of it, to keep 12px. The right corner rounds wider than the card's,
+     so it stays inside the card's corner. */
+  .editor-shell[data-dock="1"][data-dock-over="1"]:not([data-phone="1"]):not(
+      [data-narrow="1"]
+    ):not([data-henosis="full"])::before {
+    border-radius: calc(var(--radiant-r-raised) - var(--sheet-gap) / 2)
+      var(--radiant-r-raised) 0 0;
+    box-shadow: var(--radiant-page-under);
+  }
+
+  /* In Henosis the chrome leaves and nothing frames the page. The frame
+     stands the sheet `--sheet-gap` in from every edge, so the page fills
+     that gap all round, the top included, with no head, edge or corners. */
+  .editor-shell[data-henosis="full"]:not([data-phone="1"]):not(
+      [data-narrow="1"]
+    )::before {
+    border-radius: 0;
+    background: var(--sheet);
+    box-shadow: 0 0 0 var(--sheet-gap) var(--sheet);
+  }
+
+  /* The desk between the page's rounded head and the panel's or the
+     Dock's edge: the same ring, so the shadow runs on round the curve
+     outside them. Placed by the shell's own measures, as the frame places
+     the sheet. */
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"]):not(
+      [data-henosis="full"]
+    ) {
+    background-image:
+      radial-gradient(circle at 100% 100%, var(--radiant-cast-ring)),
+      var(--radiant-light), var(--grain), var(--ground-quiet);
+    background-size:
+      var(--radiant-r-raised) var(--radiant-r-raised),
+      auto,
+      auto,
+      auto;
+    background-position:
+      calc(var(--panel-left) + var(--panel-w)) var(--chrome-horizon),
+      0 0,
+      0 0,
+      0 0;
+    background-repeat: no-repeat, repeat, repeat, repeat;
+    background-attachment: scroll, fixed, fixed, fixed;
+  }
+
+  .editor-shell[data-dock="1"]:not([data-dock-over="1"]):not(
+      [data-phone="1"]
+    ):not([data-narrow="1"]):not([data-henosis="full"]) {
+    background-image:
+      radial-gradient(circle at 100% 100%, var(--radiant-cast-ring)),
+      radial-gradient(circle at 0 100%, var(--radiant-cast-ring)),
+      var(--radiant-light), var(--grain), var(--ground-quiet);
+    background-size:
+      var(--radiant-r-raised) var(--radiant-r-raised),
+      var(--radiant-r-raised) var(--radiant-r-raised),
+      auto,
+      auto,
+      auto;
+    background-position:
+      calc(var(--panel-left) + var(--panel-w)) var(--chrome-horizon),
+      right calc(var(--dock-inset) + var(--dock-w)) top var(--chrome-horizon),
+      0 0,
+      0 0,
+      0 0;
+    background-repeat: no-repeat, no-repeat, repeat, repeat, repeat;
+    background-attachment: scroll, scroll, fixed, fixed, fixed;
+  }
+
+  /* ── Comments as notes ───────────────────────────────────────────────────── */
+
+  :root[data-comments="notes"] :is(.cm-pmark, .cm-marker[data-at="end"]) {
+    font-family: var(--f-prose);
+    font-weight: var(--medium-weight);
+    font-style: normal;
+    color: var(--spark);
+  }
+
+  :root[data-comments="notes"]
+    :is(.cm-layer[data-mode="notes"], .cm-float)
+    :is(.cm-card, .cm-card[data-active="1"], .cm-card[data-state="proposed"]) {
+    background: none;
+    box-shadow: none;
+  }
+
+  @media (max-width: 720px) {
+    .editor-shell {
+      background-image: var(--grain);
+    }
+  }
+
+  /* ── The Desk ────────────────────────────────────────────────────────────── */
+
+  .desk-eyebrow {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .desk-last {
+    border-left-color: var(--hair);
+    font-family: var(--f-prose);
+    color: var(--ink);
+  }
+
+  .desk-primary {
+    border-radius: var(--r-lg);
+    background: var(--radiant-primary);
+    color: var(--paper);
+    box-shadow: var(--radiant-primary-lift);
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .desk-primary:hover {
+    box-shadow: var(--radiant-primary-lift), var(--shadow-accent);
+  }
+
+  .desk-quiet {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+    font-weight: var(--link-weight);
+  }
+
+  .desk-quiet:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+
+  .desk-ledger b {
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  .desk-thread {
+    border-radius: var(--r-lg);
+    background: var(--attention-tint);
+    color: var(--attention);
+  }
+
+  .desk-empty p {
+    color: var(--ink-3);
+  }
+
+  /* ── The prose column ────────────────────────────────────────────────────── */
+
+  .editor {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    font-family: var(--f-prose);
+    color: var(--prose-ink);
+    caret-color: transparent;
+  }
+
+  [contenteditable]:focus-visible {
+    outline: none;
+  }
+
+  /* ── Fake cursor ─────────────────────────────────────────────────────────── */
+
+  .fake-cursor {
+    border-radius: 1px;
+    background: var(--accent);
+  }
+
+  /* ── The revision rail ───────────────────────────────────────────────────── */
+
+  .rev-rail-head {
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .rev-rail-head-walking {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--hair-firm);
+  }
+
+  .rev-step {
+    border-radius: var(--r-lg);
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink-3);
+  }
+
+  .rev-step:hover:not(:disabled) {
+    background: var(--radiant-chip-hover);
+  }
+
+  .rev-step:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .rev-chip {
+    border-color: var(--bar-edge);
+    border-radius: var(--r-round);
+    background: var(--bar-ground);
+    box-shadow: var(--bar-shadow);
+    backdrop-filter: var(--bar-frost);
+  }
+
+  .rev-chip button {
+    background: transparent;
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .rev-chip button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── The titlebar's right cluster ────────────────────────────────────────── */
+
+  .ed-palette {
+    font-weight: var(--quiet-weight);
+  }
+
+  .titlebar-project {
+    background: transparent;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    font-weight: var(--name-weight);
+    color: var(--ink);
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+  }
+
+  .titlebar-idx {
+    font-variant-numeric: var(--figures);
+    letter-spacing: calc(var(--meta-tracking) * 4);
+  }
+
+  /* ── The way back to the library ─────────────────────────────────────────── */
+
+  .titlebar-return {
+    border-radius: var(--r-sm);
+    color: var(--ink-3);
+    text-decoration: none;
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .titlebar-return:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .titlebar-return[data-nudge="1"] {
+    box-shadow: 0 0 0 4px var(--accent-tint);
+  }
+
+  .titlebar-return-nudge {
+    border-radius: var(--r-lg);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  /* ── The titlebar's frost ────────────────────────────────────────────────── */
+
+  .titlebar::before {
+    backdrop-filter: blur(var(--frost-blur));
+  }
+
+  .titlebar::before {
+    --frost-blur: 12px;
+  }
+
+  .titlebar-veil {
+    --frost-a: 0.6;
+    background-color: var(--canvas);
+    background-image: var(--grain), var(--ground-quiet);
+    background-attachment: fixed;
+  }
+
+  /* ── The save state ──────────────────────────────────────────────────────── */
+
+  /* At the pill's head the state's ground follows the pill's round end:
+     the bar's first item, and on the phone its last. */
+  .bar-stack .ed-save {
+    border-radius: var(--r-round) var(--r) var(--r) var(--r-round);
+  }
+
+  .editor-shell[data-phone="1"] .bar-stack .ed-save {
+    border-radius: var(--r) var(--r-round) var(--r-round) var(--r);
+  }
+
+  /* ── A face that grows ───────────────────────────────────────────────────── */
+
+  .ed-fold {
+    border-radius: var(--r-round);
+  }
+
+  .ed-fold-face {
+    border-radius: var(--r-round);
+    color: var(--ink-3);
+    font-weight: var(--strong-weight);
+  }
+
+  .ed-fold-comments .ed-fold-face[data-pressed="1"] {
+    background: var(--radiant-chip);
+    color: var(--press-ink);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  /* ── Special characters ──────────────────────────────────────────────────── */
+
+  .char-key {
+    border-color: transparent;
+    border-radius: var(--r-lg);
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink);
+    font-family: var(--f-mono);
+  }
+
+  .char-key:hover {
+    background: var(--radiant-chip-hover);
+  }
+
+  /* ── Find ────────────────────────────────────────────────────────────────── */
+
+  .find-row input {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+    outline: none;
+  }
+
+  .find-row input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .find-tog:hover:not(:disabled) {
+    background: var(--hover-tool);
+    color: var(--ink);
+  }
+
+  /* ── The shortcut sheet ──────────────────────────────────────────────────── */
+
+  .keys-group h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── Document tree ───────────────────────────────────────────────────────── */
+
+  .doc-tree {
+    background: var(--pane-ground);
+    background-image: var(--radiant-light);
+    background-attachment: fixed;
+    box-shadow: var(--pane-shadow);
+    backdrop-filter: var(--pane-frost);
+    border-color: var(--pane-edge);
+    border-radius: var(--pane-radius);
+  }
+
+  /* ── The panel's find ────────────────────────────────────────────────────── */
+
+  .dt-find {
+    border-radius: var(--r-lg);
+    color: var(--ink-3);
+  }
+
+  /* ── The two bodies ──────────────────────────────────────────────────────── */
+
+  .dt-search-excerpt {
+    font-family: var(--f-prose);
+    color: var(--ink-3);
+  }
+
+  /* ── A body source and its occurrences ───────────────────────────────────── */
+
+  .dt-search-row.dt-search-head:hover {
+    background: transparent;
+  }
+
+  /* ── Regions ─────────────────────────────────────────────────────────────── */
+
+  .dt-region-label {
+    background: transparent;
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── The rail ────────────────────────────────────────────────────────────── */
+
+  .dt-rail button {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+    letter-spacing: calc(var(--meta-tracking) * 3);
+    font-variant-numeric: var(--figures-text);
+  }
+
+  .dt-rail button:hover {
+    background: var(--hover-row);
+    color: var(--ink);
+  }
+
+  .dt-rail button[aria-current="true"],
+  .dt-rail .dt-rail-find {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink);
+  }
+
+  .dt-rail hr {
+    background: var(--hair-soft);
+  }
+
+  /* ── The recycle bin ─────────────────────────────────────────────────────── */
+
+  .dt-bin-restore:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── The boundary's own control ──────────────────────────────────────────── */
+
+  .dt-collapse {
+    border-color: var(--hair);
+    border-radius: 50%;
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-1);
+    color: var(--ink-3);
+  }
+
+  .dt-collapse:hover,
+  .dt-collapse:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-fill);
+  }
+
+  /* ── Rows ────────────────────────────────────────────────────────────────── */
+
+  .dt-row:hover {
+    background: var(--hover-row);
+    color: var(--ink);
+  }
+
+  .dt-part > :is(.dt-idx, .dt-words) {
+    font-weight: var(--quiet-weight);
+  }
+
+  .dt-label {
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .dt-label:focus-visible {
+    outline: 1px solid var(--accent-glow);
+    outline-offset: -2px;
+    border-radius: var(--r-xs);
+  }
+
+  /* The chosen row's mark: a short pill inside the chip's left curve, where
+     the frame's full-height rule would cross it. */
+  .dt-row::before {
+    position: absolute;
+    left: 5px;
+    border-radius: var(--r-round);
+    background: var(--accent);
+  }
+
+  .dt-row.active::before {
+    position: absolute;
+    height: 14px;
+  }
+
+  .dt-row.active {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  /* ── Ticking rows to move together ───────────────────────────────────────── */
+
+  .dt-row.selected,
+  .dt-row.selected:hover {
+    background: var(--wash-strong);
+  }
+
+  .dt-row.selected.active {
+    background: var(--row-selected);
+  }
+
+  /* ── Moving ──────────────────────────────────────────────────────────────── */
+
+  .dt-moving-stop {
+    color: inherit;
+  }
+
+  .dt-landing:hover,
+  .dt-landing:focus-visible {
+    background: var(--accent-tint);
+    border-radius: var(--r-sm);
+    outline: none;
+  }
+
+  /* ── Expand and collapse ─────────────────────────────────────────────────── */
+
+  .dt-empty {
+    font-family: var(--f-prose);
+    font-style: var(--aside-style);
+    color: var(--ink-3);
+  }
+
+  .dt-add {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .dt-add:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* ── Drop indicator ──────────────────────────────────────────────────────── */
+
+  .dt-drop-line::before {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ── Inline naming ───────────────────────────────────────────────────────── */
+
+  .dt-name-input {
+    border-radius: var(--r-xs);
+    background: var(--field);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+    color: var(--ink);
+    font-family: var(--f-chrome);
+  }
+
+  .dt-name-input:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .dt-name-input.invalid {
+    box-shadow: inset 0 0 0 1.5px var(--danger);
+  }
+
+  /* ── States ──────────────────────────────────────────────────────────────── */
+
+  .dt-state-hint {
+    font-family: var(--f-prose);
+    font-style: var(--aside-style);
+    color: var(--ink-3);
+  }
+
+  /* ── Undo toast ──────────────────────────────────────────────────────────── */
+
+  .dt-toast {
+    border-radius: var(--r-lg);
+    background: var(--tip);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+  }
+
+  .dt-toast-undo {
+    border-radius: var(--r-sm);
+    background: var(--tip-raised);
+    color: var(--tip-ink-strong);
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+  }
+
+  /* ── The journal notice ──────────────────────────────────────────────────── */
+
+  .rev-notice {
+    border-radius: var(--r-sm);
+    background: var(--tip);
+    box-shadow:
+      0 0 0 1px var(--tip-edge),
+      var(--shadow-2);
+    font-family: var(--f-chrome);
+    color: var(--tip-ink);
+  }
+
+  /* ── The save gutter ─────────────────────────────────────────────────────── */
+
+  .save-gutter i {
+    border-radius: 1px;
+    background: var(--attention);
+  }
+
+  /* ── The margin's comments ───────────────────────────────────────────────── */
+
+  .cm-card {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .cm-kicker {
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .cm-orphan q,
+  .cm-quote {
+    font-family: var(--f-prose);
+    font-style: var(--quote-style);
+    color: var(--ink-3);
+  }
+
+  .cm-face-letter {
+    font-weight: var(--bold-weight);
+    background: var(--wash-strong);
+    color: var(--on-fill);
+  }
+
+  .cm-searched a {
+    color: inherit;
+  }
+
+  .cm-input {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-lg);
+    background: var(--field);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .cm-input:focus {
+    outline: none;
+    box-shadow: var(--shadow-accent);
+  }
+
+  .dt-tag {
+    border-radius: var(--r-round);
+    background: var(--radiant-tag-ground);
+    box-shadow: inset 0 0 0 1px var(--hair);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .dt-tag-k {
+    color: var(--ink-3);
+  }
+
+  .dt-tag-v {
+    color: var(--ink);
+  }
+
+  /* ── The foot ────────────────────────────────────────────────────────────── */
+
+  .dt-foot {
+    border-top-color: var(--hair-soft);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+    color: var(--ink-3);
+  }
+
+  .dt-foot-demo-hint {
+    color: var(--ink-dim);
+    font-style: var(--aside-style);
+  }
+
+  .dt-foot-act {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .dt-foot-theme {
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .dt-prefs {
+    border-color: var(--hair);
+    border-radius: var(--radiant-r-raised);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* ── Offered, not honoured here ──────────────────────────────────────────── */
+
+  .dt-pick-select {
+    border-color: var(--hair-firm);
+    border-radius: var(--r-lg);
+    background: var(--paper-sunk);
+    color: var(--ink);
+    font-family: var(--f-meta);
+  }
+
+  .dt-pick-select:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  /* ── The dock ────────────────────────────────────────────────────────────── */
+
+  .ed-dock {
+    border-color: var(--pane-edge);
+    border-radius: var(--pane-radius);
+    background: var(--pane-ground);
+    background-image: var(--radiant-light);
+    background-attachment: fixed;
+    box-shadow: var(--pane-shadow);
+    backdrop-filter: var(--pane-frost);
+  }
+
+  /* Each grip stands on its page edge, 3px across the 1px hairline, so
+     the line it draws is the border it moves. */
+  .dock-resize::before {
+    position: absolute;
+    left: -2px;
+    width: 3px;
+    border-radius: var(--r-round);
+    background: transparent;
+  }
+
+  .dock-resize:focus-visible {
+    outline: none;
+  }
+
+  .panel-resize::before {
+    position: absolute;
+    right: -2px;
+    width: 3px;
+    border-radius: var(--r-round);
+    background: transparent;
+  }
+
+  .panel-resize:focus-visible {
+    outline: none;
+  }
+
+  .dock-meta {
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  /* ── The snapshot face ───────────────────────────────────────────────────── */
+
+  .snap-rel {
+    border-radius: var(--r-round);
+    background: var(--wash-subtle);
+    font-family: var(--f-meta);
+    font-variant-numeric: var(--figures);
+    color: var(--ink-3);
+  }
+
+  .snap-rel:focus-visible,
+  .ref-card-head:focus-visible,
+  .ref-card-row:focus-visible,
+  .ref-card-add:focus-visible,
+  .ai-new-chat:focus-visible,
+  .ref-picker-row:focus-visible,
+  .ref-picker-close:focus-visible,
+  .ref-row-del:focus-visible,
+  .ref-row-ren:focus-visible,
+  .dt-dock-button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* The Notes' and Snapshots' rows are the panel's: no rule between them,
+     the chosen one on the raised chip. No mark beside it: the row's first
+     column holds its Adopt, which a mark would cross. */
+  .snap-row {
+    border-bottom-color: transparent;
+    border-radius: var(--r-lg);
+  }
+
+  .snap-row.selected {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .snap-tick {
+    color: var(--accent);
+  }
+
+  .snap-adopt {
+    font-family: var(--f-chrome);
+    font-weight: var(--quiet-weight);
+    letter-spacing: var(--meta-tracking);
+    color: var(--accent);
+    background: none;
+    border-radius: var(--r-lg);
+    font-variant-caps: var(--control-caps);
+  }
+
+  .snap-title-input {
+    font-family: var(--f-chrome);
+    color: var(--ink);
+    background: var(--paper);
+    border-color: var(--accent);
+    border-radius: var(--r-lg);
+    outline: none;
+  }
+
+  .snap-add,
+  .ref-card-add,
+  .ai-new-chat {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .ref-card {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper);
+  }
+
+  .ref-card-head {
+    background: transparent;
+    color: var(--row-ink);
+    font-family: var(--f-chrome);
+    font-weight: var(--head-weight);
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+  }
+
+  .ref-card-row {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  /* The card is the chip's own white, so the open entry is tinted. */
+  .ref-card-row[aria-current="true"] {
+    background: var(--accent-tint);
+    color: var(--ink);
+  }
+
+  .ref-row-ren,
+  .ref-row-del {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  /* ── The AI bar toggle ───────────────────────────────────────────────────── */
+
+  .ref-row-ai:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .ref-arc {
+    color: var(--ink-3);
+  }
+
+  /* ── The section picker ──────────────────────────────────────────────────── */
+
+  .ref-picker-row {
+    border-radius: var(--r-lg);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  /* ── No ligatures in the reference dock ──────────────────────────────────── */
+
+  .dock-read h1,
+  .dock-read h2,
+  .dock-read h3 {
+    color: var(--ink-3);
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── A template's question and its blank ─────────────────────────────────── */
+
+  .dock-read strong {
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── Editing a reference document ────────────────────────────────────────── */
+
+  .dock-editbar {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-round);
+    background: var(--paper-sunk);
+  }
+
+  .dock-editbar button {
+    border-radius: var(--r-round);
+    background: transparent;
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+  }
+
+  .dock-editbar button:hover {
+    background: var(--radiant-chip-hover);
+    color: var(--ink);
+  }
+
+  .dock-editbar button:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* The editor's bar is the command bar's pill, its tools pills, and its
+     Save the raised chip a pressed tool stands on. */
+  .dock-editbar .dock-editbar-actions button.dock-save {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink);
+    font-weight: var(--bold-weight);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save:hover {
+    background: var(--radiant-chip-hover);
+    color: var(--ink);
+  }
+
+  .dock-editbar .dock-editbar-actions button.dock-save:disabled:hover {
+    background: var(--radiant-chip);
+    color: var(--ink);
+  }
+
+  .dock-edit-btn {
+    border-color: transparent;
+    border-radius: var(--r-lg);
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .dock-edit-btn:hover {
+    background: var(--radiant-chip-hover);
+    color: var(--ink);
+  }
+
+  .dock-edit-btn:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .dock-edit {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-lg);
+    background: var(--paper);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .dock-edit:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-tint);
+  }
+
+  .dock-foot b {
+    color: var(--accent);
+    font-weight: var(--bold-weight);
+  }
+
+  /* ── The conversation ────────────────────────────────────────────────────── */
+
+  .ai-persona {
+    border-radius: var(--r-lg);
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink);
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    font-weight: var(--link-weight);
+  }
+
+  .ai-persona:hover:not(:disabled) {
+    background: var(--radiant-chip-hover);
+  }
+
+  .ai-persona:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The asking floats over the transcript ───────────────────────────────── */
+
+  .ai-stopped q {
+    font-family: var(--f-prose);
+    color: var(--ink);
+  }
+
+  /* ── The persona picker ──────────────────────────────────────────────────── */
+
+  .ai-persona-dialog .ai-persona-focus-label {
+    color: var(--ink-3);
+    font-family: var(--f-meta);
+    font-weight: normal;
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+  }
+
+  .ai-mode-end:focus-visible {
+    outline: var(--focus-ring);
+    border-radius: var(--r-sm);
+  }
+
+  .ai-mode-panel p {
+    color: var(--ink-3);
+  }
+
+  .ai-reading:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .ai-reading-head strong {
+    font-weight: var(--bold-weight);
+  }
+
+  .ai-model-button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .ai-text-button {
+    color: var(--ink-3);
+    background: transparent;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    font-variant-caps: var(--control-caps);
+    letter-spacing: var(--control-tracking);
+  }
+
+  .ai-refusal select {
+    color: var(--ink);
+    background: var(--paper-raised);
+    border-color: var(--hair);
+    border-radius: var(--r);
+    font-family: var(--f-chrome);
+  }
+
+  .ai-stop {
+    font-family: var(--f-chrome);
+    color: var(--ink-3);
+    background: var(--radiant-chip);
+    border-color: transparent;
+    border-radius: var(--r-lg);
+    box-shadow: var(--radiant-chip-lift);
+  }
+
+  .ai-stop:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The turn's footer ───────────────────────────────────────────────────── */
+
+  .ai-stop:hover {
+    background: var(--radiant-chip-hover);
+    color: var(--ink);
+  }
+
+  .ai-stop.is-send {
+    color: var(--ink);
+  }
+
+  .ai-stop.is-send:disabled {
+    color: var(--ink-3);
+  }
+
+  .ai-stop.is-send:disabled:hover {
+    background: var(--radiant-chip);
+  }
+
+  .ai-stop.is-running::after {
+    border-radius: calc(var(--r-lg) + 3px);
+    background: conic-gradient(
+      from var(--ai-spark-at),
+      #fff 0deg,
+      #ffe27a 10deg,
+      rgb(255 196 64 / 0.45) 34deg,
+      transparent 80deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock-head .ui-bar-track button[data-busy="1"] svg {
+      color: #0a84ff;
+    }
+  }
+
+  /* ── The chat's ramp ─────────────────────────────────────────────────────── */
+
+  .msg-you .msg-body {
+    border-radius: var(--r-lg);
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  .msg-assistant .msg-body {
+    color: var(--ink);
+  }
+
+  .msg-assistant .dock-read blockquote {
+    color: var(--ink);
+    font-family: var(--f-prose);
+  }
+
+  .ai-cite {
+    border-radius: var(--r-xs);
+    background: none;
+    box-shadow: inset 0 -1px 0 var(--hair-firm);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-cite:hover {
+    background: var(--accent-tint);
+    box-shadow: inset 0 -1px 0 var(--accent);
+  }
+
+  .ai-cite:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .msg-quote {
+    border-left-color: var(--accent);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    background: var(--accent-tint);
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .chip {
+    border-radius: var(--r-round);
+    background: var(--accent-tint);
+    box-shadow: inset 0 0 0 1px var(--accent-glow);
+    color: var(--accent);
+    font-family: var(--f-chrome);
+  }
+
+  .chip:hover {
+    background: var(--accent-tint-2);
+  }
+
+  .composer {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--paper-raised);
+    border-color: var(--hair-firm);
+    box-shadow: var(--shadow-card);
+  }
+
+  .ai-composer-menu {
+    border-radius: var(--radiant-r-raised);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .ai-composer-menu:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .composer-quote {
+    border-radius: var(--r-sm);
+    background: var(--accent-tint);
+    font-family: var(--f-meta);
+    color: var(--accent);
+  }
+
+  .composer-quote button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .composer-quote button:hover {
+    background: var(--accent-tint-2);
+  }
+
+  .composer-pin button {
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .composer-pin button:hover {
+    background: var(--accent-tint-2);
+  }
+
+  /* ── The comparing mode ──────────────────────────────────────────────────── */
+
+  [data-block-hunk="delete"] {
+    background: var(--mark-diff-wash-del);
+  }
+
+  [data-block-hunk="insert"] {
+    background: var(--mark-diff-wash-add);
+  }
+
+  .comparing-bar {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--radiant-r-raised);
+    box-shadow: var(--shadow-1);
+  }
+
+  .comparing-select {
+    border-color: var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--glass);
+    backdrop-filter: var(--frost);
+    color: var(--ink);
+    font-family: var(--f-meta);
+    letter-spacing: var(--meta-tracking);
+  }
+
+  .comparing-select:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .comparing-question {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .comparing-legend {
+    font-family: var(--f-meta);
+    color: var(--ink-3);
+  }
+
+  .comparing-swatch-del {
+    background: var(--mark-diff-del);
+  }
+
+  .comparing-swatch-add {
+    background: var(--mark-diff-add);
+  }
+
+  /* ── The Accept layer ────────────────────────────────────────────────────── */
+
+  .df-accept {
+    border-radius: var(--r-round);
+    font-family: var(--f-chrome);
+    font-weight: var(--strong-weight);
+    letter-spacing: var(--meta-tracking);
+    color: var(--mark-diff-add);
+    background: var(--mark-diff-tag-add);
+    font-variant-caps: var(--control-caps);
+  }
+
+  /* ── The board ───────────────────────────────────────────────────────────── */
+
+  .board {
+    background: var(--paper-raised);
+    border-color: var(--slip-edge);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+  }
+
+  .board-head h2 {
+    font-family: var(--f-chrome);
+    font-weight: var(--medium-weight);
+    color: var(--ink);
+  }
+
+  .board-close {
+    border-radius: var(--r);
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .board-filter {
+    border-color: var(--hair-soft);
+    border-radius: var(--r-lg);
+    background: var(--paper-sunk);
+    font-family: var(--f-chrome);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .board-filter:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .board-well h3 {
+    font-family: var(--f-meta);
+    font-weight: var(--medium-weight);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .board-cell {
+    border-radius: var(--r);
+    background: transparent;
+    font-family: var(--f-chrome);
+    color: var(--ink);
+  }
+
+  .board-cell:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  /* ── The board as a full-screen room ─────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .board {
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* ── The chat's head ─────────────────────────────────────────────────────── */
+
+  .ai-chat-title {
+    border-color: transparent;
+    border-radius: var(--r-lg);
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-chat-title:hover {
+    background: var(--radiant-chip-hover);
+  }
+
+  .ai-chat-title:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .ai-chat-title.is-attention {
+    box-shadow: 0 0 0 1px var(--attention-glow);
+  }
+
+  .ai-chat-title.is-attention:hover {
+    background: var(--attention-tint);
+    box-shadow: 0 0 0 1px var(--attention);
+  }
+
+  .ai-switcher-row {
+    border-radius: var(--r-lg);
+  }
+
+  .ai-finding-head {
+    font-family: var(--f-meta);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+    font-variant-caps: var(--label-caps);
+    color: var(--ink-3);
+  }
+
+  .ai-evidence {
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--ink-3);
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+  }
+
+  .ai-evidence:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .ai-verdict > strong {
+    font-weight: var(--bold-weight);
+  }
+
+  .ai-map-station {
+    border-radius: 50%;
+    background: var(--ink-3);
+  }
+
+  .ai-map-start {
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .ai-jump {
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-1);
+    color: var(--ink-3);
+  }
+
+  .ai-jump:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  /* ── The summary dialog ──────────────────────────────────────────────────── */
+
+  .summary-wait p,
+  .summary-note {
+    color: var(--ink-3);
+  }
+
+  .summary-link {
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-stretch: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .summary-link:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ── A beta reader's reading ─────────────────────────────────────────────── */
+
+  .ai-attention > span {
+    border-radius: 50%;
+    border-color: var(--ink-3);
+  }
+
+  /* ── The editorial revision plan ─────────────────────────────────────────── */
+
+  .ai-plan > .ai-reading-summary {
+    font-variant-caps: var(--head-caps);
+    letter-spacing: var(--head-tracking);
+    font-weight: var(--link-weight);
+  }
+
+  .ai-plan-verdict strong {
+    font-weight: var(--bold-weight);
+    color: var(--ink);
+  }
+
+  .ai-transit-line {
+    color: var(--ink-3);
+  }
+}
+
+@layer tune {
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"]) .dt-collapse {
+    background: var(--canvas);
+    box-shadow: none;
+  }
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"])
+    .dt-collapse:hover {
+    background: var(--accent);
+  }
+  .editor-shell:not([data-phone="1"]):not([data-narrow="1"])
+    .dt-collapse:focus-visible {
+    background: var(--accent);
+  }
+  .rev-rail-time {
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    backdrop-filter: none;
+    box-shadow:
+      0 0 0 1px var(--hair),
+      var(--shadow-1);
+  }
+  .rev-now {
+    border-radius: var(--r-round);
+    background: var(--paper-raised);
+    backdrop-filter: none;
+  }
+  .rev-step {
+    border-radius: var(--r-lg);
+    backdrop-filter: none;
+    box-shadow: var(--radiant-chip-lift);
+  }
+  .rev-chip {
+    border-radius: var(--r-round);
+  }
+  .app {
+    background-color: var(--canvas);
+  }
+  .app-top {
+    border-bottom-color: transparent;
+  }
+  .project {
+    border-color: var(--sheet-edge);
+    border-radius: var(--radiant-r-raised);
+    background: var(--radiant-card-ground);
+    box-shadow: var(--radiant-card-raise);
+  }
+  /* A card is a raised surface lit from above, as the Dock and the panel
+     are: a pointer lifts it further, a project that needs attention has a
+     warm ring, and one that is gone lies flat on the desk, an outline with
+     nothing lit. */
+  .project:hover,
+  .project:focus-within {
+    box-shadow: var(--radiant-card-lift);
+  }
+  .project-attention {
+    border-color: var(--attention-tint);
+    box-shadow:
+      0 0 0 1px var(--attention-tint),
+      var(--radiant-card-raise);
+  }
+  .project-attention:hover,
+  .project-attention:focus-within {
+    box-shadow:
+      0 0 0 1px var(--attention-tint),
+      var(--radiant-card-lift);
+  }
+  .project-gone,
+  .project-gone:hover,
+  .project-gone:focus-within {
+    border-color: var(--hair);
+    background: transparent;
+    box-shadow: none;
+  }
+  .titlebar-return:hover {
+    background-color: transparent;
+    background-image: none;
+    color: var(--ink);
+  }
+  .titlebar-sep {
+    opacity: 1;
+  }
+  .titlebar-project:hover {
+    color: var(--ink);
+  }
+  .titlebar .ed-palette {
+    font-weight: 400;
+  }
+  .titlebar .ed-palette .ui-kbd {
+    border-radius: var(--r);
+    background-color: transparent;
+    color: var(--ink-2);
+  }
+  .dt-region-label:not(h3) {
+    font-weight: 500;
+  }
+  .dt-row {
+    border-radius: var(--r-lg);
+  }
+  .dt-row.dt-part,
+  .dt-row.active,
+  .dt-row.selected {
+    color: var(--ink);
+  }
+  .dt-row:hover {
+    background: var(--wash);
+  }
+  .dt-row.active {
+    background: var(--radiant-chip);
+    box-shadow: var(--radiant-chip-lift);
+  }
+  .dt-row.selected:hover {
+    background: var(--wash-strong);
+  }
+  .dt-row.selected.active {
+    background: var(--radiant-chip);
+  }
+  .dt-meta {
+    border-top-color: var(--hair);
+  }
+  .dt-tag-v {
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  .dt-foot {
+    border-top-color: var(--hair);
+  }
+  .bar-stack .ui-bar-act {
+    border-radius: var(--r-round);
+    color: var(--ink-2);
+  }
+  .bar-stack .ui-bar-act[data-attention="1"] {
+    color: var(--attention);
+  }
+  .bar-stack .ui-bar-act[data-attention="1"]:hover {
+    color: var(--attention);
+  }
+  .bar-stack .ui-bar-track button:not([aria-pressed="true"]),
+  .bar-stack .ed-fold-face {
+    color: var(--ink-2);
+  }
+  .ui-bar-track
+    button[data-attention="1"]:is(
+      .bar-stack .ui-bar-track button:not([aria-pressed="true"])
+    ) {
+    color: var(--attention);
+  }
+  .bar-stack .ui-bar-act:hover:not(:disabled),
+  .bar-stack .ui-bar-act-quiet:hover {
+    background: var(--wash);
+    color: var(--ink);
+  }
+  .ui-bar-act[aria-pressed="true"]:is(
+      .bar-stack .ui-bar-act:hover:not(:disabled)
+    ) {
+    color: var(--press-ink);
+  }
+  .ui-bar-act[data-attention="1"]:is(
+      .bar-stack .ui-bar-act:hover:not(:disabled)
+    ) {
+    color: var(--attention);
+  }
+  .ui-bar-act[aria-pressed="true"]:is(
+      .ui-bar-act[data-attention="1"]:is(
+          .bar-stack .ui-bar-act:hover:not(:disabled)
+        )
+    ) {
+    color: var(--press-ink);
+  }
+  .ui-bar-act[data-attention="1"]:hover:is(
+      .bar-stack .ui-bar-act:hover:not(:disabled)
+    ) {
+    color: var(--attention);
+  }
+  .ui-bar-act[aria-pressed="true"]:is(
+      .ui-bar-act[data-attention="1"]:hover:is(
+          .bar-stack .ui-bar-act:hover:not(:disabled)
+        )
+    ) {
+    color: var(--press-ink);
+  }
+  .bar-stack .ui-bar-act[aria-pressed="true"]:hover:not(:disabled) {
+    background: var(--radiant-chip-hover);
+  }
+  .bar-stack .ui-bar-act[aria-pressed="true"] {
+    color: var(--ink);
+  }
+  .bar-stack .ed-save {
+    color: var(--ink-3);
+  }
+  .bar-stack .ed-save[data-state="dirty"] {
+    color: var(--attention);
+  }
+  .bar-stack .ed-save[data-state="cached"] {
+    color: var(--attention);
+  }
+  .bar-stack .ed-save[data-state="failed"] {
+    color: var(--danger);
+  }
+  .bar-stack .ed-save[data-state="saved"] {
+    color: var(--accent);
+  }
+  .rev-rail-time {
+    font-family: var(--f-ui);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--ink-3);
+  }
+  .rev-step:hover:not(:disabled) {
+    background: var(--radiant-chip-hover);
+    color: var(--ink);
+  }
+  .rev-chip button {
+    font-weight: 500;
+  }
+  .rev-chip-revert {
+    color: var(--ink);
+  }
+  .rev-chip-revert:hover:not(:disabled),
+  .rev-chip-cancel:hover:not(:disabled) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+  .cm-body {
+    color: var(--ink-2);
+  }
+  .dt-idx,
+  .dt-words {
+    font-weight: 400;
+  }
+  .dt-part > :is(.dt-idx, .dt-words) {
+    font-weight: var(--quiet-weight);
+  }
+  .cm-name {
+    font-weight: 600;
+  }
+
+  /* The attached panel's head on the Dock head's line. The panel starts at
+     the title bar's foot with no top edge, the Dock at the chrome's horizon
+     under its 1px edge, so the head comes down by the two. The fold follows
+     the line it sits on. */
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"]) .dt-root {
+    padding-top: calc(var(--chrome-horizon) - var(--header-h) + 1px + 8px);
+  }
+  .editor-shell:not([data-narrow="1"]):not([data-phone="1"]) .dt-collapse {
+    top: calc(var(--chrome-horizon) + 1px + 8px + 12px);
+  }
+}
+
+@layer paint {
+  .landing-beta,
+  .app-beta {
+    border-color: var(--hair);
+    border-radius: var(--r-round);
+    color: var(--ink-3);
+    font-family: var(--f-chrome);
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-case);
+  }
+}

@@ -1,0 +1,574 @@
+<!--
+  Copyright (C) 2026 Perseo Mazzoni
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  Free software under the GNU Affero General Public License, version 3 or
+  later; the full text is in `LICENSE`.
+-->
+<!-- A Go template: every text is put in by `.T`, or by `.Plain` inside an
+     attribute, from the language's file in `internal/adapters/words`. -->
+<!doctype html>
+<html lang="{{.Lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>{{.Plain "page.title"}}</title>
+<link rel="stylesheet" href="admin.css">
+<script type="application/json" id="words">{{.Script}}</script>
+<script src="admin.js" defer></script>
+</head>
+<body>
+<p class="notice" id="error" role="alert" hidden></p>
+
+<!-- The settings: one card per area, each with its status. -->
+<div id="home">
+  <header class="top">
+    <div class="top-row">
+      <p class="eyebrow">{{.T "page.eyebrow"}}</p>
+      <label class="language">{{.T "language.label"}}
+        <select id="language">
+          {{range .Languages}}<option value="{{.Value}}"{{if .Chosen}} selected{{end}}>{{.Label}}</option>{{end}}
+        </select>
+      </label>
+    </div>
+    <h1 data-bind="product"></h1>
+    <div class="callout"><p>{{.T "page.caution"}}</p></div>
+  </header>
+
+  <main class="cards">
+    <section class="card" id="card-google" aria-labelledby="google-title">
+      <div class="card-head">
+        <h2 id="google-title">{{.T "google.title"}}</h2>
+        <span class="chip" id="google-chip"></span>
+      </div>
+      <details class="more card-more">
+        <summary>{{.T "google.manage"}}</summary>
+        <div id="google-unset">
+          <p>{{.T "google.unset"}}</p>
+          <div class="row">
+            <button type="button" class="primary" id="google-setup">{{.T "google.setup"}}</button>
+            <button type="button" class="quiet" id="google-existing">{{.T "google.existing"}}</button>
+          </div>
+        </div>
+        <div id="google-set" hidden>
+          <p id="google-working" hidden>{{.T "google.working"}}</p>
+          <!-- Google's answer to the last check, with the one way forward. -->
+          <div class="verdict" id="card-verdict" data-scope="card-verdict" aria-live="polite" hidden>
+            <p class="verdict-text"></p>
+            <dl class="sheet verdict-rows"></dl>
+            <div class="row">
+              <button type="button" class="primary verdict-redo">{{.T "google.redo"}}</button>
+              <button type="button" class="verdict-again">{{.T "common.checkAgain"}}</button>
+            </div>
+          </div>
+          <div class="row" id="google-change-row" hidden>
+            <button type="button" class="quiet" id="google-people">{{.T "google.people"}}</button>
+            <button type="button" class="quiet" id="google-trial">{{.T "google.trial"}}</button>
+            <button type="button" class="quiet" id="google-change">{{.T "google.change"}}</button>
+          </div>
+          <details class="more">
+            <summary>{{.T "google.addresses"}}</summary>
+            <p class="hint">{{.T "google.addressesHint"}}</p>
+            <dl class="sheet ref redirect-uris"></dl>
+          </details>
+        </div>
+      </details>
+    </section>
+
+    <section class="card" id="card-home" aria-labelledby="home-title">
+      <div class="card-head">
+        <h2 id="home-title">{{.T "home.title"}}</h2>
+        <span class="chip" id="home-chip"></span>
+      </div>
+      <details class="more card-more">
+        <summary>{{.T "home.more"}}</summary>
+        <p>{{.T "home.intro"}}</p>
+
+        <div id="home-unset" hidden>
+          <p>{{.T "home.unset"}}</p>
+          <div class="row"><button type="button" class="primary" id="home-setup">{{.T "home.setup"}}</button></div>
+        </div>
+
+        <div id="home-waiting" hidden>
+          <p>{{.T "home.waiting"}}</p>
+          <div class="row"><button type="button" class="primary" id="home-continue">{{.T "common.continue"}}</button></div>
+        </div>
+
+        <!-- One switch, which remembers where it was left, also after the
+             computer restarts. While it is on, the code phones scan and the
+             address come first. -->
+        <div id="home-linked" hidden>
+          <div class="share" id="lan-running" hidden>
+            <img id="lan-qr" alt="{{.Plain "home.qrAlt"}}" width="200" height="200">
+            <div>
+              <p class="share-title">{{.T "home.shareTitle"}}</p>
+              <ol>
+                <li>{{.T "home.shareWifi"}}</li>
+                <li>{{.T "home.shareScan"}}</li>
+              </ol>
+              <p>{{.T "home.shareType"}}</p>
+              <p class="share-url"><code id="lan-url"></code></p>
+            </div>
+          </div>
+          <p class="ready" id="ready-line">{{.T "home.ready"}} <a id="ready-link" target="_blank" rel="noopener noreferrer"><code id="ready-address"></code></a></p>
+          <!-- Shown while the address ends in a number, which phones need
+               typed, and while the number set can't be used. -->
+          <div class="callout" id="port-note" hidden>
+            <p><strong id="port-note-head"></strong></p>
+            <p id="port-note-body"></p>
+            <div class="row">
+              <button type="button" class="primary" id="port-note-use" hidden></button>
+              <button type="button" id="port-note-choose">{{.T "home.portChoose"}}</button>
+            </div>
+          </div>
+          <!-- The certificate authority's agreement: before the first
+               certificate it takes the switch's place, and its button is the
+               acceptance; while the authority asks again, it shows above the
+               switch. -->
+          <div class="callout" id="lan-terms" hidden>
+            <p id="lan-terms-first">{{.T "terms.first"}}</p>
+            <p id="lan-terms-changed" hidden>{{.T "terms.changed"}} <span id="lan-terms-keeps">{{.T "terms.keeps"}}</span></p>
+            <div class="row">
+              <button type="button" class="primary" id="lan-terms-accept"></button>
+              <button type="button" id="lan-terms-retry" hidden>{{.T "common.tryAgain"}}</button>
+            </div>
+            <p class="result" id="lan-terms-result" aria-live="polite"></p>
+          </div>
+          <div id="lan-switch">
+            <label class="switch"><input type="checkbox" id="lan-on">
+              <span>{{.T "home.switch"}}</span></label>
+            <p class="hint">{{.T "home.switchHint"}}</p>
+          </div>
+          <p class="status" id="lan-status" aria-live="polite"></p>
+          <!-- While turning on: the stage under way, and how far it has
+               come where that is known. -->
+          <div id="lan-progress" hidden>
+            <dl class="sheet stages">
+              <div class="sheet-row" data-stage="publish"><span class="tick-mark"></span>
+                <dd>{{.T "home.stagePublish"}}
+                  <progress id="lan-bar" aria-label="{{.Plain "home.stageBar"}}"></progress>
+                  <span class="hint" id="lan-bar-words"></span></dd></div>
+              <div class="sheet-row" data-stage="check"><span class="tick-mark"></span>
+                <dd>{{.T "home.stageCheck"}}</dd></div>
+            </dl>
+            <p class="hint" id="lan-elapsed"></p>
+          </div>
+        </div>
+
+        <!-- Reference for later, apart from the card's main action. -->
+        <div class="card-foot">
+          <div id="home-linked-more" hidden>
+            <details class="more" id="home-google-uri">
+              <summary>{{.T "phones.title"}}</summary>
+              <p class="hint">{{.T "phones.hint"}}</p>
+              <p><a class="button" href="https://console.cloud.google.com/auth/clients" target="_blank" rel="noopener noreferrer">{{.T "open.clients"}}</a></p>
+              <dl class="sheet ref redirect-home"></dl>
+            </details>
+
+            <details class="more" id="lan-port">
+              <summary>{{.T "port.title"}}</summary>
+              <p>{{.T "port.intro"}}</p>
+              <form id="lan-port-form" autocomplete="off">
+                <label>{{.T "port.label"}}
+                  <select id="lan-port-pick"></select>
+                </label>
+                <label id="lan-port-other-label" hidden>{{.T "port.other"}}
+                  <input id="lan-port-other" type="number" min="1" max="65535">
+                </label>
+                <p class="hint">{{.T "port.hint"}}</p>
+                <div class="row"><button type="submit" class="primary" id="lan-port-use">{{.T "port.use"}}</button></div>
+                <p class="result" id="lan-port-result" aria-live="polite"></p>
+              </form>
+            </details>
+
+            <details class="more" id="lan-settings">
+              <summary>{{.T "trouble.title"}}</summary>
+              <ul class="plain">
+                <li>{{.T "trouble.wifi"}}</li>
+                <li>{{.T "trouble.windows"}}</li>
+                <li>{{.T "trouble.router"}}</li>
+                <li>{{.T "trouble.address"}}</li>
+              </ul>
+              <form id="lan-form" autocomplete="off">
+                <label>{{.T "trouble.connection"}}
+                  <select name="address" id="lan-address"></select>
+                </label>
+                <p class="hint">{{.T "trouble.connectionHint"}}</p>
+                <p class="result" id="lan-form-result" aria-live="polite"></p>
+              </form>
+            </details>
+
+            <details class="more" id="name-settings">
+              <summary>{{.T "unlink.title"}}</summary>
+              <p>{{.T "unlink.body"}}</p>
+              <p id="ready-forgotten" hidden>{{.T "unlink.forgotten"}}</p>
+              <div class="row"><button type="button" id="name-unlink" class="danger">{{.T "unlink.title"}}</button></div>
+            </details>
+          </div>
+          <details class="more">
+            <summary>{{.T "know.title"}}</summary>
+            <ul class="plain">
+              <li>{{.T "know.awake"}}</li>
+              <li>{{.T "know.folders"}}</li>
+              <li>{{.T "know.public"}}</li>
+              <li>{{.T "know.desec"}}</li>
+              <li>{{.T "know.letsencrypt"}}</li>
+            </ul>
+          </details>
+        </div>
+      </details>
+    </section>
+
+    <!-- Settings that need no setup, out of the way. -->
+    <section class="card others" aria-labelledby="others-title">
+      <h2 id="others-title">{{.T "others.title"}}</h2>
+      <div class="line">
+        <div class="line-text">
+          <h3 id="login-title">{{.T "login.title"}}</h3>
+          <p class="hint">{{.T "login.hint"}}</p>
+          <p class="result" id="login-result" aria-live="polite"></p>
+        </div>
+        <label class="switch"><input type="checkbox" id="start-at-login">
+          <span class="visually-hidden">{{.T "login.label"}}</span></label>
+      </div>
+
+      <div class="line">
+        <div class="line-text">
+          <h3 id="browsers-title">{{.T "browsers.title"}}</h3>
+          <p class="hint">{{.T "browsers.hint"}}</p>
+          <p class="result" id="browsers-result" aria-live="polite"></p>
+        </div>
+        <button type="button" id="sign-out-all">{{.T "browsers.button"}}</button>
+      </div>
+
+      <div class="line">
+        <div class="line-text">
+          <h3 id="updates-title">{{.T "updates.title"}}</h3>
+          <p class="hint">{{.T "updates.hint"}}</p>
+          <p class="result" id="updates-result" aria-live="polite"></p>
+        </div>
+        <button type="button" id="check-updates">{{.T "updates.check"}}</button>
+      </div>
+
+      <div class="line">
+        <div class="line-text">
+          <h3 id="stop-title">{{.T "quit.title"}}</h3>
+          <p class="hint">{{.T "quit.hint"}}</p>
+          <p class="result" id="quit-result" aria-live="polite"></p>
+        </div>
+        <button type="button" id="quit" class="danger">{{.T "quit.title"}}</button>
+      </div>
+
+      <div class="line">
+        <div class="line-text">
+          <h3 id="wipe-title">{{.T "wipe.title"}}</h3>
+          <p class="hint">{{.T "wipe.hint"}}</p>
+          <p class="result" id="wipe-result" aria-live="polite"></p>
+        </div>
+        <div class="line-actions">
+          <button type="button" id="wipe-google" class="danger">{{.T "wipe.google"}}</button>
+          <button type="button" id="wipe-everything" class="danger">{{.T "wipe.everything"}}</button>
+        </div>
+      </div>
+    </section>
+
+    <p class="foot hint">{{.T "page.dataDir"}} {{.T .SecretsKey}}</p>
+  </main>
+</div>
+
+<!-- A flow takes the place of the cards, one step at a time. -->
+<div id="flow" hidden>
+  <header class="flow-top">
+    <button type="button" class="quiet back-link" id="flow-close">{{.T "flow.cancel"}}</button>
+    <p class="dots" id="flow-dots" role="img"></p>
+  </header>
+
+  <main class="flow-body">
+    <!-- Google, six steps. -->
+    <article class="step" data-flow="google">
+      <h2 tabindex="-1">{{.T "g1.title"}}</h2>
+      <dl class="sheet" data-scope="g1">
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener noreferrer">{{.T "g1.open"}}</a></dd>
+          <dd class="row-why" hidden>{{.T "g1.openWhy"}}</dd>
+          <dd class="row-done" hidden>{{.T "g1.openDone"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g1.name"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g1.create"}}</dd></div>
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" id="drive-open" href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener noreferrer">{{.T "g1.drive"}}</a></dd></div>
+        <div class="sheet-row wide"><dd>{{.T "common.pickProject"}}</dd>
+          <dd class="row-why" hidden>{{.T "g1.pickWhy"}}</dd></div>
+        <div class="sheet-row wide" data-key="drive"><dd>{{.T "g1.enable"}}</dd>
+          <dd class="row-why" hidden>{{.T "g1.enableWhy"}}</dd>
+          <dd class="row-done" hidden>{{.T "g1.enableDone"}}</dd></div>
+      </dl>
+    </article>
+
+    <article class="step" data-flow="google">
+      <h2 tabindex="-1">{{.T "g2.title"}}</h2>
+      <dl class="sheet" data-scope="g2">
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/auth/overview" target="_blank" rel="noopener noreferrer">{{.T "g2.open"}}</a></dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g2.start"}}</dd>
+          <dd class="row-done" hidden>{{.T "g2.startDone"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g2.name"}}</dd>
+          <dd class="row-why" hidden>{{.T "g2.nameWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g2.support"}}</dd>
+          <dd class="row-why" hidden>{{.T "g2.supportWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g2.audience"}}</dd>
+          <dd class="row-why" hidden>{{.T "g2.audienceWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g2.contact"}}</dd>
+          <dd class="row-why" hidden>{{.T "g2.contactWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g2.agree"}}</dd></div>
+      </dl>
+    </article>
+
+    <article class="step" data-flow="google">
+      <h2 tabindex="-1">{{.T "g3.title"}}</h2>
+      <dl class="sheet" data-scope="g3">
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/auth/scopes" target="_blank" rel="noopener noreferrer">{{.T "g3.open"}}</a></dd>
+          <dd class="row-why" hidden>{{.T "g3.openWhy"}}</dd></div>
+        <div class="sheet-row wide" data-key="scopes"><dd>{{.T "g3.add"}}</dd>
+          <dd class="row-done" hidden>{{.T "g3.addDone"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g3.paste"}}
+          <code class="block">openid
+https://www.googleapis.com/auth/userinfo.email
+https://www.googleapis.com/auth/userinfo.profile
+https://www.googleapis.com/auth/drive.file
+https://www.googleapis.com/auth/drive.appdata</code></dd>
+          <dd class="row-why" hidden>{{.T "g3.pasteWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g3.table"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "g3.save"}}</dd></div>
+      </dl>
+    </article>
+
+    <article class="step" data-flow="google">
+      <h2 tabindex="-1">{{.T "g4.title"}}</h2>
+      <dl class="sheet" data-scope="g4">
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/auth/audience" target="_blank" rel="noopener noreferrer">{{.T "open.audience"}}</a></dd>
+          <dd class="row-why" hidden>{{.T "g4.openWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "common.addUsers"}}</dd></div>
+        <div class="sheet-row wide" data-key="people"><dd>{{.T "g4.people"}}</dd>
+          <dd class="row-why" hidden>{{.T "g4.peopleWhy"}}</dd>
+          <dd class="row-done" hidden>{{.T "g4.peopleDone"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "common.save"}}</dd></div>
+      </dl>
+    </article>
+
+    <!-- The fifth step ends with giving the client: the file is saved and
+         checked as soon as it is dropped. -->
+    <article class="step" data-flow="google" data-next="none">
+      <h2 tabindex="-1">{{.T "g5.title"}}</h2>
+      <!-- Shown when the setup reuses a Google project made before. -->
+      <p class="lead-in" id="existing-lead" hidden>{{.T "g5.existing"}}</p>
+      <div data-scope="g5">
+        <dl class="sheet">
+          <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/auth/clients" target="_blank" rel="noopener noreferrer">{{.T "open.clients"}}</a></dd>
+            <dd class="row-why" hidden>{{.T "g5.openWhy"}}</dd></div>
+          <div class="sheet-row wide"><dd>{{.T "g5.create"}}</dd>
+            <dd class="row-done" hidden>{{.T "g5.createDone"}}</dd></div>
+          <div class="sheet-row wide"><dd>{{.T "g5.type"}}</dd></div>
+          <div class="sheet-row wide"><dd>{{.T "g5.name"}}</dd></div>
+          <div class="sheet-row wide"><dd>{{.T "g5.origins"}}</dd></div>
+        </dl>
+        <dl class="sheet redirect-rows"></dl>
+        <dl class="sheet">
+          <div class="sheet-row wide" data-key="download"><dd>{{.T "g5.download"}}</dd>
+            <dd class="row-done" hidden>{{.T "g5.downloadDone"}}</dd></div>
+        </dl>
+      </div>
+
+      <h3>{{.T "g5.give"}}</h3>
+
+      <div id="client-file">
+        <label class="drop" id="google-drop">
+          <input type="file" id="google-file" accept=".json,application/json">
+          <span class="drop-title">{{.T "g5.drop"}}</span>
+          <span class="hint">{{.T "g5.dropHint"}}</span>
+        </label>
+        <p class="result" id="google-file-result" aria-live="polite"></p>
+        <p class="switch-path"><button type="button" class="quiet" id="paste-instead">{{.T "g5.pasteInstead"}}</button></p>
+      </div>
+
+      <form id="client-paste" autocomplete="off" hidden>
+        <p class="result" id="paste-result" aria-live="polite"></p>
+        <label>{{.T "g5.clientId"}}
+          <input name="clientId" type="text" spellcheck="false" placeholder="1234-abc.apps.googleusercontent.com">
+        </label>
+        <label>{{.T "g5.clientSecret"}}
+          <input name="clientSecret" type="password" spellcheck="false">
+        </label>
+        <p class="hint" id="lost-secret" hidden>{{.T "g5.lostSecret"}}</p>
+        <div class="row"><button type="submit" class="primary" id="paste-save">{{.T "g5.save"}}</button></div>
+        <p class="switch-path"><button type="button" class="quiet" id="file-instead">{{.T "g5.fileInstead"}}</button></p>
+      </form>
+
+      <!-- What became of the client: received, then Google's answer. -->
+      <div id="client-received" hidden>
+        <p class="done-line"><span class="tick" aria-hidden="true">✓</span> <span id="received-text"></span></p>
+        <p class="status" id="received-progress" aria-live="polite"></p>
+        <div class="verdict" id="step-verdict" data-scope="step-verdict" aria-live="polite" hidden>
+          <p class="verdict-text"></p>
+          <dl class="sheet verdict-rows"></dl>
+          <div class="row">
+            <button type="button" class="primary verdict-again">{{.T "common.checkAgain"}}</button>
+            <button type="button" class="primary verdict-redo">{{.T "g5.redo"}}</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="google-done" class="done" hidden>
+        <p class="status is-ok">{{.T "g5.done"}}</p>
+        <div class="row"><button type="button" class="primary" id="google-try">{{.T "common.continue"}}</button></div>
+      </div>
+    </article>
+
+    <!-- The trial signs in once, as everyone at home will, and reports what
+         Google allowed. Its window closes itself and the answer shows here. -->
+    <article class="step" data-flow="google" data-next="none">
+      <h2 tabindex="-1">{{.T "g6.title"}}</h2>
+      <div data-scope="g6">
+        <dl class="sheet">
+          <div class="sheet-row wide open-row"><dd><button type="button" class="primary open-page" id="trial-start">{{.T "g6.start"}}</button></dd>
+            <dd class="row-why" hidden>{{.T "g6.startWhy"}}</dd></div>
+          <div class="sheet-row wide no-tick"><dd>{{.T "g6.unverified"}}</dd>
+            <dd class="row-why" hidden>{{.T "g6.unverifiedWhy"}}</dd></div>
+          <div class="sheet-row wide no-tick"><dd>{{.T "g6.tick"}}</dd></div>
+        </dl>
+      </div>
+      <p class="status" id="trial-progress" aria-live="polite"></p>
+      <div class="verdict" id="trial-verdict" data-scope="trial-verdict" aria-live="polite" hidden>
+        <p class="verdict-text"></p>
+        <dl class="sheet verdict-rows"></dl>
+        <div class="row">
+          <button type="button" class="primary trial-fix"></button>
+          <button type="button" class="trial-again">{{.T "common.tryAgain"}}</button>
+        </div>
+      </div>
+      <div id="trial-done" class="done" hidden>
+        <p class="status is-ok" id="trial-done-text"></p>
+        <div class="row">
+          <a class="button primary" id="google-open" href="/app">{{.T "g6.open"}}</a>
+          <button type="button" id="google-finish">{{.T "g6.back"}}</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Adding people later, one step. -->
+    <article class="step" data-flow="people" data-next="{{.Plain "flow.done"}}">
+      <h2 tabindex="-1">{{.T "people.title"}}</h2>
+      <dl class="sheet" data-scope="p1">
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/auth/audience" target="_blank" rel="noopener noreferrer">{{.T "open.audience"}}</a></dd>
+          <dd class="row-why" hidden>{{.T "people.openWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "common.pickProject"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "common.addUsers"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "people.add"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "common.save"}}</dd></div>
+      </dl>
+    </article>
+
+    <!-- Phones and tablets, three steps. -->
+    <article class="step" data-flow="home">
+      <h2 tabindex="-1">{{.T "h1.title"}}</h2>
+      <form id="name-form" autocomplete="off" novalidate>
+        <label>{{.T "h1.email"}}
+          <input name="email" type="email" spellcheck="false" placeholder="{{.Plain "h1.emailExample"}}">
+        </label>
+        <p class="hint">{{.T "h1.emailHint"}}</p>
+        <p class="result" id="name-email-result" aria-live="polite"></p>
+        <label>{{.T "h1.name"}}
+          <span class="suffixed"><input name="name" type="text" spellcheck="false" data-hint="name"><span>.dedyn.io</span></span>
+        </label>
+        <p class="hint">{{.T "h1.nameHint"}}</p>
+        <p class="result" id="name-name-result" aria-live="polite"></p>
+      </form>
+      <p class="switch-path"><button type="button" class="quiet" id="use-existing">{{.T "h1.useExisting"}}</button></p>
+    </article>
+
+    <!-- The same first step, for a name someone already has at deSEC. -->
+    <article class="step" data-flow="home-existing" data-next="none">
+      <h2 tabindex="-1">{{.T "hx.title"}}</h2>
+      <dl class="sheet" data-scope="h1-existing">
+        <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://desec.io/tokens" target="_blank" rel="noopener noreferrer">{{.T "hx.open"}}</a></dd>
+          <dd class="row-why" hidden>{{.T "hx.openWhy"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "hx.plus"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "hx.nameIt"}}</dd></div>
+        <div class="sheet-row wide"><dd>{{.T "hx.copy"}}</dd></div>
+      </dl>
+      <form id="link-form" autocomplete="off" novalidate>
+        <label>{{.T "hx.name"}}
+          <span class="suffixed"><input name="name" type="text" spellcheck="false" data-hint="name"><span>.dedyn.io</span></span>
+        </label>
+        <label>{{.T "hx.token"}}
+          <input name="token" type="password" spellcheck="false">
+        </label>
+        <p class="result" id="link-result" aria-live="polite"></p>
+        <div class="row"><button type="submit" class="primary" id="link-save">{{.T "hx.save"}}</button></div>
+      </form>
+      <p class="switch-path"><button type="button" class="quiet" id="use-new">{{.T "hx.useNew"}}</button></p>
+    </article>
+
+    <article class="step" data-flow="home" data-next="{{.Plain "h2.next"}}">
+      <h2 tabindex="-1">{{.T "h2.title"}}</h2>
+      <dl class="sheet" data-scope="h2">
+        <div class="sheet-row wide no-tick"><dd>{{.T "h2.password"}} <code id="name-password"></code></dd>
+          <dd class="row-why" hidden>{{.T "h2.passwordWhy"}}</dd></div>
+        <div class="sheet-row wide" id="saved-row"><dd>{{.T "h2.saved"}}</dd></div>
+        <div class="sheet-row wide" id="limits-row" data-done="{{.Plain "h2.limitsYes"}}"><dd>{{.T "h2.limits"}}</dd></div>
+      </dl>
+      <p class="hint">{{.T "h2.accept"}}</p>
+      <p class="result" id="name-result" aria-live="polite"></p>
+    </article>
+
+    <!-- Waits for the link in deSEC's email, then says the name is
+         confirmed and waits for Continue. -->
+    <article class="step" data-flow="home" data-next="none" data-back="none">
+      <h2 tabindex="-1">{{.T "h3.title"}}</h2>
+      <div id="waiting-on">
+        <p class="lead-in">{{.T "h3.lead"}}</p>
+        <ol class="plain-steps">
+          <li>{{.T "h3.open"}}</li>
+          <li>{{.T "h3.link"}}</li>
+          <li>{{.T "h3.completed"}}</li>
+        </ol>
+        <p class="status" id="waiting-status" aria-live="polite"></p>
+        <div id="waiting-slow" hidden>
+          <p>{{.T "h3.slow"}}</p>
+          <div class="row"><button type="button" class="primary" id="waiting-existing">{{.T "h3.useMine"}}</button></div>
+        </div>
+        <div class="row"><button type="button" id="name-restart">{{.T "h3.restart"}}</button></div>
+      </div>
+      <div id="name-done" class="done" hidden>
+        <p class="status is-ok">{{.T "h3.done"}}</p>
+      </div>
+    </article>
+
+    <article class="step" data-flow="home" data-next="{{.Plain "flow.done"}}" data-back="none">
+      <h2 tabindex="-1">{{.T "phones.title"}}</h2>
+      <div class="callout" id="flow-port-note" hidden>
+        <p><strong class="port-head"></strong></p>
+        <p class="port-body"></p>
+        <p>{{.T "h4.portChoose"}}</p>
+      </div>
+      <div data-scope="h4">
+        <dl class="sheet">
+          <div class="sheet-row wide open-row"><dd><a class="button primary open-page" href="https://console.cloud.google.com/auth/clients" target="_blank" rel="noopener noreferrer">{{.T "open.clients"}}</a></dd>
+            <dd class="row-why" hidden>{{.T "h4.openWhy"}}</dd></div>
+          <div class="sheet-row wide"><dd>{{.T "h4.client"}}</dd></div>
+        </dl>
+        <dl class="sheet redirect-rows" data-for="home"></dl>
+        <dl class="sheet">
+          <div class="sheet-row wide"><dd>{{.T "common.saveWait"}}</dd></div>
+        </dl>
+      </div>
+    </article>
+  </main>
+
+  <footer class="flow-foot">
+    <button type="button" id="flow-back">{{.T "flow.back"}}</button>
+    <button type="button" id="flow-next">{{.T "common.continue"}}</button>
+  </footer>
+</div>
+
+<!-- The copy button's icons. -->
+<template id="icon-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 9h10v10H9z"/><path d="M5 15V5h10"/></svg></template>
+<template id="icon-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg></template>
+</body>
+</html>

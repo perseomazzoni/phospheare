@@ -1,0 +1,9 @@
+{
+  "name": "@phospheare/changelog-tools",
+  "private": true,
+  "description": "git-cliff, which the release workflow runs to write the notes, pinned here so that Dependabot updates it. Not a workspace: the app's install never pulls it.",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "git-cliff": "2.14.2"
+  }
+}
