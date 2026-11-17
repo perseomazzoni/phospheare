@@ -56,6 +56,8 @@ import {
 } from "./domain/cards";
 import { outcomeForAccess, outcomeForError } from "./domain/readOutcome";
 import type { SyncMarks } from "./syncMarks";
+import { appLog, describeError } from "../../../log";
+import { refForLog } from "../../../project/logRef";
 
 // The shelf's cards: derived from the library mirror and live reads.
 //
@@ -80,6 +82,9 @@ import type { SyncMarks } from "./syncMarks";
 // two files each on top of the listing, a burst the API may throttle.
 
 const CONCURRENCY = 4;
+
+/** Cards whose failed read is already in the log this session. */
+const unreadableLogged = new Set<string>();
 
 /** How far a sweep has got: listing the root, then reading each candidate. */
 export type SweepProgress =
@@ -354,7 +359,20 @@ export class Shelf {
         problem: null,
       };
     } catch (err) {
-      return outcomeForError(err, remembered, this.inputs.describe);
+      const outcome = outcomeForError(err, remembered, this.inputs.describe);
+      // A lapsed grant or a folder gone is the card's state, not a failure.
+      // A card is read on every shelf load, so once a session per card.
+      if (
+        outcome.state === "unreadable" &&
+        !unreadableLogged.has(refIdentity(ref))
+      ) {
+        unreadableLogged.add(refIdentity(ref));
+        appLog.warn("library", "A project's card could not be read.", {
+          ...refForLog(ref),
+          ...describeError(err),
+        });
+      }
+      return outcome;
     }
   }
 
@@ -409,9 +427,13 @@ export class Shelf {
     if (!conn) return;
 
     this.setCards((cards) => updateCard(cards, ref, { state: "loading" }));
-    const outcome = await conn
-      .reconnect(ref)
-      .catch(() => "unavailable" as const);
+    const outcome = await conn.reconnect(ref).catch((err: unknown) => {
+      appLog.warn("library", "A storage could not be reconnected.", {
+        provider: ref.providerId,
+        ...describeError(err),
+      });
+      return "unavailable" as const;
+    });
     if (outcome !== "granted") {
       const remembered = libraryCard(libraryRows(this.userId), ref);
       this.setCards((cards) =>
@@ -685,7 +707,12 @@ export class Shelf {
     }
 
     watch?.step({ phase: "listing" });
-    const scanned = await listLocalProjects().catch(() => []);
+    const scanned = await listLocalProjects().catch((err: unknown) => {
+      appLog.warn("library", "The Local Storage folder could not be listed.", {
+        ...describeError(err),
+      });
+      return [];
+    });
     return this.sweepCandidates(scanned, watch);
   };
 }

@@ -1150,6 +1150,22 @@ input.import-row-title:hover {
   color: var(--ink);
 }
 
+/* The account id and the log: quiet, in the mono voice of a result. */
+.setting-id,
+.log-count {
+  color: var(--ink-3);
+}
+.setting-id code,
+.log-lines {
+  font-family: var(--f-mono);
+}
+.log-lines {
+  border-color: var(--hair-soft);
+  border-radius: var(--r-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+}
+
 .setting-note {
   color: var(--ink-3);
 }

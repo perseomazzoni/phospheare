@@ -6,6 +6,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { pairingFor } from "../../../project/sync/pairing";
+import { refForLog } from "../../../project/logRef";
 import type { ProjectRef } from "../../../storage";
 import { libraryIdForRef } from "../../../profile/library";
 import { libraryRows } from "../../../profile/profileSync";
@@ -14,10 +15,12 @@ import type { ActionFailure } from "./useActionError";
 import {
   actionFailure,
   trashOnRemote,
+  type LibraryAction,
   type LibraryCardsApi,
   type ShelfToasts,
   type ShelfUser,
 } from "./shelfActions";
+import { appLog } from "../../../log";
 
 export interface DeleteProjectInput extends Pick<
   LibraryCardsApi,
@@ -74,6 +77,8 @@ export function useDeleteProject({
       setPending(null);
       clearFailure();
       const title = card.content?.title ?? card.ref.name;
+      const about = refForLog(card.ref);
+      const began = Date.now();
       try {
         if (card.id && synced.has(card.id)) {
           const remote = await pairingFor(card.id);
@@ -91,9 +96,14 @@ export function useDeleteProject({
           await trashOnRemote(card.ref);
           drop(card.ref);
         }
+        appLog.info("library", "A Library action succeeded.", {
+          action: "delete" satisfies LibraryAction,
+          ...about,
+          ms: Date.now() - began,
+        });
         post(t("library.deleted", { title }));
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "delete"));
       }
     },
     [drop, revalidate, synced, unpair, post, t, clearFailure, fail],
@@ -114,7 +124,16 @@ export function useDeleteProject({
 
       // Reversible, so it happens now and offers Undo. A confirmation here
       // would teach writers to click through.
+      //
+      // The uuid is read before `forget` removes the row that holds it.
+      // "remove" is not a `LibraryAction`, which names the actions that can
+      // fail.
+      const about = refForLog(ref);
       const restore = forget(ref);
+      appLog.info("library", "A Library action succeeded.", {
+        action: "remove",
+        ...about,
+      });
       post(t("library.removed", { title: ref.name }), restore);
     },
     [user, forget, synced, unpair, post, t],

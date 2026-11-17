@@ -910,6 +910,34 @@ describe("the margin across a chapter switch and a refused write", () => {
     expect(typed()).toBe("Which gate?");
   });
 
+  it("says a change was not saved until the next one is", async () => {
+    let refuse = true;
+    const saved: string[] = [];
+    const { engine, show, ui } = await twoChapters(
+      { A: file() },
+      {
+        async write(_nodeId, text) {
+          if (refuse) throw new Error("offline");
+          saved.push(text);
+        },
+      },
+    );
+    engine.open(TEXT);
+    show(TEXT);
+    render(ui("A"));
+    fireEvent.click(button("comments.onChapter"));
+    const box = () => document.querySelector("textarea") as HTMLTextAreaElement;
+    fireEvent.change(box(), { target: { value: "The middle sags." } });
+    fireEvent.click(button("comments.add"));
+    await waitFor(() =>
+      expect(screen.getByRole("alert").textContent).toBe("comments.notSaved"),
+    );
+    refuse = false;
+    fireEvent.click(button("comments.add"));
+    await waitFor(() => expect(saved).toHaveLength(1));
+    await waitFor(() => expect(screen.queryByRole("alert")).toBeNull());
+  });
+
   it("keeps a reply the file refused, open and as typed", async () => {
     const { engine, show, ui } = await twoChapters(
       { A: file(thread("mine")) },

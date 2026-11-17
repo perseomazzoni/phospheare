@@ -89,6 +89,17 @@ export type SessionNotification = "doc" | "selection" | "saved" | "history";
 /** Why the session declined an input, for the surface to say. */
 export type SessionRefusal = "pasteTooLong";
 
+/**
+ * A comparison that could not render at the grain asked for: shown at
+ * paragraph grain instead, or not at all, which reads as "no changes". The
+ * error is named by its kind only; its message can quote the text.
+ */
+export interface DiffFallback {
+  grain: DiffGranularity;
+  shown: "paragraph" | "none";
+  error: string;
+}
+
 /** Which side of the snapshot comparison reads as the spine; `diffSides()`
  * maps the roles onto the engine's left and right. */
 export type DiffDirection =
@@ -123,6 +134,8 @@ export type SessionEvents = {
    * so a view that only redraws would show nothing.
    */
   refused: [SessionRefusal];
+  /** A comparison fell back (`DiffFallback`). The view hears it for the log. */
+  diffFallback: [DiffFallback];
 };
 
 /** The session's dependencies: ports, never adapters. */
@@ -272,6 +285,11 @@ export class Session {
   /** Hears every input the session declines, apart from the redraw events. */
   onRefused(listener: (why: SessionRefusal) => void): () => void {
     return this.events.on("refused", listener);
+  }
+
+  /** Hears each comparison that could not render at its grain. */
+  onDiffFallback(listener: (fallback: DiffFallback) => void): () => void {
+    return this.events.on("diffFallback", listener);
   }
 
   private notify(reason: SessionNotification): void {
@@ -592,14 +610,18 @@ export class Session {
     const grain = this.diffKind === "snapshot" ? this._diffGrain : "word";
     const sides = this.comparisonSides();
     if (!sides) return;
+    let failure: unknown;
+    const named = (err: unknown) =>
+      err instanceof Error ? err.name : typeof err;
     try {
       const merged = buildMergedDoc(sides.leftSide, sides.rightSide, grain);
       this._displayedDoc = merged.doc;
       this._diffDecorations = merged.decorations;
       this._diffHunks = merged.hunks;
       return;
-    } catch {
+    } catch (err) {
       // Fall through to the paragraph-grain retry below.
+      failure = err;
     }
     // Retry once at paragraph grain, which has no token-level LCS. Without
     // the retry, a throw at a finer grain would empty the hunks, which the
@@ -614,9 +636,15 @@ export class Session {
         this._displayedDoc = merged.doc;
         this._diffDecorations = merged.decorations;
         this._diffHunks = merged.hunks;
+        this.events.emit("diffFallback", {
+          grain,
+          shown: "paragraph",
+          error: named(failure),
+        });
         return;
-      } catch {
+      } catch (err) {
         // Falls through to the empty comparison below.
+        failure = err;
       }
     }
     // A comparison that cannot render at any grain never crashes the session:
@@ -624,6 +652,11 @@ export class Session {
     this._displayedDoc = null;
     this._diffDecorations = [];
     this._diffHunks = [];
+    this.events.emit("diffFallback", {
+      grain,
+      shown: "none",
+      error: named(failure),
+    });
   }
 
   /** The current comparison's doc pair, or null when none exists. On a null

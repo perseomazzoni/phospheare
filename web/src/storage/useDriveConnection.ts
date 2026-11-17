@@ -20,6 +20,7 @@ import type {
 } from "./connections";
 import { driveProvider } from "./driveProvider";
 import type { ProjectRef } from "./types";
+import { appLog, describeError } from "../log";
 
 // The Remote Storage connection of the open writer. A writer connects Remote
 // Storage only after signing in with Google, and only with that same account:
@@ -88,6 +89,9 @@ export async function dropDriveConnection(): Promise<void> {
   updateWriter(id, (w) => ({ ...w, drive: null, remoteCopiesKept: true }));
   forgetDriveToken();
   resetDriveGrant();
+  appLog.info("drive", "Remote Storage was disconnected in this browser.", {
+    outcome: "dropped",
+  });
 }
 
 export function useDriveConnection(): ProviderConnection {
@@ -124,9 +128,18 @@ export function useDriveConnection(): ProviderConnection {
       }));
       forgetDriveToken();
       noteDriveAccepted();
+      appLog.info("drive", "Remote Storage was connected.", {
+        outcome: "connected",
+      });
       await refresh();
       return true;
     } catch (err) {
+      // A closed Google window is the writer's choice, not a failure.
+      if (!isPlatformError(err, "flow-cancelled"))
+        appLog.warn("drive", "Remote Storage could not be connected.", {
+          ...(isPlatformError(err) ? { code: err.code } : {}),
+          ...describeError(err),
+        });
       if (isPlatformError(err, "account-mismatch"))
         setError(
           t("library.driveAccountMismatch", { loginEmail: google.email }),
@@ -165,6 +178,11 @@ export function useDriveConnection(): ProviderConnection {
         return;
       }
       const confirmed = await revokeDriveGrant();
+      // The browser-only branch above is logged by `dropDriveConnection`.
+      appLog.info("drive", "Remote Storage was disconnected.", {
+        outcome: confirmed ? "revoked" : "revoke-pending",
+        keptCopies: options.keptCopies,
+      });
       const id = getCurrentUserId();
       if (id && findWriter(id))
         updateWriter(id, (w) => ({

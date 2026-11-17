@@ -45,6 +45,7 @@ import {
   structuredAnswer,
   type StructuredAnswerShape,
 } from "./structuredAnswer";
+import { appLog, describeError } from "../../log";
 
 export const ENTITY_INSTRUCTIONS = `You are shown a numbered list of names, each with what it is (a place or a thing). They are every name a note-taker used for the places and things of one novel, each passage noted on its own, so one thing may be named in several ways: with more or fewer words, by its owner, or in another language ("the old revolver", "Hale's gun", "la pistola").
 
@@ -339,7 +340,12 @@ async function ask(
     ),
     [question.part]: { asked: lines, model, groups },
   } as EntityGroups;
-  await deps.artifacts.writeEntities(next).catch(() => undefined);
+  await deps.artifacts.writeEntities(next).catch((err) =>
+    appLog.warn("ai", "An AI cache file could not be written.", {
+      artifact: "entities",
+      ...describeError(err),
+    }),
+  );
   return { grouped: aliasesOf(groups, counts), usage };
 }
 

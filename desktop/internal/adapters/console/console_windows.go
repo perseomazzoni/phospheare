@@ -11,9 +11,6 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// toFile is set: the program is linked without a console (`-H windowsgui`).
-const toFile = true
-
 // usable reports whether f reaches somewhere: a console, a pipe or a file.
 // Started from Explorer, the program has no standard handles at all.
 func usable(f *os.File) bool {

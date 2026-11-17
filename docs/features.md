@@ -9,7 +9,8 @@ which the app calls Remote Storage.
 - **On your computer.** `once-dark-studio-desktop`, one program for Windows,
   macOS and Linux, serves the app on `http://localhost:47821` and opens the
   default browser. Its setup page at `/desktop/setup/` holds the Google
-  client, home-network access, start at login and the update check.
+  client, home-network access, start at login, the log and the update
+  check.
 - **Phones and tablets at home**, optionally, over HTTPS at a free
   `dedyn.io` name ([home-network.md](home-network.md)).
 - **Without the identity service**, as under the Vite dev server, the app
@@ -201,8 +202,9 @@ where each kind of data goes.
 - **Sign out.** Sign out writes the open text, then asks one question, the
   same for both kinds of account: *Leave everything as it is* for the next
   sign-in, or *Clean everything from this browser*. A clean removes the shelf
-  and settings copy, folder access, the working copy, a kept key and this
-  browser's Remote Storage connection, without revoking it elsewhere. While
+  and settings copy, folder access, the working copy, a kept key, the log
+  and this browser's Remote Storage connection, without revoking it
+  elsewhere. While
   changes are still waiting for Remote Storage, the sign-out says how many
   files they are in. Every tab of a browser profile follows a sign-out made in
   another, and writes its open text first.
@@ -224,6 +226,13 @@ where each kind of data goes.
   linked from the landing and Settings; nothing asks to accept them.
 - **Not offered.** There is no list of signed-in devices with remote sign-out:
   a session exists only on its device.
+- **The log.** *Show the log* in About opens the lines that this browser kept
+  in the last 14 days, with a search, a filter by level and area, and
+  *Download the log*. Who you are shows the writer account id, small, for a
+  problem report. The desktop program's setup page opens its log files and
+  keeps a detailed log for 24 hours. Nothing sends a log; the
+  [README](../README.md#send-the-log-with-a-bug-report) says how a person
+  sends one.
 - A settings sheet with six panes: How it looks, Where words live, How you
   write, Set up your AI, Who you are and About. The About pane states the
   licence.

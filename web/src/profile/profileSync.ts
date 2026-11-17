@@ -16,6 +16,7 @@ import {
   type RemoteProfile,
 } from "./profileStore";
 import type { DocumentProperties, DocumentStructure } from "../project/types";
+import { appLog } from "../log";
 
 // The app's entry point to the account's profile: the writer's preferences
 // (theme, language, the AI models, library view state, the global Editor
@@ -66,12 +67,56 @@ export function getPref<T>(key: string, fallback: T): T {
   return entry ? (entry.value as T) : fallback;
 }
 
+/**
+ * The preferences whose value may go in the log beside the key: each holds
+ * a theme, a language, an option of a fixed list, a switch or a number, and
+ * never text a writer typed. A key not listed is logged by name alone, so a
+ * new preference stays out until it is read and added here.
+ */
+const LOGGED_VALUES: ReadonlySet<string> = new Set([
+  "theme",
+  "language",
+  "filter",
+  "density",
+  "proseSize",
+  "typewriter",
+  "focus",
+  "smoothCaret",
+  "autosave",
+  "autosaveDelay",
+  "henosis",
+  "henosisAfter",
+  "henosisFade",
+  "henosisPause",
+]);
+
+/** The value a preference shows in the log, or `undefined` for none. */
+function loggedValue(
+  key: string,
+  value: unknown,
+): string | number | boolean | undefined {
+  if (!LOGGED_VALUES.has(key)) return undefined;
+  return typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+    ? value
+    : undefined;
+}
+
 export function setPref<T>(key: string, value: T): void {
   const userId = getCurrentUserId();
   if (!userId) return; // no per-user store to write to
+  const before = profileDoc(userId).prefs[key];
   const updatedAt = new Date().toISOString();
   editProfile(userId, (doc) => applyPref(doc, key, { value, updatedAt }));
   changed(userId);
+  // A write that keeps the value, such as a choice made again, changes
+  // nothing the writer sees.
+  if (before && JSON.stringify(before.value) === JSON.stringify(value)) return;
+  appLog.info("profile", "A preference changed.", {
+    key,
+    value: loggedValue(key, value),
+  });
 }
 
 /** The library's live rows; the same array until the profile changes. */

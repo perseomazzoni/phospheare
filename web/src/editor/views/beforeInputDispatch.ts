@@ -8,9 +8,10 @@
 // `text/html` and `text/plain` flavors that the `insertFromPaste` event's
 // `dataTransfer` does not carry.
 //
-// An input family with no case is dropped silently, so the default warns in
-// development. A non-cancelable unhandled `inputType` in production has no
-// other signal: `EditorCore`'s `preventDefault` is inert on it.
+// An input family with no case is dropped silently, so the default reports
+// it to `onUnhandled`, which the host turns into a log line: a non-cancelable
+// unhandled `inputType` has no other signal, since `EditorCore`'s
+// `preventDefault` is inert on it.
 
 import type { EditorEngine } from "./engine";
 import { domPointToLogical } from "./writing/dom";
@@ -62,6 +63,7 @@ export function dispatchBeforeInput(
   e: InputEvent,
   flags: BeforeInputFlags,
   revealCaretIfHidden: (el: HTMLElement) => void,
+  onUnhandled?: (inputType: string, cancelable: boolean) => void,
 ): void {
   if (!flags.composing.current) revealCaretIfHidden(el);
 
@@ -149,12 +151,16 @@ export function dispatchBeforeInput(
     // Do not handle `insertFromDrop`: it would carry arbitrary HTML from any
     // page or app past `parseHtmlAllowlist`, the one hardened HTML-to-model
     // boundary. It is cancelable, so the core's `preventDefault` stops it.
+    // A drag's other half goes with it, and paste and cut belong to
+    // `clipboardDispatch.ts`: all left on purpose, so none is logged.
+    case "insertFromDrop":
+    case "deleteByDrag":
+    case "insertFromPaste":
+    case "insertFromPasteAsQuotation":
+    case "deleteByCut":
+      break;
     default:
-      if (import.meta.env.DEV) {
-        console.warn(
-          `beforeInputDispatch: unhandled inputType "${e.inputType}" fell through to the default (cancelable=${e.cancelable})`,
-        );
-      }
+      onUnhandled?.(e.inputType, e.cancelable);
       break;
   }
 }

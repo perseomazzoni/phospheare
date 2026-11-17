@@ -13,6 +13,8 @@ import type { MetadataLanes } from "./application/metadataLanes";
 import type { StatsKeeper } from "./application/statsKeeper";
 import type { MetadataStore } from "./application/stores";
 import { useBufferJournal } from "./useBufferJournal";
+import { appLog, describeError } from "../../log";
+import { refForLog } from "../../project/logRef";
 
 /**
  * The engine's buffer and the file it came from: every read and write of
@@ -84,6 +86,9 @@ export function useBuffer({
   // read in parallel, and a slow read must not replace the file asked for
   // after it, or bring a file back after the writer left it.
   const requestRef = useRef(0);
+  // Autosave writes on a debounce while the writer types, so the log keeps
+  // only the first save after each Section opens.
+  const firstSaveLogged = useRef(false);
 
   /**
    * Opens `content` as the buffer's file, with its timeline, and names it
@@ -107,7 +112,10 @@ export function useBuffer({
         opts,
         wanted,
       );
-      if (opened) setActiveFile(fileName);
+      if (opened) {
+        firstSaveLogged.current = false;
+        setActiveFile(fileName);
+      }
       return opened;
     },
     [hydrateOpen],
@@ -146,6 +154,10 @@ export function useBuffer({
         );
         if (opened) setError(null);
       } catch (err) {
+        appLog.warn("editor", "A Section could not be opened.", {
+          ...refForLog(target),
+          ...describeError(err),
+        });
         if (latest()) setError(message(err));
       }
     },
@@ -173,7 +185,16 @@ export function useBuffer({
     if (!target || !file) return false;
     try {
       const text = engine.save();
+      const started = Date.now();
       await provider.writeFile(target, filePath(file), text);
+      if (!firstSaveLogged.current) {
+        firstSaveLogged.current = true;
+        appLog.info("editor", "A Section was saved.", {
+          ...refForLog(target),
+          bytes: new TextEncoder().encode(text).length,
+          ms: Date.now() - started,
+        });
+      }
       // Only now is the buffer written: a failed write leaves the dirty flag
       // set, or a later navigation would discard the unsaved text as safe.
       engine.markSaved(text);
@@ -194,6 +215,10 @@ export function useBuffer({
       setLastSave({ ok: true, at: Date.now(), error: null });
       return true;
     } catch (err) {
+      appLog.error("editor", "A Section could not be saved.", {
+        ...refForLog(target),
+        ...describeError(err),
+      });
       const reason = message(err);
       setError(reason);
       setLastSave({ ok: false, at: Date.now(), error: reason });

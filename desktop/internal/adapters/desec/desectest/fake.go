@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -59,9 +60,35 @@ type Fake struct {
 
 // New starts a fake. Its URL is the API base, as desec.API is.
 func New() *Fake {
-	f := &Fake{accounts: map[string]*account{}, tokens: map[string]*token{}, records: map[string][]string{}}
-	f.Server = httptest.NewServer(http.HandlerFunc(f.serve))
+	f := NewUnstarted()
+	f.Start()
 	return f
+}
+
+// NewUnstarted makes a fake that is not started yet. Its caller can set the
+// server's Listener and then call Start, or serve Config.Handler itself.
+func NewUnstarted() *Fake {
+	f := &Fake{accounts: map[string]*account{}, tokens: map[string]*token{}, records: map[string][]string{}}
+	f.Server = httptest.NewUnstartedServer(http.HandlerFunc(f.serve))
+	return f
+}
+
+// Account is an account as Accounts lists it.
+type Account struct {
+	Email, Domain string
+	Active        bool
+}
+
+// Accounts answers every account, sorted by email.
+func (f *Fake) Accounts() []Account {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	out := make([]Account, 0, len(f.accounts))
+	for email, a := range f.accounts {
+		out = append(out, Account{Email: email, Domain: a.domain, Active: a.active})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Email < out[j].Email })
+	return out
 }
 
 // Activate acts as the person using the activation link.

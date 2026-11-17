@@ -6,6 +6,7 @@
 package identityproc
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,6 +16,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -156,6 +158,40 @@ func TestSupervisorRunsTheServiceAndStopsIt(t *testing.T) {
 	}
 	if err := s.Restart(); err != nil || s.Target() != nil {
 		t.Fatalf("a stopped supervisor started again: %v", err)
+	}
+}
+
+// lockedBuffer takes the child's output, which a copying goroutine writes.
+type lockedBuffer struct {
+	mu  sync.Mutex
+	buf bytes.Buffer
+}
+
+func (b *lockedBuffer) Write(p []byte) (int, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.Write(p)
+}
+
+func (b *lockedBuffer) String() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.String()
+}
+
+func TestTheServiceLogsJSONAtTheLevelAsked(t *testing.T) {
+	var out lockedBuffer
+	s := newSupervisor(t, configured)
+	s.Output = &out
+	s.LogLevel = func() string { return "debug" }
+	if err := s.Restart(); err != nil {
+		t.Fatal(err)
+	}
+	session(t, s)
+	s.Stop()
+	got := out.String()
+	if !strings.Contains(got, `"level":"DEBUG","msg":"GET /identity/session"`) {
+		t.Fatalf("the service did not log a read as a DEBUG JSON line:\n%s", got)
 	}
 }
 

@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { folderNameFor } from "../../../project/naming";
 import { copyProject } from "../../../project/transfer";
+import { refForLog } from "../../../project/logRef";
 import {
   createDriveProject,
   driveProvider,
@@ -19,10 +20,12 @@ import type { CopyJob } from "./useCopyJob";
 import {
   actionFailure,
   goToAdopted,
+  type LibraryAction,
   type LibraryCardsApi,
   type ShelfToasts,
   type ShelfUser,
 } from "./shelfActions";
+import { appLog } from "../../../log";
 
 export interface MoveToRemoteInput {
   user: ShelfUser;
@@ -67,6 +70,7 @@ export function useMoveToRemote({
       if (!user) return;
 
       const signal = start(card.ref.name, "move");
+      const began = Date.now();
 
       try {
         const target = await createDriveProject(
@@ -102,10 +106,15 @@ export function useMoveToRemote({
           fail(t("library.openFailed"));
           return;
         }
+        appLog.info("library", "A Library action succeeded.", {
+          action: "move-to-remote" satisfies LibraryAction,
+          ...refForLog(target),
+          ms: Date.now() - began,
+        });
         post(t("library.movedToDrive", { name: card.ref.name }));
         goToAdopted(user.id, target, navigate);
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "move-to-remote"));
       } finally {
         finish();
       }

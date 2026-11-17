@@ -12,6 +12,7 @@ import type {
   ToolCall,
 } from "../domain/types";
 import type { ModelProvider } from "../ports";
+import { appLog } from "../../log";
 
 // One inference step for every workflow. Cancellation surfaces as an outcome
 // rather than a provider error.
@@ -19,6 +20,14 @@ import type { ModelProvider } from "../ports";
 export class ModelRunError extends Error {
   constructor(readonly failure: ModelFailure) {
     super(failure.message);
+  }
+
+  /**
+   * What the app's log may keep of this error. The message stays out: it can
+   * quote the provider, and the provider can quote the manuscript.
+   */
+  toLog(): Record<string, string | boolean> {
+    return { code: this.failure.code, retryable: this.failure.retryable };
   }
 }
 
@@ -150,6 +159,7 @@ export async function runStep(
   signal: AbortSignal,
   options: StepOptions = {},
 ): Promise<StepResult> {
+  const started = Date.now();
   const usage: RunUsage = { steps: 1 };
   const calls: ToolCall[] = [];
   const blocks: unknown[] = [];
@@ -214,5 +224,15 @@ export async function runStep(
       message: "The stream ended before the model finished.",
       retryable: true,
     });
+  appLog.info("ai", "A model step ended.", {
+    provider: request.model.providerId,
+    model: request.model.modelId,
+    tools: request.tools.length,
+    reason: terminal,
+    inputTokens: usage.inputTokens,
+    outputTokens: usage.outputTokens,
+    cachedTokens: usage.cachedInputTokens,
+    ms: Math.round(Date.now() - started),
+  });
   return { text, calls, blocks, usage: withContext(usage), reason: terminal };
 }

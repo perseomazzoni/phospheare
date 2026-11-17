@@ -161,6 +161,31 @@ Ollama and OpenRouter. Every dependency is listed, with its licence, in the
 third-party notices that ship with the app (`/third-party-notices.txt`) and
 with every release.
 
+## Skills out of the box
+
+I've built a minimal set of skills, and I configured Claude (other agents are
+supported too) to use them and the documentation available in the repo. It is
+a subset of what I use for actual development, made with anyone who wants to
+start contributing in mind. If you want, you can start with them, and use them
+in whatever workflow or tools you rely on in your day-to-day development. You
+can also suggest new setups for the project. The idea is to provide a "base" for
+everyone, not a full-fledged, fixed environment you must use in order to
+contribute to the project. Let's say you find some basic tools out of the box,
+but you still have your personal toolbox, and you can use it. Contributions
+made without AI are just as welcome.
+
+In short:
+
+- [AGENTS.md](AGENTS.md) is where every agent starts: what the project is,
+  how to work here, the commands and the list of skills.
+  [CLAUDE.md](CLAUDE.md) imports it.
+- The skills are in [.claude/skills/](.claude/skills/), from `suggest`
+  before a change to `verify` and `rules-review` after it. OpenCode runs them
+  through [.opencode/commands/](.opencode/commands/).
+- [.claude/settings.json](.claude/settings.json) lets the agent run the
+  tests and builds, asks you before every commit, push or pull request, keeps
+  `.env` unread and formats each edited file with Prettier.
+
 ## The logo
 
 I designed the product's mark, which I call "The Same Spark", with a little
@@ -176,12 +201,12 @@ and I couldn't find any software that did things the way I wanted them done.
 So I decided to create it myself, at first just for me. But then I wondered:
 why not make it available to everyone?
 
-I put a lot of effort into thinking about "bringing light where there was
-dark". The light of knowledge, the light of empathy. The light of Life, with
-its good and its bad, but with one main point: we're all sharing this planet,
-so let's make the best of it. Let's be one more person who reduces the pain in
-the world. So where do great stories come from? They form in darkness, then
-come to light. Once dark.
+I put a lot of effort into building a product identity around "bringing light
+where there was dark". The light of knowledge, the light of empathy. The light
+of Life, with its good and its bad, but with one main point: we're all sharing
+this planet, so let's make the best of it. Let's be one more person who
+reduces the pain in the world. So where do great stories come from? They form
+in darkness, then come to light. Once dark.
 
 With this project, I'm bringing together everything I have: rationality,
 technical skills, curiosity, empathy, vision and care.
@@ -199,6 +224,31 @@ the version, your browser, the storage mode and the steps to reproduce the
 problem. Pull requests are welcome, provided that they pass the gates in
 [CONTRIBUTING.md](CONTRIBUTING.md). Report security problems privately, as
 [SECURITY.md](SECURITY.md) describes.
+
+### Send the log with a bug report
+
+Each part of Once Dark Studio keeps a log of what it did in the last 14
+days, to help find the cause of a problem. Before it writes a line, it
+removes the names, email and network addresses that it recognizes. Nothing
+sends the log by itself: you decide whether to send it.
+
+- **In the app:** Settings → About → **Show the log**, then **Download the
+  log**.
+- **In the desktop program:** on its setup page, Other settings → Log →
+  **Show the files**, or **Show the log files** in the tray menu. Send
+  `desktop.log` and `identity.log`. If the program stopped with a crash,
+  start it again before you send them: the next start removes the personal
+  values from the crash, writes it into `desktop.log` and empties
+  `crash.txt`.
+
+**Before you send the log, read it yourself.** You must check that it holds
+nothing you do not want to make public. The app removes what it knows to be
+personal, but only you know what is private to you.
+
+Attach the files to the GitHub issue. Each line carries your account id, a
+random code with no name in it. If you prefer not to post the log in public,
+email it to [contact@oncedark.studio](mailto:contact@oncedark.studio) with the
+issue number.
 
 ## Licence
 

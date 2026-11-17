@@ -10,9 +10,9 @@
 // listener. On Windows and on a Linux desktop with a tray it shows an icon
 // whose menu opens the app and quits it; elsewhere, or with `--no-tray`, it
 // runs in its terminal. It runs until the tray or the setup page quits it
-// or, where it has a terminal, until the terminal closes. The Windows build
-// has no terminal: its messages and log go to the data folder's
-// `desktop.log`, and a failure to start is shown in a message box.
+// or, where it has a terminal, until the terminal closes. On every system
+// it keeps its log in the data folder's `logs/desktop.log`. The Windows
+// build has no terminal: a failure to start is shown in a message box.
 package main
 
 import (
@@ -23,12 +23,17 @@ import (
 	"io/fs"
 	"log"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"os/user"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strconv"
+	"strings"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -43,6 +48,7 @@ import (
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/identityproc"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/instance"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/locale"
+	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/logs"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/netif"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/tray"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/vault"
@@ -70,7 +76,28 @@ type options struct {
 	devOrigin     string
 	acmeDirectory string
 	desecAPI      string
+	logLevel      slog.Level
+	devWiring     devWiring
 }
+
+// devWiring is what a development build changes once its flags are read.
+// The release build leaves every field empty.
+type devWiring struct {
+	// check refuses flags that do not go together.
+	check func(options) error
+	// certs changes the certificate source once it is made.
+	certs func(*certs.Source)
+	// autostart replaces the operating system's login list.
+	autostart ports.Autostart
+	// listen opens the home network's listener.
+	listen func(network, addr string) (net.Listener, error)
+	// setupPage wraps the setup page's handler.
+	setupPage func(http.Handler) http.Handler
+}
+
+// devFlags sets up a development build before its flags are read. The
+// release build does nothing.
+var devFlags = func(*flag.FlagSet, *options) {}
 
 func parseFlags(args []string) (options, error) {
 	var o options
@@ -85,11 +112,22 @@ func parseFlags(args []string) (options, error) {
 	fl.StringVar(&o.devOrigin, "dev-origin", "", "development: the browser origin that proxies /identity (e.g. http://localhost:5173)")
 	fl.StringVar(&o.acmeDirectory, "acme-directory", certs.LetsEncrypt, "ACME directory URL for home-network certificates")
 	fl.StringVar(&o.desecAPI, "desec-api", desec.API, "deSEC API base for the home network's name")
+	fl.Func("log-level", "the lowest level the log files keep: debug, info, warn or error (default info)", func(s string) error {
+		l, err := logs.ParseLevel(s)
+		o.logLevel = l
+		return err
+	})
+	devFlags(fl, &o)
 	if err := fl.Parse(args); err != nil {
 		return o, err
 	}
 	if o.dev && o.devOrigin == "" {
 		return o, errors.New("--dev needs --dev-origin, for example --dev-origin http://localhost:5173")
+	}
+	if o.devWiring.check != nil {
+		if err := o.devWiring.check(o); err != nil {
+			return o, err
+		}
 	}
 	return o, nil
 }
@@ -119,17 +157,61 @@ func run(args []string) int {
 		console.Fail(productName, "The data folder could not be created: "+err.Error())
 		return 1
 	}
-	con, err := console.Open(dataDir)
-	if err != nil {
+	con := console.Open()
+	// The settings are read after the log opens, so the log reads the
+	// personal values in them once they are there.
+	var settings atomic.Pointer[configfile.Store]
+	redact := &logs.Redactor{Known: personal(settings.Load)}
+	level := new(slog.LevelVar)
+	level.Set(o.logLevel)
+	desktopLog, err := openLog(dataDir, logs.Desktop)
+	if err == nil {
+		defer desktopLog.Close()
+	}
+	identityLog, ierr := openLog(dataDir, logs.Identity)
+	if err = errors.Join(err, ierr); err != nil {
 		console.Fail(productName, "The log in the data folder could not be opened: "+err.Error())
 		return 1
 	}
-	defer con.Close()
-	logger := log.New(con.Log, "", log.LstdFlags)
+	defer identityLog.Close()
+	logger := slog.New(logs.NewHandler(logs.NewSink(redact, desktopLog, con.Errors), logs.Desktop, level))
+	identityLogger := slog.New(logs.NewHandler(logs.NewSink(redact, identityLog, con.Errors), logs.Identity, level))
+	area := func(name string) *slog.Logger { return logger.With(logs.AreaKey, name) }
 	// The tray library logs through the standard logger.
-	log.SetOutput(con.Log)
+	log.SetFlags(0)
+	log.SetOutput(logs.Standard(area("system"), slog.LevelWarn))
+	// The data folder by its kind, never its path: a path names the person.
+	dataKind := "default"
+	if o.dataDir != "" {
+		dataKind = "chosen"
+	}
+	area("start").Info("Starting.", "version", version, "data", dataKind, "level", logs.LevelName(o.logLevel))
+	detail := &logs.Detail{Level: level, Base: o.logLevel, Log: area("logs")}
+	logDir := filepath.Join(dataDir, logs.Dir)
+	// A crash writes only to standard error, which a program started from
+	// a launcher loses; the runtime copies it to a file the next start
+	// reads into the log.
+	crashed, err := logs.KeepCrashes(filepath.Join(dataDir, logs.CrashFile))
+	if err != nil {
+		area("crash").Warn("A crash cannot be kept for the next start.", "error", err)
+	}
+	// The crash goes into the log once the settings are read, so the
+	// redactor knows the personal values they hold, such as the home
+	// network's name. A start that stops before them writes it with the
+	// values it knows, since the file is empty now.
+	noteCrash := func() {
+		if len(crashed) == 0 {
+			return
+		}
+		area("crash").Error("The last run stopped with a crash.")
+		for _, line := range crashed {
+			area("crash").Error(line)
+		}
+		crashed = nil
+	}
 	fail := func(message string) int {
-		logger.Print(message)
+		noteCrash()
+		area("start").Error(message)
 		console.Fail(productName, message)
 		return 1
 	}
@@ -148,6 +230,10 @@ func run(args []string) int {
 	case err != nil:
 		return fail("The settings could not be read: " + err.Error())
 	}
+	settings.Store(store)
+	noteCrash()
+	// A detailed log turned on before a restart goes on until its end.
+	detail.Set(store.Get().LogDetailedUntil)
 	identityBin := o.identityBin
 	if identityBin == "" {
 		if identityBin, err = besideExecutable("identity"); err != nil {
@@ -172,7 +258,7 @@ func run(args []string) int {
 		}
 		return 0
 	case instance.Occupied:
-		logger.Printf("listen: %v", err)
+		area("start").Error("The port is taken by another program.", "port", port, "error", err)
 		return fail(instance.OccupiedMessage(productName, port))
 	}
 
@@ -206,30 +292,37 @@ func run(args []string) int {
 				ClientSecret: cfg.Google.ClientSecret,
 			}
 		},
-		Logger: logger,
-		Output: con.Log,
+		Log:    area("identity"),
+		Output: logs.NewRelay(identityLogger),
+		// The service logs everything; the desktop's level, which the
+		// detailed log changes while the service runs, decides what stays.
+		LogLevel: func() string { return "debug" },
 	}
 	defer id.Stop()
-	requestLog := slog.New(slog.NewTextHandler(con.Log, nil))
+	requestLog := area("http")
 
 	configured := func() bool { return store.Get().Google.Configured() }
 	httpClient := &http.Client{Timeout: 30 * time.Second}
-	deSEC := &desec.Client{BaseURL: o.desecAPI, HTTP: httpClient, TokenName: productName + " on this computer"}
+	deSEC := &desec.Client{BaseURL: o.desecAPI, HTTP: httpClient, TokenName: productName + " on this computer", Log: area("desec")}
 	certSource := &certs.Source{
 		Dir:           certs.Dir{Path: filepath.Join(dataDir, "tls"), Vault: secrets},
 		ACMEDirectory: o.acmeDirectory,
 		Records:       deSEC,
-		Propagated:    desec.Servers{Addrs: desec.NameServers}.Wait,
+		Propagated:    desec.Servers{Addrs: desec.NameServers, Log: area("cert")}.Wait,
 		// A short margin once every server shows the record, for one that
 		// answered from an old copy just before it took the change.
 		Settle: 15 * time.Second,
-		Logf:   logger.Printf,
+		Log:    area("cert"),
 		HTTP:   httpClient,
+	}
+	if o.devWiring.certs != nil {
+		o.devWiring.certs(certSource)
 	}
 	lanManager := &application.Manager{
 		Config:  store,
 		PortUse: netif.PortUse,
 		Certs:   certSource,
+		Listen:  o.devWiring.listen,
 		Handler: func(origin, hostHeader string) http.Handler {
 			return front.Handler(front.Options{
 				Listener:         front.Listener{Origin: origin, ExpectedHost: hostHeader},
@@ -244,7 +337,8 @@ func run(args []string) int {
 				HTTPS:            true,
 			})
 		},
-		Logf: logger.Printf,
+		Log:      area("homenet"),
+		ErrorLog: logs.ServerLog(area("homenet")),
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -258,8 +352,14 @@ func run(args []string) int {
 	useTray := !o.noTray && !o.dev && tray.Available()
 	systemLanguage := locale.System()
 	adminHost := domain.LoopbackHost("localhost", port)
-	auto := &autostart.Remembered{List: autostart.System{}}
+	var login ports.Autostart = autostart.System{}
+	if o.devWiring.autostart != nil {
+		login = o.devWiring.autostart
+	}
+	auto := &autostart.Remembered{List: login}
 	loginWith := loginArgs(o, dataDir)
+	wipe := &application.Wipe{Config: store, Identity: id, LAN: lanManager, Certs: certSource, Autostart: auto,
+		Logs: logFiles{files: []*logs.File{desktopLog, identityLog}, detail: detail}}
 	adm := &admin.Admin{
 		Version:        version,
 		ProductName:    productName,
@@ -273,10 +373,10 @@ func run(args []string) int {
 		Config:         store,
 		Identity:       id,
 		LAN:            lanManager,
-		Name:           &application.HomeName{Config: store, Account: deSEC, Logf: logger.Printf},
+		Name:           &application.HomeName{Config: store, Account: deSEC, Log: area("desec")},
 		Addresses:      netif.PrivateAddresses,
 		Autostart:      auto,
-		Wipe:           &application.Wipe{Config: store, Identity: id, LAN: lanManager, Certs: certSource, Autostart: auto},
+		Wipe:           wipe,
 		Executable:     admin.Executable,
 		LoginArgs:      loginWith,
 		HTTP:           httpClient,
@@ -294,9 +394,13 @@ func run(args []string) int {
 			}
 			if err := browser.Open(target); err != nil {
 				// The setup address holds the key, which the log never holds.
-				logger.Printf("second launch: the browser did not open: %v", err)
+				area("start").Warn("The browser did not open for a second launch.", "error", err)
 			}
 		},
+		LogDir:     logDir,
+		OpenFolder: browser.OpenFolder,
+		Detail:     detail,
+		Log:        area("setup"),
 	}
 	listener := front.Listener{Origin: local, ExpectedHost: adminHost}
 	alias := domain.LoopbackHost("127.0.0.1", port)
@@ -305,13 +409,17 @@ func run(args []string) int {
 		listener.ExpectedHost = ""
 		alias = ""
 	}
+	setupPage := adm.Handler()
+	if o.devWiring.setupPage != nil {
+		setupPage = o.devWiring.setupPage(setupPage)
+	}
 	srv := &http.Server{
 		Handler: front.Handler(front.Options{
 			Listener:     listener,
 			AliasHost:    alias,
 			WrongHost:    productName + " answers only at its own address.",
 			Identity:     id,
-			Desktop:      adm.Handler(),
+			Desktop:      setupPage,
 			Configured:   configured,
 			SPA:          spa,
 			SPAImmutable: immutable,
@@ -319,6 +427,7 @@ func run(args []string) int {
 		}),
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       2 * time.Minute,
+		ErrorLog:          logs.ServerLog(requestLog),
 	}
 	// The port answers before the identity service starts, so a second
 	// launch finds this copy rather than a silent port; until the service
@@ -328,7 +437,7 @@ func run(args []string) int {
 		go func() { served <- srv.Serve(ln) }()
 	}
 	if err := id.Start(); err != nil {
-		logger.Printf("identity service: %v; trying again", err)
+		area("identity").Error("The identity service did not start. Trying again.", "error", err)
 	}
 
 	setup := admin.SetupURL(local, key, "")
@@ -363,7 +472,7 @@ func run(args []string) int {
 	}
 	if store.Get().LAN.AutoStart && !o.dev {
 		if err := lanManager.Resume(); err != nil {
-			logger.Printf("home network: %v", err)
+			area("homenet").Error("The home network did not turn on at start.", "error", err)
 		}
 	}
 
@@ -372,15 +481,16 @@ func run(args []string) int {
 		case <-ctx.Done():
 		case <-quit:
 		case err := <-served:
-			logger.Printf("server: %v", err)
+			requestLog.Error("The server stopped.", "error", err)
 		}
 	}
 	if useTray {
-		tray.Run(trayActions(local, key, systemLanguage, store, lanManager, auto, admin.Executable, loginWith, adm.Quit, logger.Printf), wait)
+		tray.Run(trayActions(local, key, systemLanguage, logDir, store, lanManager, auto, admin.Executable, loginWith, adm.Quit, area("tray")), wait)
 	} else {
 		wait()
 	}
 	fmt.Fprintf(con.Out, "Stopping %s.\n", productName)
+	area("start").Info("Stopping.")
 	id.Stop()
 	_ = lanManager.Stop()
 	shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -417,4 +527,60 @@ func besideExecutable(name string) (string, error) {
 		name += ".exe"
 	}
 	return filepath.Join(filepath.Dir(exe), name), nil
+}
+
+// logFiles are the log files, which a wipe of every setting empties, with
+// the detailed time, which it ends.
+type logFiles struct {
+	files  []*logs.File
+	detail *logs.Detail
+}
+
+func (l logFiles) Clear() error {
+	l.detail.Set(time.Time{})
+	var errs []error
+	for _, f := range l.files {
+		errs = append(errs, f.Clear())
+	}
+	return errors.Join(errs...)
+}
+
+// openLog opens source's log in the data folder.
+func openLog(dataDir, source string) (*logs.File, error) {
+	return logs.Open(filepath.Join(dataDir, logs.Dir), source, func(started time.Time) string {
+		return logs.Header(productName, version, runtime.GOOS+"/"+runtime.GOARCH, source, started)
+	})
+}
+
+// personal answers the personal values the log removes: the home folder,
+// the user's and the computer's names, and the home network's name and
+// the email of its deSEC account, read from the settings of store.
+func personal(store func() *configfile.Store) func() []logs.Known {
+	home, _ := os.UserHomeDir()
+	host, _ := os.Hostname()
+	fixed := []logs.Known{
+		{Value: home, As: logs.AsHome},
+		{Value: filepath.ToSlash(home), As: logs.AsHome},
+		{Value: filepath.Base(home), As: logs.AsUser, Word: true},
+		{Value: host, As: logs.AsComputer, Word: true},
+	}
+	if u, err := user.Current(); err == nil {
+		// On Windows the name carries its computer or domain before a
+		// backslash.
+		fixed = append(fixed, logs.Known{Value: u.Username, As: logs.AsUser, Word: true})
+		if _, name, ok := strings.Cut(u.Username, "\\"); ok {
+			fixed = append(fixed, logs.Known{Value: name, As: logs.AsUser, Word: true})
+		}
+	}
+	return func() []logs.Known {
+		s := store()
+		if s == nil {
+			return fixed
+		}
+		d := s.Get().LAN.DeSEC
+		return append(slices.Clone(fixed),
+			logs.Known{Value: d.Domain(), As: logs.AsName},
+			logs.Known{Value: d.Name, As: logs.AsName, Word: true},
+			logs.Known{Value: d.Email, As: logs.AsEmail})
+	}
 }

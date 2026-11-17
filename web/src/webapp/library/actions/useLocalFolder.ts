@@ -13,6 +13,7 @@ import {
   type ShelfToasts,
   type ShelfUser,
 } from "./shelfActions";
+import { appLog } from "../../../log";
 
 export interface LocalFolderInput {
   user: ShelfUser;
@@ -61,10 +62,11 @@ export function useLocalFolder({
       // the gather then paints them from the cache. In the reverse order the
       // gather races the sweep's adoption and wipes the just-added card.
       const added = await scanLocal();
+      appLog.info("library", "A local folder was chosen.", { added });
       if (added > 0) post(t("library.findLocalDone", { count: added }));
       rescan();
     } catch (err) {
-      fail(actionFailure(err, t));
+      fail(actionFailure(err, t, "choose-folder"));
     }
   }, [user, post, t, scanLocal, rescan, connect, clearFailure, fail]);
 
@@ -82,9 +84,10 @@ export function useLocalFolder({
     clearFailure();
     try {
       await disconnect();
+      appLog.info("library", "The local folder was forgotten.");
       rescan();
     } catch (err) {
-      fail(actionFailure(err, t));
+      fail(actionFailure(err, t, "forget-folder"));
     }
   }, [user, disconnect, t, rescan, clearFailure, fail]);
 

@@ -8,6 +8,7 @@ package application
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"strings"
 	"sync"
 	"time"
@@ -47,7 +48,8 @@ type HomeName struct {
 	// LoginGap is the shortest time between two logins while the link is
 	// unused, 10 seconds when zero, however many pages ask.
 	LoginGap time.Duration
-	Logf     func(format string, args ...any)
+	// Log may be nil.
+	Log *slog.Logger
 
 	mu        sync.Mutex
 	lastLogin time.Time
@@ -60,10 +62,11 @@ func (h *HomeName) now() time.Time {
 	return time.Now()
 }
 
-func (h *HomeName) logf(format string, args ...any) {
-	if h.Logf != nil {
-		h.Logf(format, args...)
+func (h *HomeName) log() *slog.Logger {
+	if h.Log == nil {
+		return slog.New(slog.DiscardHandler)
 	}
+	return h.Log
 }
 
 var errHasName = errors.New("This computer already has a name. Choose Use another name first.")
@@ -149,7 +152,7 @@ func (h *HomeName) Check(ctx context.Context) (state NameState, linked bool, err
 	}
 	token, narrowed, err := h.Account.MakeToken(ctx, login, d.Domain())
 	if lerr := h.Account.Logout(ctx, login); lerr != nil {
-		h.logf("deSEC: the login could not be ended: %v", lerr)
+		h.log().Warn("The deSEC login could not be ended.", "error", lerr)
 	}
 	if err != nil {
 		return h.stateOf(d), false, err
@@ -162,7 +165,7 @@ func (h *HomeName) Check(ctx context.Context) (state NameState, linked bool, err
 	if err != nil {
 		return h.stateOf(d), false, err
 	}
-	h.logf("deSEC: %s is ready; its token writes only this name's records: %v", d.Domain(), narrowed)
+	h.log().Info("The name is ready.", "tokenOnlyForThisName", narrowed)
 	return h.State(), true, nil
 }
 

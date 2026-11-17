@@ -29,6 +29,7 @@ import {
   type Weight,
 } from "../domain/model";
 import { admit, type Admission, type Proposal } from "../domain/proposals";
+import { appLog, describeError } from "../../../log";
 
 // What the service needs from outside: one entry point, the file of one node,
 // read and written whole. The service decides what goes in it; the store
@@ -309,13 +310,22 @@ export class CommentsService {
     let stored;
     try {
       stored = await this.deps.store.read(nodeId);
-    } catch {
+    } catch (err) {
+      appLog.warn("comments", "A comments file could not be read.", {
+        node: nodeId,
+        ...describeError(err),
+      });
       this.set(nodeId, { status: "unavailable" }, publish);
       throw new CommentsRefused("unavailable");
     }
     if (stored.kind === "missing") return EMPTY_FILE;
     const read = readComments(stored.text);
     if (!read.ok) {
+      appLog.warn("comments", "A comments file is damaged.", {
+        node: nodeId,
+        reason: read.reason,
+        chars: stored.text.length,
+      });
       this.set(nodeId, { status: "damaged" }, publish);
       throw new CommentsRefused("damaged");
     }

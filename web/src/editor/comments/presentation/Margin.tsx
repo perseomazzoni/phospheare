@@ -23,7 +23,7 @@ import { FRAME_GEOMETRY, useFrameOptions } from "../../../theme/editor";
 import { paragraphText } from "../../engine/application/diff/blocks";
 import type { EditorEngine } from "../../views/engine";
 import { logicalToDomPoint } from "../../views/writing/dom";
-import type { CommentsService } from "../application/comments";
+import { CommentsRefused, type CommentsService } from "../application/comments";
 import { anchorFrom, place, refreshed, type Placement } from "../domain/anchor";
 import { MARGIN_MIN_W } from "../domain/limits";
 import {
@@ -37,6 +37,7 @@ import { useCommentsService, useNodeComments } from "../host/comments";
 import CommentComposer from "./CommentComposer";
 import { faceOf, type PersonaFace, type WriterFace } from "./faces";
 import ThreadCard, { Face, type ReplyState } from "./ThreadCard";
+import { appLog, describeError } from "../../../log";
 
 // ── The margin ───────────────────────────────────────────────────────────────
 //
@@ -645,10 +646,20 @@ function MarginOf({
     setHovered((h) => (h === id ? null : h));
 
   // ── Acting ─────────────────────────────────────────────────────────────────
+  // A change whose write failed, shown until the next one is saved. A
+  // refused change (a damaged or unreachable file) is shown by the node's
+  // state instead.
+  const [unsaved, setUnsaved] = useState(false);
   const settle = useCallback((work: Promise<unknown>) => {
-    // A refused change (a damaged or unreachable file) is already shown by the
-    // node's state; nothing more to say here.
-    work.catch(() => undefined);
+    work.then(
+      () => setUnsaved(false),
+      (err: unknown) => {
+        appLog.warn("comments", "A comment change was not saved.", {
+          ...describeError(err),
+        });
+        if (!(err instanceof CommentsRefused)) setUnsaved(true);
+      },
+    );
   }, []);
 
   const writerEntry = useCallback(
@@ -768,6 +779,11 @@ function MarginOf({
       {state?.status === "unavailable" && (
         <p className="cm-trouble" role="alert">
           {t("comments.unavailable")}
+        </p>
+      )}
+      {unsaved && (
+        <p className="cm-trouble" role="alert">
+          {t("comments.notSaved")}
         </p>
       )}
       {chapterLevel.map((thread) => (

@@ -31,11 +31,14 @@ export interface MetadataStore<P extends ProjectId> {
 
 /** What an open reads from a project's folder. */
 export interface ProjectReader<P extends ProjectId> {
-  /** The properties file's text, or `null` when it cannot be read. */
+  /**
+   * The properties file's text, or `null` when it is not there. Any other
+   * failure throws: an unreadable file is never taken for an absent one.
+   */
   properties(project: P): Promise<string | null>;
-  /** The snapshot catalogue's text, or `null` when it cannot be read. */
+  /** The snapshot catalogue's text, or `null` when it is not there; as above. */
   catalogue(project: P): Promise<string | null>;
-  /** The structure file's text, or `null` when it cannot be read. */
+  /** The structure file's text, or `null` when it is not there; as above. */
   structure(project: P): Promise<string | null>;
   /** A snapshot file's text, or `null` when it cannot be read. */
   snapshot(project: P, fileName: string): Promise<string | null>;

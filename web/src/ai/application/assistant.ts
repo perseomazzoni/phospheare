@@ -83,6 +83,7 @@ import type { SearchPause } from "./searchAsk";
 import { mapShapeOf } from "../domain/structureShapes";
 import { QUESTION_ARGUMENT_MAX } from "../domain/types";
 import { commandLine } from "../domain/skills";
+import { appLog, describeError } from "../../log";
 
 // ── The assistant aggregate ──────────────────────────────────────────────────
 //
@@ -301,6 +302,9 @@ export class Assistant {
       prepared = await prepare();
     } catch (error) {
       // A rejecting validation await is a refusal like any other: it speaks.
+      appLog.warn("ai", "An assistant run was refused before it began.", {
+        ...describeError(error),
+      });
       runs.reportRunError(this.runSupport(), error, failure);
     } finally {
       this.release(token);
@@ -339,9 +343,24 @@ export class Assistant {
       runProgress: undefined,
       ...start,
     });
+    const began = Date.now();
+    appLog.info("ai", "An assistant run started.", { chat: chatId });
     try {
       await run(signal);
+      // A run may settle normally after Stop, keeping what it wrote.
+      appLog.info("ai", "An assistant run finished.", {
+        chat: chatId,
+        stopped: signal.aborted || undefined,
+        ms: Math.round(Date.now() - began),
+      });
     } catch (error) {
+      if (signal.aborted)
+        appLog.info("ai", "An assistant run was stopped.", { chat: chatId });
+      else
+        appLog.error("ai", "An assistant run failed.", {
+          chat: chatId,
+          ...describeError(error),
+        });
       await stopped(error);
     } finally {
       this.abort = null;
@@ -554,11 +573,17 @@ export class Assistant {
             model,
             signal,
           );
-        } catch {
+        } catch (err) {
           cancelled = signal.aborted;
           // Disclosed: the new chat exists, the digest does not.
-          if (!cancelled)
+          if (!cancelled) {
+            appLog.warn("ai", "A continuation digest could not be made.", {
+              provider: model.providerId,
+              model: model.modelId,
+              ...describeError(err),
+            });
             this.publish({ problem: { kind: "continuation-unavailable" } });
+          }
         } finally {
           this.abort = null;
           this.publish({
@@ -657,7 +682,12 @@ export class Assistant {
     await this.writes.settled(chatId);
     try {
       await this.dependencies.artifacts.deleteChat(chatId);
-    } catch {
+    } catch (err) {
+      appLog.warn("ai", "A chat or its review files could not be deleted.", {
+        chat: chatId,
+        reviewRuns: chat.reviewRuns?.length ?? 0,
+        ...describeError(err),
+      });
       // A storage message is technical prose for logs (`StorageError`'s own
       // rule), and this layer may not import storage to translate it, so the
       // writer gets the one sentence the surface owns.

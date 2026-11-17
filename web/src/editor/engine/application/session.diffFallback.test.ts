@@ -52,6 +52,8 @@ const deps = (): SessionDeps => ({
 describe("— recomputeDiff retries at paragraph grain before giving up", () => {
   it("recovers a real comparison when the caller's own grain throws", () => {
     const session = new Session(deps());
+    const heard = vi.fn();
+    session.onDiffFallback(heard);
     // Two of three words shared clears paragraph grain's 0.5 similarity bar,
     // so the blocks pair as an edited pair. Only an edited pair reaches
     // `wholeParagraphReplace`'s block-replace shape, which shows paragraph
@@ -64,6 +66,12 @@ describe("— recomputeDiff retries at paragraph grain before giving up", () => 
     expect(session.diffHunks.length).toBeGreaterThan(0);
     expect(session.diffHunks[0].block).toBe(true);
     expect(session.diffHunks[0].kind).toBe("replace");
+    // The view hears the fallback, by the error's kind only.
+    expect(heard).toHaveBeenCalledWith({
+      grain: "word",
+      shown: "paragraph",
+      error: "Error",
+    });
   });
 
   it("still falls back to an honest empty comparison when the retry also fails", () => {
@@ -78,6 +86,8 @@ describe("— recomputeDiff retries at paragraph grain before giving up", () => 
       throw new Error("forced paragraph failure too");
     });
     const session = new Session(deps());
+    const heard = vi.fn();
+    session.onDiffFallback(heard);
     session.open("one\n\ntwo");
     session.enterDiff("one\n\nTWO");
     // No comparison, but no crash and no stale or half-built one.
@@ -85,5 +95,10 @@ describe("— recomputeDiff retries at paragraph grain before giving up", () => 
     expect(session.diffDecorations).toEqual([]);
     // The real buffer is untouched by the failed comparison attempt.
     expect(session.commonmark).toBe("one\n\ntwo");
+    expect(heard).toHaveBeenLastCalledWith({
+      grain: "word",
+      shown: "none",
+      error: "Error",
+    });
   });
 });

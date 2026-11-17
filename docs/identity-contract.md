@@ -323,7 +323,7 @@ first.
 
 | Route | Body | Answer |
 |---|---|---|
-| `GET state` | | product, version, data folder, the local address, `google {clientIdSet, clientIdEnd, secretSet, redirectUris:[{for: computer\|home, uri}]}`, `lan {config:{port, address, autoStart, termsAccepted}, name, status}`, `startAtLogin`, `startAtLoginError`. `termsAccepted` says that an agreement of the certificate authority was accepted; `status.terms` is the address of an agreement that waits for the person, when there is one. The route asks no other server |
+| `GET state` | | product, version, data folder, the local address, `google {clientIdSet, clientIdEnd, secretSet, redirectUris:[{for: computer\|home, uri}]}`, `lan {config:{port, address, autoStart, termsAccepted}, name, status}`, `startAtLogin`, `startAtLoginError`, `logs {folder, detailedUntil}`. `detailedUntil` is the RFC 3339 time when the detailed log ends, or empty when it is off. `termsAccepted` says that an agreement of the certificate authority was accepted; `status.terms` is the address of an agreement that waits for the person, when there is one. The route asks no other server |
 | `PUT google` | `{clientId, clientSecret}` (an empty secret keeps the saved one) | `204` once the identity service runs with it; `400 invalid` when the client ID does not end in `.apps.googleusercontent.com` or no secret was ever saved; `500 identity-failed` when the service does not start (the client stays saved) |
 | `POST google/check` | | `{results:[{redirectUri, result: ok\|wrong-credentials\|redirect-mismatch\|unreachable\|unexpected, detail}]}` |
 | `GET lan/addresses` | | `{addresses:[{ip, interface, preferred}]}` |
@@ -342,7 +342,9 @@ first.
 | `PUT language` | `{language}` | `204`; the language of the setup page and the tray menu. `400 invalid` for an unknown language |
 | `POST sign-out-browsers` | | `204`; replaces every seal key and starts the identity service again, which disconnects Google Drive and the kept OpenRouter keys from every browser; nobody is signed out of the app |
 | `POST wipe/google` | | `204`; forgets the Google client, then disconnects Google Drive and OpenRouter from every browser as above. `500 wipe-failed` keeps what was already done |
-| `POST wipe/everything` | | `204`; also stops home-network access, forgets its name, settings and certificate, stops starting at login, and removes the seal keys rather than replacing them, so the system's store keeps nothing for this setup; the program's own port (the app's address) stays, and so does the token at deSEC |
+| `POST wipe/everything` | | `204`. It also stops home-network access and forgets its name, settings and certificate. It stops starting at login. It removes the seal keys rather than replacing them, so the system's store keeps nothing for this setup. It empties the log files and turns the detailed log off. The program's own port (the app's address) stays, and so does the token at deSEC. |
+| `POST logs/open` | | `204` once the system shows the folder of the log files; `500 logs-open-failed` otherwise, and the page shows `logs.folder` |
+| `PUT logs/detailed` | `{on}` | `{detailedUntil}`; the log keeps `DEBUG` lines for 24 hours, or stops at once. The end is saved first, so a restart keeps it. `400 invalid` for a malformed body; `500 save-failed` |
 | `POST updates/check` | | `{current, latest, url, newer, known}`; `404 no-release` when GitHub has none |
 | `POST quit` | | `202`; the process stops |
 

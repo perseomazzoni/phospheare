@@ -21,6 +21,9 @@ import ReferenceNameInput from "../reference/ReferenceNameInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { splitHeight, useSplitDrag, FACE_SPLIT_OPTIONS } from "./useSplitDrag";
 import { formatWhen } from "./datetime";
+import { appLog, describeError } from "../../log";
+
+let metaFailureLogged = false;
 
 // The Dock's `notes` face, split as the Reference and Snapshot faces are: the
 // notes table on top (an add button, then rows of date, title and actions),
@@ -120,6 +123,8 @@ export default function NotesPanel({
     }
     let live = true;
     void (async () => {
+      let unread = 0;
+      let lastError: unknown;
       const entries = await Promise.all(
         notesDocs.map(async (doc) => {
           try {
@@ -128,11 +133,21 @@ export default function NotesPanel({
               `${REFERENCE_DIR}/${doc.fileName}`,
             );
             return [doc.fileName, meta] as const;
-          } catch {
+          } catch (err) {
+            unread += 1;
+            lastError = err;
             return [doc.fileName, null] as const;
           }
         }),
       );
+      // The read reruns with every change to the notes: one line a session.
+      if (unread > 0 && !metaFailureLogged) {
+        metaFailureLogged = true;
+        appLog.warn("editor", "The notes' dates could not be read.", {
+          count: unread,
+          ...describeError(lastError),
+        });
+      }
       if (!live) return;
       const map = new Map<string, { created?: string; updatedAt?: string }>();
       for (const [fileName, meta] of entries) {

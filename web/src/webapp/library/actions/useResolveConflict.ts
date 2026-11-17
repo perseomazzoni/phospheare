@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { isWinnerUnsettled } from "../../../project/sync/apply";
 import type { ActionFailure } from "./useActionError";
 import type { LibraryCardsApi, ShelfToasts } from "./shelfActions";
+import { appLog, describeError } from "../../../log";
 
 export interface ResolveConflictInput {
   resolve: LibraryCardsApi["resolve"];
@@ -47,6 +48,11 @@ export function useResolveConflict({
           }),
         );
       } catch (err) {
+        appLog.error("sync", "A conflict could not be resolved.", {
+          project: projectId,
+          keep,
+          ...describeError(err),
+        });
         fail(
           isWinnerUnsettled(err)
             ? t(

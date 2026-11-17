@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { libraryRows, syncProfile } from "../../profile/profileSync";
+import { appLog, describeError } from "../../log";
 import type { StorageSearchView } from "./StorageSearchDialog";
 import type { SweepWatch } from "./useProjects";
 
@@ -185,7 +186,10 @@ export function useStorageSearch(options: Options): StorageSearch {
           }),
         added: (name) => added.push(name),
       });
-    } catch {
+    } catch (err) {
+      appLog.warn("library", "Remote Storage could not be searched.", {
+        ...describeError(err),
+      });
       show(token, {
         kind: "result",
         title: t("library.search.unreachableTitle"),
@@ -224,7 +228,12 @@ export function useStorageSearch(options: Options): StorageSearch {
         },
         added: (name) => added.push(name),
       })
-      .catch(() => 0);
+      .catch((err: unknown) => {
+        appLog.warn("library", "Local Storage could not be searched.", {
+          ...describeError(err),
+        });
+        return 0;
+      });
     if (!swept) return;
     show(
       token,

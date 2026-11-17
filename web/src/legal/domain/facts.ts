@@ -25,7 +25,7 @@ export interface LegalFacts {
 }
 
 export const LEGAL: LegalFacts = {
-  updated: "2026-11-12",
+  updated: "2026-11-16",
   publisher: {
     name: "Perseo Mazzoni",
     repository: "https://github.com/perseomazzoni/phospheare",

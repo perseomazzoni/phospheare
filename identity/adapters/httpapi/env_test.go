@@ -79,7 +79,7 @@ func newEnv(t *testing.T) *env {
 		ProductName: "Phospheare",
 		Sealer:      sealer,
 		Clients:     clients,
-		Observer:    httpapi.Observer{Logger: slog.New(slog.NewTextHandler(logs, nil))},
+		Observer:    httpapi.Observer{Logger: slog.New(slog.NewTextHandler(logs, &slog.HandlerOptions{Level: slog.LevelDebug}))},
 		OAuth: &application.Service{
 			Google:  client,
 			Clients: clients,

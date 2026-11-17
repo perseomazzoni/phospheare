@@ -40,6 +40,7 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"os"
 	"runtime"
@@ -49,6 +50,7 @@ import (
 
 	"rsc.io/qr"
 
+	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/logs"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/problem"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/words"
 	"github.com/perseomazzoni/phospheare/desktop/internal/application"
@@ -129,6 +131,16 @@ type Admin struct {
 	// the tray leads to the setup page, and at the setup page, with the
 	// key, where nothing else does.
 	OpenAgain func()
+	// LogDir is the folder of the log files. It is fixed: no request
+	// names a folder to open.
+	LogDir string
+	// OpenFolder shows a folder in the file manager.
+	OpenFolder func(dir string) error
+	// Detail keeps the log detailed for a while.
+	Detail *logs.Detail
+	// Log hears the cause of each failure the page is told of. It may be
+	// nil.
+	Log *slog.Logger
 
 	mux *http.ServeMux
 }
@@ -164,6 +176,8 @@ func (a *Admin) Handler() http.Handler {
 	mux.HandleFunc("POST /desktop/setup/api/wipe/google", func(w http.ResponseWriter, r *http.Request) { a.wipe(w, a.Wipe.Google) })
 	mux.HandleFunc("POST /desktop/setup/api/wipe/everything", func(w http.ResponseWriter, r *http.Request) { a.wipe(w, a.Wipe.Everything) })
 	mux.HandleFunc("POST /desktop/setup/api/updates/check", a.checkUpdates)
+	mux.HandleFunc("POST /desktop/setup/api/logs/open", a.openLogs)
+	mux.HandleFunc("PUT /desktop/setup/api/logs/detailed", a.putDetailedLog)
 	mux.HandleFunc("POST /desktop/setup/api/quit", a.quit)
 	mux.HandleFunc("/desktop/", func(w http.ResponseWriter, r *http.Request) {
 		problem.Write(w, http.StatusNotFound, "not-found", "No such page")
@@ -329,7 +343,7 @@ func (a *Admin) page(w http.ResponseWriter, r *http.Request) {
 		SecretsKey: secretsKey(a.Config.Get().Secrets),
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		a.fail(w, http.StatusInternalServerError, "page-failed", err, err.Error())
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -388,7 +402,7 @@ func (a *Admin) redirectURIs(cfg domain.Config) []redirectURI {
 // saved, answering whether it is running.
 func (a *Admin) restartIdentity(w http.ResponseWriter) bool {
 	if err := a.Identity.Restart(); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "identity-failed", a.say("api.identityFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "identity-failed", err, a.say("api.identityFailed", "error", err.Error()))
 		return false
 	}
 	return true
@@ -436,7 +450,38 @@ func (a *Admin) state(w http.ResponseWriter, r *http.Request) {
 		},
 		"startAtLogin":      startAtLogin,
 		"startAtLoginError": startAtLoginError,
+		"logs": map[string]any{
+			"folder":        a.LogDir,
+			"detailedUntil": stamp(a.Detail.Until()),
+		},
 	})
+}
+
+// fail answers a problem that the program, or a service it asks, caused,
+// and logs it with its cause: the request's own line holds only the
+// status, and the page's words are in the page's language.
+func (a *Admin) fail(w http.ResponseWriter, status int, code string, cause error, detail string) {
+	args := []any{"problem", code, "status", status}
+	if cause != nil {
+		args = append(args, "error", cause)
+	}
+	a.log().Error("A setup request failed.", args...)
+	problem.Write(w, status, code, detail)
+}
+
+func (a *Admin) log() *slog.Logger {
+	if a.Log == nil {
+		return slog.New(slog.DiscardHandler)
+	}
+	return a.Log
+}
+
+// stamp answers t for the page, or "" for the zero time.
+func stamp(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format(time.RFC3339)
 }
 
 // ── Google ───────────────────────────────────────────────────────────────────
@@ -469,7 +514,7 @@ func (a *Admin) putGoogle(w http.ResponseWriter, r *http.Request) {
 		}
 	})
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "save-failed", a.say("api.saveFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "save-failed", err, a.say("api.saveFailed", "error", err.Error()))
 		return
 	}
 	if a.restartIdentity(w) {
@@ -485,7 +530,7 @@ func (a *Admin) checkGoogle(w http.ResponseWriter, r *http.Request) {
 	}
 	out, err := a.Identity.CheckGoogle(r.Context())
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "check-failed", a.say("api.checkFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "check-failed", err, a.say("api.checkFailed", "error", err.Error()))
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"results": out})
@@ -496,7 +541,7 @@ func (a *Admin) checkGoogle(w http.ResponseWriter, r *http.Request) {
 func (a *Admin) addresses(w http.ResponseWriter, r *http.Request) {
 	list, err := a.Addresses()
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "addresses-failed", a.say("api.addressesFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "addresses-failed", err, a.say("api.addressesFailed", "error", err.Error()))
 		return
 	}
 	if list == nil {
@@ -532,7 +577,7 @@ func (a *Admin) putLAN(w http.ResponseWriter, r *http.Request) {
 		c.LAN.Address = strings.TrimSpace(body.Address)
 	})
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "save-failed", a.say("api.saveFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "save-failed", err, a.say("api.saveFailed", "error", err.Error()))
 		return
 	}
 	if a.restartIfMoved(w, before) {
@@ -563,7 +608,7 @@ func (a *Admin) nameFailed(w http.ResponseWriter, err error) {
 		problem.Write(w, http.StatusBadRequest, code, message)
 		return
 	}
-	problem.Write(w, http.StatusBadGateway, "desec-failed", err.Error())
+	a.fail(w, http.StatusBadGateway, "desec-failed", err, err.Error())
 }
 
 // namePassword answers a new password for a deSEC account. Nothing keeps
@@ -571,7 +616,7 @@ func (a *Admin) nameFailed(w http.ResponseWriter, err error) {
 func (a *Admin) namePassword(w http.ResponseWriter, r *http.Request) {
 	p, err := domain.NewPassword(rand.Reader)
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "password-failed", err.Error())
+		a.fail(w, http.StatusInternalServerError, "password-failed", err, err.Error())
 		return
 	}
 	w.Header().Set("Cache-Control", "no-store")
@@ -637,12 +682,12 @@ func (a *Admin) linkName(w http.ResponseWriter, r *http.Request) {
 
 func (a *Admin) unlinkName(w http.ResponseWriter, r *http.Request) {
 	if err := a.LAN.TurnOff(); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "stop-failed", err.Error())
+		a.fail(w, http.StatusInternalServerError, "stop-failed", err, err.Error())
 		return
 	}
 	before := domain.Origins(a.Config.Get(), a.appOrigin())
 	if err := a.Name.Unlink(); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "save-failed", a.say("api.saveFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "save-failed", err, a.say("api.saveFailed", "error", err.Error()))
 		return
 	}
 	if a.restartIfMoved(w, before) {
@@ -656,11 +701,11 @@ func (a *Admin) termsFailed(w http.ResponseWriter, err error) {
 	var unsaved *application.SaveError
 	switch {
 	case errors.As(err, &unsaved):
-		problem.Write(w, http.StatusInternalServerError, "save-failed", a.say("api.saveFailed", "error", unsaved.Error()))
+		a.fail(w, http.StatusInternalServerError, "save-failed", unsaved, a.say("api.saveFailed", "error", unsaved.Error()))
 	case errors.Is(err, application.ErrTermsUnreachable):
-		problem.Write(w, http.StatusBadGateway, "terms-unreachable", a.say("api.termsUnreachable"))
+		a.fail(w, http.StatusBadGateway, "terms-unreachable", err, a.say("api.termsUnreachable"))
 	case errors.Is(err, application.ErrTermsUnshown):
-		problem.Write(w, http.StatusBadGateway, "terms-unshown", a.say("api.termsUnshown"))
+		a.fail(w, http.StatusBadGateway, "terms-unshown", err, a.say("api.termsUnshown"))
 	case errors.Is(err, application.ErrTermsChanged):
 		problem.Write(w, http.StatusConflict, "terms-changed", a.say("api.termsChanged"))
 	case errors.Is(err, domain.ErrNoCertTerms):
@@ -725,7 +770,7 @@ func (a *Admin) startLAN(w http.ResponseWriter, r *http.Request) {
 
 func (a *Admin) stopLAN(w http.ResponseWriter, r *http.Request) {
 	if err := a.LAN.TurnOff(); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "stop-failed", err.Error())
+		a.fail(w, http.StatusInternalServerError, "stop-failed", err, err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, a.LAN.Status())
@@ -740,7 +785,7 @@ func (a *Admin) qr(w http.ResponseWriter, r *http.Request) {
 	}
 	code, err := qr.Encode(s.URL, qr.M)
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "qr-failed", err.Error())
+		a.fail(w, http.StatusInternalServerError, "qr-failed", err, err.Error())
 		return
 	}
 	code.Scale = 8
@@ -769,11 +814,11 @@ func (a *Admin) putStartAtLogin(w http.ResponseWriter, r *http.Request) {
 		err = a.Autostart.Disable()
 	}
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "autostart-failed", a.say("api.autostartFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "autostart-failed", err, a.say("api.autostartFailed", "error", err.Error()))
 		return
 	}
 	if err := a.Config.Update(func(c *domain.Config) { c.StartAtLogin = body.Enabled }); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "save-failed", a.say("api.saveFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "save-failed", err, a.say("api.saveFailed", "error", err.Error()))
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -794,7 +839,7 @@ func (a *Admin) putLanguage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := a.Config.Update(func(c *domain.Config) { c.Language = body.Language }); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "save-failed", a.say("api.saveFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "save-failed", err, a.say("api.saveFailed", "error", err.Error()))
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -804,7 +849,7 @@ func (a *Admin) putLanguage(w http.ResponseWriter, r *http.Request) {
 // every Drive connection held by any browser stops opening.
 func (a *Admin) signOutBrowsers(w http.ResponseWriter, r *http.Request) {
 	if err := a.Identity.SignOutBrowsers(); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "rotate-failed", a.say("api.rotateFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "rotate-failed", err, a.say("api.rotateFailed", "error", err.Error()))
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -814,10 +859,42 @@ func (a *Admin) signOutBrowsers(w http.ResponseWriter, r *http.Request) {
 // already did, and the page shows the settings as they now are.
 func (a *Admin) wipe(w http.ResponseWriter, run func() error) {
 	if err := run(); err != nil {
-		problem.Write(w, http.StatusInternalServerError, "wipe-failed", a.say("api.wipeFailed", "error", err.Error()))
+		a.fail(w, http.StatusInternalServerError, "wipe-failed", err, a.say("api.wipeFailed", "error", err.Error()))
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// openLogs shows the folder of the log files. When it cannot, the page
+// shows the folder's path, which the state holds.
+func (a *Admin) openLogs(w http.ResponseWriter, r *http.Request) {
+	if err := a.OpenFolder(a.LogDir); err != nil {
+		a.fail(w, http.StatusInternalServerError, "logs-open-failed", err, a.say("api.logsOpenFailed"))
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// putDetailedLog turns the detailed log on for logs.DetailFor, or off. The
+// end is saved first, so a restart keeps it.
+func (a *Admin) putDetailedLog(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		On bool `json:"on"`
+	}
+	if !readJSON(r, &body) {
+		badRequest(w, a.say("api.malformed"))
+		return
+	}
+	var until time.Time
+	if body.On {
+		until = time.Now().Add(logs.DetailFor).Truncate(time.Second)
+	}
+	if err := a.Config.Update(func(c *domain.Config) { c.LogDetailedUntil = until }); err != nil {
+		a.fail(w, http.StatusInternalServerError, "save-failed", err, a.say("api.saveFailed", "error", err.Error()))
+		return
+	}
+	a.Detail.Set(until)
+	writeJSON(w, http.StatusOK, map[string]string{"detailedUntil": stamp(a.Detail.Until())})
 }
 
 // checkUpdates asks GitHub for the newest release, only when the user asks.
@@ -827,13 +904,13 @@ func (a *Admin) checkUpdates(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.ReleaseURL, nil)
 	if err != nil {
-		problem.Write(w, http.StatusInternalServerError, "updates-failed", err.Error())
+		a.fail(w, http.StatusInternalServerError, "updates-failed", err, err.Error())
 		return
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
 	resp, err := a.HTTP.Do(req)
 	if err != nil {
-		problem.Write(w, http.StatusBadGateway, "updates-unreachable", a.say("api.updatesUnreachable"))
+		a.fail(w, http.StatusBadGateway, "updates-unreachable", err, a.say("api.updatesUnreachable"))
 		return
 	}
 	defer resp.Body.Close()
@@ -842,7 +919,7 @@ func (a *Admin) checkUpdates(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
-		problem.Write(w, http.StatusBadGateway, "updates-unreachable", a.say("api.noReleaseAnswer"))
+		a.fail(w, http.StatusBadGateway, "updates-unreachable", errors.New("GitHub answered "+resp.Status), a.say("api.noReleaseAnswer"))
 		return
 	}
 	var rel struct {
@@ -850,7 +927,7 @@ func (a *Admin) checkUpdates(w http.ResponseWriter, r *http.Request) {
 		HTMLURL string `json:"html_url"`
 	}
 	if err := json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(&rel); err != nil || rel.TagName == "" {
-		problem.Write(w, http.StatusBadGateway, "updates-unreachable", a.say("api.updatesUnreadable"))
+		a.fail(w, http.StatusBadGateway, "updates-unreachable", err, a.say("api.updatesUnreadable"))
 		return
 	}
 	newer, known := domain.Newer(rel.TagName, a.Version)

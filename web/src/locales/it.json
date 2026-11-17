@@ -892,7 +892,9 @@
     "aiRemoteRememberUnavailable": "Questo dispositivo non può memorizzare la chiave.",
     "aiRemoteRememberNoMore": "Quando chiudi l'app la chiave viene dimenticata, e la volta dopo ne crei una nuova.",
     "aiRemoteKeys": "Gestisci le chiavi su {{host}}",
-    "aiRemoteRemoved": "La chiave rimossa funziona ancora su {{host}} finché non la elimini lì."
+    "aiRemoteRemoved": "La chiave rimossa funziona ancora su {{host}} finché non la elimini lì.",
+    "accountId": "ID dell'account",
+    "showLog": "Mostra i log"
   },
   "toolbar": {
     "normalText": "Testo normale",
@@ -2584,6 +2586,7 @@
     "resolvedCount_other": "{{count}} risolti",
     "damaged": "Il file dei commenti di questo capitolo non si riesce a leggere: resta com'è.",
     "unavailable": "In questo momento i commenti del capitolo non sono raggiungibili.",
+    "notSaved": "L'ultima modifica ai commenti non è stata salvata. Riprova.",
     "chapterMarker": "Commenti sul capitolo",
     "markerLabel": "Commento di {{name}}",
     "panelLabel": "Commento",
@@ -2649,12 +2652,12 @@
       "lede": "Dove la tua installazione conserva i dati e quali servizi facoltativi li ricevono.",
       "controller": {
         "title": "Chi pubblica il programma e chi tratta i dati",
-        "body": "{{publisherName}} (di seguito «Autore») pubblica {{product}} come progetto personale, a titolo gratuito e al di fuori di qualsiasi attività commerciale o professionale. Puoi scaricare il codice sorgente da {{publisherRepository}}, compilare il programma e usarlo sui tuoi dispositivi. L’Autore non gestisce la tua installazione e non riceve dal programma registri di funzionamento (log), dati di telemetria, credenziali o manoscritti. Per l’accesso con {{identity}} e per autorizzare il collegamento allo spazio di archiviazione remoto, il programma usa il progetto {{identity}} Cloud creato da chi ha configurato la tua installazione.",
+        "body": "{{publisherName}} (di seguito «Autore») pubblica {{product}} come progetto personale, a titolo gratuito e al di fuori di qualsiasi attività commerciale o professionale. Puoi scaricare il codice sorgente da {{publisherRepository}}, compilare il programma e usarlo sui tuoi dispositivi. L’Autore non gestisce la tua installazione e non riceve dal programma log, dati di telemetria, credenziali o manoscritti, a meno che tu non gli invii un log per segnalare un problema. Per l’accesso con {{identity}} e per autorizzare il collegamento allo spazio di archiviazione remoto, il programma usa il progetto {{identity}} Cloud creato da chi ha configurato la tua installazione.",
         "roles": "L’Autore non è titolare del trattamento dei dati presenti nella tua installazione: non ne determina le finalità né i mezzi e non li riceve. A decidere è chi gestisce l’installazione. Se usi il programma per attività esclusivamente personali o domestiche, il Regolamento (UE) 2016/679 (GDPR) non si applica a quell’uso (art. 2, par. 2, lett. c). Se gestisci l’installazione per altre persone o per lavoro, puoi essere tu il titolare del trattamento dei loro dati. In quel caso spetta a te verificare come funziona il programma, anche esaminando il codice sorgente, qualunque versione tu usi, compresa quella pubblicata dall’Autore. Questa pagina riguarda la versione pubblicata dall’Autore; le versioni modificate da altri possono comportarsi diversamente. In ogni caso è una descrizione, non una garanzia: ti aiuta a scegliere con cognizione di causa, ma non sostituisce la tua verifica. Per il sito della demo vale l’informativa pubblicata sul sito."
       },
       "notCollected": {
         "title": "Cosa non raccoglie l’Autore",
-        "body": "Il programma conserva sui tuoi dispositivi l’account locale, le preferenze e le copie di lavoro. Non usa strumenti di analisi, pubblicità o profilazione e non invia dati di telemetria all’Autore. Le funzioni che attivi comunicano con i rispettivi fornitori direttamente dalla tua installazione, senza passare da alcun servizio dell’Autore. I dati che invii di tua iniziativa a GitHub, ad esempio in una segnalazione, sono una comunicazione distinta: non includere credenziali o manoscritti privati."
+        "body": "Il programma conserva sui tuoi dispositivi l’account locale, le preferenze e le copie di lavoro. Non usa strumenti di analisi, pubblicità o profilazione e non invia dati di telemetria all’Autore. Le funzioni che attivi comunicano con i rispettivi fornitori direttamente dalla tua installazione, senza passare da alcun servizio dell’Autore. I dati che pubblichi di tua iniziativa su GitHub, ad esempio in una segnalazione o nel log che alleghi, sono una comunicazione distinta e restano visibili a tutti: rileggi il log prima di allegarlo e non includere credenziali o manoscritti privati."
       },
       "data": {
         "title": "Quali dati tratta il programma",
@@ -2710,6 +2713,11 @@
               "what": "Impostazioni dell’app desktop, tra cui porte, nome di dominio per la rete di casa, dati dell’account {{homeDns}} (email e credenziale di accesso) e certificato del dominio",
               "why": "Usare il programma anche dagli altri dispositivi della rete di casa",
               "where": "Sul computer che esegue l’app desktop"
+            },
+            "log": {
+              "what": "Log del programma: le operazioni svolte, con avvisi ed errori, l’identificativo del tuo account locale e nome, versione, dimensioni della finestra e lingua del browser. Prima di scrivere una riga, il programma toglie i nomi e gli indirizzi email e di rete che riconosce. Non scrive titoli né testi dei tuoi documenti",
+              "why": "Trovare la causa di un problema che segnali",
+              "where": "In questo browser, su questo dispositivo. L’app desktop tiene il proprio log in alcuni file sul computer che la esegue. Il programma non invia mai il log: puoi allegarlo tu a una segnalazione"
             }
           }
         },
@@ -2722,7 +2730,8 @@
           "sessions": "Il browser mantiene l’accesso fino all’uscita. Il cookie di sessione scade dopo 30 giorni. Se a quel punto non sei uscito, il servizio di identità ne crea uno nuovo.",
           "removed": "Quando rimuovi un progetto dalla libreria, il progetto sparisce subito dall’elenco. Il programma conserva una traccia della rimozione nei dati della libreria associata all’account locale, così il progetto non ricompare dopo la sincronizzazione.",
           "aiKey": "Il browser tiene la chiave {{ai}} in memoria finché non esci o non chiudi la scheda del browser. Se scegli di farla ricordare, la chiave è salvata, cifrata, in un cookie: si applicano le durate indicate nella sezione «Cookie e memoria del browser».",
-          "sync": "Dopo l’uscita, le copie di preferenze e libreria restano nello spazio remoto. Il programma può recuperarle quando ricolleghi quello stesso spazio."
+          "sync": "Dopo l’uscita, le copie di preferenze e libreria restano nello spazio remoto. Il programma può recuperarle quando ricolleghi quello stesso spazio.",
+          "log": "Il programma cancella le righe del log più vecchie di 14 giorni mentre è in uso o, se era chiuso, al primo avvio successivo. Se all’uscita scegli di cancellare i dati da questo browser, o se elimini l’account, il programma svuota il log di questo browser. Nell’app desktop, «Cancella tutte le configurazioni» svuota i file di log. Se l’app desktop si arresta per un errore, il file che descrive l’errore resta sul computer, completo, finché non la riavvii; il programma lo copia allora nel log senza i dati personali e lo svuota."
         },
         "deletion": "Quando scolleghi lo spazio di archiviazione remoto, il programma ti chiede da dove. Se scegli «Solo da questo browser», gli altri dispositivi restano collegati. Se scegli «Da tutti i dispositivi», il programma chiede a {{identity}} di revocare l’accesso allo spazio remoto. Nella stessa finestra puoi anche far cancellare dallo spazio remoto le copie delle preferenze e della libreria.",
         "cleanup": "Prima di uscire, il programma salva il lavoro aperto e ti avvisa se restano modifiche da sincronizzare. Se scegli di cancellare i dati da questo browser, il programma tenta di rimuovere i dati locali e le credenziali dell’account. L’uscita può completarsi anche se il browser non riesce a rimuovere tutti i dati locali.",
@@ -2776,12 +2785,12 @@
             }
           }
         },
-        "device": "Il browser conserva l’account locale, le preferenze, la libreria, le copie di lavoro dei file remoti e le modifiche in attesa di salvataggio. Il risultato del controllo aggiornamenti e il numero di versione dell’ultimo avviso che hai chiuso riguardano l’intera installazione e restano nel browser anche dopo l’eliminazione di un account. Il browser conserva anche il codice che lo associa alla sessione con il servizio di identità, la scelta di salvare la chiave {{ai}}, l’ultimo tema usato e l’indirizzo dei tuoi modelli AI locali."
+        "device": "Il browser conserva l’account locale, le preferenze, la libreria, le copie di lavoro dei file remoti e le modifiche in attesa di salvataggio. Il risultato del controllo aggiornamenti e il numero di versione dell’ultimo avviso che hai chiuso riguardano l’intera installazione e restano nel browser anche dopo l’eliminazione di un account. Il browser conserva anche il codice che lo associa alla sessione con il servizio di identità, la scelta di salvare la chiave {{ai}}, l’ultimo tema usato e l’indirizzo dei tuoi modelli AI locali. Conserva inoltre il log del programma e, quando chiudi una scheda, le ultime righe non ancora scritte, fino all’avvio successivo del programma. Il log resta in questo browser e nessuno lo legge dall’esterno."
       },
       "rights": {
         "title": "A chi rivolgerti per i tuoi dati",
-        "body": "Per cancellare i dati locali, puoi scegliere la cancellazione all’uscita oppure usare «Elimina il tuo account» nelle Impostazioni. Per i dati trattati dai servizi esterni, usa le opzioni dei tuoi account o i recapiti indicati nelle loro informative. Se usi una copia di {{product}} installata e gestita da un’altra persona, rivolgiti a lei. L’Autore non riceve dal programma i dati degli account o i manoscritti e quindi non può fornirli, rettificarli o cancellarli.",
-        "delete": "Se scrivi all’Autore a {{privacyContact}}, ai tuoi messaggi si applica l’informativa del sito. Non includere nei messaggi dati personali oltre a quelli necessari per risponderti, né credenziali, manoscritti o dati di altre persone.",
+        "body": "Per cancellare i dati locali, puoi scegliere la cancellazione all’uscita oppure usare «Elimina il tuo account» nelle Impostazioni. Per cancellare il log dell’app desktop, chiudi l’app ed elimina i file nella cartella dei log («Mostra i file» nella pagina di configurazione), oppure usa «Cancella tutte le configurazioni». Per i dati trattati dai servizi esterni, usa le opzioni dei tuoi account o i recapiti indicati nelle loro informative. Se usi una copia di {{product}} installata e gestita da un’altra persona, rivolgiti a lei. L’Autore non riceve dal programma i dati degli account o i manoscritti e quindi non può fornirli, rettificarli o cancellarli.",
+        "delete": "Se scrivi all’Autore a {{privacyContact}}, ai tuoi messaggi si applica l’informativa del sito. Non includere nei messaggi dati personali oltre a quelli necessari per risponderti, né credenziali, manoscritti o dati di altre persone. Se invii il log all’Autore per segnalare un problema, l’Autore lo usa solo per trovarne la causa e lo cancella quando il problema è risolto.",
         "complaint": "Se ritieni che chi tratta i tuoi dati violi il GDPR, puoi presentare reclamo all’autorità di controllo competente. In Italia puoi rivolgerti al Garante per la protezione dei dati personali ({{supervisor}})."
       },
       "automated": {
@@ -2919,7 +2928,7 @@
         "body": "Puoi scrivere all’Autore all’indirizzo {{privacyContact}}. Per gestire la richiesta, l’Autore tratta il tuo indirizzo email e le informazioni che invii. Non includere dati personali oltre a quelli necessari per risponderti, né credenziali, manoscritti o dati di altre persone. Per le richieste ordinarie, la base giuridica è il legittimo interesse a rispondere (art. 6, par. 1, lett. f, del GDPR). Se scrivi per esercitare un diritto previsto dal GDPR, il trattamento è necessario per adempiere a un obbligo di legge (art. 6, par. 1, lett. c).",
         "optional": "Scrivere all’Autore è una tua scelta: nessuna legge e nessun contratto te lo chiede. Senza il tuo indirizzo email e le informazioni che servono, l’Autore non può risponderti.",
         "provider": "La casella di posta dell’Autore è fornita da {{mail}}, società con sede in Svizzera, che tratta i messaggi per conto dell’Autore, come responsabile del trattamento (art. 28 del GDPR).",
-        "retention": "L’Autore conserva i messaggi per il tempo necessario a gestire la richiesta. Se occorre, può conservarli più a lungo per adempiere a un obbligo di legge o far valere i propri diritti."
+        "retention": "L’Autore conserva i messaggi per il tempo necessario a gestire la richiesta. Se occorre, può conservarli più a lungo per adempiere a un obbligo di legge o far valere i propri diritti. Il log che invii per segnalare un problema serve solo a trovarne la causa e viene cancellato quando il problema è risolto."
       }
     }
   },
@@ -2956,5 +2965,23 @@
     "connection": "il collegamento allo spazio di archiviazione remoto",
     "unsynced": "le modifiche non ancora sincronizzate",
     "projectsUntouched": "I tuoi progetti non vengono toccati."
+  },
+  "log": {
+    "title": "Log",
+    "note": "Ciò che {{product}} ha fatto in questo browser negli ultimi 14 giorni, per aiutare a trovare la causa di un problema. Non contiene nomi né indirizzi email o di rete, e non esce mai da solo da questo browser: per segnalare un problema, scaricalo e allegalo.",
+    "download": "Scarica i log",
+    "copyId": "Copia l'ID dell'account",
+    "copied": "Copiato",
+    "search": "Cerca",
+    "level": "Livello",
+    "levelAll": "Tutti",
+    "levelWarn": "Avvisi ed errori",
+    "levelError": "Errori",
+    "area": "Area",
+    "areaAll": "Tutte",
+    "count_one": "{{count}} riga su {{total}}",
+    "count_other": "{{count}} righe su {{total}}",
+    "countShown": "{{found}} righe su {{total}}: sono mostrate le {{shown}} più recenti.",
+    "empty": "Il log per ora è vuoto."
   }
 }

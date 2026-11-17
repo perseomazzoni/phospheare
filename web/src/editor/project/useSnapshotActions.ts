@@ -22,6 +22,7 @@ import type { ProjectRef } from "../../storage";
 import type { SnapshotCatalogue } from "../../project/types";
 import { StorageError } from "../../storage/types";
 import type { ActionHost } from "./actionHost";
+import { appLog, describeError } from "../../log";
 
 /**
  * Add, adopt, retitle, delete and restore a binned snapshot.
@@ -90,6 +91,10 @@ export function useSnapshotActions(host: ActionHost) {
         return null;
       } catch (err) {
         if (!(err instanceof StorageError && err.code === "not-found")) {
+          appLog.warn("editor", "A new snapshot's name could not be checked.", {
+            node: id,
+            ...describeError(err),
+          });
           setError(t("name.snapshotSourceUnreadable"));
           return null;
         }
@@ -107,7 +112,11 @@ export function useSnapshotActions(host: ActionHost) {
           target,
           filePath(outcome.copyFrom),
         );
-      } catch {
+      } catch (err) {
+        appLog.warn("editor", "A snapshot's source could not be read.", {
+          node: id,
+          ...describeError(err),
+        });
         setError(t("name.snapshotSourceUnreadable"));
         return null;
       }
@@ -281,7 +290,15 @@ export function useSnapshotActions(host: ActionHost) {
       if (!record) return false;
       try {
         if (await provider.exists(target, filePath(file))) return false;
-      } catch {
+      } catch (err) {
+        appLog.warn(
+          "editor",
+          "A binned snapshot's place could not be checked.",
+          {
+            node: nodeId,
+            ...describeError(err),
+          },
+        );
         return false;
       }
       const next = restoreSnapshot(current, nodeId, record);

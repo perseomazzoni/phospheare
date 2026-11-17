@@ -12,6 +12,7 @@ import {
   type ProjectRef,
   type StorageProvider,
 } from "./types";
+import { appLog, describeError } from "../log";
 
 // Which folders under the projects root are projects. Drive addresses its
 // folders through the `StorageProvider` port by id, while a local root is a
@@ -36,7 +37,13 @@ export async function listProjectsInFolder(
   let entries;
   try {
     entries = await provider.listDir(rootRef, dirPath);
-  } catch {
+  } catch (err) {
+    // A folder not made yet is the empty case above, not a failure.
+    if ((err as { code?: unknown } | null)?.code !== "not-found")
+      appLog.warn("storage", "The projects folder could not be listed.", {
+        provider: provider.id,
+        ...describeError(err),
+      });
     return [];
   }
 

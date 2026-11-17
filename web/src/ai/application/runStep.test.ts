@@ -273,3 +273,17 @@ describe("runStep", () => {
     expect(() => throwIfCancelled(new AbortController().signal)).not.toThrow();
   });
 });
+
+describe("a model failure in the app's log", () => {
+  it("gives its code and whether it may be retried, never the provider's words", () => {
+    const error = new ModelRunError({
+      code: "provider-rejected",
+      message: "The model refused: 'Chapter One of My Secret Novel'",
+      retryable: true,
+    });
+    expect(error.toLog()).toEqual({
+      code: "provider-rejected",
+      retryable: true,
+    });
+  });
+});

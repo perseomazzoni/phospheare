@@ -28,6 +28,7 @@ import {
   limitsFor,
 } from "./budgets";
 import { oneLine } from "./context";
+import { appLog, describeError } from "../../log";
 import {
   ModelRunError,
   mergeUsage,
@@ -254,8 +255,15 @@ export async function judgeFit(
       input !== "section" &&
       error instanceof ModelRunError &&
       error.failure.code !== "cancelled"
-    )
+    ) {
+      appLog.warn("ai", "A structure fit could not be judged.", {
+        input,
+        provider: dependencies.modelRef.providerId,
+        model: dependencies.modelRef.modelId,
+        ...describeError(error),
+      });
       return { suggestion: null, usage: { steps: 1 } };
+    }
     throw error;
   }
   stoppedIf(result.reason, "Map stopped");

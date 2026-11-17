@@ -9,9 +9,6 @@ package console
 
 import "os"
 
-// toFile is unset: the program runs in a terminal.
-const toFile = false
-
 func usable(*os.File) bool { return true }
 
 func messageBox(string, string) {}

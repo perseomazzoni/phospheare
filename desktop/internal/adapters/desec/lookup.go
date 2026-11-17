@@ -8,8 +8,10 @@ package desec
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 )
@@ -46,6 +48,9 @@ type Servers struct {
 	// Fallback is the wait when deSEC's servers cannot be asked: longer
 	// than the few minutes deSEC's servers take to share a change.
 	Fallback time.Duration
+	// Log hears each round: which servers show the record, which do not
+	// yet, and which do not answer. It may be nil.
+	Log *slog.Logger
 }
 
 // LookupTXT answers the `TXT` values addr gives for fqdn.
@@ -80,22 +85,46 @@ func (s Servers) Wait(ctx context.Context, fqdn, value string, report func(done,
 	if report == nil {
 		report = func(int, int, bool) {}
 	}
+	log := s.Log
+	if log == nil {
+		log = slog.New(slog.DiscardHandler)
+	}
 	if s.intercepted(ctx) {
+		log.Info("This network answers DNS in place of deSEC's servers. Waiting a fixed time.", "wait", s.fallbackWait())
 		return s.fallback(ctx, report)
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	timedOut := errors.New("deSEC took longer than usual to publish the record that proves the name is yours. Try again in a few minutes.")
-	for seen, round := 0, 0; ; round++ {
-		have, answered := s.count(ctx, fqdn, value)
+	started := time.Now()
+	shown := -1
+	var last round
+	stopped := func() error {
+		log.Warn("deSEC took longer than usual. Stopped waiting.", "after", time.Since(started).Round(time.Second),
+			"shown", len(last.have), "of", len(s.Addrs), "late", names(last.late), "silent", names(last.silent))
+		return timedOut
+	}
+	for seen, n := 0, 0; ; n++ {
+		r := s.count(ctx, fqdn, value)
 		// A round the deadline cut short counts servers as silent that
 		// were only interrupted, so it is not reported.
-		if ctx.Err() != nil && round > 0 {
-			return timedOut
+		if ctx.Err() != nil && n > 0 {
+			return stopped()
 		}
-		if answered == 0 && round == 0 {
+		if r.answered() == 0 && n == 0 {
+			log.Info("No deSEC server answers from this network. Waiting a fixed time.", "wait", s.fallbackWait())
 			return s.fallback(ctx, report)
 		}
+		// A round that changes the count is a step; the same count again
+		// is a detail.
+		level := slog.LevelDebug
+		if len(r.have) != shown {
+			level, shown = slog.LevelInfo, len(r.have)
+		}
+		log.Log(ctx, level, "deSEC servers show the proof.", "shown", len(r.have), "of", len(s.Addrs), "round", n+1,
+			"late", names(r.late), "silent", names(r.silent))
+		last = r
+		have, answered := len(r.have), r.answered()
 		report(have, len(s.Addrs), false)
 		if answered > 0 && have == answered {
 			seen++
@@ -107,7 +136,7 @@ func (s Servers) Wait(ctx context.Context, fqdn, value string, report func(done,
 		}
 		select {
 		case <-ctx.Done():
-			return timedOut
+			return stopped()
 		case <-time.After(interval):
 		}
 	}
@@ -128,13 +157,16 @@ func (s Servers) intercepted(ctx context.Context) bool {
 	return err == nil || errors.As(err, &dnsErr) && dnsErr.IsNotFound
 }
 
+func (s Servers) fallbackWait() time.Duration {
+	if s.Fallback == 0 {
+		return 3 * time.Minute
+	}
+	return s.Fallback
+}
+
 // fallback waits Fallback, reporting each second.
 func (s Servers) fallback(ctx context.Context, report func(done, total int, timed bool)) error {
-	total := s.Fallback
-	if total == 0 {
-		total = 3 * time.Minute
-	}
-	secs := int(total / time.Second)
+	secs := int(s.fallbackWait() / time.Second)
 	t := time.NewTicker(time.Second)
 	defer t.Stop()
 	for done := 0; done < secs; done++ {
@@ -149,29 +181,58 @@ func (s Servers) fallback(ctx context.Context, report func(done, total int, time
 	return nil
 }
 
-// count answers how many servers show value for fqdn, and how many
-// answered at all. The servers are asked together, each for at most a few
-// seconds, so a silent one does not hold up the others.
-func (s Servers) count(ctx context.Context, fqdn, value string) (have, answered int) {
+// round is one round of asking: the servers that show the record, those
+// that answer without it, and those that do not answer.
+type round struct {
+	have, late, silent []string
+}
+
+func (r round) answered() int { return len(r.have) + len(r.late) }
+
+// count asks every server for value at fqdn. The servers are asked
+// together, each for at most a few seconds, so a silent one does not hold
+// up the others.
+func (s Servers) count(ctx context.Context, fqdn, value string) round {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
+	var r round
 	for _, addr := range s.Addrs {
 		wg.Go(func() {
 			ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 			defer cancel()
 			values, err := LookupTXT(ctx, addr, fqdn)
 			var dnsErr *net.DNSError
-			if err != nil && !(errors.As(err, &dnsErr) && dnsErr.IsNotFound) {
-				return
-			}
 			mu.Lock()
 			defer mu.Unlock()
-			answered++
-			if slices.Contains(values, value) {
-				have++
+			switch {
+			case err != nil && !(errors.As(err, &dnsErr) && dnsErr.IsNotFound):
+				r.silent = append(r.silent, addr)
+			case slices.Contains(values, value):
+				r.have = append(r.have, addr)
+			default:
+				r.late = append(r.late, addr)
 			}
 		})
 	}
 	wg.Wait()
-	return have, answered
+	return r
+}
+
+// names answers addrs as a short, sorted list for the log: "syd-1.a" for
+// syd-1.a.desec.io:53, and "-" for none.
+func names(addrs []string) string {
+	if len(addrs) == 0 {
+		return "-"
+	}
+	short := make([]string, 0, len(addrs))
+	for _, a := range addrs {
+		host, _, err := net.SplitHostPort(a)
+		if err != nil {
+			host = a
+		}
+		host = strings.TrimSuffix(strings.TrimSuffix(host, ".desec.io"), ".desec.org")
+		short = append(short, host)
+	}
+	slices.Sort(short)
+	return strings.Join(short, ",")
 }

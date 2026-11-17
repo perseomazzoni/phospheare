@@ -348,28 +348,43 @@ describe("— composed text reaches the model", () => {
     expect(engine.updateSelection).not.toHaveBeenCalled();
   });
 
-  it("an unhandled inputType reaches the deliberate default and does nothing", () => {
+  it("refuses a drop on purpose, and reports nothing for it", () => {
     // `insertFromDrop` is never routed: it would carry arbitrary HTML past
     // `parseHtmlAllowlist`, the one hardened HTML-to-model boundary.
-    //
-    // Vitest runs with `import.meta.env.DEV` true, so the path's dev-only
-    // `console.warn` fires on every run; the row asserts it rather than
-    // leaving unowned output.
     const engine = mockEngine();
     const { el } = editable("hello");
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const report = vi.fn();
     dispatchBeforeInput(
       el,
       engine,
       inputEvent({ inputType: "insertFromDrop", data: "<b>x</b>" }),
       flags(),
       () => {},
+      report,
     );
     expect(engine.type).not.toHaveBeenCalled();
     expect(engine.replaceRange).not.toHaveBeenCalled();
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('unhandled inputType "insertFromDrop"'),
+    expect(report).not.toHaveBeenCalled();
+  });
+
+  it("reports an input it does not handle by its type, and does nothing", () => {
+    const engine = mockEngine();
+    const { el } = editable("hello");
+    const report = vi.fn();
+    dispatchBeforeInput(
+      el,
+      engine,
+      inputEvent({
+        inputType: "insertFromYank",
+        data: "private words",
+        cancelable: false,
+      }),
+      flags(),
+      () => {},
+      report,
     );
-    warn.mockRestore();
+    expect(engine.type).not.toHaveBeenCalled();
+    expect(engine.replaceRange).not.toHaveBeenCalled();
+    expect(report).toHaveBeenCalledWith("insertFromYank", false);
   });
 });

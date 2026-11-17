@@ -129,7 +129,7 @@ class FileStorage {
       readFile: async (_ref: ProjectRef, path: string) => {
         if (this.unreadable.has(path)) throw new Error("unreadable");
         const value = this.files.get(path);
-        if (value === undefined) throw new Error("missing");
+        if (value === undefined) throw new StorageError("missing", "not-found");
         return value;
       },
       writeFile: async (_ref: ProjectRef, path: string, value: string) => {
@@ -618,6 +618,29 @@ describe("ProjectAiAdapter", () => {
     const conflictFile = outcome.conflictFile;
     if (!conflictFile) throw new Error("expected conflict file");
     expect(disk.files.get(conflictFile)).toBe(serializeChat(external));
+  });
+
+  it("fails the save, and leaves the file, when the chat file cannot be read", async () => {
+    const { adapter, disk } = await setup();
+    const original = chat();
+    await adapter.saveChat(original);
+    const path = `/assistant/chat--${CHAT_ID}.json`;
+    const before = disk.files.get(path);
+    disk.unreadable.add(path);
+    await expect(
+      adapter.saveChat({ ...original, title: "Mine" }),
+    ).rejects.toThrow("unreadable");
+    expect(disk.files.get(path)).toBe(before);
+  });
+
+  it("creates the chat file again when it is gone", async () => {
+    const { adapter, disk } = await setup();
+    const original = chat();
+    await adapter.saveChat(original);
+    const path = `/assistant/chat--${CHAT_ID}.json`;
+    disk.files.delete(path);
+    await adapter.saveChat({ ...original, title: "Mine" });
+    expect(disk.files.get(path)).toContain("Mine");
   });
 
   // The other writer's copy must exist before this one replaces it: a copy

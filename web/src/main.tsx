@@ -21,9 +21,12 @@ import {
   reactRootOptions,
   showBootFailure,
 } from "./fault";
+import { appLog, describeError, installLog } from "./log";
 
-// Before anything can fail: from here on every failure is reported once, and
-// none reaches the writer as a message or a stack.
+// Before anything can fail: from here on every failure is reported once, to
+// the console and to the log this browser keeps, and none reaches the writer
+// as a message or a stack.
+installLog();
 installFaultListeners();
 
 async function main() {
@@ -39,7 +42,15 @@ async function main() {
 
   await initI18n();
   // A sheet that cannot be fetched leaves the app unpainted but working.
-  await dressed.catch(() => null);
+  await dressed.catch((err: unknown) => {
+    // The scheme is on the page before the fetch; the theme's id is not.
+    appLog.warn("theme", "The theme's sheet could not be loaded at start.", {
+      scheme: document.documentElement.style.colorScheme || null,
+      online: navigator.onLine,
+      ...describeError(err),
+    });
+    return null;
+  });
 
   // A change made moments ago, such as a theme change, waits for its merge
   // with Remote Storage; a tab closed or put away before it runs would keep

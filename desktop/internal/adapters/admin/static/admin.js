@@ -978,6 +978,9 @@
       if (ok) a.href = terms.url;
       else a.removeAttribute("href");
     });
+    box.querySelectorAll(".terms-name").forEach(function (c) {
+      c.textContent = lan.name.domain || "";
+    });
     var accept = $("lan-terms-accept");
     accept.hidden = !ok;
     if (!accept.disabled) accept.textContent = w(st.state === "running" ? "terms.continue" : "terms.turnOn");
@@ -1197,20 +1200,24 @@
   }
 
   // renderWaiting shows where deSEC's activation link stands, and asks again
-  // in 15 seconds until it is used or expires.
+  // in 15 seconds until it is used or expires. A confirmed name keeps the
+  // steps in view: the person may still be on deSEC's page, which the last
+  // step tells them how to read.
   function renderWaiting(n, first) {
     clearTimeout(nameTimer);
     nameTimer = 0;
     var linked = n.state === "linked";
-    $("waiting-on").hidden = linked;
+    $("waiting-status").hidden = linked;
+    $("waiting-restart").hidden = linked;
     $("name-done").hidden = !linked;
+    $("waiting-email").textContent = n.email;
+    $("waiting-domain").textContent = n.domain;
     if (linked) {
+      $("waiting-slow").hidden = true;
       $("done-domain").textContent = n.domain;
       showFoot();
       return;
     }
-    $("waiting-email").textContent = n.email;
-    $("waiting-domain").textContent = n.domain;
     var waited = Date.now() - new Date(n.requested).getTime();
     $("waiting-slow").hidden = n.state === "expired" || waited < 5 * 60 * 1000;
     if (n.state === "expired") {
@@ -1474,9 +1481,31 @@
     renderHome(s);
     renderLAN(s.lan, fillForms);
     $("start-at-login").checked = s.startAtLogin;
+    renderDetailed(s.logs.detailedUntil);
     $("wipe-google").disabled = !googleSet(s.google);
     if (s.startAtLoginError) say($("login-result"), s.startAtLoginError, "error");
     settle();
+  }
+
+  // renderDetailed shows until when the detailed log is on, in the page's
+  // language; "" is off.
+  function renderDetailed(until) {
+    $("logs-detailed").checked = until !== "";
+    if (!until) { say($("detailed-result"), "", ""); return; }
+    var time = new Date(until).toLocaleString(document.documentElement.lang || undefined,
+      { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+    say($("detailed-result"), w("logs.until", { time: time }), "");
+  }
+
+  // showLogFolder says where the log files are, to copy, when the folder
+  // could not open.
+  function showLogFolder() {
+    var out = $("logs-result");
+    say(out, w("logs.notOpened") + " ", "warn");
+    var code = document.createElement("code");
+    code.textContent = state.logs.folder;
+    out.appendChild(code);
+    out.appendChild(copyButton(code));
   }
 
   function refresh(fillForms) {
@@ -1713,6 +1742,20 @@
       }, function (err) { say(out, err.message, "error"); refresh(false); });
     });
 
+    $("logs-open").addEventListener("click", function () {
+      say($("logs-result"), "", "");
+      api("POST", "logs/open").then(null, function (err) {
+        if (err.code === "logs-open-failed") showLogFolder();
+        else say($("logs-result"), err.message, "error");
+      });
+    });
+
+    $("logs-detailed").addEventListener("change", function (e) {
+      api("PUT", "logs/detailed", { on: e.target.checked }).then(function (res) {
+        renderDetailed(res.detailedUntil);
+      }, function (err) { refresh(false).then(function () { say($("detailed-result"), err.message, "error"); }); });
+    });
+
     $("sign-out-all").addEventListener("click", function () {
       if (!window.confirm(w("browsers.confirm"))) return;
       var out = $("browsers-result");
@@ -1796,6 +1839,12 @@
       else if (state && googleSet(state.google)) checkGoogle();
       // The tray's "Open on a phone or tablet" arrives here.
       if (location.hash === "#phones") $("card-home").scrollIntoView({ block: "start" });
+      // The tray's "Show the log files" arrives here when the folder did
+      // not open.
+      if (location.hash === "#logs" && state) {
+        showLogFolder();
+        $("logs-line").scrollIntoView({ block: "center" });
+      }
     });
   });
 })();

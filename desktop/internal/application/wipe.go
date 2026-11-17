@@ -25,6 +25,8 @@ type Wipe struct {
 	// Certs is the home-network certificate, with its keys.
 	Certs     interface{ Forget() error }
 	Autostart ports.Autostart
+	// Logs is the program's log files, with their detailed time.
+	Logs interface{ Clear() error }
 }
 
 // Google forgets the Google client and replaces the seal keys. The
@@ -40,10 +42,10 @@ func (w *Wipe) Google() error {
 }
 
 // Everything also stops the home network and forgets its name, settings
-// and certificate, stops starting at login, and removes the seal keys, so
-// the vault keeps nothing for this setup. The identity service's own port
-// and an ACME directory set by hand stay, since nothing on the setup page
-// sets them.
+// and certificate, stops starting at login, removes the seal keys, so the
+// vault keeps nothing for this setup, and empties the log files. The
+// identity service's own port and an ACME directory set by hand stay, since
+// nothing on the setup page sets them.
 func (w *Wipe) Everything() error {
 	if err := w.LAN.Stop(); err != nil {
 		return fmt.Errorf("stop home-network access: %w", err)
@@ -65,6 +67,9 @@ func (w *Wipe) Everything() error {
 	}
 	if err := w.Identity.ForgetKeys(); err != nil {
 		return fmt.Errorf("sign the browsers out: %w", err)
+	}
+	if err := w.Logs.Clear(); err != nil {
+		return fmt.Errorf("empty the log: %w", err)
 	}
 	return nil
 }

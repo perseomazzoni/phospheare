@@ -31,6 +31,7 @@ import {
 } from "./driveRest";
 import { projectsFolderId } from "./driveLayout";
 import { listProjectsInFolder } from "./projectScan";
+import { appLog, describeError } from "../log";
 
 // ── Google Drive provider ────────────────────────────────────────────────────
 //
@@ -382,10 +383,21 @@ export const driveProvider: StorageProvider = {
       const response = await driveFetch(
         `${FILES_ENDPOINT}/${driveId(ref.key)}?fields=id,trashed`,
       );
-      if (!response.ok) return false;
+      if (!response.ok) {
+        // A 404 is a folder that is gone; any other refusal reads as gone too,
+        // and only the log tells the two apart.
+        if (response.status !== 404)
+          appLog.warn("drive", "A Remote Storage book could not be reopened.", {
+            status: response.status,
+          });
+        return false;
+      }
       const file = (await response.json()) as { trashed?: boolean };
       return file.trashed !== true;
-    } catch {
+    } catch (err) {
+      appLog.warn("drive", "A Remote Storage book could not be reopened.", {
+        ...describeError(err),
+      });
       return false;
     }
   },
@@ -724,7 +736,16 @@ export const driveProvider: StorageProvider = {
  * carry a structure manifest.
  */
 export async function listDriveProjects(): Promise<ProjectRef[]> {
-  const projectsId = await projectsFolderId().catch(() => null);
+  const projectsId = await projectsFolderId().catch((err: unknown) => {
+    appLog.warn(
+      "drive",
+      "The Remote Storage projects folder could not be reached.",
+      {
+        ...describeError(err),
+      },
+    );
+    return null;
+  });
   if (!projectsId) return [];
 
   // A project added from another device or drive.google.com is invisible to

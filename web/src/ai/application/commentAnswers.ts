@@ -25,6 +25,8 @@ import type {
   SourceDescriptor,
 } from "../domain/types";
 import { withHost } from "./features";
+import { ModelRunError } from "./runStep";
+import { appLog, describeError } from "../../log";
 
 export type MarginAnswer =
   { ok: true } | { ok: false; reason: "unavailable" | "no-model" | "failed" };
@@ -158,7 +160,17 @@ export async function answerComment(
       answer.searched,
     );
     return { ok: true };
-  } catch {
+  } catch (err) {
+    const cancelled =
+      abort.signal.aborted ||
+      (err instanceof ModelRunError && err.failure.code === "cancelled");
+    if (!cancelled)
+      appLog.warn("ai", "A margin comment could not be answered.", {
+        persona: persona.id,
+        provider: modelRef.providerId,
+        model: modelRef.modelId,
+        ...describeError(err),
+      });
     return { ok: false, reason: "failed" };
   } finally {
     host.marginRuns.delete(abort);

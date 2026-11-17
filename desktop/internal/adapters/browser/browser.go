@@ -3,7 +3,8 @@
 // Free software under the GNU Affero General Public License, version 3 or
 // later; the full text is in `LICENSE`.
 
-// Package browser opens a URL in the user's default browser.
+// Package browser opens a URL in the user's default browser, and a folder
+// in the file manager.
 package browser
 
 import (
@@ -23,9 +24,26 @@ func Command(goos, url string) (string, []string) {
 	}
 }
 
+// FolderCommand answers the program and arguments that show dir in the
+// file manager of goos.
+func FolderCommand(goos, dir string) (string, []string) {
+	if goos == "windows" {
+		return "explorer", []string{dir}
+	}
+	return Command(goos, dir)
+}
+
 // Open starts the default browser at url without waiting for it.
 func Open(url string) error {
-	name, args := Command(runtime.GOOS, url)
+	return start(Command(runtime.GOOS, url))
+}
+
+// OpenFolder shows dir in the file manager without waiting for it.
+func OpenFolder(dir string) error {
+	return start(FolderCommand(runtime.GOOS, dir))
+}
+
+func start(name string, args []string) error {
 	cmd := exec.Command(name, args...)
 	if err := cmd.Start(); err != nil {
 		return err

@@ -6,6 +6,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { identityPlatform } from "./identityPlatform";
+import { appLog } from "../log";
 import { forgetIdentityProof, IDENTITY_PROOF_PREFIX } from "./index";
 
 // Pins the SPA's side of the identity service's wire: the header every call
@@ -424,6 +425,28 @@ describe("the writer session", () => {
       method: "DELETE",
       body: { revoke: true },
     });
+  });
+
+  it("names a refused call by its route, never the connection's id", async () => {
+    handler = (call) =>
+      call.path.startsWith("/identity/google/connections/")
+        ? new Response(JSON.stringify({ code: "not-connected" }), {
+            status: 404,
+            headers: { "Content-Type": "application/problem+json" },
+          })
+        : answered(call);
+    const warn = vi.spyOn(appLog, "warn").mockImplementation(() => {});
+    const platform = identityPlatform();
+    await platform
+      .disconnectDrive({ connectionId: "conn-secret-9", revoke: false })
+      .catch(() => undefined);
+    const line = warn.mock.calls.find((call) => call[0] === "identity");
+    expect(line?.[2]).toMatchObject({
+      call: "/google/connections/{id}",
+      status: 404,
+    });
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("conn-secret-9");
+    warn.mockRestore();
   });
 
   it("restates the binding once on writer-mismatch, and retries", async () => {

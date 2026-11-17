@@ -86,6 +86,7 @@ export const PRIVACY: LegalDocument = {
             "ai",
             "transit",
             "desktop",
+            "log",
           ],
         },
         text("required"),
@@ -97,7 +98,7 @@ export const PRIVACY: LegalDocument = {
         {
           kind: "list",
           key: "list",
-          items: ["account", "sessions", "removed", "aiKey", "sync"],
+          items: ["account", "sessions", "removed", "aiKey", "sync", "log"],
         },
         text("cleanup"),
         text("deletion"),

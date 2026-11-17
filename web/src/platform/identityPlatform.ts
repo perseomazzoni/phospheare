@@ -5,6 +5,7 @@
 
 import { dropSessionCredentials, identityVault } from "./identityVault";
 import { openChannel } from "./channel";
+import { appLog, describeError } from "../log";
 import {
   IDENTITY_REQUEST_HEADER,
   IDENTITY_SESSION_HEADER,
@@ -115,6 +116,17 @@ function isSessionAnswer(value: unknown): boolean {
 }
 
 /**
+ * A call as the log names it: its route, with a flow's or a connection's id
+ * as `{id}`, and no query. The ids grant nothing alone, but they are the
+ * account's.
+ */
+function callForLog(path: string): string {
+  return path
+    .split("?")[0]
+    .replace(/\/(flows|connections)\/[^/]+/g, "/$1/{id}");
+}
+
+/**
  * The identity service's answer to one call, or the refusal it answered. A
  * service that cannot be reached, or that answers a page, rejects as
  * `unavailable`.
@@ -140,7 +152,14 @@ async function identityAnswer<T>(
       redirect: "error",
       signal: init.signal,
     });
-  } catch {
+  } catch (error) {
+    // An abort is the caller's own choice, not a failure.
+    if (!init.signal?.aborted) {
+      appLog.warn("identity", "The identity service could not be reached.", {
+        call: callForLog(path),
+        ...describeError(error),
+      });
+    }
     throw new PlatformError(
       "unavailable",
       "The identity service could not be reached.",
@@ -153,6 +172,10 @@ async function identityAnswer<T>(
     try {
       return (await response.json()) as T;
     } catch {
+      appLog.warn("identity", "The identity service did not answer.", {
+        call: callForLog(path),
+        status: response.status,
+      });
       throw new PlatformError(
         "unavailable",
         "The identity service did not answer.",
@@ -166,6 +189,11 @@ async function identityAnswer<T>(
   } catch {
     // An unreadable refusal is still a refusal; the status decides.
   }
+  appLog.warn("identity", "The identity service refused a request.", {
+    call: callForLog(path),
+    status: response.status,
+    code: typeof body.code === "string" ? body.code : null,
+  });
   return new Refusal(
     response.status,
     typeof body.code === "string" ? body.code : null,

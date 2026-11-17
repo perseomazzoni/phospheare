@@ -9,6 +9,7 @@ import type { ProjectRef, StorageProvider } from "../../storage";
 import type { DockFace } from "../components/Dock";
 import type { CompareInfo } from "../components/SnapshotPanel";
 import type { EditorEngine } from "../views/engine";
+import { appLog, describeError } from "../../log";
 
 // The two review modes: the dock's snapshot comparison and the history rail.
 // They are mutually exclusive, and the comparison's reads race the writer's
@@ -95,7 +96,10 @@ export function useComparison({
           engine.setDiffGranularity("word");
           engine.setDiffDirection("adoptedWithSelected");
           engine.enterDiff(compared);
-        } catch {
+        } catch (err) {
+          appLog.warn("editor", "A snapshot could not be opened to compare.", {
+            ...describeError(err),
+          });
           // An unreadable file is no comparison, so the editor stays
           // editable. This path bumps the exit counter itself, or the row
           // would stay highlighted over a comparison that never opened.

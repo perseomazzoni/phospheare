@@ -7,6 +7,7 @@ import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { scaffoldProject, type ProjectSeed } from "../../../project/scaffold";
 import { createStepIndex } from "../../../project/createSteps";
+import { refForLog } from "../../../project/logRef";
 import {
   createDriveProject,
   createLocalProject,
@@ -25,6 +26,7 @@ import {
   type LibraryCardsApi,
   type ShelfUser,
 } from "./shelfActions";
+import { appLog, describeError } from "../../../log";
 
 export interface CreateProjectInput {
   user: ShelfUser;
@@ -83,6 +85,7 @@ export function useCreateProject({
       inFlight.current = true;
       clearFailure();
       setError(null);
+      const began = Date.now();
       try {
         // The job face is up from the first await: creating the folder is
         // the slowest single call (a Remote Storage round-trip), and an idle
@@ -110,6 +113,14 @@ export function useCreateProject({
         );
         setProgress({ index: createStepIndex("adopt") });
         await adopt(ref);
+        appLog.info("library", "A project was created.", {
+          ...refForLog(ref),
+          destination: seed.destination,
+          // Only an import arrives with word counts.
+          imported: seed.init.stats !== undefined,
+          documents: seed.init.shape?.files.length ?? 0,
+          ms: Date.now() - began,
+        });
         setProgress(null);
         setCreating(false);
         setImporting(false);
@@ -119,6 +130,10 @@ export function useCreateProject({
         // The wizard keeps its own values, and the failure shows as a
         // create-context line inside it. A non-storage failure reads "could
         // not be created", never "could not be opened".
+        appLog.error("library", "A project could not be created.", {
+          destination: seed.destination,
+          ...describeError(err),
+        });
         setProgress(null);
         setError(storageErrorMessage(err, t, t("create.failed")));
         return false;

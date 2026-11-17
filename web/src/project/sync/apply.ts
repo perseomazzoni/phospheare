@@ -23,6 +23,7 @@ import {
 import { isNotFound, isScanned, remoteCopyGone, scan } from "./scan";
 import { sha256Hex } from "../../text/hash";
 import type { SyncVerdict } from "./compare";
+import { appLog, describeError } from "../../log";
 
 interface Side {
   provider: StorageProvider;
@@ -76,6 +77,7 @@ export async function pull(
   paths: readonly string[],
   manifest: SyncManifest,
 ): Promise<SyncManifest> {
+  const began = Date.now();
   let next = manifest;
   let remotePresent = false;
   const held = new Map<string, boolean>();
@@ -127,6 +129,11 @@ export async function pull(
           })
         : withoutPath(next, path);
   }
+  appLog.info("sync", "Changes were pulled.", {
+    provider: remote.ref.providerId,
+    files: paths.length,
+    ms: Date.now() - began,
+  });
   return next;
 }
 
@@ -143,6 +150,7 @@ export async function push(
   paths: readonly string[],
   manifest: SyncManifest,
 ): Promise<SyncManifest> {
+  const began = Date.now();
   let next = manifest;
   for (const path of paths) {
     let remoteFileId = "";
@@ -174,6 +182,11 @@ export async function push(
           })
         : withoutPath(next, path);
   }
+  appLog.info("sync", "Changes were pushed.", {
+    provider: remote.ref.providerId,
+    files: paths.length,
+    ms: Date.now() - began,
+  });
   return next;
 }
 
@@ -271,7 +284,12 @@ export function isWinnerUnsettled(err: unknown): boolean {
 async function textOrNull(side: Side, path: string): Promise<string | null> {
   try {
     return await side.provider.readFile(side.ref, path);
-  } catch {
+  } catch (err) {
+    if (!isNotFound(err))
+      appLog.warn("sync", "A file could not be read to resolve a conflict.", {
+        provider: side.ref.providerId,
+        ...describeError(err),
+      });
     return null;
   }
 }
@@ -304,6 +322,7 @@ export async function resolveConflict(
   opts: CopyOptions = {},
 ): Promise<{ manifest: SyncManifest; backupDir: string | null }> {
   if (verdict.remoteGone) throw remoteGoneError();
+  const began = Date.now();
   const [kept, discarded] =
     keep === "local" ? [local, remote] : [remote, local];
 
@@ -341,5 +360,11 @@ export async function resolveConflict(
   }
 
   const manifest = await rebuildManifest(local, remote, remoteTarget);
+  appLog.info("sync", "A conflict was resolved.", {
+    provider: remote.ref.providerId,
+    keep,
+    files: files.length,
+    ms: Date.now() - began,
+  });
   return { manifest, backupDir };
 }

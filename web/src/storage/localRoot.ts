@@ -5,6 +5,7 @@
 
 import { getHandle, putHandle, removeHandle } from "./handleStore";
 import { onUserChange } from "../auth/currentUser";
+import { appLog, describeError } from "../log";
 import {
   LOCAL_PROVIDER_ID,
   StorageError,
@@ -178,11 +179,22 @@ export async function rootPermission(): Promise<Access> {
   try {
     const permission = await root.queryPermission({ mode: "readwrite" });
     return permission === "granted" ? "granted" : "needs-gesture";
-  } catch {
-    // A handle the browser will not answer about cannot be used.
+  } catch (err) {
+    // A handle the browser will not answer about cannot be used. The Library
+    // asks for every local card at once, so the failure is written once.
+    if (!permissionFailureLogged) {
+      permissionFailureLogged = true;
+      appLog.warn(
+        "storage",
+        "The browser would not say whether the local folder can be read.",
+        { ...describeError(err) },
+      );
+    }
     return "gone";
   }
 }
+
+let permissionFailureLogged = false;
 
 // The folder picker is the one way access is granted or re-granted.
 // A fresh pick grants its subtree in every permission state, so reconnect is

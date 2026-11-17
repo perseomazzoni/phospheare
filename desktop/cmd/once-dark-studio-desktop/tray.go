@@ -6,7 +6,7 @@
 package main
 
 import (
-	"strings"
+	"log/slog"
 
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/admin"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/autostart"
@@ -22,13 +22,14 @@ import (
 // home-network manager, login list and settings, and the same quit. The
 // menu shows the login list's kept reading, which a change from the menu,
 // the setup page or a wipe drops and a setup page load reads again.
-func trayActions(local, key, systemLanguage string, store ports.ConfigStore, lan *application.Manager, login *autostart.Remembered,
-	executable func() (string, error), loginArgs []string, quit func(), logf func(string, ...any)) tray.Actions {
-	open := func(url string) func() {
+func trayActions(local, key, systemLanguage, logDir string, store ports.ConfigStore, lan *application.Manager, login *autostart.Remembered,
+	executable func() (string, error), loginArgs []string, quit func(), log *slog.Logger) tray.Actions {
+	// page names what the browser was to open, never its address: the
+	// setup page's address holds the launch key.
+	open := func(url, page string) func() {
 		return func() {
 			if err := browser.Open(url); err != nil {
-				// The fragment holds the launch key, which the log never holds.
-				logf("tray: the browser did not open %s: %v", strings.SplitN(url, "#", 2)[0], err)
+				log.Warn("The browser did not open.", "page", page, "error", err)
 			}
 		}
 	}
@@ -37,9 +38,9 @@ func trayActions(local, key, systemLanguage string, store ports.ConfigStore, lan
 		Words: func() tray.Words {
 			return words.For(domain.Language(store.Get().Language, systemLanguage), productName)
 		},
-		Open:         open(local + "/app"),
-		Setup:        open(admin.SetupURL(local, key, "")),
-		OpenOnPhone:  open(admin.SetupURL(local, key, "phones")),
+		Open:         open(local+"/app", "app"),
+		Setup:        open(admin.SetupURL(local, key, ""), "setup"),
+		OpenOnPhone:  open(admin.SetupURL(local, key, "phones"), "phones"),
 		Network:      func() tray.Network { return networkOf(store.Get(), lan.Status()) },
 		StartNetwork: lan.TurnOn,
 		StopNetwork:  lan.TurnOff,
@@ -58,8 +59,15 @@ func trayActions(local, key, systemLanguage string, store ports.ConfigStore, lan
 			}
 			return store.Update(func(c *domain.Config) { c.StartAtLogin = on })
 		},
+		// When the folder cannot open, the setup page shows its path.
+		ShowLogs: func() {
+			if err := browser.OpenFolder(logDir); err != nil {
+				log.Warn("The log folder did not open.", "error", err)
+				open(admin.SetupURL(local, key, "logs"), "logs")()
+			}
+		},
 		Quit: quit,
-		Logf: logf,
+		Log:  log,
 	}
 }
 

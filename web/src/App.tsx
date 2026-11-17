@@ -19,6 +19,7 @@ import {
   NotFoundPage,
   RouteFault,
   reloadPage,
+  setFaultRoute,
   useUpdateReady,
   type FaultHome,
 } from "./fault";
@@ -31,6 +32,8 @@ import {
   SettingsSheet,
   SessionGate,
 } from "./webapp";
+import { LogSheet } from "./log/page";
+import { appLog } from "./log";
 import { memoryProvider } from "./storage";
 import { useDriveGrantLapsed } from "./storage/driveGrant";
 import { useDeviceWork, useLostChanges } from "./webapp/shell/useDeviceWork";
@@ -129,6 +132,7 @@ const router = createBrowserRouter([
             children: [
               { index: true, element: null },
               { path: "settings", element: <SettingsSheet /> },
+              { path: "log", element: <LogSheet /> },
             ],
           },
           {
@@ -147,6 +151,36 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+/**
+ * The route pattern a state is on, such as `/app/project/:projectId`. The
+ * address itself stays out of the log: its query can hold a sign-in code.
+ */
+function routePattern(state: typeof router.state): string {
+  const joined = state.matches
+    .map((match) => match.route.path ?? "")
+    .filter((path) => path !== "")
+    .join("/");
+  return `/${joined}`.replace(/\/{2,}/g, "/");
+}
+
+// One line for each page the writer reaches, by its pattern; the project's
+// uuid is the one value a pattern takes.
+// A failure's log line names the page the same way.
+setFaultRoute(() => routePattern(router.state));
+let lastRoute = routePattern(router.state);
+appLog.info("nav", "A page opened.", { route: lastRoute });
+router.subscribe((state) => {
+  if (state.navigation.state !== "idle") return;
+  const route = routePattern(state);
+  const project = state.matches[state.matches.length - 1]?.params.projectId;
+  if (route === lastRoute && !project) return;
+  lastRoute = route;
+  appLog.info("nav", "A page opened.", {
+    route,
+    ...(project ? { project } : {}),
+  });
+});
 
 export default function App() {
   // The notice column sits outside the router: a standing status is a fact

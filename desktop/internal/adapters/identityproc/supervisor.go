@@ -26,7 +26,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net"
 	"net/url"
 	"os"
@@ -61,10 +61,15 @@ type Supervisor struct {
 	ProductName string
 	// Settings answers the settings of the next run.
 	Settings func() Settings
-	Logger   *log.Logger
-	// Output takes the service's own log; the desktop's standard error when
-	// nil.
+	// Log takes the supervisor's own lines; it may be nil.
+	Log *slog.Logger
+	// Output takes the service's own log, which it writes as JSON lines
+	// when LogLevel is set; the desktop's standard error when nil.
 	Output io.Writer
+	// LogLevel answers the level the service logs at, by name (debug,
+	// info, warn or error); nil leaves the service's own default and text
+	// lines.
+	LogLevel func() string
 	// ReadyTimeout bounds a start; 15 seconds when zero.
 	ReadyTimeout time.Duration
 	// RetryAfter is the first pause before a failed start is tried again;
@@ -283,6 +288,9 @@ func (s *Supervisor) start(set Settings) (*child, error) {
 		"IDENTITY_PRODUCT_NAME":        s.ProductName,
 		"IDENTITY_STOP_ON_STDIN_CLOSE": "true",
 	})
+	if s.LogLevel != nil {
+		cmd.Env = append(cmd.Env, "IDENTITY_LOG_FORMAT=json", "IDENTITY_LOG_LEVEL="+s.LogLevel())
+	}
 	var output io.Writer = os.Stderr
 	if s.Output != nil {
 		output = s.Output
@@ -303,7 +311,7 @@ func (s *Supervisor) start(set Settings) (*child, error) {
 		return nil, fmt.Errorf("the identity service did not start: %w", err)
 	}
 	if err := adopt(cmd); err != nil {
-		s.logf("identity service: %v", err)
+		s.log().Warn("The identity service could not be tied to this program.", "error", err)
 	}
 	c := &child{
 		cmd:     cmd,
@@ -406,7 +414,7 @@ func (s *Supervisor) watch(c *child) {
 	if c.expected.Load() {
 		return
 	}
-	s.logf("identity service exited: %v", err)
+	s.log().Error("The identity service stopped by itself. Starting it again.", "error", err)
 	if time.Since(c.started) > time.Minute {
 		s.failures.Store(0)
 	}
@@ -461,7 +469,7 @@ func (s *Supervisor) retry(ctx context.Context) {
 			return
 		}
 		s.restart.Unlock()
-		s.logf("identity service: %v", err)
+		s.log().Error("The identity service did not start.", "error", err)
 	}
 }
 
@@ -477,8 +485,9 @@ func (s *Supervisor) stop(c *child) {
 	}
 }
 
-func (s *Supervisor) logf(format string, args ...any) {
-	if s.Logger != nil {
-		s.Logger.Printf(format, args...)
+func (s *Supervisor) log() *slog.Logger {
+	if s.Log == nil {
+		return slog.New(slog.DiscardHandler)
 	}
+	return s.Log
 }

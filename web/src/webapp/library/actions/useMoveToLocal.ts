@@ -11,6 +11,7 @@ import { copyProject } from "../../../project/transfer";
 import { retryNow, settled } from "../../../project/sync/remoteQueue";
 import { LOST, opsFor } from "../../../project/sync/remoteQueueStore";
 import { refIdentity } from "../../../project/refIdentity";
+import { refForLog } from "../../../project/logRef";
 import {
   createLocalProject,
   localProvider,
@@ -25,10 +26,12 @@ import {
   actionFailure,
   goToAdopted,
   trashOnRemote,
+  type LibraryAction,
   type LibraryCardsApi,
   type ShelfToasts,
   type ShelfUser,
 } from "./shelfActions";
+import { appLog } from "../../../log";
 
 /**
  * Whether the queue still owes the remote work for this book. A lost change
@@ -111,12 +114,13 @@ export function useMoveToLocal({
         return;
       }
 
+      const began = Date.now();
       // The folder first, while the click's permission still holds.
       let target: ProjectRef;
       try {
         target = await createLocalProject(folder);
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "move-to-local-folder"));
         return;
       }
 
@@ -184,10 +188,15 @@ export function useMoveToLocal({
           return;
         }
         await trashOnRemote(card.ref);
+        appLog.info("library", "A Library action succeeded.", {
+          action: "move-to-local-copy" satisfies LibraryAction,
+          ...refForLog(target),
+          ms: Date.now() - began,
+        });
         post(t("library.movedToLocal", { name: card.ref.name }));
         goToAdopted(user.id, target, navigate);
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "move-to-local-copy"));
       } finally {
         opened?.dispose();
         finish();

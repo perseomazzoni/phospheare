@@ -12,6 +12,7 @@
     "dev": "npm run dev --workspace @phospheare/web",
     "dev:identity": "node tools/dev.mjs identity",
     "dev:full": "node tools/dev.mjs full",
+    "dev:wizard": "node tools/dev-wizard.mjs",
     "build": "npm run build --workspace @phospheare/web",
     "preview": "npm run preview --workspace @phospheare/web",
     "test": "npm run test --workspaces --if-present",

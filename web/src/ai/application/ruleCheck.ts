@@ -51,6 +51,7 @@ import {
   structuredAnswer,
   type StructuredAnswerShape,
 } from "./structuredAnswer";
+import { appLog, describeError } from "../../log";
 
 /** The start of a rule finding's id: a fact-check finding, of a rule. */
 export const RULE_FINDING = "fact:rule:";
@@ -269,7 +270,12 @@ async function checkNotes(
   if (Object.keys(fresh).length > 0 && deps.artifacts.writeRuleChecks)
     await deps.artifacts
       .writeRuleChecks(keepRuleChecks(kept, fresh))
-      .catch(() => undefined);
+      .catch((err) =>
+        appLog.warn("ai", "An AI cache file could not be written.", {
+          artifact: "rule-checks",
+          ...describeError(err),
+        }),
+      );
   return { findings, rules: reports, usage };
 }
 

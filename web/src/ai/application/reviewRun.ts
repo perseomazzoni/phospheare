@@ -50,6 +50,7 @@ import type {
   TurnCommand,
 } from "../domain/types";
 import { withHost } from "./features";
+import { appLog, describeError } from "../../log";
 
 /** What a review uses of the aggregate beyond a workflow's host. */
 export interface ReviewHost extends WorkflowHost {
@@ -562,8 +563,12 @@ async function discardPlan(host: ReviewHost, runId: string): Promise<void> {
         reviewRuns: chat.reviewRuns?.filter((run) => run.runId !== runId),
       });
     await host.dependencies.artifacts.deleteReview(runId);
-  } catch {
+  } catch (err) {
     // Left as it is: an orphan the reload tolerates.
+    appLog.warn("ai", "A review plan could not be discarded.", {
+      run: runId,
+      ...describeError(err),
+    });
   }
 }
 
@@ -741,7 +746,11 @@ async function resumeTarget(
       let checkpoint: ReviewCheckpoint | null = null;
       try {
         checkpoint = await host.dependencies.artifacts.loadReview(runId);
-      } catch {
+      } catch (err) {
+        appLog.warn("ai", "A review plan could not be loaded to resume.", {
+          run: runId,
+          ...describeError(err),
+        });
         host.publish({ error: "That review plan could not be found." });
       }
       if (checkpoint === null) {
@@ -857,9 +866,13 @@ async function markReviewInterrupted(
     if (host.snapshot().activeChatId === checkpoint.chatId)
       host.publish({ pendingReview: reviewProgressOf(checkpoint) });
     else clearIfMine();
-  } catch {
+  } catch (err) {
     // The plan itself is unreadable, so there is nothing to resume, but
     // only this run's offer may be withdrawn.
+    appLog.warn("ai", "A review plan could not be read for the resume offer.", {
+      run: runId,
+      ...describeError(err),
+    });
     clearIfMine();
   }
 }

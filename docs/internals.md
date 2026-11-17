@@ -209,6 +209,50 @@ The merge is in `profile/portableDoc.ts`.
 - Add each new portable preference to `DOMAIN` in `portableDoc.ts`, or no
   other installation imports it.
 
+## The app's log
+
+The log is in `web/src/log`. `appLog` is its only entry for the rest of the
+app; `App.tsx` alone imports the page from `log/page.ts`.
+[CONTRIBUTING.md](../CONTRIBUTING.md#rules-the-gates-cannot-fully-check)
+says when code writes a line.
+
+- A line is redacted when it is made, never later. `redact.ts` replaces:
+  - email and IP addresses, but not a product's version such as
+    `Chrome/131.0.0.0`;
+  - `dedyn.io` names and the secrets in a query;
+  - the values that the writer registry knows: the Google name, the emails,
+    the Google `sub`, the photo address and the Drive connection id;
+  - each word of the Google name, as a whole word, as Google gives it and
+    with a capital. In lower case it is the ordinary word: "will" is not
+    "Will".
+- Redaction cannot know a title, a folder name or a sentence of the
+  manuscript. Code keeps them out of a line:
+  - An error whose message can hold one has `toLog()`, which gives the safe
+    fields in its place, as `StorageError` and `ModelRunError` do.
+  - A project goes in a line as `refForLog(ref)` (`project/logRef.ts`): the
+    provider and the project uuid. `ref.key` is a folder name that the
+    writer chose.
+  - `describeError` keeps the frames of a stack and drops the header that
+    repeats the message. It keeps only the name of a `SyntaxError`, whose
+    message quotes the text that `JSON.parse` read.
+- Lines wait 1 second and go to IndexedDB together; an `error` line goes at
+  once. At `pagehide`, the lines that wait and the batches that IndexedDB has
+  not confirmed go to `localStorage`, which writes at once. The next start
+  writes them first. A line can then appear twice.
+- The store keeps the size of all the lines in one record, at id 0, and
+  changes it in the same transaction as the lines. A prune reads only the
+  lines that it removes: those past 14 days, then the oldest while the
+  lines are past `MAX_SIZE` characters, down to `TRIM_TO`
+  (`domain/retention.ts`).
+- The demo site keeps no log. Its build replaces `log/index.ts` and
+  `project/logRef.ts` with twins that do nothing, and its gate refuses the
+  rest of `log/` (`build/demoBuild.ts`, `build/demoBoundary.ts`).
+- The store is one for each browser, not for each writer account. Each
+  line carries the writer account id, so a line tells which account wrote
+  it. A sign-out that cleans this browser, and so an account deletion,
+  empties the whole store, the lines of other accounts included. The store
+  keeps 14 days and 10 MiB of text.
+
 ## Costs of the shape
 
 [architecture.md](architecture.md#security-posture) gives the other costs.

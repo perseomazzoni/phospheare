@@ -6,6 +6,7 @@
 import { REFERENCE_DIR } from "../../project/naming";
 import type { ProjectRef, StorageProvider } from "../../storage";
 import { writeReference } from "../reference/referenceWrite";
+import { appLog, describeError } from "../../log";
 import type { EditSession } from "./domain/referenceGuard";
 
 // The writes of a reference edit session, and the draft the page's exits
@@ -124,7 +125,10 @@ export function createDraftKeeper(onFolderChanged: () => void): DraftKeeper {
         await provider.writeFile(projectRef, pathOf(edit.fileName), edit.draft);
         kept = null;
         return true;
-      } catch {
+      } catch (err) {
+        appLog.warn("editor", "A reference draft could not be written.", {
+          ...describeError(err),
+        });
         return false;
       }
     },
@@ -135,8 +139,12 @@ export function createDraftKeeper(onFolderChanged: () => void): DraftKeeper {
       try {
         if (draft.unborn) await provider.removeFile(projectRef, path);
         else await provider.writeFile(projectRef, path, draft.savedText);
-      } catch {
+      } catch (err) {
         // Best effort: the draft stays on disk, as a killed tab leaves it.
+        appLog.warn("editor", "A reference draft could not be put back.", {
+          unborn: Boolean(draft.unborn),
+          ...describeError(err),
+        });
       }
       // The reader re-reads on the folder's revision, so read mode shows
       // the restored text rather than the draft it may have read first.

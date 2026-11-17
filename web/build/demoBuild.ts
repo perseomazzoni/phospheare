@@ -44,14 +44,26 @@ export function demoPageFiles(): string[] {
 /**
  * Modules the demo build replaces with the `.demo` file beside them, as
  * `web/src/`-relative paths without the extension. A twin keeps its
- * original's exports, so no importer changes.
+ * original's exports, so no importer changes. The log's twins keep and read
+ * nothing: the site has no log.
  */
 export const DEMO_TWINS: readonly string[] = [
   "preferences/compose",
   "legal/compose",
+  "log/index",
+  "project/logRef",
 ];
 
-const TWIN_NAMES = new Set(DEMO_TWINS.map((twin) => twin.split("/").pop()));
+/**
+ * The last segment an import of each twin's original can end in: its file
+ * name, and for an `index` file the folder's name too, as `"../log"` is.
+ */
+const TWIN_NAMES = new Set(
+  DEMO_TWINS.flatMap((twin) => {
+    const [file, folder] = twin.split("/").reverse();
+    return file === "index" && folder ? [file, folder] : [file];
+  }),
+);
 
 /**
  * Whether an import specifier can name a module with a twin: its last
@@ -126,6 +138,7 @@ export const PRUNED_SECTIONS: readonly string[] = [
   "export",
   "import",
   "accountData",
+  "log",
 ];
 
 /**
@@ -141,8 +154,9 @@ export const KEPT_KEYS: readonly string[] = [
 
 /**
  * Keys outside the pruned sections that only stripped code reads: the
- * landing's sign-in, and the full program's legal texts, which the site
- * replaces with its own (`legal/compose.demo.ts`).
+ * landing's sign-in, the settings lines that lead to the log and name the
+ * account, and the full program's legal texts, which the site replaces with
+ * its own (`legal/compose.demo.ts`).
  */
 export const PRUNED_KEYS: readonly string[] = [
   "landing.head.logIn",
@@ -155,6 +169,8 @@ export const PRUNED_KEYS: readonly string[] = [
   "legal.privacy",
   "legal.terms",
   "legal.links.terms",
+  "settings.showLog",
+  "settings.accountId",
 ];
 
 type Strings = { [key: string]: string | Strings };

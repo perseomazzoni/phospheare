@@ -29,6 +29,7 @@ import {
 import type { ProjectSources } from "../ports";
 import { ModelRunError } from "./runStep";
 import type { RunBudget } from "./budgets";
+import { appLog, describeError } from "../../log";
 
 // ── Context selection ────────────────────────────────────────────────────────
 //
@@ -394,13 +395,21 @@ export async function selectDeclared(
     parsed: ParsedReference;
     rendered: string;
   }> = [];
+  const unreadable = new Set<string>();
+  let readError: unknown;
   for (const source of wanted) {
     let capture: SourceText;
     try {
       capture = await sources.read(source.id);
-    } catch {
+    } catch (err) {
       // One unreadable note does not cost the review; it is named instead.
       skipped.push({ sourceId: source.id, reason: "failed" });
+      // A note that is not there is the catalogue running ahead of the
+      // files, which the coverage already names: not worth a line.
+      if ((err as { code?: unknown } | null)?.code !== "not-found") {
+        unreadable.add(source.kind);
+        readError = err;
+      }
       continue;
     }
     // Empty, or still the untouched template: nothing to attach. The room
@@ -417,6 +426,11 @@ export async function selectDeclared(
     if (parsed.records.length === 0) continue;
     captures.push({ source, capture, parsed, rendered: renderForChat(parsed) });
   }
+  if (unreadable.size > 0)
+    appLog.warn("ai", "Reference notes could not be read for a review.", {
+      kinds: [...unreadable].join(","),
+      ...describeError(readError),
+    });
   // A document that does not fit whole is searched for the request's terms
   // (`relevanceTerms`), and its matching records are attached instead, each
   // whole under its role (`selectRecords`), labelled as an excerpt in the
@@ -573,6 +587,8 @@ export async function missingWants(
   attached: ReadonlySet<string>,
 ): Promise<ReadRef[]> {
   const missing: ReadRef[] = [];
+  const unreadable = new Set<string>();
+  let readError: unknown;
   for (const want of wants) {
     const found = declaredSources(catalog, allowed, [want]);
     if (found.length === 0) {
@@ -591,15 +607,24 @@ export async function missingWants(
           written = true;
           break;
         }
-      } catch {
+      } catch (err) {
         // Unreadable is not unwritten: the coverage names a failed read, and
         // the writer is not asked to write what they wrote.
+        if ((err as { code?: unknown } | null)?.code !== "not-found") {
+          unreadable.add(source.kind);
+          readError = err;
+        }
         written = true;
         break;
       }
     }
     if (!written) missing.push(want);
   }
+  if (unreadable.size > 0)
+    appLog.warn("ai", "Reference notes could not be read to check them.", {
+      kinds: [...unreadable].join(","),
+      ...describeError(readError),
+    });
   return missing;
 }
 

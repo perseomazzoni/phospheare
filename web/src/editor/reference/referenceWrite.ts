@@ -4,12 +4,16 @@
 // later; the full text is in `LICENSE`.
 
 import { REFERENCE_DIR } from "../../project/naming";
-import type { ReferenceGroupId } from "../../project/reference";
+import {
+  referenceGroupOf,
+  type ReferenceGroupId,
+} from "../../project/reference";
 import {
   isSectionGroup,
   sectionFileName,
 } from "../../project/referenceSections";
 import type { ProjectRef, StorageProvider } from "../../storage";
+import { appLog, describeError } from "../../log";
 import { sectionTemplate } from "./referenceTemplates";
 
 // The one write seam for reference documents: a file inside `reference/`
@@ -37,7 +41,11 @@ export async function writeReference(
       template,
     );
     return true;
-  } catch {
+  } catch (err) {
+    appLog.warn("reference", "A reference document could not be created.", {
+      group: referenceGroupOf(fileName) ?? "none",
+      ...describeError(err),
+    });
     return false;
   }
 }
@@ -80,7 +88,12 @@ export async function sectionDraft(
         text: await provider.readFile(projectRef, path),
         unborn: false,
       };
-  } catch {
+  } catch (err) {
+    appLog.warn(
+      "reference",
+      "A reference document could not be read to open it for writing.",
+      { group, ...describeError(err) },
+    );
     return null;
   }
   return {
@@ -108,7 +121,13 @@ export async function newDraft(
   try {
     if (await provider.exists(projectRef, `${REFERENCE_DIR}/${fileName}`))
       return null;
-  } catch {
+  } catch (err) {
+    if ((err as { code?: unknown } | null)?.code !== "not-found")
+      appLog.warn(
+        "reference",
+        "A new reference document could not be checked for a taken name.",
+        { ...describeError(err) },
+      );
     return null;
   }
   return { fileName, text: template, unborn: true };

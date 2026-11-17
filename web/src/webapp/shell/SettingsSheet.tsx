@@ -589,6 +589,11 @@ export default function SettingsSheet() {
                       : "settings.accountNoteWithoutGoogle",
                   )}
                 </p>
+                {/* Small and quiet: it is for a problem report, which the
+                    log page copies it into. */}
+                <p className="setting-id">
+                  {t("settings.accountId")} <code>{user.id}</code>
+                </p>
                 <div className="setting-row">
                   <Button
                     variant="outline"
@@ -638,6 +643,19 @@ export default function SettingsSheet() {
               {/* The pitch, and only the pitch: the folder is not the focus
                   of the application, so no line about it follows. */}
               <p className="setting-note">{t("settings.aboutNote")}</p>
+              <div className="setting-row about-log">
+                <Button
+                  variant="outline"
+                  className="ui-btn-sm"
+                  onClick={() =>
+                    void navigate("/app/log", {
+                      state: { fromSettings: true },
+                    })
+                  }
+                >
+                  {t("settings.showLog")}
+                </Button>
+              </div>
               {/* The license and the source are the pane's footer. The
                   repository's address is the one string on screen that spells
                   the working name; `product.test.ts` allows that address and

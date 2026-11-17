@@ -72,6 +72,14 @@ export class StorageError extends Error {
     super(message);
     this.name = "StorageError";
   }
+
+  /**
+   * What the app's log may keep of this error. The message and `params`
+   * stay out: they name paths, and a path names the manuscript.
+   */
+  toLog(): Record<string, string> {
+    return { code: this.code, ...(this.key ? { key: this.key } : {}) };
+  }
 }
 
 /**

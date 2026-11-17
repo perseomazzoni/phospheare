@@ -29,9 +29,14 @@ import {
 import { forgetProject, resolving } from "../../../project/sync/remoteQueue";
 import { getProvider, localProvider, type ProjectRef } from "../../../storage";
 import { withConflict, withSynced, withoutSynced } from "./domain/syncMarks";
+import { appLog, describeError } from "../../../log";
 
 /** How many conflict checks run at once, the same budget as the card reads. */
 const CONCURRENCY = 4;
+
+// The pairings are read on every shelf load, so an unreadable store writes
+// one line a session.
+let pairingsReadLogged = false;
 
 export interface SyncMarksState {
   /**
@@ -127,7 +132,15 @@ export class SyncMarks {
   async readPairings(
     alive: () => boolean,
   ): Promise<Map<string, RemoteTarget> | null> {
-    const pairings = await allPairings().catch(() => null);
+    const pairings = await allPairings().catch((err: unknown) => {
+      if (!pairingsReadLogged) {
+        pairingsReadLogged = true;
+        appLog.warn("sync", "The sync pairings could not be read.", {
+          ...describeError(err),
+        });
+      }
+      return null;
+    });
     if (alive() && pairings)
       this.set({ ...this.state, synced: new Set(pairings.keys()) });
     return pairings;
@@ -155,7 +168,11 @@ export class SyncMarks {
           const local = localSideFor(rows, projectId);
           if (!side || !local) return null;
           return await checkSync(local, side, projectId);
-        } catch {
+        } catch (err) {
+          appLog.warn("sync", "A background sync check failed.", {
+            project: projectId,
+            ...describeError(err),
+          });
           // A failed check is not surfaced: Sync now covers the writer
           // asking, and the next background pass retries. A distinct
           // "failed" sentinel, not `null`: `checkSync` returns `null` for not

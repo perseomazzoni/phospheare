@@ -19,6 +19,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import LeaveDialog from "./LeaveDialog";
 import { splitHeight, useSplitDrag } from "./useSplitDrag";
 import { formatWhen } from "./datetime";
+import { appLog, describeError } from "../../log";
 
 // The snapshot face: the project's saved moments, for the node that is open.
 // A table on top, one row per snapshot, newest first, the adopted one ticked;
@@ -185,7 +186,11 @@ export default function SnapshotPanel({
       try {
         const text = await provider.readFile(projectRef, filePath(file));
         if (live) setPreview({ file, text, failed: false });
-      } catch {
+      } catch (err) {
+        appLog.warn("editor", "A snapshot preview could not be read.", {
+          node: node.id,
+          ...describeError(err),
+        });
         if (live) setPreview({ file, text: "", failed: true });
       }
     })();

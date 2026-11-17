@@ -8,6 +8,8 @@ import { providerFor } from "./sync/resolve";
 import type { CacheStore } from "../storage/cache/cacheStore";
 import { openCacheStore } from "../storage/cache/opfsCacheStore";
 import type { ProjectRef, StorageProvider } from "../storage/types";
+import { appLog, describeError } from "../log";
+import { refForLog } from "./logRef";
 
 // A book's storage, opened outside the editor as the editor would hold it.
 //
@@ -32,7 +34,15 @@ export async function openProjectStorage(
 ): Promise<ProjectStorage | null> {
   // An unreadable pairing opens the book without a store, as the editor does
   // (`useProjectStore`): a device project's writes still reach its disk.
-  const remote = await remoteFor({ ...ref, id: projectId }).catch(() => null);
+  const remote = await remoteFor({ ...ref, id: projectId }).catch(
+    (err: unknown) => {
+      appLog.warn("sync", "A project's pairing could not be read.", {
+        ...refForLog(ref),
+        ...describeError(err),
+      });
+      return null;
+    },
+  );
   let store: CacheStore | null = remote
     ? openCacheStore({ id: projectId, remote })
     : null;

@@ -23,3 +23,17 @@ func TestCommand(t *testing.T) {
 		}
 	}
 }
+
+func TestFolderCommand(t *testing.T) {
+	const dir = "/data/logs"
+	for goos, want := range map[string]string{
+		"windows": "explorer " + dir,
+		"darwin":  "open " + dir,
+		"linux":   "xdg-open " + dir,
+	} {
+		name, args := FolderCommand(goos, dir)
+		if got := name + " " + strings.Join(args, " "); got != want {
+			t.Fatalf("%s: %q", goos, got)
+		}
+	}
+}

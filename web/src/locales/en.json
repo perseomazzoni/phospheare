@@ -892,7 +892,9 @@
     "aiRemoteRememberUnavailable": "This device can't remember the key.",
     "aiRemoteRememberNoMore": "When you close the app the key is forgotten, and next time you create a new one.",
     "aiRemoteKeys": "Manage keys on {{host}}",
-    "aiRemoteRemoved": "The removed key still works on {{host}} until you delete it there."
+    "aiRemoteRemoved": "The removed key still works on {{host}} until you delete it there.",
+    "accountId": "Account id",
+    "showLog": "Show the log"
   },
   "toolbar": {
     "normalText": "Normal text",
@@ -2584,6 +2586,7 @@
     "resolvedCount_other": "{{count}} resolved",
     "damaged": "This chapter's comments file can't be read, so it's left as it is.",
     "unavailable": "This chapter's comments can't be reached right now.",
+    "notSaved": "Your last change to the comments wasn't saved. Try it again.",
     "chapterMarker": "Comments on the chapter",
     "markerLabel": "Comment by {{name}}",
     "panelLabel": "Comment",
@@ -2649,12 +2652,12 @@
       "lede": "Where your installation stores data and which optional services receive it.",
       "controller": {
         "title": "Who publishes the program and who handles your data",
-        "body": "{{publisherName}} (the Author) publishes {{product}} as a personal project, free of charge and outside any commercial or professional activity. You can download its source code from {{publisherRepository}}, build the program and run it on your devices. The Author does not run your installation or receive application logs, telemetry, credentials or manuscripts from the program. Sign-in with {{identity}} and authorization for Remote Storage use the {{identity}} Cloud project that the person who set up your installation created.",
+        "body": "{{publisherName}} (the Author) publishes {{product}} as a personal project, free of charge and outside any commercial or professional activity. You can download its source code from {{publisherRepository}}, build the program and run it on your devices. The Author does not run your installation or receive application logs, telemetry, credentials or manuscripts from the program, unless you send the Author a log yourself to report a problem. Sign-in with {{identity}} and authorization for Remote Storage use the {{identity}} Cloud project that the person who set up your installation created.",
         "roles": "The Author is not the controller of the data in your installation: the Author does not determine why or how it is processed and does not receive it. Whoever runs the installation decides. If you use the program for purely personal or household activities, Regulation (EU) 2016/679 (GDPR) does not apply to that use (Article 2(2)(c)). If you run the installation for other people or for your work, you may be the controller of their data. In that case, it is for you to verify how the program works, including by examining the source code, whichever version you use, the one published by the Author included. This page concerns the version published by the Author; versions modified by others may behave differently. In every case it is a description, not a guarantee: it helps you choose with the facts in hand, but does not replace your own verification. The privacy notice published on the demo website applies to that website."
       },
       "notCollected": {
         "title": "What the Author does not collect",
-        "body": "The program sends no telemetry to the Author and has no analytics, advertising or profiling integration. It keeps local accounts, preferences and working copies on your devices. Features you enable communicate directly with their providers; no service of the Author sits between them. Data you deliberately submit to GitHub, for example in an issue, is a separate disclosure: do not include credentials or private manuscripts."
+        "body": "The program sends no telemetry to the Author and has no analytics, advertising or profiling integration. It keeps local accounts, preferences and working copies on your devices. Features you enable communicate directly with their providers; no service of the Author sits between them. Data you deliberately submit to GitHub, for example in an issue or a log attached to it, is a separate disclosure and is public: read the log first, and do not include credentials or private manuscripts."
       },
       "data": {
         "title": "What data the program handles, and where",
@@ -2710,6 +2713,11 @@
               "what": "Desktop app settings: ports, the home network name and its {{homeDns}} account (email and access key), the certificate for that name",
               "why": "Opening the program on your other devices at home",
               "where": "On the computer that runs the desktop app"
+            },
+            "log": {
+              "what": "Log: what the program did, with its warnings and errors, the identifier of your local account, and the browser’s name, version, window size and language. Before it writes a line, the program removes the names, email and network addresses it recognizes. It writes no titles or text from your documents",
+              "why": "Finding the cause of a problem you report",
+              "where": "In this browser, on this device. The desktop app keeps its own log in files on the computer that runs it. The program never sends the log: you can attach it to a report yourself"
             }
           }
         },
@@ -2722,7 +2730,8 @@
           "sessions": "Your browser remembers that you are signed in until you sign out. The session cookie expires after 30 days. If you are still signed in then, the identity service makes a new one.",
           "removed": "Projects removed from the Library: their card goes at once. The program records the removal in the library data associated with your local account so the project does not reappear after synchronization.",
           "aiKey": "The {{ai}} key stays in memory until you close the tab or sign out. If you choose to have it remembered, the key is saved, encrypted, in a cookie: see the lifetimes under “Cookies and browser storage”.",
-          "sync": "Copies of your preferences and library stay in Remote Storage after you sign out. The program can recover them when you reconnect the same storage."
+          "sync": "Copies of your preferences and library stay in Remote Storage after you sign out. The program can recover them when you reconnect the same storage.",
+          "log": "The program removes log lines older than 14 days while it runs or, if it was closed, at its next start. If you choose to clear this browser when you sign out, or delete your account, the program empties the log in this browser. In the desktop app, “Wipe every configuration” empties its log files. If the desktop app stops because of an error, the file that describes the error stays on the computer, complete, until you start the app again; the program then copies it into the log without personal data and empties it."
         },
         "deletion": "When you disconnect Remote Storage, the program asks you from where. If you disconnect it from this browser only, other devices stay connected. If you disconnect it everywhere, the program asks {{identity}} to revoke access. In the same window you can also have the remote copies of your preferences and library removed.",
         "cleanup": "Before signing you out, the program saves open work and warns you if changes are still waiting to sync. If you choose to clear this browser, the program tries to remove the account’s local data and credentials. Sign-out may complete if the browser fails to remove some local data.",
@@ -2776,12 +2785,12 @@
             }
           }
         },
-        "device": "Your browser keeps the local account, preferences, library, working copies of remote files and changes waiting to be saved. The update check record and the version whose notice you dismissed are shared by the installation and stay in the browser when you delete an account. Your browser also keeps the proof that links it to its session with the identity service, your choice to keep the {{ai}} key, the theme last used and the address of your local AI models."
+        "device": "Your browser keeps the local account, preferences, library, working copies of remote files and changes waiting to be saved. The update check record and the version whose notice you dismissed are shared by the installation and stay in the browser when you delete an account. Your browser also keeps the proof that links it to its session with the identity service, your choice to keep the {{ai}} key, the theme last used and the address of your local AI models. It also keeps the program’s log and, when you close a tab, the few lines not yet written to it, until the program next starts. The log stays in this browser, and nobody reads it from elsewhere."
       },
       "rights": {
         "title": "Who to contact about your data",
-        "body": "To erase the data in your installation, choose to clear this browser when signing out or choose “Delete your account” in Settings. For data handled by connected services, use your account controls or the contact details in their privacy notices. If you use a copy of {{product}} that someone else installed and runs, contact that person. The Author does not receive manuscripts or account data from the program, and so cannot provide, correct or erase them.",
-        "delete": "If you write to the Author at {{privacyContact}}, the website’s privacy notice applies to your messages. Do not include personal data beyond what a reply needs, or credentials, manuscripts or other people’s data.",
+        "body": "To erase the data in your installation, choose to clear this browser when signing out or choose “Delete your account” in Settings. To erase the desktop app’s log, close the app and delete the files in its log folder (“Show the files” on the setup page), or use “Wipe every configuration”. For data handled by connected services, use your account controls or the contact details in their privacy notices. If you use a copy of {{product}} that someone else installed and runs, contact that person. The Author does not receive manuscripts or account data from the program, and so cannot provide, correct or erase them.",
+        "delete": "If you write to the Author at {{privacyContact}}, the website’s privacy notice applies to your messages. Do not include personal data beyond what a reply needs, or credentials, manuscripts or other people’s data. If you send the Author a log to report a problem, the Author uses it only to find the cause of the problem and deletes it when the problem is closed.",
         "complaint": "If you believe that whoever processes your data infringes the GDPR, you can lodge a complaint with the competent supervisory authority. In Italy, you can contact the Garante per la protezione dei dati personali ({{supervisor}})."
       },
       "automated": {
@@ -2919,7 +2928,7 @@
         "body": "You can write to the Author at {{privacyContact}}. The Author uses your email address and the information you send to handle your request. Do not include personal data beyond what a reply needs, or credentials, manuscripts or other people’s data. For general requests the legal basis is the legitimate interest in replying (Article 6(1)(f) GDPR). For requests to exercise your rights under the GDPR, it is compliance with a legal obligation (Article 6(1)(c)).",
         "optional": "Writing to the Author is your choice: no law and no contract requires it. Without your email address and the information that is needed, the Author cannot reply to you.",
         "provider": "{{mail}}, a company in Switzerland, provides the Author’s mailbox and processes the messages on the Author’s behalf, as a processor (Article 28 GDPR).",
-        "retention": "The Author keeps messages for as long as needed to handle the request and, where necessary, meet legal obligations or protect legal rights."
+        "retention": "The Author keeps messages for as long as needed to handle the request and, where necessary, meet legal obligations or protect legal rights. A log you send to report a problem is used only to find its cause and is deleted when the problem is closed."
       }
     }
   },
@@ -2956,5 +2965,23 @@
     "connection": "the connection to Remote Storage",
     "unsynced": "changes not yet synced",
     "projectsUntouched": "Your projects are not touched."
+  },
+  "log": {
+    "title": "Log",
+    "note": "What {{product}} did in this browser in the last 14 days, to help find the cause of a problem. It holds no names, email or network addresses, and it never leaves this browser by itself: to report a problem, download it and attach it.",
+    "download": "Download the log",
+    "copyId": "Copy the account id",
+    "copied": "Copied",
+    "search": "Search",
+    "level": "Level",
+    "levelAll": "All",
+    "levelWarn": "Warnings and errors",
+    "levelError": "Errors",
+    "area": "Area",
+    "areaAll": "All",
+    "count_one": "{{count}} line of {{total}}",
+    "count_other": "{{count}} lines of {{total}}",
+    "countShown": "{{found}} lines of {{total}}; the newest {{shown}} are shown.",
+    "empty": "The log is empty for now."
   }
 }

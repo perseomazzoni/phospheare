@@ -12,6 +12,8 @@
 // from this browser either way, so a retry could not ask again, and the
 // person is told where to remove the access themselves.
 
+import { appLog } from "../../log";
+
 /** The steps the use case orders; each rejects when it did not happen. */
 export interface DeleteAccountPorts {
   /** Writes the work open in an editor; false when it could not. */
@@ -49,6 +51,10 @@ export async function deleteAccount(ports: DeleteAccountPorts): Promise<void> {
     at: DeleteAccountFailure,
     run: () => Promise<unknown>,
   ) => {
+    appLog.info("account", "An account deletion step started.", {
+      step: at,
+      remote: ports.remoteConnected,
+    });
     let ok: unknown;
     try {
       ok = await run();

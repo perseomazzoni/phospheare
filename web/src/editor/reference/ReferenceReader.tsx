@@ -38,6 +38,7 @@ import { parseSummary } from "../../ai/adapters/summaryCodec";
 import type { SummaryState } from "../../ai/domain/types";
 import { markdown } from "../components/safeMarkdown";
 import { useReferenceRevision } from "./referenceShared";
+import { appLog, describeError } from "../../log";
 
 // ── The reference reader and editor ──────────────────────────────────────────
 //
@@ -222,7 +223,11 @@ export default function ReferenceReader({
           `${REFERENCE_DIR}/${fileName}`,
         );
         if (live) setState({ text, failed: false });
-      } catch {
+      } catch (err) {
+        appLog.warn("reference", "A reference document could not be read.", {
+          group: referenceGroupOf(fileName) ?? "none",
+          ...describeError(err),
+        });
         if (live) setState({ text: null, failed: true });
       }
     })();

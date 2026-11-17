@@ -163,7 +163,7 @@ sends them from the device to OpenRouter on the writer's own key.
 for. A local Ollama model sends nothing off the machine, except the query of
 a web search that the writer approves.
 
-Six kinds of data are stored, and they behave differently:
+Seven kinds of data are stored, and they behave differently:
 
 | | Data | Where |
 |---|---|---|
@@ -173,6 +173,7 @@ Six kinds of data are stored, and they behave differently:
 | d | Folder handles, sync manifests, the write queue | Local IndexedDB. Handles cannot leave the machine; the queue holds writes bound for the writer's own Drive |
 | e | Working copy of projects that have a remote | OPFS, disposable at any moment |
 | f | Credentials: Drive refresh tokens, a remembered OpenRouter key | Sealed in `HttpOnly` cookies that only the identity service can open; a key that is not remembered stays in the tab's memory |
+| g | The log, with no personal data ([internals.md](internals.md#the-apps-log)) | The app's: IndexedDB `writer-log` in this browser, and the lines not yet written in local storage while a tab closes. The desktop program's and the identity service's: files in the data folder's `logs` |
 
 The working copy and the queue hold plain-text prose on the device. A sign-out
 that cleans removes them with the rest of the account's local data, and first

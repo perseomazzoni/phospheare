@@ -1491,13 +1491,13 @@
    is read as one thing. */
 .about {
   display: grid;
-  /* Emblem, name, tagline, the pitch, then the footer. The pitch's row takes
-     the slack and the footer sits at the pane's foot; `min-height: 100%` is
-     the pane's content box, so the pane's own padding frames the footer. The
-     pane is a stretched grid item, which makes its height definite for the
-     percentage. `align-items: start` keeps the pitch at the top of its row
-     instead of floating in the slack. */
-  grid-template-rows: auto auto auto 1fr auto;
+  /* Emblem, name, tagline, the pitch, the log's button, then the footer. The
+     button's row takes the slack and the footer sits at the pane's foot;
+     `min-height: 100%` is the pane's content box, so the pane's own padding
+     frames the footer. The pane is a stretched grid item, which makes its
+     height definite for the percentage. `align-items: start` keeps the button
+     at the top of its row instead of floating in the slack. */
+  grid-template-rows: auto auto auto auto 1fr auto;
   align-items: start;
   justify-items: center;
   text-align: center;
@@ -1550,6 +1550,22 @@
   margin: 0 0 14px;
   font-size: 13px;
 }
+
+/* The account id: small, there for a problem report. */
+.setting-id {
+  margin: 0 0 14px;
+  font-size: 12px;
+}
+.setting-id code {
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
+
+.about-log {
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
 .setting-row {
   display: flex;
   gap: 8px;

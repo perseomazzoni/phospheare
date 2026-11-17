@@ -13,6 +13,7 @@ import {
 } from "../storage/driveRest";
 import { StorageError } from "../storage/types";
 import { driveQueryString } from "../storage/driveLayout";
+import { appLog } from "../log";
 
 // The writer's profile copies in Google Drive's application data folder:
 // hidden from the Drive interface, reachable only by this application's
@@ -90,7 +91,16 @@ export async function readProfileCopy(fileId: string): Promise<unknown> {
   if (text.length > MAX_COPY_BYTES) return null;
   try {
     return JSON.parse(text) as unknown;
-  } catch {
+  } catch (err) {
+    // The name only: a parser's message can quote the profile's text.
+    appLog.warn(
+      "profile",
+      "A Remote Storage copy of the settings is not valid JSON.",
+      {
+        size: text.length,
+        error: err instanceof Error ? err.name : "unknown",
+      },
+    );
     return null;
   }
 }

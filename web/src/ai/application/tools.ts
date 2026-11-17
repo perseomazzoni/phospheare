@@ -29,6 +29,7 @@ import {
   type GrepRequest,
 } from "./grep";
 import { webSearchRefusal } from "./webResults";
+import { appLog, describeError } from "../../log";
 
 // ── The bounded tool catalog ─────────────────────────────────────────────────
 //
@@ -797,6 +798,8 @@ async function leaveComments(
     if (source?.kind !== "manuscript" || !source.nodeId) return;
     byNode.set(source.nodeId, [...(byNode.get(source.nodeId) ?? []), index]);
   });
+  let failedChapters = 0;
+  let writeError: unknown;
   for (const [nodeId, indexes] of byNode) {
     let outcomes: ProposalOutcome[];
     try {
@@ -817,16 +820,25 @@ async function leaveComments(
           };
         }),
       );
-    } catch {
+    } catch (err) {
       // A margin that cannot be written says so for its own notes; the
       // other chapters' still go in.
       for (const index of indexes) answers[index] = "failed";
+      failedChapters += 1;
+      writeError = err;
       continue;
     }
     indexes.forEach((index, n) => {
       answers[index] = outcomes[n] ?? "unplaceable";
     });
   }
+  if (failedChapters > 0)
+    appLog.warn("ai", "Margin notes from a tool could not be written.", {
+      tool: call.name,
+      chapters: failedChapters,
+      notes: answers.filter((one) => one === "failed").length,
+      ...describeError(writeError),
+    });
   return {
     placed: answers.filter((one) => one === "placed").length,
     results: answers,

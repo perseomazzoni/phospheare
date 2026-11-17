@@ -16,9 +16,11 @@ import { Icon } from "./icons";
 // give, as its writer already has the program.
 //
 // The pill shows one short line on a phone, where it lies over the chapter's
-// title. The reset sentence and the download stand only on wider screens
-// (`.demo-notice-more`): the program runs on a computer, not on the phone.
-// The spoken region always carries all of it.
+// title, and below 1080px on the desk, where it lies in the titlebar between
+// its controls. The reset sentence and the download stand only on wider
+// screens (`.demo-notice-more`), the download on a line of its own: the
+// program runs on a computer, not on the phone. The spoken region always
+// carries all of it.
 //
 // `attention`: nothing is wrong, and nothing is lost yet.
 //

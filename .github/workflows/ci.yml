@@ -124,6 +124,19 @@ jobs:
       - name: Vet
         run: go vet ./...
 
+      # The development build of `npm run dev:wizard` compiles only with its
+      # tag, so it is vetted and tested on its own. The release build must
+      # hold none of it: its binary names no part of the Google stand-in.
+      - name: Vet and test the devfake build, and keep it out of the release build
+        run: |
+          go vet -tags devfake ./cmd/identity
+          go test -race -tags devfake ./cmd/identity
+          go build -o "$RUNNER_TEMP/identity-release" ./cmd/identity
+          if grep -a -o -E 'fakeServices|fakeGoogle|devfake' "$RUNNER_TEMP/identity-release" | sort -u | grep .; then
+            echo "::error::the release build of the identity service holds development code"
+            exit 1
+          fi
+
       # A known vulnerability that this module's code reaches, in a dependency
       # or in the standard library of the Go it builds with, fails the job.
       # One in a package the code never calls is listed and passes.
@@ -200,6 +213,19 @@ jobs:
 
       - name: Vet
         run: go vet ./...
+
+      # The development build of `npm run dev:wizard` compiles only with its
+      # tag, so it is vetted and tested on its own. The release build must
+      # hold none of it: its binary names no part of the stand-ins.
+      - name: Vet and test the devfake build, and keep it out of the release build
+        run: |
+          go vet -tags devfake ./cmd/once-dark-studio-desktop
+          go test -race -tags devfake -run Devfake ./cmd/once-dark-studio-desktop
+          go build -o "$RUNNER_TEMP/desktop-release" ./cmd/once-dark-studio-desktop
+          if grep -a -o -E 'fakeServices|consoleLinks|testMode|loopbackOnlyClient|loginList|devfake' "$RUNNER_TEMP/desktop-release" | sort -u | grep .; then
+            echo "::error::the release build of the desktop program holds development code"
+            exit 1
+          fi
 
       # As in the identity checks: a reached known vulnerability fails the job.
       - name: Check for known vulnerabilities (govulncheck)

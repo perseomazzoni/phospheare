@@ -53,6 +53,7 @@ import {
   type PickNode,
 } from "../domain/selection";
 import ExportPicker, { checkedOf } from "./ExportPicker";
+import { appLog, describeError } from "../../../log";
 
 // ── The export window ────────────────────────────────────────────────────────
 //
@@ -132,7 +133,14 @@ export default function ExportDialog({
       .then((loaded) => live && setEntries(loaded))
       // A shelf that cannot be read is an empty one here, so the manuscript
       // can still leave.
-      .catch(() => live && setEntries([]));
+      .catch((err: unknown) => {
+        appLog.warn(
+          "export",
+          "The reference documents could not be loaded for the export.",
+          { ...describeError(err) },
+        );
+        if (live) setEntries([]);
+      });
     return () => {
       live = false;
     };
@@ -276,14 +284,37 @@ export default function ExportDialog({
       runningHeader,
       storySeparator: separator,
     };
+    // The file's name and the author stay out of both lines.
+    const shape = {
+      format,
+      layout,
+      page,
+      toc: request.toc,
+      manuscript: pickedManuscript.size,
+      references: pickedReferences.size,
+      notes: pickedNotes.size,
+    };
+    const started = Date.now();
+    appLog.info("export", "An export started.", shape);
     try {
       const outcome = await onExport(request, fileName);
+      appLog.info("export", "An export finished.", {
+        ...shape,
+        homes: outcome.homes.length,
+        homesOk: outcome.homes.filter((home) => home.ok).length,
+        ms: Date.now() - started,
+      });
       // Saved once the file exists under it, and not before, because an
       // export that failed has not gone out under any name.
       if (cleanAuthor !== book.author) onAuthor(cleanAuthor);
       onDone(outcome);
       onClose();
     } catch (reason) {
+      appLog.error("export", "An export failed.", {
+        format,
+        layout,
+        ...describeError(reason),
+      });
       const message = reason instanceof Error ? reason.message : "";
       setError(
         t(

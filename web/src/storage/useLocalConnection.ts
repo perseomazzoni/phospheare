@@ -16,6 +16,7 @@ import {
   getLocalRoot,
   rootPermission,
 } from "./localRoot";
+import { appLog, describeError } from "../log";
 
 // The local connection is a device fact, not an account one: the root folder
 // the writer chose once, in `localRoot.ts`. A fresh pick is the grant, so
@@ -48,7 +49,12 @@ export function useLocalConnection(): ProviderConnection {
       // possible connection.
       next = "unavailable";
     } else {
-      const root = await getLocalRoot().catch(() => null);
+      const root = await getLocalRoot().catch((err: unknown) => {
+        appLog.warn("storage", "The local folder could not be looked up.", {
+          ...describeError(err),
+        });
+        return null;
+      });
       name = root?.name ?? null;
       if (!root) {
         next = "unset";

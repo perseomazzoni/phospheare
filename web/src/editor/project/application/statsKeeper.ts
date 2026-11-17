@@ -37,6 +37,7 @@ import type {
 import { sessionChanged, sessionFor } from "../../deskLedger";
 import type { MetadataStore, ProjectId, ProjectReader } from "./stores";
 import { sameProject, type MetadataLanes } from "./metadataLanes";
+import { appLog, describeError } from "../../../log";
 
 export class StatsKeeper<P extends ProjectId> {
   /** Every counted node's words when this visit began; null once consumed. */
@@ -72,7 +73,7 @@ export class StatsKeeper<P extends ProjectId> {
 
     const next = sessionFor(current.ui.session, current.stats, now);
     if (!sessionChanged(current.ui.session, next)) return Promise.resolve();
-    return this.write(store, target, (latest) => ({
+    return this.write(store, target, { job: "session" }, (latest) => ({
       ...latest,
       ui: { ...latest.ui, session: next },
     }));
@@ -92,7 +93,7 @@ export class StatsKeeper<P extends ProjectId> {
     // Consumed before the write: pagehide, visibilitychange and unmount can
     // all fire for one exit, and the first to settle owns the write.
     this.baseline = null;
-    return this.write(store, target, (latest) => {
+    return this.write(store, target, { job: "exit" }, (latest) => {
       const deltas = sessionDeltas(latest.stats.perNode, baseline);
       if (deltas.size === 0) return null;
       return {
@@ -135,22 +136,27 @@ export class StatsKeeper<P extends ProjectId> {
     const words = countWords(text);
     const hash = hashOf(text);
     const at = now.toISOString();
-    return this.write(store, target, async (latest) => {
-      const counted: DocumentProperties = {
-        ...latest,
-        stats: withNodeCount(latest.stats, shape, nodeId, words, at),
-      };
-      const h = await hash.catch(() => null);
-      const listed = findNode(shape, nodeId)?.snapshots.some(
-        (snap) => snap.file === file,
-      );
-      if (h === null || !listed || counted.snapshotHashes[file] === h)
-        return counted;
-      return {
-        ...counted,
-        snapshotHashes: { ...counted.snapshotHashes, [file]: h },
-      };
-    });
+    return this.write(
+      store,
+      target,
+      { job: "save", node: nodeId },
+      async (latest) => {
+        const counted: DocumentProperties = {
+          ...latest,
+          stats: withNodeCount(latest.stats, shape, nodeId, words, at),
+        };
+        const h = await hash.catch(() => null);
+        const listed = findNode(shape, nodeId)?.snapshots.some(
+          (snap) => snap.file === file,
+        );
+        if (h === null || !listed || counted.snapshotHashes[file] === h)
+          return counted;
+        return {
+          ...counted,
+          snapshotHashes: { ...counted.snapshotHashes, [file]: h },
+        };
+      },
+    );
   }
 
   /**
@@ -209,7 +215,10 @@ export class StatsKeeper<P extends ProjectId> {
       next.perNode.length === current.stats.perNode.length;
     if (unchanged || !stillHere()) return;
 
-    await this.write(store, target, (latest) => ({ ...latest, stats: next }));
+    await this.write(store, target, { job: "counts" }, (latest) => ({
+      ...latest,
+      stats: next,
+    }));
   }
 
   /**
@@ -241,7 +250,7 @@ export class StatsKeeper<P extends ProjectId> {
       }
     }
     if (updates.length === 0 || !stillHere()) return;
-    await this.write(store, target, (latest) => {
+    await this.write(store, target, { job: "hashes" }, (latest) => {
       const patched: Record<string, string> = {};
       for (const { file, hash } of updates) {
         // A backfill fills a missing hash and never overwrites one. Its read
@@ -262,12 +271,18 @@ export class StatsKeeper<P extends ProjectId> {
   private write(
     store: MetadataStore<P>,
     target: P,
+    what: { job: string; node?: string },
     job: (
       latest: DocumentProperties,
     ) => DocumentProperties | null | Promise<DocumentProperties | null>,
   ): Promise<void> {
     return this.lanes
       .writeProperties(store, target, job)
-      .catch(() => undefined);
+      .catch((err: unknown) => {
+        appLog.warn("editor", "The word counts could not be written.", {
+          ...what,
+          ...describeError(err),
+        });
+      });
   }
 }

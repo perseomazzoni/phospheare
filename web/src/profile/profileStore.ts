@@ -29,6 +29,7 @@ import type {
   DocumentType,
   NodeStat,
 } from "../project/types";
+import { appLog, describeError } from "../log";
 
 // The account's preferences and library membership. The canonical copy is
 // local, one `profile.<accountId>` entry per account in this site's
@@ -154,6 +155,8 @@ const parsedProfiles = new Map<
 >();
 const memoryProfiles = new Map<string, StoredProfile>();
 const volatileProfiles = new Set<string>();
+/** The accounts whose unreadable settings the log has already heard of. */
+const damagedLogged = new Set<string>();
 
 /** Whether the latest local profile survives a page reload. */
 export function profileDurable(writerId: string): boolean {
@@ -213,8 +216,16 @@ function readProfile(writerId: string): StoredProfile {
   let profile: StoredProfile | null = null;
   try {
     profile = parseProfile(raw);
-  } catch {
-    // Unreadable JSON reads as no profile.
+  } catch (err) {
+    // Unreadable JSON reads as no profile. The read repeats on every render,
+    // so the log hears it once a session.
+    if (!damagedLogged.has(writerId)) {
+      damagedLogged.add(writerId);
+      appLog.error("profile", "The stored settings could not be read.", {
+        bytes: raw.length,
+        ...describeError(err),
+      });
+    }
   }
   if (!profile) return emptyProfile();
   parsedProfiles.set(writerId, { raw, profile });
@@ -231,9 +242,13 @@ function writeProfile(writerId: string, profile: StoredProfile): void {
     localStorage.setItem(`${PROFILE_PREFIX}${writerId}`, raw);
     parsedProfiles.set(writerId, { raw, profile });
     volatileProfiles.delete(writerId);
-  } catch {
+  } catch (err) {
     // Full or disabled storage: the edit stays this session's truth in
     // memory, and `profileDurable` says it will not survive a reload.
+    if (!volatileProfiles.has(writerId))
+      appLog.warn("profile", "The settings could not be stored.", {
+        ...describeError(err),
+      });
     volatileProfiles.add(writerId);
   }
   for (const listen of [...syncListeners]) listen();
@@ -513,6 +528,31 @@ export type RemoteProfile = "found" | "none" | "unreachable" | "off";
  * `profileSyncState`; it never rejects.
  */
 export async function mergeWithDrive(writerId: string): Promise<RemoteProfile> {
+  const found = await mergeOnce(writerId);
+  noteMerge(writerId, found);
+  return found;
+}
+
+/**
+ * The last merge result the log has heard of, per account. A merge runs on
+ * every settings change, so only a change of result is a line.
+ */
+const mergeLogged = new Map<string, string>();
+
+function noteMerge(writerId: string, found: RemoteProfile): void {
+  const result = found === "found" || found === "none" ? "merged" : found;
+  if (mergeLogged.get(writerId) === result) return;
+  mergeLogged.set(writerId, result);
+  appLog.info(
+    "profile",
+    "The settings merge with Remote Storage gave a new result.",
+    {
+      result,
+    },
+  );
+}
+
+async function mergeOnce(writerId: string): Promise<RemoteProfile> {
   if (!findWriter(writerId)?.drive) {
     setSyncState(writerId, { kind: "off" });
     return "off";
@@ -525,14 +565,20 @@ export async function mergeWithDrive(writerId: string): Promise<RemoteProfile> {
       setSyncState(writerId, { kind: "off" });
       return "off";
     });
-  } catch {
-    setSyncState(writerId, {
-      kind: "paused",
-      reason:
-        typeof navigator !== "undefined" && navigator.onLine === false
-          ? "offline"
-          : "drive",
-    });
+  } catch (err) {
+    const reason =
+      typeof navigator !== "undefined" && navigator.onLine === false
+        ? "offline"
+        : "drive";
+    appLog.warn(
+      "profile",
+      "The settings could not be merged with Remote Storage.",
+      {
+        reason,
+        ...describeError(err),
+      },
+    );
+    setSyncState(writerId, { kind: "paused", reason });
     return "unreachable";
   }
 }

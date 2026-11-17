@@ -14,6 +14,7 @@ import {
   type StorageProvider,
 } from "../types";
 import type { CacheStore, CachedEntry } from "./cacheStore";
+import { appLog, describeError } from "../../log";
 
 // ── The working copy as a decorator ──────────────────────────────────────────
 //
@@ -119,6 +120,8 @@ type RemoteFill =
   | { kind: "owed"; entry: CachedEntry | null }
   | { kind: "unsure" };
 
+let fillFailureLogged = false;
+
 export function cached(
   base: StorageProvider,
   store: CacheStore,
@@ -171,9 +174,18 @@ export function cached(
     if (generation(path) !== since) return;
     try {
       await store.write(path, text);
-    } catch {
+    } catch (err) {
       // Best-effort: the reader already has the text, and the next read
-      // fills again.
+      // fills again. A full or broken store fails every fill, so the failure
+      // is written once a session.
+      if (!fillFailureLogged) {
+        fillFailureLogged = true;
+        appLog.warn(
+          "storage",
+          "The working copy could not be filled after a remote read.",
+          { ...describeError(err) },
+        );
+      }
     }
   };
 

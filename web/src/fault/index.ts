@@ -9,6 +9,7 @@
 import { faults } from "./compose";
 
 export { installFaultListeners, reactRootOptions } from "./compose";
+export { setFaultRoute } from "./browser";
 export { default as RouteFault } from "./presentation/RouteFault";
 export { default as RootFault } from "./presentation/RootFault";
 export { default as NotFoundPage } from "./presentation/NotFoundPage";

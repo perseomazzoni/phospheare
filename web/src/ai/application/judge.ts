@@ -57,6 +57,7 @@ import {
   structuredAnswer,
   type StructuredAnswerShape,
 } from "./structuredAnswer";
+import { appLog, describeError } from "../../log";
 
 /**
  * The most fresh questions one check asks about value candidates; the
@@ -292,7 +293,12 @@ export async function judgeCandidates(
   // and the next one asks again. A failed write loses only the reuse.
   await deps.artifacts
     .writeJudgements(keepJudgements(kept, fresh))
-    .catch(() => undefined);
+    .catch((err) =>
+      appLog.warn("ai", "An AI cache file could not be written.", {
+        artifact: "judgements",
+        ...describeError(err),
+      }),
+    );
   return {
     findings,
     usage,

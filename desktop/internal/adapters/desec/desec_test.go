@@ -6,10 +6,12 @@
 package desec
 
 import (
+	"bytes"
 	"context"
 	"encoding/binary"
 	"errors"
 	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -135,12 +137,16 @@ func TestAFailingGatewayIsAskedAgain(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer srv.Close()
-	c := &Client{BaseURL: srv.URL, HTTP: srv.Client(), RetryAfter: time.Millisecond}
+	var out bytes.Buffer
+	c := &Client{BaseURL: srv.URL, HTTP: srv.Client(), RetryAfter: time.Millisecond, Log: slog.New(slog.NewTextHandler(&out, nil))}
 	if err := c.write(context.Background(), "t", "x.dedyn.io", rrset{Type: "A", TTL: 3600, Records: []string{"192.168.1.7"}}); err != nil {
 		t.Fatal(err)
 	}
 	if len(bodies) != 3 || bodies[0] == "" || bodies[0] != bodies[2] {
 		t.Fatalf("bodies %q", bodies)
+	}
+	if log := out.String(); strings.Count(log, "level=WARN msg=\"deSEC's gateway failed. Asking again.\" status=502") != 2 || !strings.Contains(log, "try=3") {
+		t.Fatalf("log %q", log)
 	}
 	fails = 5
 	if err := c.write(context.Background(), "t", "x.dedyn.io", rrset{Type: "A"}); err == nil {
@@ -227,6 +233,48 @@ func TestServersWaitForEveryServer(t *testing.T) {
 	}
 	if last != [2]int{1, 2} {
 		t.Fatalf("reported %v, want 1 of 2", last)
+	}
+}
+
+// The log names, for each round, the servers still without the record and
+// those that do not answer, and says when the wait stops.
+func TestTheWaitLogsTheLateServers(t *testing.T) {
+	has, lacks := txtServer(t, "abc"), txtServer(t, "other")
+	silent, err := net.ListenPacket("udp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer silent.Close()
+	var out bytes.Buffer
+	logger := slog.New(slog.NewTextHandler(&out, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	late := Servers{Addrs: []string{has, lacks}, Probe: closedPort(t), Interval: 10 * time.Millisecond, Timeout: 300 * time.Millisecond, Log: logger}
+	if err := late.Wait(context.Background(), "_acme-challenge.rossi.dedyn.io", "abc", nil); err == nil {
+		t.Fatal("a server without the record did not stop the wait")
+	}
+	// A silent server takes its few seconds; the one that answers is enough.
+	quiet := Servers{Addrs: []string{has, silent.LocalAddr().String()}, Probe: closedPort(t), Interval: time.Millisecond, Timeout: 20 * time.Second, Steady: 1, Log: logger}
+	if err := quiet.Wait(context.Background(), "_acme-challenge.rossi.dedyn.io", "abc", nil); err != nil {
+		t.Fatal(err)
+	}
+	log := out.String()
+	for _, want := range []string{
+		`level=INFO msg="deSEC servers show the proof." shown=1 of=2 round=1 late=127.0.0.1 silent=-`,
+		`level=DEBUG msg="deSEC servers show the proof." shown=1 of=2 round=2`,
+		`level=WARN msg="deSEC took longer than usual. Stopped waiting."`,
+		`shown=1 of=2 round=1 late=- silent=127.0.0.1`,
+	} {
+		if !strings.Contains(log, want) {
+			t.Fatalf("the log misses %q:\n%s", want, log)
+		}
+	}
+}
+
+func TestNamesAreShortAndSorted(t *testing.T) {
+	if got := names([]string{"syd-1.a.desec.io:53", "ams-1.a.desec.io:53", "lhr-1.c.desec.org:53"}); got != "ams-1.a,lhr-1.c,syd-1.a" {
+		t.Fatalf("names %q", got)
+	}
+	if got := names(nil); got != "-" {
+		t.Fatalf("no names %q", got)
 	}
 }
 

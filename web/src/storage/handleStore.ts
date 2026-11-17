@@ -18,6 +18,7 @@
 
 import { STORE_HANDLES, tx } from "./idb";
 import { getCurrentUserId } from "../auth/currentUser";
+import { appLog, describeError } from "../log";
 
 export interface StoredHandle {
   handle: FileSystemDirectoryHandle;
@@ -55,7 +56,10 @@ export async function getHandle(
       (s) => s.get(keyFor(key)),
     );
     return record?.handle ?? null;
-  } catch {
+  } catch (err) {
+    appLog.warn("storage", "The stored local folder could not be read.", {
+      ...describeError(err),
+    });
     return null;
   }
 }

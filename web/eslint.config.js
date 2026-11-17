@@ -14,10 +14,6 @@ import eslintConfigPrettier from "eslint-config-prettier";
 // `npm run format:check`.
 //
 // Every rule is a hard error, so a lint run that passes carries no lint debt.
-// `react-refresh/only-export-components` is not enabled: it flags a file that
-// exports a component beside a constant or helper, which this codebase does
-// (context hooks exporting their accessor, the icon set), and fast refresh is
-// a dev convenience, not a quality signal.
 export default tseslint.config(
   {
     ignores: ["dist", "coverage", "node_modules", "test-results"],

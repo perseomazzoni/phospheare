@@ -67,6 +67,7 @@ Run from the repository root.
 ```bash
 npm ci
 npm run dev                                            # the app on port 5173
+npm run dev:wizard                                     # setup page, fake services
 npm --prefix web test -- src/path/file.test.ts -t "name"
 npm --prefix web run build                             # typecheck and build
 npm --prefix web run lint

@@ -27,12 +27,16 @@ import {
 import type { DocumentStructure } from "../../project/types";
 import type { ProjectRef, StorageProvider } from "../../storage/types";
 import { useDeferredDispose } from "../useDeferredDispose";
+import { appLog, describeError } from "../../log";
+
+const DAMAGED = "barred-sources-damaged";
 
 export class BarredSources {
   private lane: Promise<unknown> = Promise.resolve();
   private view: readonly string[] = NO_BARS;
   private readonly listeners = new Set<() => void>();
   private disposed = false;
+  private refreshLogged = false;
 
   constructor(
     private readonly provider: StorageProvider,
@@ -63,7 +67,15 @@ export class BarredSources {
 
   /** Reads the file again for the screen. A failure keeps what it showed. */
   refresh(): void {
-    void this.current().catch(() => undefined);
+    void this.current().catch((err: unknown) => {
+      // The refresh reruns on every structure change: one line per project.
+      if (this.refreshLogged) return;
+      this.refreshLogged = true;
+      appLog.warn("ai", "The barred sources could not be read again.", {
+        damaged: err instanceof Error && err.message === DAMAGED,
+        ...describeError(err),
+      });
+    });
   }
 
   /** Bars a source from the assistant, or lets it back in. */
@@ -96,7 +108,7 @@ export class BarredSources {
     const ids = parseBarred(
       await this.provider.readFile(this.ref, BARRED_SOURCES_FILE),
     );
-    if (ids === null) throw new Error("barred-sources-damaged");
+    if (ids === null) throw new Error(DAMAGED);
     this.show(ids);
     return ids;
   }

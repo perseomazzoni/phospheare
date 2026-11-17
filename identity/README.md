@@ -33,6 +33,8 @@ missing or malformed value and names every one that is wrong.
 | `IDENTITY_LISTEN` | The routes; default `:8080`. With port 0 the service picks a free port. Once it listens, it prints `listening host:port` on standard output, the one line it writes there. The desktop program starts the service on port 0 and passes `/identity/` to it from its own port, 47821, and the Vite dev server proxies `/identity` to `http://127.0.0.1:47821` unless `PHOSPHEARE_IDENTITY_ORIGIN` says otherwise; a service started by hand on `:8080` is reached by the dev server only with that variable set. |
 | `IDENTITY_PRODUCT_NAME` | The name on the pages the service serves; default the build's `-X main.productName`. |
 | `IDENTITY_STOP_ON_STDIN_CLOSE` | `true` stops the service as `SIGTERM` does once its standard input closes; default `false`. The desktop sets it, so the child ends with the desktop on every system. |
+| `IDENTITY_LOG_FORMAT` | `text` (the default) or `json`. The desktop sets `json` and writes the lines into its `logs/identity.log`. |
+| `IDENTITY_LOG_LEVEL` | The lowest level logged: `debug`, `info` (the default), `warn` or `error`. The desktop passes its own level. |
 
 Every Google client must list `<origin>/identity/google/callback` for each
 origin served.
@@ -52,9 +54,12 @@ changed keyring takes effect when the service starts again.
 
 ### At run time
 
-- One text log line per request: method, route pattern, status, duration
-  and request id (`X-Request-Id`, kept or made). No query, code, token,
-  cookie or email reaches the log.
+- One log line per request: method, route pattern, status, duration,
+  request id (`X-Request-Id`, kept or made) and `account`, the writer
+  account id that the request's session or sign-in flow cookie seals. An id
+  that the request only states is never logged. A successful GET is `DEBUG`,
+  another successful request `INFO`, a status from 400 `WARN` and from 500
+  `ERROR`. No query, code, token, cookie or email reaches the log.
 - The service listens once its settings and keyring have been read.
   `SIGTERM` stops it from accepting new requests, lets the requests in flight
   finish for up to 20 seconds, then exits.

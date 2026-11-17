@@ -27,6 +27,7 @@ import { dropOtherUserCaches, dropUserCache } from "../storage/cache/cacheRoot";
 import { AI_SETTINGS_PREFIX } from "../ai/settings";
 import { IDENTITY_PROOF_PREFIX } from "../platform/identityProof";
 import { syncProfile } from "./profileSync";
+import { appLog, describeError } from "../log";
 import {
   PROFILE_PREFIX,
   profileSyncState,
@@ -78,21 +79,35 @@ export async function purgeLocalData(userId: string): Promise<void> {
   // Storage request.
   resetDriveGrant();
 
+  // The first store to refuse, for the log line.
+  let store: string | null = null;
+  const tag =
+    (name: string) =>
+    (err: unknown): never => {
+      store ??= name;
+      throw err;
+    };
   try {
     const [handles, manifests, queued] = await Promise.all([
-      listHandles(),
+      listHandles().catch(tag("handles")),
       // A manifest store that cannot be read leaves its rows, which are keyed
       // by the account, and the handles and the queue are still cleared.
       allManifests().catch(() => []),
-      pendingProjects(),
+      pendingProjects().catch(tag("queue")),
     ]);
     await Promise.all([
-      ...handles.map((h) => removeHandle(h.key)),
-      ...manifests.map((m) => removeManifest(m.projectId)),
-      ...queued.map((ref) => forgetProject(ref)),
+      ...handles.map((h) => removeHandle(h.key).catch(tag("handles"))),
+      ...manifests.map((m) =>
+        removeManifest(m.projectId).catch(tag("manifests")),
+      ),
+      ...queued.map((ref) => forgetProject(ref).catch(tag("queue"))),
     ]);
-  } catch {
+  } catch (err) {
     // Best-effort: a record that fails to clear does not block a sign-out.
+    appLog.warn("account", "Local records could not be cleared at sign-out.", {
+      store: store ?? "unknown",
+      ...describeError(err),
+    });
   }
 }
 

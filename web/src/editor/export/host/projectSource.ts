@@ -35,6 +35,7 @@ import type { ProjectRef, StorageProvider } from "../../../storage";
 import { modelText, withoutAsides } from "../../assistant/sourceText";
 import type { BookFacts, ManuscriptNode, ReferenceEntry } from "../domain/book";
 import type { ExportSource } from "../ports";
+import { appLog, describeError } from "../../../log";
 
 export interface ProjectSourceOptions {
   /** The project's provider, over its working copy when it has one. */
@@ -86,8 +87,13 @@ export function projectExportSource(
         names = (await storage.listDir(ref, REFERENCE_DIR))
           .filter((entry) => entry.kind === "file")
           .map((entry) => entry.name);
-      } catch {
-        // No reference folder yet: a book with nothing in it.
+      } catch (err) {
+        // No reference folder yet: a book with nothing in it. Any other
+        // failure leaves the references out of the export, and the log hears.
+        if (!((err as { code?: unknown } | null)?.code === "not-found"))
+          appLog.warn("export", "The reference folder could not be listed.", {
+            ...describeError(err),
+          });
         return [];
       }
       const structure = options.structure();

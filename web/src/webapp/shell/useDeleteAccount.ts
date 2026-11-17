@@ -16,6 +16,7 @@ import {
   DeleteAccountStopped,
   type DeleteAccountFailure,
 } from "../../writers/application/deleteAccount";
+import { appLog, describeError } from "../../log";
 
 // "Delete your account", wired to this installation. It lives beside
 // `useSignOutFlow` for the same reason: the Remote Storage revoke imports
@@ -67,6 +68,10 @@ export function useDeleteAccount(
     }).catch((err: unknown) => {
       clearFarewell();
       const at = err instanceof DeleteAccountStopped ? err.at : "local";
+      appLog.error("account", "The account deletion stopped.", {
+        step: at,
+        ...describeError(err),
+      });
       // A retry starts disconnected, so a cleared Remote Storage stays known.
       if (at === "local" && remoteConnected) setRemoteCleared(true);
       setFailure(at);

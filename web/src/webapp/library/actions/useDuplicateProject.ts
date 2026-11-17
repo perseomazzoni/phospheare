@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { folderNameFor } from "../../../project/naming";
 import { openProjectStorage } from "../../../project/projectStorage";
 import { duplicateProject } from "../../../project/duplicate";
+import { refForLog } from "../../../project/logRef";
 import {
   createLocalProject,
   localProvider,
@@ -18,9 +19,11 @@ import type { ActionFailure } from "./useActionError";
 import type { CopyJob } from "./useCopyJob";
 import {
   actionFailure,
+  type LibraryAction,
   type LibraryCardsApi,
   type ShelfToasts,
 } from "./shelfActions";
+import { appLog } from "../../../log";
 
 export interface DuplicateProjectInput {
   adopt: LibraryCardsApi["adopt"];
@@ -68,12 +71,13 @@ export function useDuplicateProject({
         return;
       }
 
+      const began = Date.now();
       // The folder first, while the click's permission still holds.
       let target: ProjectRef;
       try {
         target = await createLocalProject(folderNameFor(title));
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "duplicate-folder"));
         return;
       }
 
@@ -101,9 +105,14 @@ export function useDuplicateProject({
           return;
         }
         await adopt(target);
+        appLog.info("library", "A Library action succeeded.", {
+          action: "duplicate-copy" satisfies LibraryAction,
+          ...refForLog(card.ref),
+          ms: Date.now() - began,
+        });
         post(t("library.duplicated", { title }));
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "duplicate-copy"));
       } finally {
         opened?.dispose();
         finish();

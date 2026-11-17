@@ -23,6 +23,7 @@ import type {
   SummaryState,
 } from "../domain/types";
 import { withHost } from "./features";
+import { appLog, describeError } from "../../log";
 
 export type SourceHost = Pick<
   WorkflowHost,
@@ -88,7 +89,12 @@ export async function revealEvidence(
   let capture;
   try {
     capture = await host.dependencies.sources.read(anchor.sourceId);
-  } catch {
+  } catch (err) {
+    // The id's scheme alone: past it, a reference id carries a file name.
+    appLog.warn("ai", "A cited source could not be read to show it.", {
+      kind: /^[a-z-]+(?=:)/.exec(anchor.sourceId)?.[0] ?? "unknown",
+      ...describeError(err),
+    });
     return "unavailable";
   }
   if (anchor.revision && anchor.revision !== capture.revision) return "changed";
@@ -120,7 +126,15 @@ export async function openSource(
   let sources: SourceDescriptor[];
   try {
     sources = await host.listCatalogue();
-  } catch {
+  } catch (err) {
+    appLog.warn(
+      "ai",
+      "The source catalogue could not be listed to open a source.",
+      {
+        kind: /^[a-z-]+(?=:)/.exec(sourceId)?.[0] ?? "unknown",
+        ...describeError(err),
+      },
+    );
     return "unavailable";
   }
   if (!sources.some((source) => source.id === sourceId)) return "unavailable";

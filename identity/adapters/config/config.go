@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"strconv"
 	"strings"
@@ -43,6 +44,11 @@ type Config struct {
 	// input closes: a parent that keeps a pipe to it open takes it down
 	// with it however the parent ends.
 	StopOnStdinClose bool
+	// LogJSON writes the log as JSON lines, for a parent that writes them
+	// into its own log file; text lines otherwise.
+	LogJSON bool
+	// LogLevel is the lowest level the log writes.
+	LogLevel slog.Level
 }
 
 // DefaultListen is where the service listens without IDENTITY_LISTEN.
@@ -162,6 +168,27 @@ func Load(env Environment) (Config, error) {
 			fail("IDENTITY_STOP_ON_STDIN_CLOSE", "%q is neither true nor false", raw)
 		}
 		c.StopOnStdinClose = stop
+	}
+
+	switch raw := strings.ToLower(get("IDENTITY_LOG_FORMAT")); raw {
+	case "", "text":
+	case "json":
+		c.LogJSON = true
+	default:
+		fail("IDENTITY_LOG_FORMAT", "%q is neither text nor json", raw)
+	}
+
+	switch raw := strings.ToLower(get("IDENTITY_LOG_LEVEL")); raw {
+	case "", "info":
+		c.LogLevel = slog.LevelInfo
+	case "debug":
+		c.LogLevel = slog.LevelDebug
+	case "warn":
+		c.LogLevel = slog.LevelWarn
+	case "error":
+		c.LogLevel = slog.LevelError
+	default:
+		fail("IDENTITY_LOG_LEVEL", "%q is not debug, info, warn or error", raw)
 	}
 
 	if err := errors.Join(errs...); err != nil {

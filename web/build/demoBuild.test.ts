@@ -29,6 +29,13 @@ describe("demoTwin", () => {
     );
   });
 
+  it("points the log's index at the twin that keeps nothing", () => {
+    expect(demoTwin("C:/repo/web/src/log/index.ts", SRC)).toBe(
+      "C:/repo/web/src/log/index.demo.ts",
+    );
+    expect(demoTwin("C:/repo/web/src/log/compose.ts", SRC)).toBeNull();
+  });
+
   it("leaves every other module alone", () => {
     expect(demoTwin("C:/repo/web/src/preferences/types.ts", SRC)).toBeNull();
   });
@@ -44,6 +51,11 @@ describe("mayHaveTwin", () => {
     expect(mayHaveTwin("./compose")).toBe(true);
     expect(mayHaveTwin("../../preferences/compose.ts")).toBe(true);
     expect(mayHaveTwin("../legal/compose?import")).toBe(true);
+  });
+
+  it("lets through an import of a folder whose index has a twin", () => {
+    expect(mayHaveTwin("../log")).toBe(true);
+    expect(mayHaveTwin("../../log/index.ts")).toBe(true);
   });
 
   it("stops every other specifier before it is resolved", () => {
@@ -119,6 +131,11 @@ describe("pruneLocale", () => {
       expect(landing.noFolders, language).toBeUndefined();
       expect(landing.hero?.try, language).toBe(locale.landing.hero.try);
       expect(locale.landing.head.logIn, language).toBeDefined();
+      // The site keeps no log, so no word of it ships.
+      expect(pruned.log, language).toBeUndefined();
+      const settings = pruned.settings as Record<string, unknown>;
+      expect(settings.showLog, language).toBeUndefined();
+      expect(settings.accountId, language).toBeUndefined();
     }
   });
 });

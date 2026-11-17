@@ -32,6 +32,7 @@ import {
   webPageKey,
 } from "../domain/webText";
 import type { WebSearch, WebSearchEngine } from "../ports";
+import { appLog } from "../../log";
 import { BOOK_WORDS_RUN } from "./budgets";
 import { ModelRunError, throwIfCancelled } from "./runStep";
 import {
@@ -580,6 +581,7 @@ export class SearchPause {
       engine: engineLabel(engine.engine),
     });
     await this.deps.onRecords([...this.records]);
+    const began = Date.now();
     const outcome = await engine.search(query, this.deps.signal);
     if (outcome.status === "searched") {
       this.records[record] = { ...pending, reached: "yes" };
@@ -615,6 +617,20 @@ export class SearchPause {
           : null,
       });
     }
+    appLog.info("ai", "A web search ended.", {
+      engine: engine.engine.kind,
+      provider:
+        engine.engine.kind === "provider"
+          ? engine.engine.providerId
+          : undefined,
+      status: outcome.status,
+      code: outcome.status === "searched" ? undefined : outcome.failure.code,
+      reached: outcome.status === "searched" ? "yes" : outcome.reached,
+      attempts: attempts.get(row)?.length,
+      results:
+        outcome.status === "searched" ? outcome.results.length : undefined,
+      ms: Math.round(Date.now() - began),
+    });
     await this.deps.onRecords([...this.records]);
     // Stopped mid-fetch: the attempt is written, and the run ends here.
     throwIfCancelled(this.deps.signal);

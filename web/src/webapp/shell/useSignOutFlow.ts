@@ -15,6 +15,7 @@ import { uncommittedFiles } from "../../project/sync/deviceWork";
 import { pendingOpsOrThrow } from "../../project/sync/remoteQueueStore";
 import { writeOpenWork } from "../../auth/openWork";
 import { uploadProfile } from "../../profile/forgetAccount";
+import { appLog, describeError } from "../../log";
 
 // Sign-out, with one question for both kinds of account: leave everything
 // here for the next entry, or clean everything of the account away from this
@@ -135,6 +136,10 @@ export function useSignOutFlow(
     setConfirming(false);
     setFailure(null);
     void work().catch((err: unknown) => {
+      appLog.error("account", "Sign-out stopped.", {
+        step: err instanceof StoppedAt ? err.failure : "sign-out",
+        ...describeError(err),
+      });
       setFailure(err instanceof StoppedAt ? err.failure : "sign-out");
       setConfirming(true);
     });

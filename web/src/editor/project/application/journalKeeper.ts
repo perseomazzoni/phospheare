@@ -21,6 +21,7 @@
 // convenience, the manuscript is the contract.
 
 import type { JournalStore, ProjectId } from "./stores";
+import { appLog, describeError } from "../../../log";
 
 export class JournalKeeper<P extends ProjectId> {
   /** The active file's journal as last seen on disk, or null. */
@@ -55,7 +56,12 @@ export class JournalKeeper<P extends ProjectId> {
   ): Promise<string | undefined> {
     try {
       return (await store.read(project, fileName)) ?? undefined;
-    } catch {
+    } catch (err) {
+      // A missing journal reads as null; this is a read that failed, and the
+      // timeline opens empty.
+      appLog.warn("history", "A Section's history could not be read.", {
+        ...describeError(err),
+      });
       return undefined;
     }
   }
@@ -84,7 +90,9 @@ export class JournalKeeper<P extends ProjectId> {
         this.baseline = journal;
         await store.write(project, fileName, journal);
       } catch (err) {
-        console.warn("history journal flush failed", err);
+        appLog.warn("history", "A Section's history could not be saved.", {
+          ...describeError(err),
+        });
       }
     });
   }
@@ -110,7 +118,11 @@ export class JournalKeeper<P extends ProjectId> {
         await store.write(project, to, moved);
         await store.remove(project, from);
       } catch (err) {
-        console.warn("history journal section move failed", err);
+        appLog.warn(
+          "history",
+          "A Section's history did not follow its rename.",
+          { ...describeError(err) },
+        );
       }
     });
   }
@@ -127,7 +139,11 @@ export class JournalKeeper<P extends ProjectId> {
         if ((await store.read(project, fileName)) === null) return;
         await store.remove(project, fileName);
       } catch (err) {
-        console.warn("history journal section delete failed", err);
+        appLog.warn(
+          "history",
+          "A deleted Section's history could not be removed.",
+          { ...describeError(err) },
+        );
       }
     });
   }

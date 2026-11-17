@@ -57,6 +57,7 @@ import type {
 } from "../../project/types";
 import type { ProjectRef, StorageProvider } from "../../storage";
 import { StorageError } from "../../storage/types";
+import { appLog, describeError } from "../../log";
 
 /**
  * The exact name `chatFilePath` writes, case included. A file the listing
@@ -174,7 +175,14 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
     });
     const entries = await this.options.storage
       .listDir(this.options.ref, REFERENCE_DIR)
-      .catch(() => []);
+      .catch((err: unknown) => {
+        // A project without reference documents has no folder yet.
+        if (!(err instanceof StorageError && err.code === "not-found"))
+          appLog.warn("ai", "The reference folder could not be listed.", {
+            ...describeError(err),
+          });
+        return [];
+      });
     // The folder is read through `groupReference`, the function the reference
     // and notes panels draw from. A file it does not draw (no group, or a
     // `guidebook--`/`world--` stem that is not a catalogue id) has no row and
@@ -445,6 +453,8 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
   async knownNames(sourceIds: readonly string[]): Promise<KnownName[]> {
     const out: KnownName[] = [];
     const most = NAMES_MOST;
+    let unread = 0;
+    let lastError: unknown;
     for (const sourceId of new Set(sourceIds)) {
       if (out.length >= most) break;
       const source = await this.locate(sourceId);
@@ -457,7 +467,9 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
       let text: string;
       try {
         text = (await this.open(sourceId)).text;
-      } catch {
+      } catch (err) {
+        unread += 1;
+        lastError = err;
         continue;
       }
       // The title the catalogue gives the sheet (`list()`'s own reading), so
@@ -479,6 +491,11 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
         ),
       );
     }
+    if (unread > 0)
+      appLog.warn("ai", "Reference sheets could not be read for names.", {
+        count: unread,
+        ...describeError(lastError),
+      });
     return out;
   }
 
@@ -487,7 +504,14 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
   async listChats(): Promise<ChatListing> {
     const entries = await this.options.storage
       .listDir(this.options.ref, ASSISTANT_DIR)
-      .catch(() => []);
+      .catch((err: unknown) => {
+        // A project without chats has no folder yet.
+        if (!(err instanceof StorageError && err.code === "not-found"))
+          appLog.error("ai", "The chat folder could not be listed.", {
+            ...describeError(err),
+          });
+        return [];
+      });
     const chats: ChatRecord[] = [];
     const unreadable: ChatListing["unreadable"] = [];
     for (const entry of entries) {
@@ -503,6 +527,10 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
         chats.push(chat);
         this.seen.set(chat.id, raw);
       } catch (error) {
+        appLog.warn("ai", "A chat could not be read.", {
+          chat: match[1],
+          ...describeError(error),
+        });
         // The writer's file stays untouched; it is surfaced by name with a
         // way to remove it rather than silently vanishing.
         unreadable.push({
@@ -543,8 +571,12 @@ export class ProjectAiAdapter implements ProjectSources, Artifacts {
       let current: string | undefined;
       try {
         current = await this.options.storage.readFile(this.options.ref, path);
-      } catch {
-        // No file there yet (or unreadable): this save creates it.
+      } catch (err) {
+        // No file there yet: this save creates it. One that cannot be read
+        // fails the save rather than be replaced unseen; the chat stays in
+        // memory and the surface shows the save as failed.
+        if (!(err instanceof StorageError && err.code === "not-found"))
+          throw err;
       }
       if (current !== undefined && current !== known) {
         // Both copies survive: the other writer's bytes are preserved under

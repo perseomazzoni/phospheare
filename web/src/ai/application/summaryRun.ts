@@ -33,6 +33,7 @@ import type {
   RunUsage,
 } from "../domain/types";
 import { withHost } from "./features";
+import { appLog, describeError } from "../../log";
 
 /**
  * Write one node's stored summary; nothing of the chat is in it. The
@@ -373,6 +374,8 @@ async function summariseNodes(
   const failed = new Set<string>();
   // The subset the same model would fail on again.
   const blocked = new Set<string>();
+  // The first failure stands for the run: one line, not one per Section.
+  let first: { node: string; error: unknown } | null = null;
   for (const [index, nodeId] of nodes.entries()) {
     throwIfCancelled(signal);
     try {
@@ -381,11 +384,22 @@ async function summariseNodes(
       if (!sectionFailure(error)) throw error;
       failed.add(nodeId);
       if (blocksSummary(error)) blocked.add(nodeId);
+      first ??= { node: nodeId, error };
     }
     host.publish({
       runProgress: { work: "summarise", complete: index + 1, total },
     });
   }
+  if (first)
+    appLog.warn("ai", "Some Sections could not be summarised.", {
+      failed: failed.size,
+      blocked: blocked.size,
+      node: first.node,
+      firstBlocked: blocked.has(first.node),
+      provider: model.providerId,
+      model: model.modelId,
+      ...describeError(first.error),
+    });
   return { failed, blocked };
 }
 

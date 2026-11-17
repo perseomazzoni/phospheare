@@ -180,9 +180,12 @@ func proxy(o Options) http.Handler {
 		}
 		if target == nil {
 			if o.Configured != nil && !o.Configured() {
+				// The usual state before setup, which the app asks about often.
+				proxyLog(o, slog.LevelDebug, "Google sign-in is not set up. The identity route answers 503.", r)
 				problem.Write(w, http.StatusServiceUnavailable, "google-not-configured", "Google sign-in is not set up yet")
 				return
 			}
+			proxyLog(o, slog.LevelWarn, "The identity service is not running. The identity route answers 503.", r)
 			problem.Write(w, http.StatusServiceUnavailable, "identity-unavailable", "The identity service is not running")
 			return
 		}
@@ -202,6 +205,7 @@ func proxy(o Options) http.Handler {
 				if r.Context().Err() == context.Canceled {
 					return
 				}
+				proxyLog(o, slog.LevelError, "The identity service did not answer.", r, "error", err)
 				set(w.Header(), baseHeaders)
 				problem.Write(w, http.StatusBadGateway, "identity-unavailable", "The identity service did not answer")
 			},
@@ -312,7 +316,8 @@ func (s *statusRecorder) Unwrap() http.ResponseWriter { return s.ResponseWriter 
 
 // logged logs each request but the identity routes: the method, the route
 // pattern that answered it (never the path, which can name a project), the
-// status and the time it took.
+// status and the time it took. A successful read is a detail (DEBUG), a
+// successful change a step (INFO), a refusal a WARN and a failure an ERROR.
 func logged(logger *slog.Logger, next http.Handler) http.Handler {
 	if logger == nil {
 		return next
@@ -335,10 +340,30 @@ func logged(logger *slog.Logger, next http.Handler) http.Handler {
 		if route == "" {
 			route = "unmatched"
 		}
-		logger.LogAttrs(context.Background(), slog.LevelInfo, "request",
-			slog.String("method", r.Method),
-			slog.String("route", route),
+		logger.LogAttrs(context.Background(), RequestLevel(r.Method, rec.status), r.Method+" "+route,
 			slog.Int("status", rec.status),
 			slog.Duration("took", time.Since(start).Round(time.Microsecond)))
 	})
+}
+
+// RequestLevel answers the level of a request's log line.
+func RequestLevel(method string, status int) slog.Level {
+	switch {
+	case status >= http.StatusInternalServerError:
+		return slog.LevelError
+	case status >= http.StatusBadRequest:
+		return slog.LevelWarn
+	case method == http.MethodGet || method == http.MethodHead:
+		return slog.LevelDebug
+	}
+	return slog.LevelInfo
+}
+
+// proxyLog logs an identity request that the identity service did not
+// answer, so its own log has no line for it. The path stays out: it can
+// carry a flow id.
+func proxyLog(o Options, level slog.Level, msg string, r *http.Request, args ...any) {
+	if o.Logger != nil {
+		o.Logger.Log(context.Background(), level, msg, append([]any{"method", r.Method}, args...)...)
+	}
 }

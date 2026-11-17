@@ -15,6 +15,7 @@ import { filePath } from "../project/naming";
 import type { DocumentProperties, DocumentStructure } from "../project/types";
 import type { ProjectRef, StorageProvider } from "../storage/types";
 import type { Paragraph } from "./engine";
+import { appLog, describeError } from "../log";
 
 export function useDesk(
   provider: StorageProvider,
@@ -34,15 +35,26 @@ export function useDesk(
     if (activeFile || !projectRef || !structure) return;
     const sources = resumeSources(props, structure);
     let live = true;
+    let unread = 0;
+    let lastError: unknown;
+    const report = () => {
+      if (unread > 0)
+        appLog.warn("editor", "Desk candidates could not be read.", {
+          count: unread,
+          ...describeError(lastError),
+        });
+    };
     void (async () => {
       for (const node of sources) {
         const file = node.adopted;
         let text: string;
         try {
           text = await provider.readFile(projectRef, filePath(file));
-        } catch {
+        } catch (err) {
           // An unreadable candidate is skipped: a vanished file or a
           // hand-edited structure costs one candidate, never the whole Desk.
+          unread += 1;
+          lastError = err;
           continue;
         }
         if (!live) return;
@@ -54,8 +66,10 @@ export function useDesk(
           resume: { fileName: file, para: last },
           thread: thread ? { ...thread, fileName: file } : null,
         });
+        report();
         return;
       }
+      report();
       if (live) setState({ resume: null, thread: null });
     })();
     return () => {

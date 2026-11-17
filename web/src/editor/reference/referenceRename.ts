@@ -11,6 +11,7 @@ import {
   type ReferenceGroupId,
 } from "../../project/reference";
 import type { ProjectRef, StorageProvider } from "../../storage";
+import { appLog, describeError } from "../../log";
 
 // Renaming a reference document renames its file: the title is the file
 // name.
@@ -71,14 +72,25 @@ export async function renameReference(
           `${REFERENCE_DIR}/${arc}`,
           nextArc,
         );
-      } catch {
+      } catch (err) {
         // No arc, or the arc's rename failed. The character is renamed either
         // way, so reporting failure would misstate the file that moved, and
-        // the orphaned arc is visible on the card.
+        // the orphaned arc is visible on the card. A missing arc is the
+        // common case and not a failure.
+        if ((err as { code?: unknown } | null)?.code !== "not-found")
+          appLog.warn(
+            "reference",
+            "The arc of a renamed character could not be renamed.",
+            { ...describeError(err) },
+          );
       }
     }
     return next;
-  } catch {
+  } catch (err) {
+    appLog.warn("reference", "A reference document could not be renamed.", {
+      group,
+      ...describeError(err),
+    });
     return null;
   }
 }

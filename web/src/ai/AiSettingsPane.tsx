@@ -31,6 +31,8 @@ import type {
 } from "./ports";
 import { OllamaProvider } from "./adapters/ollama";
 import { DEFAULT_AI, normalizeOllamaEndpoint } from "./settings";
+import { kindForDestination } from "./domain/providerKind";
+import { appLog, describeError } from "../log";
 
 // AI settings: where the models come from. One card per place a model runs,
 // and the division is the one axis anything above the port may branch on:
@@ -257,8 +259,17 @@ export default function AiSettingsPane({
       setModels(found);
       probeTarget = found[0] ?? null;
       setStatus("connected");
-    } catch {
+      appLog.info("ai", "The Ollama connection test succeeded.", {
+        endpoint: kindForDestination({ via: "direct", endpoint }),
+        models: found.length,
+      });
+    } catch (err) {
       if (!current()) return;
+      // The endpoint's kind, never its address.
+      appLog.warn("ai", "The Ollama connection test failed.", {
+        endpoint: kindForDestination({ via: "direct", endpoint }),
+        ...describeError(err),
+      });
       setStatus("failed");
       setProbe("idle");
       setModels([]);
@@ -697,7 +708,11 @@ function RemoteModels({
       if (models.length === 0) throw new Error("empty catalogue");
       setCatalogue(models);
       setReading("idle");
-    } catch {
+    } catch (err) {
+      appLog.warn("ai", "The model catalogue could not be read in Settings.", {
+        provider: provider.providerId,
+        ...describeError(err),
+      });
       setReading("failed");
     } finally {
       window.clearTimeout(timer);

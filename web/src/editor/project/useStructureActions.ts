@@ -36,6 +36,7 @@ import { withoutLastOpened } from "../../project/properties";
 import type { DocNode, NodeKind } from "../../project/types";
 import type { ProjectRef } from "../../storage";
 import type { ActionHost } from "./actionHost";
+import { appLog, describeError } from "../../log";
 
 /**
  * The structural actions: add, rename, remove, restore and move a node. Each
@@ -260,7 +261,11 @@ export function useStructureActions(host: ActionHost) {
       if (removedIds.has(lanes.properties?.ui.lastOpened ?? "")) {
         void enqueuePropsWrite(target, (latest) =>
           withoutLastOpened(latest, removedIds),
-        ).catch(() => {});
+        ).catch((err: unknown) => {
+          appLog.warn("editor", "The last open Section could not be cleared.", {
+            ...describeError(err),
+          });
+        });
       }
 
       // The generated summaries go with the nodes they describe; otherwise

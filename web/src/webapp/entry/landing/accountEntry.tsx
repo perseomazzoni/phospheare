@@ -19,6 +19,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../auth/AuthContext";
 import { clearFarewell, peekFarewell } from "../../../auth/farewell";
 import { signInProblemKey } from "../../../auth/signInProblem";
+import { appLog, describeError } from "../../../log";
+import { isPlatformError } from "../../../platform";
 import { localFoldersSupported } from "../../../storage/localRoot";
 import { VENDORS } from "../../../legal/domain/facts";
 import { Button, Dialog, DialogText } from "../../../ui";
@@ -42,7 +44,20 @@ export function useAccountEntry(): LandingEntry {
   // Called inside the click: the popup must open in it.
   const logInWithGoogle = () => {
     setProblem(null);
-    logIn().catch((err: unknown) => setProblem(signInProblemKey(err)));
+    logIn().catch((err: unknown) => {
+      // A closed window is no failure, and an unreachable service is
+      // logged where the request failed.
+      if (
+        !isPlatformError(err, "flow-cancelled") &&
+        !isPlatformError(err, "unavailable")
+      ) {
+        appLog.warn("account", "Google sign-in failed.", {
+          code: isPlatformError(err) ? err.code : null,
+          ...describeError(err),
+        });
+      }
+      setProblem(signInProblemKey(err));
+    });
   };
 
   const withoutAccount = localFoldersSupported()

@@ -12,6 +12,7 @@ import {
 } from "../../project/naming";
 import { characterFileNameForArc } from "../../project/reference";
 import type { ProjectRef, StorageProvider } from "../../storage";
+import { appLog, describeError } from "../../log";
 
 // The one delete seam for reference documents, the twin of
 // `referenceWrite.ts`.
@@ -43,12 +44,16 @@ export async function deleteReference(
 ): Promise<boolean> {
   if (!projectRef) return false;
   const path = `${REFERENCE_DIR}/${fileName}`;
+  const toBin = !isDerivedReference(fileName);
   try {
-    if (isDerivedReference(fileName))
-      await provider.removeFile(projectRef, path);
-    else await provider.moveFile(projectRef, path, RECYCLE_BIN_DIR);
+    if (toBin) await provider.moveFile(projectRef, path, RECYCLE_BIN_DIR);
+    else await provider.removeFile(projectRef, path);
     return true;
-  } catch {
+  } catch (err) {
+    appLog.warn("reference", "A reference document could not be deleted.", {
+      toBin,
+      ...describeError(err),
+    });
     return false;
   }
 }
@@ -97,7 +102,10 @@ export async function restoreReference(
       );
     }
     return true;
-  } catch {
+  } catch (err) {
+    appLog.warn("reference", "A reference document could not be restored.", {
+      ...describeError(err),
+    });
     return false;
   }
 }
@@ -132,7 +140,9 @@ async function freeSuffix(
   if (!(await anyTaken(0, [REFERENCE_DIR]))) return 0;
   for (let n = 2; n <= MAX_SUFFIX; n++)
     if (!(await anyTaken(n, [REFERENCE_DIR, RECYCLE_BIN_DIR]))) return n;
-  throw new Error(`no free name for ${names.join(", ")}`);
+  // The count, not the names: they are the writer's, and a failure can reach
+  // the app's log.
+  throw new Error(`no free name for ${names.length} reference files`);
 }
 
 /** `note--idea (2).md` for `note--idea.md` at `2`; the name itself at `0`. */

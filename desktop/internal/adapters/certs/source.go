@@ -16,6 +16,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"sync"
@@ -44,9 +45,10 @@ type Source struct {
 	Propagated func(ctx context.Context, fqdn, value string, report func(done, total int, timed bool)) error
 	// Settle is the issuer's wait after Propagated.
 	Settle time.Duration
-	Logf   func(format string, args ...any)
-	HTTP   *http.Client
-	Now    func() time.Time
+	// Log may be nil.
+	Log  *slog.Logger
+	HTTP *http.Client
+	Now  func() time.Time
 
 	// owed is set while the last address write failed; WriteAddress clears
 	// it once the record is written.
@@ -122,23 +124,25 @@ func (s *Source) Prepare(ctx context.Context, cfg domain.LAN, report func(domain
 		if !usable {
 			return nil, domain.CertInfo{}, fmt.Errorf("the address record could not be written: %w", addressErr)
 		}
-		s.logf("home network: the address record could not be written; the stored certificate serves: %v", addressErr)
+		s.log().Warn("The address record could not be written. The stored certificate serves.", "error", addressErr)
 	}
 	if usable && s.now().Add(RenewBefore).Before(info.NotAfter) {
+		s.log().Info("The stored certificate is still valid.", "until", info.NotAfter.Format(time.DateOnly))
 		return cert, info, nil
 	}
 	fresh, freshInfo, err := s.obtain(ctx, cfg, report)
 	if err != nil && usable {
-		s.logf("home network: the certificate could not be renewed; the stored one serves until %s: %v", info.NotAfter.Format(time.DateOnly), err)
+		s.log().Warn("The certificate could not be renewed. The stored one serves.", "until", info.NotAfter.Format(time.DateOnly), "error", err)
 		return cert, info, nil
 	}
 	return fresh, freshInfo, err
 }
 
-func (s *Source) logf(format string, args ...any) {
-	if s.Logf != nil {
-		s.Logf(format, args...)
+func (s *Source) log() *slog.Logger {
+	if s.Log == nil {
+		return slog.New(slog.DiscardHandler)
 	}
+	return s.Log
 }
 
 // Forget removes the stored certificate, its key and the `ACME` account
@@ -170,7 +174,7 @@ func (s *Source) WriteAddress(ctx context.Context, cfg domain.LAN) (bool, error)
 	s.mu.Lock()
 	s.owed = false
 	s.mu.Unlock()
-	s.logf("home network: the address record is written")
+	s.log().Info("The address record is written.")
 	return false, nil
 }
 
@@ -196,7 +200,7 @@ func (s *Source) obtain(ctx context.Context, cfg domain.LAN, report func(domain.
 		DNS:           desecDNS{records: s.Records, token: cfg.DeSEC.Token, domain: host},
 		Propagated:    s.Propagated,
 		Settle:        s.Settle,
-		Logf:          s.Logf,
+		Log:           s.Log,
 		Report:        report,
 	}
 	certPEM, keyPEM, err := issuer.Obtain(ctx, host)
@@ -214,7 +218,11 @@ func (s *Source) obtain(ctx context.Context, cfg domain.LAN, report func(domain.
 	if err := s.Dir.SaveIssued(certPEM, keyPEM); err != nil {
 		return nil, domain.CertInfo{}, err
 	}
-	return Load(certPEM, keyPEM, host, s.now())
+	cert, info, err := Load(certPEM, keyPEM, host, s.now())
+	if err == nil {
+		s.log().Info("The certificate is saved.", "issuer", info.Issuer, "until", info.NotAfter.Format(time.DateOnly))
+	}
+	return cert, info, err
 }
 
 // desecDNS writes challenge records inside one deSEC domain.

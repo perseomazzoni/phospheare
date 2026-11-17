@@ -4,6 +4,7 @@
 // later; the full text is in `LICENSE`.
 
 import { isPlatformError, type CredentialVault } from "./types";
+import { appLog, describeError } from "../log";
 
 // The identity platform's credential vault. A value lives in this
 // tab's memory; a remembered one is also sealed by the identity service in
@@ -117,8 +118,12 @@ export function identityVault(
       if (remember) {
         try {
           await sealed.keep(name, value);
-        } catch {
+        } catch (err) {
           // Not sealed: the value lives in this tab, and the answer says so.
+          appLog.warn("account", "A credential could not be remembered.", {
+            slot: name,
+            ...describeError(err),
+          });
           return { remembered: false };
         }
         hold(id, name, { value, kept: true });

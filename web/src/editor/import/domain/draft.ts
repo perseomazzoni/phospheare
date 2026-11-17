@@ -70,16 +70,18 @@ export interface Draft {
  * children.
  */
 export function assertHomogeneous(nodes: readonly DraftNode[]): void {
-  const check = (list: readonly DraftNode[], where: string) => {
+  // The messages give a depth, not a title: a title is the writer's text, and
+  // a failure can reach the app's log.
+  const check = (list: readonly DraftNode[], depth: number) => {
     if (list.length > 1 && list.some((n) => n.kind !== list[0].kind))
-      throw new Error(`mixed children under ${where}`);
+      throw new Error(`mixed children at depth ${depth}`);
     for (const node of list) {
       if (node.kind === "section" && node.children.length)
-        throw new Error(`section "${node.title}" holds children`);
-      check(node.children, node.title);
+        throw new Error(`a section at depth ${depth} holds children`);
+      check(node.children, depth + 1);
     }
   };
-  check(nodes, "the root");
+  check(nodes, 0);
 }
 
 /** Every node, parents before children: the order ids are given in. */

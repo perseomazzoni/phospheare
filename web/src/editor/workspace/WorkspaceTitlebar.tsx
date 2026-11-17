@@ -3,7 +3,7 @@
 // Free software under the GNU Affero General Public License, version 3 or
 // later; the full text is in `LICENSE`.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { appIcons } from "../../ui/appIcons";
@@ -53,6 +53,8 @@ export function WorkspaceTitlebar({
 }: WorkspaceTitlebarProps) {
   const { t } = useTranslation();
   const { returnNudge, returnNudgeIn } = useReturnNudge();
+  const right = useRef<HTMLDivElement>(null);
+  usePublishedRightRoom(right);
   return (
     <div className="titlebar">
       {/* The frost's veil (`editor.css`): a copy of the ground
@@ -127,7 +129,7 @@ export function WorkspaceTitlebar({
         carries its shortcut on its face, as the Library's `.app-find`
         does. A palette glyph rather than a magnifier, because it runs
         commands rather than searching. */}
-      <div className="titlebar-right">
+      <div className="titlebar-right" ref={right}>
         {/* The pointer route to the shortcut sheet, which `?` and
             Ctrl+/ open from the keyboard. */}
         <button
@@ -223,4 +225,40 @@ function useReturnNudge() {
     };
   }, []);
   return { returnNudge, returnNudgeIn };
+}
+
+/**
+ * Publishes `--titlebar-right` on the root element: the room the right
+ * cluster takes from the window's right edge. The status notices, rendered
+ * outside the shell like the toast that reads `--kb`, keep their width
+ * inside it (`.status-notices`, `base.css`), so a notice centred in the
+ * titlebar never lies over the cluster's buttons. The cluster's width
+ * changes with the language, the account face, the theme and the pointer,
+ * so it is measured, not written down.
+ */
+function usePublishedRightRoom(cluster: RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const element = cluster.current;
+    if (!element) return;
+    const root = document.documentElement;
+    const publish = () => {
+      const room = window.innerWidth - element.getBoundingClientRect().left;
+      root.style.setProperty(
+        "--titlebar-right",
+        `${Math.max(0, Math.ceil(room))}px`,
+      );
+    };
+    publish();
+    const watch =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(publish);
+    watch?.observe(element);
+    window.addEventListener("resize", publish);
+    return () => {
+      watch?.disconnect();
+      window.removeEventListener("resize", publish);
+      root.style.removeProperty("--titlebar-right");
+    };
+  }, [cluster]);
 }

@@ -7,6 +7,7 @@ import { INDEX_QUEUE_USER_ID, STORE_QUEUE, tx } from "../../storage/idb";
 import { getCurrentUserId } from "../../auth/currentUser";
 import { refIdentity } from "../refIdentity";
 import type { Op } from "../../storage/mirrored";
+import { appLog, describeError } from "../../log";
 
 /**
  * A queued project as a lookup names it: where its bytes are.
@@ -120,9 +121,13 @@ export async function markStopped(
     await tx(STORE_QUEUE, "readwrite", (s) =>
       s.put({ ...record, stopped: { code } }),
     );
-  } catch {
+  } catch (err) {
     // Best-effort, like every write in this module: a failure to record the
     // stop leaves the op live, which retries and never destroys.
+    appLog.warn("sync", "A stopped change could not be recorded.", {
+      op: id,
+      ...describeError(err),
+    });
   }
 }
 
@@ -137,17 +142,30 @@ export async function markStopped(
  * again.
  */
 export async function clearStopped(ref: QueuedProject): Promise<void> {
+  let failed = 0;
+  let first: { op: number; err: unknown } | null = null;
   for (const record of await opsFor(ref)) {
     // A lost change stays lost: retrying it would only find it gone again.
     if (!record.stopped || record.stopped.code === LOST) continue;
     const { stopped: _dropped, ...live } = record;
     try {
       await tx(STORE_QUEUE, "readwrite", (s) => s.put(live));
-    } catch {
+    } catch (err) {
       // Best-effort, like `markStopped`.
+      failed += 1;
+      first ??= { op: record.id, err };
     }
   }
+  if (first) {
+    appLog.warn("sync", "Stopped changes could not be released.", {
+      op: first.op,
+      failed,
+      ...describeError(first.err),
+    });
+  }
 }
+
+let pendingReadLogged = false;
 
 /**
  * Every live op for the signed-in user, oldest first.
@@ -167,7 +185,15 @@ export async function allPendingOps(): Promise<RemoteQueueRecord[]> {
     return await tx<RemoteQueueRecord[]>(STORE_QUEUE, "readonly", (s) =>
       s.index(INDEX_QUEUE_USER_ID).getAll(userId),
     );
-  } catch {
+  } catch (err) {
+    // Read on every drain step, so a store that stays unreadable writes
+    // one line a session.
+    if (!pendingReadLogged) {
+      pendingReadLogged = true;
+      appLog.warn("sync", "The sync queue could not be read.", {
+        ...describeError(err),
+      });
+    }
     return [];
   }
 }

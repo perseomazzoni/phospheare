@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"log/slog"
 	"net"
 	"net/http"
@@ -42,6 +43,13 @@ import (
 var (
 	version     = "dev"
 	productName = "Phospheare"
+)
+
+// googleEndpoints and driveFiles are where the service reaches Google. Only
+// a development build changes them.
+var (
+	googleEndpoints = google.GoogleEndpoints
+	driveFiles      = google.DriveFiles
 )
 
 // drainFor is how long a stopping service lets requests in flight finish.
@@ -71,7 +79,7 @@ func cli(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "identity: the configuration is not usable:\n%v\n", err)
 			return 2
 		}
-		return googleCheck(env, google.NewClient(google.GoogleEndpoints), stdout, stderr)
+		return googleCheck(env, google.NewClient(googleEndpoints), stdout, stderr)
 	case cmd == "version" && len(args) == 0:
 		fmt.Fprintln(stdout, "identity", version)
 		return 0
@@ -116,7 +124,7 @@ func serve(stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "identity: the configuration is not usable:\n%v\n", err)
 		return 2
 	}
-	logger := slog.New(slog.NewTextHandler(stderr, nil))
+	logger := newLogger(stderr, cfg)
 	setting := "IDENTITY_SEAL_KEYS_FILE"
 	var sealer *seal.Sealer
 	if cfg.SealKeys != "" {
@@ -147,8 +155,8 @@ func serve(stdin io.Reader, stdout, stderr io.Writer) int {
 	err = run(ctx, service{
 		cfg:    cfg,
 		sealer: sealer,
-		google: google.NewClient(google.GoogleEndpoints),
-		drive:  google.NewDrive(google.DriveFiles),
+		google: google.NewClient(googleEndpoints),
+		drive:  google.NewDrive(driveFiles),
 		logger: logger,
 		drain:  drainFor,
 	}, ln)
@@ -198,12 +206,12 @@ func run(ctx context.Context, s service, ln net.Listener) error {
 		Sealer:      s.sealer,
 		Google:      s.google,
 		Drive:       s.drive,
-		Observer:    identity.Observer{Logger: s.logger},
+		Observer:    identity.Observer{Logger: s.logger.With("area", "http")},
 	})
 	public := newServer(id.Handler(listeners...), s.logger)
 	failed := make(chan error, 1)
 	go func() { failed <- public.Serve(ln) }()
-	s.logger.Info("identity service listening", "version", version, "listen", ln.Addr().String(),
+	s.logger.Info("identity service listening", "area", "start", "version", version, "listen", ln.Addr().String(),
 		"origins", strings.Join(origins, ","))
 
 	var err error
@@ -211,7 +219,7 @@ func run(ctx context.Context, s service, ln net.Listener) error {
 	case <-ctx.Done():
 	case err = <-failed:
 	}
-	s.logger.Info("identity service draining", "upTo", s.drain.String())
+	s.logger.Info("identity service draining", "area", "start", "upTo", s.drain.String())
 	stopCtx, cancel := context.WithTimeout(context.Background(), s.drain)
 	defer cancel()
 	drainErr := public.Shutdown(stopCtx)
@@ -230,8 +238,32 @@ func newServer(h http.Handler, logger *slog.Logger) *http.Server {
 		WriteTimeout:   60 * time.Second,
 		IdleTimeout:    2 * time.Minute,
 		MaxHeaderBytes: 32 << 10,
-		ErrorLog:       slog.NewLogLogger(logger.Handler(), slog.LevelWarn),
+		ErrorLog:       serverLog(logger.With("area", "http")),
 	}
+}
+
+// serverLog answers a server's ErrorLog. What the server complains of, such
+// as a failed TLS handshake, is a WARN record for each line; a handler's
+// panic is ERROR, each line of its stack too, so the stack stays with it.
+func serverLog(logger *slog.Logger) *log.Logger {
+	return log.New(serverErrors{logger}, "", 0)
+}
+
+type serverErrors struct{ logger *slog.Logger }
+
+// Write gets one complaint, a panic with all its stack included.
+func (s serverErrors) Write(p []byte) (int, error) {
+	text := strings.TrimRight(string(p), "\n")
+	level := slog.LevelWarn
+	if strings.HasPrefix(text, "http: panic serving") {
+		level = slog.LevelError
+	}
+	for line := range strings.SplitSeq(text, "\n") {
+		if strings.TrimSpace(line) != "" {
+			s.logger.Log(context.Background(), level, line)
+		}
+	}
+	return len(p), nil
 }
 
 type checker interface {
@@ -269,4 +301,15 @@ func googleCheck(env config.Environment, g checker, stdout, stderr io.Writer) in
 	}
 	_ = json.NewEncoder(stdout).Encode(out)
 	return code
+}
+
+// newLogger answers the service's logger: text lines for a person at a
+// terminal, or JSON lines for the desktop program, which writes them into
+// its own log file.
+func newLogger(w io.Writer, cfg config.Config) *slog.Logger {
+	opts := &slog.HandlerOptions{Level: cfg.LogLevel}
+	if cfg.LogJSON {
+		return slog.New(slog.NewJSONHandler(w, opts))
+	}
+	return slog.New(slog.NewTextHandler(w, opts))
 }

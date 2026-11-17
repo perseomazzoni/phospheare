@@ -7,6 +7,7 @@ import { getCurrentUserId } from "../../auth/currentUser";
 import { deleteAllProfileCopies } from "../../profile/portableDrive";
 import { withMergesHeld } from "../../profile/profileStore";
 import type { DisconnectOptions, ProviderConnection } from "../../storage";
+import { appLog } from "../../log";
 
 /** The settings and Library could not be removed; nothing was disconnected. */
 export class CopiesNotDeleted extends Error {
@@ -38,6 +39,11 @@ export async function disconnectRemote(
     await deleteAllProfileCopies().catch(() => {
       throw new CopiesNotDeleted();
     });
+    appLog.info(
+      "drive",
+      "The settings and Library were removed from Remote Storage.",
+      { outcome: "removed" },
+    );
     await drive.disconnect(options);
   };
   const writerId = getCurrentUserId();

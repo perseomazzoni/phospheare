@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -93,6 +94,7 @@ const (
 	toggle
 	login
 	_
+	logs
 	quit
 )
 
@@ -164,7 +166,8 @@ func (p *program) actions() Actions {
 			p.mu.Unlock()
 			return nil
 		},
-		Quit: func() { p.call("quit") },
+		ShowLogs: func() { p.call("logs") },
+		Quit:     func() { p.call("quit") },
 	}
 }
 
@@ -211,7 +214,7 @@ func TestTheMenuListsItsEntriesInOrder(t *testing.T) {
 	p := &program{network: Network{State: NetworkOff}}
 	m := &fakeMenu{}
 	Build(m, p.actions())
-	want := []string{"Open Phospheare", "Setup", "Open on a phone or tablet", "", "Home network: off", "-", "Start home network", "Start at login", "", "Quit Phospheare"}
+	want := []string{"Open Phospheare", "Setup", "Open on a phone or tablet", "", "Home network: off", "-", "Start home network", "Start at login", "", "Show the log files", "Quit Phospheare"}
 	if len(m.items) != len(want) {
 		t.Fatalf("%d entries", len(m.items))
 	}
@@ -335,16 +338,17 @@ func TestOpenSetupAndQuit(t *testing.T) {
 	m := serve(t, p)
 	click(t, m, open)
 	click(t, m, setup)
+	click(t, m, logs)
 	select {
 	case m.items[quit].clicks <- struct{}{}:
 	case <-time.After(5 * time.Second):
 		t.Fatal("quit was not listened to")
 	}
 	deadline := time.Now().Add(5 * time.Second)
-	for len(p.called()) < 3 && time.Now().Before(deadline) {
+	for len(p.called()) < 4 && time.Now().Before(deadline) {
 		time.Sleep(10 * time.Millisecond)
 	}
-	if got := p.called(); len(got) != 3 || got[0] != "open" || got[1] != "setup" || got[2] != "quit" {
+	if got := strings.Join(p.called(), " "); got != "open setup logs quit" {
 		t.Fatalf("calls %v", got)
 	}
 }

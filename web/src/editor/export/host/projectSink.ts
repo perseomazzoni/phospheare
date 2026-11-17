@@ -25,6 +25,7 @@
 // the writer had already sent.
 
 import { EXPORT_DIR } from "../../../project/naming";
+import { refForLog } from "../../../project/logRef";
 import { remoteFor } from "../../../project/sync/remoteFor";
 import {
   getProvider,
@@ -32,6 +33,7 @@ import {
   type StorageProvider,
 } from "../../../storage";
 import type { ExportSink, HomeReport } from "../ports";
+import { appLog, describeError } from "../../../log";
 
 interface Home {
   kind: "device" | "remote";
@@ -61,7 +63,14 @@ async function homesOf(
   const base = getProvider(ref.providerId) ?? storage;
   const homes: Home[] = [{ kind: base.kind, provider: base, ref }];
   if (base.kind === "device") {
-    const remote = await remoteFor(ref).catch(() => null);
+    const remote = await remoteFor(ref).catch((err: unknown) => {
+      appLog.warn(
+        "export",
+        "The pairing of a book could not be read; the export skips its remote copy.",
+        { ...refForLog(ref), ...describeError(err) },
+      );
+      return null;
+    });
     const remoteProvider = remote ? getProvider(remote.providerId) : null;
     if (remote && remoteProvider)
       homes.push({
@@ -133,7 +142,16 @@ export function projectExportSink(options: ProjectSinkOptions): ExportSink {
         try {
           await home.provider.writeBytes(home.ref, path, bytes, mime);
           reports.push({ home: home.kind, ok: true });
-        } catch {
+        } catch (err) {
+          appLog.warn(
+            "export",
+            "An export could not be written to one place.",
+            {
+              home: home.kind,
+              bytes: bytes.length,
+              ...describeError(err),
+            },
+          );
           reports.push({ home: home.kind, ok: false });
         }
       }

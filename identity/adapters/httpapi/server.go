@@ -244,7 +244,8 @@ func (o Observer) observe(next http.Handler) http.Handler {
 		w.Header().Set("X-Request-Id", id)
 		// The request below is a copy, so the pattern its mux records
 		// stays readable here.
-		inner := r.WithContext(r.Context())
+		var account string
+		inner := r.WithContext(context.WithValue(r.Context(), accountKey{}, &account))
 		inner.Header = r.Header.Clone()
 		inner.Header.Set("X-Request-Id", id)
 		if strings.HasPrefix(r.URL.Path, Prefix) {
@@ -263,12 +264,46 @@ func (o Observer) observe(next http.Handler) http.Handler {
 			route = "unmatched"
 		}
 		if o.Logger != nil {
-			o.Logger.LogAttrs(context.Background(), slog.LevelInfo, "request",
-				slog.String("method", r.Method),
-				slog.String("route", route),
+			attrs := []slog.Attr{
 				slog.Int("status", rec.status),
-				slog.Duration("took", time.Since(start).Round(time.Microsecond)),
-				slog.String("requestId", id))
+				slog.String("took", time.Since(start).Round(time.Microsecond).String()),
+				slog.String("requestId", id),
+			}
+			if account != "" {
+				attrs = append(attrs, slog.String("account", account))
+			}
+			o.Logger.LogAttrs(context.Background(), RequestLevel(r.Method, rec.status), r.Method+" "+route, attrs...)
 		}
 	})
+}
+
+// accountKey holds, in a request's context, where the handler names the
+// writer account the request acts for.
+type accountKey struct{}
+
+// noteAccount names writerID as the account in the log line of r's
+// request. The id is one a cookie of this service sealed, or, for
+// `openSession`, the one it has just sealed into the new cookie; never one
+// the request states alone, so the line names the account that the request
+// truly acts for. It is the browser's random account id, which the log may hold;
+// no other value that identifies a person.
+func noteAccount(r *http.Request, writerID string) {
+	if slot, ok := r.Context().Value(accountKey{}).(*string); ok && writerID != "" {
+		*slot = writerID
+	}
+}
+
+// RequestLevel answers the level of a request's log line: a successful
+// read is a detail (DEBUG), a successful change a step (INFO), a refusal a
+// WARN and a failure an ERROR.
+func RequestLevel(method string, status int) slog.Level {
+	switch {
+	case status >= http.StatusInternalServerError:
+		return slog.LevelError
+	case status >= http.StatusBadRequest:
+		return slog.LevelWarn
+	case method == http.MethodGet || method == http.MethodHead:
+		return slog.LevelDebug
+	}
+	return slog.LevelInfo
 }

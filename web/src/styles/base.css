@@ -4280,6 +4280,18 @@ input.import-row-title {
   max-width: calc(100vw - 32px);
 }
 
+/* On the desk the column lies in the titlebar's band, centred, so it keeps
+   clear of the right cluster on both sides: a pill that reached the cluster
+   would put its dismiss or its link over Keyboard shortcuts and Palette.
+   The editor's titlebar publishes the cluster's room (`--titlebar-right`,
+   `WorkspaceTitlebar`); a longer notice wraps inside what is left. Without
+   that titlebar the column keeps its 16px gutter. */
+@media (min-width: 721px) {
+  .status-notices {
+    max-width: calc(100vw - 2 * (var(--titlebar-right, 4px) + 12px));
+  }
+}
+
 /* Sized to be read and then ignored: a standing fact the writer often can do
    nothing about must not carry the presence of a prompt. */
 .status-notice {
@@ -4327,6 +4339,13 @@ input.import-row-title {
   pointer-events: auto;
 }
 
+/* The demo site's download is a sentence of its own, as long as the one
+   before it: on a line of its own the pill is two even lines, not one line
+   as wide as the window broken where the room runs out. */
+.demo-notice-more a {
+  display: block;
+}
+
 /* The Library's new-release card: a notice's paint, outside the column, in
    the bottom trailing corner, 16px in from both edges at every width, and
    under the modal layer like the column. The toasts' phone offset clears a
@@ -4371,9 +4390,14 @@ input.import-row-title {
   .status-notice-action {
     font-size: 13px;
   }
+}
 
-  /* One line on a phone: a pill that wraps grows into an oval over the
-     chapter's title (`DemoNotice`). */
+/* Without the demo's long sentence the pill keeps to one line on a phone: a
+   pill that wraps grows into an oval over the chapter's title (`DemoNotice`).
+   On the desk the long pill is 594px wide, 622px with a touch screen's
+   dismiss. Below 1080px the room between the titlebar's clusters cannot hold
+   it on one line, so the short sentence stands alone there too. */
+@media (max-width: 1079px) {
   .demo-notice-more {
     display: none;
   }

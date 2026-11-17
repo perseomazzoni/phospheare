@@ -5,6 +5,7 @@
 
 import type { ProjectRef, StorageProvider } from "../../storage";
 import { StorageError } from "../../storage/types";
+import { appLog, describeError } from "../../log";
 import {
   DOCUMENT_DIR,
   PROPERTIES_FILE,
@@ -60,24 +61,52 @@ export function providerMetadata(
  * the sync, which the program around the editor holds; without it no pull is
  * ever unfinished.
  */
+/** A project file as the log may name it: the fixed files by name, a Section's file by kind. */
+function kindOfFile(path: string): string {
+  return path === PROPERTIES_FILE ||
+    path === SNAPSHOTS_CATALOGUE_FILE ||
+    path === STRUCTURE_FILE
+    ? path
+    : "section";
+}
+
 export function providerReader(
   provider: StorageProvider,
   pullUnfinished: (project: ProjectRef) => Promise<boolean> = async () => false,
 ): ProjectReader<ProjectRef> {
-  // "Not there" and "cannot be read" are both null: the checks that follow
-  // tell a missing file from a broken project.
-  const readOrNull = async (project: ProjectRef, path: string) => {
+  const isMissing = (err: unknown) =>
+    err instanceof StorageError && err.code === "not-found";
+  // A metadata file that is not there is `null`, and the open's checks say
+  // what that means. One that cannot be read throws, so the open fails with
+  // Try again: never read as missing, which would call the folder "not a
+  // project".
+  const readOrMissing = async (project: ProjectRef, path: string) => {
     try {
       return await provider.readFile(project, path);
-    } catch {
+    } catch (err) {
+      if (isMissing(err)) return null;
+      throw err;
+    }
+  };
+  // A snapshot is read for counts and hashes, best effort: a failure skips
+  // it, and is logged by its kind of file; the path stays out.
+  const readOrSkip = async (project: ProjectRef, path: string) => {
+    try {
+      return await provider.readFile(project, path);
+    } catch (err) {
+      if (!isMissing(err))
+        appLog.warn("editor", "A project file could not be read.", {
+          file: kindOfFile(path),
+          ...describeError(err),
+        });
       return null;
     }
   };
   return {
-    properties: (project) => readOrNull(project, PROPERTIES_FILE),
-    catalogue: (project) => readOrNull(project, SNAPSHOTS_CATALOGUE_FILE),
-    structure: (project) => readOrNull(project, STRUCTURE_FILE),
-    snapshot: (project, fileName) => readOrNull(project, filePath(fileName)),
+    properties: (project) => readOrMissing(project, PROPERTIES_FILE),
+    catalogue: (project) => readOrMissing(project, SNAPSHOTS_CATALOGUE_FILE),
+    structure: (project) => readOrMissing(project, STRUCTURE_FILE),
+    snapshot: (project, fileName) => readOrSkip(project, filePath(fileName)),
     documentFiles: async (project) =>
       (await provider.listDir(project, DOCUMENT_DIR))
         .filter((entry) => entry.kind === "file" && kindOf(entry.name) !== null)

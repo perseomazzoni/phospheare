@@ -103,6 +103,9 @@ type Config struct {
 	// token and the pending password, are kept, chosen at the first start.
 	// They never reach `config.json`; `configfile` keeps them apart.
 	Secrets SecretPlace `json:"secrets,omitempty"`
+	// LogDetailedUntil is when the detailed log, turned on from the setup
+	// page, ends; zero while it is off. It is kept so a restart keeps it.
+	LogDetailedUntil time.Time `json:"logDetailedUntil,omitzero"`
 }
 
 // Defaults answers the configuration of a first run.

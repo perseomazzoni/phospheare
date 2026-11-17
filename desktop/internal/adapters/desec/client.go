@@ -15,6 +15,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"sort"
 	"strings"
@@ -36,6 +37,8 @@ type Client struct {
 	// RetryAfter is the first pause before asking again when deSEC's own
 	// gateway fails; each later pause is longer.
 	RetryAfter time.Duration
+	// Log hears each call made again; it may be nil.
+	Log *slog.Logger
 }
 
 // tries is how many times a call is made while deSEC's gateway fails.
@@ -63,6 +66,9 @@ func (c *Client) call(ctx context.Context, method, path, token string, body, out
 		status, err := c.once(ctx, method, path, token, raw, body != nil, out)
 		if try == tries || !repeatable(method) || status != http.StatusBadGateway && status != http.StatusServiceUnavailable && status != http.StatusGatewayTimeout {
 			return status, err
+		}
+		if c.Log != nil {
+			c.Log.Warn("deSEC's gateway failed. Asking again.", "status", status, "try", try+1, "after", pause*time.Duration(try))
 		}
 		select {
 		case <-ctx.Done():

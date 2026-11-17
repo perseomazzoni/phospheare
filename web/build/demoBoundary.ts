@@ -56,6 +56,15 @@ export const FORBIDDEN_SOURCES: readonly string[] = [
   "editor/useProjectRef",
   "editor/useProjectStore",
   "editor/services/account",
+  // The log: the site keeps none, and its twin (`log/index.demo`) imports
+  // none of these.
+  "log/application/",
+  "log/domain/",
+  "log/presentation/",
+  "log/compose",
+  "log/idbStore",
+  "log/localStash",
+  "log/page",
 ];
 
 /** npm packages that only the stripped features use. */
@@ -77,6 +86,8 @@ export const FORBIDDEN_MARKERS: readonly string[] = [
   "/identity/",
   "/app/project",
   "/app/settings",
+  // The log's database and its stash in localStorage.
+  "writer-log",
 ];
 
 /** One forbidden module, and the import chain from an entry down to it. */

@@ -51,6 +51,7 @@ service again. The setup page's Google check runs `identity google-check`.
 | Path | Responsibility |
 |---|---|
 | `cmd/once-dark-studio-desktop` | flags, startup, single instance, shutdown |
+| `cmd/fake-services` | development only: the stand-ins for Google, deSEC and Let's Encrypt that `npm run dev:wizard` runs; the release build never builds it |
 | `internal/domain` | settings, home-network rules, the language choice, release version comparison |
 | `internal/ports` | settings store, vault, certificate source, deSEC account, login list, the identity service |
 | `internal/application` | the home-network HTTPS listener, the sign-up for its name, and Start over |
@@ -69,7 +70,8 @@ service again. The setup page's Google check runs `identity google-check`.
 | `internal/adapters/browser` | opening the default browser |
 | `internal/adapters/instance` | port claim and "already running" detection |
 | `internal/adapters/tray` | the tray icon and its menu (Windows, and Linux with a StatusNotifierItem host), through `fyne.io/systray`; the menu model is tested without a tray |
-| `internal/adapters/console` | where messages and the log go: the terminal, or on Windows `desktop.log` and a message box for a failed start |
+| `internal/adapters/console` | where the messages for a person go: the terminal, and on Windows a message box for a failed start |
+| `internal/adapters/logs` | the log files: the line format, the levels, the removal of personal data, and how long a file is kept |
 | `internal/adapters/locale` | the system language |
 | `internal/adapters/words` | the setup page's and the tray menu's texts, in English and Italian |
 | `tools/pack` | writes the release `.zip` and `.tar.gz` archives |
@@ -81,7 +83,7 @@ service again. The setup page's Google check runs `identity google-check`.
 ```
 once-dark-studio-desktop [--port 47821] [--data-dir DIR] [--spa-dir DIR]
          [--identity FILE] [--no-browser] [--no-tray]
-         [--acme-directory URL] [--desec-api URL]
+         [--acme-directory URL] [--desec-api URL] [--log-level LEVEL]
          [--dev --dev-origin ORIGIN]
 ```
 
@@ -90,10 +92,13 @@ once-dark-studio-desktop [--port 47821] [--data-dir DIR] [--spa-dir DIR]
   out.
 - `--acme-directory` and `--desec-api` point the home network at other
   ACME and deSEC endpoints, for tests.
+- `--log-level` is the lowest level the log files keep: `debug`, `info`
+  (the default), `warn` or `error`. The identity service gets the same
+  level.
 - The data folder is `once-dark-studio-desktop` under the per-user
   configuration folder (`%APPDATA%`, `~/Library/Application Support`,
-  `~/.config`). It holds `config.json`, `tls/cert.pem`, the log and, where
-  the computer has no password store, `secrets.json`.
+  `~/.config`). It holds `config.json`, `tls/cert.pem`, the log files in
+  `logs/` and, where the computer has no password store, `secrets.json`.
 - The secrets are the Google client secret, the deSEC token (and the deSEC
   password until the token exists), the seal keyring, the Let's Encrypt
   account key and the certificate's key. The first start keeps them in the
@@ -167,14 +172,44 @@ once-dark-studio-desktop [--port 47821] [--data-dir DIR] [--spa-dir DIR]
   they were given.
 - The process stops on "Quit" in the tray's menu or on the setup page and,
   where it runs in a terminal, when the terminal closes or on Ctrl+C.
-- The Windows program has no console window (`-H windowsgui`). Its
-  messages, its log and the identity service's log go to `desktop.log` in
-  the data folder, which moves to `desktop.log.1` past 1 MiB, and also to the
-  terminal when the program is started from one. A failure to start that no
-  terminal shows opens a message box. The identity service, and the program's
-  other runs of it, start with no window either. The executable carries the app icon
-  (`web/public/icon-512.png`) and a manifest declaring per-monitor DPI
-  awareness, both from `tools/winres`.
+- On every system, the program writes `logs/desktop.log` and
+  `logs/identity.log` in the data folder, and the same lines to the
+  terminal when it is started from one. The setup address, which holds the
+  key, goes only to the terminal.
+  - A line is: the time, the level (`DEBUG`, `INFO`, `WARN` or `ERROR`),
+    the source (`desktop` or `identity`), the writer account or `-`, the
+    area, a message, and `key=value` fields. A successful GET is `DEBUG`.
+  - Each file starts with a header that says when the file started. It
+    moves to `.log.1` when it is 7 days old or past 5 MiB. The `.log.1`
+    copy is removed 7 days after its last line, so no line is kept longer
+    than 14 days.
+  - No line holds personal data, as the
+    [log rule](../CONTRIBUTING.md#rules-the-gates-cannot-fully-check) says.
+    As a safety net, the program replaces these values with placeholders
+    such as `[home]`, `[name]` and `[address]` before it writes a line:
+    - the home folder, and the user and computer names;
+    - the home network's name and the email of its deSEC account;
+    - every email address, and every IP address other than loopback. A
+      product's version, such as `Chrome/131.0.0.0`, stays.
+  - The identity service writes JSON lines, which the program writes into
+    `identity.log` in the same format.
+  - The Go runtime writes a crash to `crash.txt` in the data folder, with
+    no value removed. The next start empties the file and copies the crash
+    into `desktop.log` as `ERROR` lines in the area `crash`. It copies
+    them once the settings are read, so the home network's name is removed
+    too.
+  - "Detailed log" on the setup page keeps `DEBUG` lines for 24 hours, past
+    `--log-level`. `config.json` keeps the end (`logDetailedUntil`), so a
+    restart keeps it.
+  - "Show the files" on the setup page and "Show the log files" in the
+    tray's menu open the `logs` folder. "Wipe every configuration" empties
+    both files and turns the detailed log off.
+  - The files stay on the computer. Nothing sends them.
+- The Windows program has no console window (`-H windowsgui`). A failure
+  to start that no terminal shows opens a message box. The identity
+  service, and the program's other runs of it, start with no window either.
+  The executable carries the app icon (`web/public/icon-512.png`) and a
+  manifest declaring per-monitor DPI awareness, both from `tools/winres`.
 
 ## Development
 

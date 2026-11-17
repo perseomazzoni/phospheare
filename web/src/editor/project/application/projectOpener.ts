@@ -36,6 +36,7 @@ import type {
   StructureError,
 } from "../../../project/types";
 import type { ProjectId, ProjectReader } from "./stores";
+import { appLog, describeError } from "../../../log";
 
 export type OpenVerdict =
   | { readonly ok: false; readonly errors: StructureError[] }
@@ -123,7 +124,11 @@ export async function readProject<P extends ProjectId>(
   let onDisk: string[];
   try {
     onDisk = await reader.documentFiles(project);
-  } catch {
+  } catch (err) {
+    if (!((err as { code?: unknown } | null)?.code === "not-found"))
+      appLog.warn("editor", "The document folder could not be listed.", {
+        ...describeError(err),
+      });
     if (!wanted()) return null;
     return refuse([{ code: "missingDocumentDir" }]);
   }

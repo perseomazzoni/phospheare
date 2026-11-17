@@ -8,6 +8,7 @@ import type { Comments } from "../ports";
 import { roomEvidence } from "../domain/evidence";
 import { planEvidence } from "../domain/plan";
 import { titlesOf } from "./chatFacts";
+import { appLog, describeError } from "../../log";
 
 /**
  * What an editor's letter is handed: the book's other chats (`roomEvidence`)
@@ -29,7 +30,13 @@ export async function letterEvidence(
   );
   const margin =
     comments && sections.length > 0
-      ? await comments.threadsOf(sections).catch(() => [])
+      ? await comments.threadsOf(sections).catch((err) => {
+          appLog.warn("ai", "Margin threads could not be read for a letter.", {
+            sections: sections.length,
+            ...describeError(err),
+          });
+          return [];
+        })
       : [];
   return [
     roomEvidence(chats, chat, titlesOf(catalog), margin),

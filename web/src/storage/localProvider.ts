@@ -45,6 +45,15 @@ import { PRODUCT } from "../product";
 // listing over `MAX_DIR_ENTRIES` is refused instead of hanging the tab; the
 // root scan shares the ceiling.
 
+/**
+ * `error` carrying the browser's own failure as its `cause`, so the app's log
+ * can name it (`QuotaExceededError`, `NotAllowedError`). Set by hand: the app
+ * builds for ES2020, whose `Error` constructor takes no `cause`.
+ */
+function causedBy(error: StorageError, cause: unknown): StorageError {
+  return Object.assign(error, { cause });
+}
+
 /** Names never surfaced: dotfiles and dependency folders. */
 function isHidden(name: string): boolean {
   return name.startsWith(".") || name === "node_modules";
@@ -118,10 +127,13 @@ async function projectDir(
     // read failure instead of a missing book. For `create: true` callers,
     // which write, a failure is a real IO error and stays one.
     if (!create)
-      throw new StorageError(
-        "This project is no longer available.",
-        "not-found",
-        "storage.projectGone",
+      throw causedBy(
+        new StorageError(
+          "This project is no longer available.",
+          "not-found",
+          "storage.projectGone",
+        ),
+        err,
       );
     throw err;
   }
@@ -137,12 +149,15 @@ async function resolveDir(
   for (const segment of path.split("/").filter(Boolean)) {
     try {
       dir = await dir.getDirectoryHandle(segment, { create });
-    } catch {
-      throw new StorageError(
-        `Folder not found: ${segment}`,
-        "not-found",
-        "storage.folderGone",
-        { name: segment },
+    } catch (err) {
+      throw causedBy(
+        new StorageError(
+          `Folder not found: ${segment}`,
+          "not-found",
+          "storage.folderGone",
+          { name: segment },
+        ),
+        err,
       );
     }
   }
@@ -168,12 +183,15 @@ async function fileHandleAt(
   const { dir, name } = await resolveParent(base, path, false);
   try {
     return await dir.getFileHandle(name);
-  } catch {
-    throw new StorageError(
-      `File not found: ${path}`,
-      "not-found",
-      "storage.fileGone",
-      { name: baseName(path) },
+  } catch (err) {
+    throw causedBy(
+      new StorageError(
+        `File not found: ${path}`,
+        "not-found",
+        "storage.fileGone",
+        { name: baseName(path) },
+      ),
+      err,
     );
   }
 }
@@ -358,8 +376,8 @@ export const localProvider: StorageProvider = {
     try {
       const fileHandle = await dir.getFileHandle(name, { create: true });
       await writeWhole(fileHandle, content);
-    } catch {
-      throw new StorageError(`Could not save ${path}.`, "io");
+    } catch (err) {
+      throw causedBy(new StorageError(`Could not save ${path}.`, "io"), err);
     }
   },
 
@@ -374,8 +392,8 @@ export const localProvider: StorageProvider = {
     try {
       const fileHandle = await dir.getFileHandle(name, { create: true });
       await writeWhole(fileHandle, bytes as Uint8Array<ArrayBuffer>);
-    } catch {
-      throw new StorageError(`Could not save ${path}.`, "io");
+    } catch (err) {
+      throw causedBy(new StorageError(`Could not save ${path}.`, "io"), err);
     }
   },
 
@@ -384,8 +402,8 @@ export const localProvider: StorageProvider = {
     const base = await projectDir(root, ref, true);
     try {
       await resolveDir(base, path, true);
-    } catch {
-      throw new StorageError(`Could not create ${path}.`, "io");
+    } catch (err) {
+      throw causedBy(new StorageError(`Could not create ${path}.`, "io"), err);
     }
   },
 
@@ -558,10 +576,10 @@ export async function createLocalProject(
   let folder: FileSystemDirectoryHandle;
   try {
     folder = await root.getDirectoryHandle(folderName, { create: true });
-  } catch {
-    throw new StorageError(
-      `Could not create ${folderName} in that folder.`,
-      "io",
+  } catch (err) {
+    throw causedBy(
+      new StorageError(`Could not create ${folderName} in that folder.`, "io"),
+      err,
     );
   }
 

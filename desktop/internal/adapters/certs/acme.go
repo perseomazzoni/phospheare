@@ -15,6 +15,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,9 +50,9 @@ type Issuer struct {
 	// Settle is how long to wait once Propagated returns, for the copies of
 	// the name servers it cannot ask; the one retry waits twice as long.
 	Settle time.Duration
-	// Logf hears the authority's own words for a refusal the error says
-	// plainly.
-	Logf func(format string, args ...any)
+	// Log hears the authority's own words for a refusal the error says
+	// plainly; it may be nil.
+	Log *slog.Logger
 	// Report hears how far Obtain has come; it may be nil.
 	Report func(domain.Progress)
 }
@@ -130,6 +131,22 @@ func retryBackoff(n int, _ *http.Request, resp *http.Response) time.Duration {
 	return min(time.Second<<min(n, 4), 10*time.Second)
 }
 
+// retryBackoff is the package's pause, with a line for each retry, so a
+// wait on a failing authority shows in the log.
+func (i *Issuer) retryBackoff(n int, r *http.Request, resp *http.Response) time.Duration {
+	d := retryBackoff(n, r, resp)
+	status := 0
+	if resp != nil {
+		status = resp.StatusCode
+	}
+	if d < 0 {
+		i.log().Warn("Let's Encrypt refused a request. Not asking again.", "status", status)
+	} else {
+		i.log().Warn("Let's Encrypt did not answer as expected. Asking again.", "status", status, "try", n+1, "after", d)
+	}
+	return d
+}
+
 // Obtain answers a PEM certificate chain and its PEM private key for
 // hostname. Every challenge record it creates is removed before it returns.
 // The authority checks the record from several places; when one of them
@@ -140,28 +157,28 @@ func retryBackoff(n int, _ *http.Request, resp *http.Response) time.Duration {
 func (i *Issuer) Obtain(ctx context.Context, hostname string) (certPEM, keyPEM []byte, err error) {
 	certPEM, keyPEM, err = i.obtainOnce(ctx, hostname, false)
 	if visit, asked := actionAsked(err); asked {
-		i.logf("certificate: %v", err)
+		i.log().Warn("Let's Encrypt asks for its agreement to be accepted again.", "error", err)
 		return nil, nil, &TermsError{Visit: visit, Err: err}
 	}
 	if rateLimited(err) {
-		i.logf("certificate: %v", err)
+		i.log().Warn("Let's Encrypt asks to wait before it issues another certificate.", "error", err)
 		return nil, nil, &RateLimitedError{Err: err}
 	}
 	if !notSeen(err) {
 		return certPEM, keyPEM, err
 	}
-	i.logf("certificate: %v; asking again", err)
+	i.log().Warn("Let's Encrypt could not see the proof from every place it checks. Asking again.", "error", err)
 	i.report(domain.Progress{Stage: domain.StagePublish, Again: true})
 	if err := wait(ctx, 2*i.Settle); err != nil {
 		return nil, nil, err
 	}
 	certPEM, keyPEM, err = i.obtainOnce(ctx, hostname, true)
 	if rateLimited(err) {
-		i.logf("certificate: %v", err)
+		i.log().Warn("Let's Encrypt asks to wait before it issues another certificate.", "error", err)
 		return nil, nil, &RateLimitedError{Err: err}
 	}
 	if notSeen(err) {
-		i.logf("certificate: %v", err)
+		i.log().Warn("Let's Encrypt could not see the proof from every place it checks, twice.", "error", err)
 		return nil, nil, &NotSeenError{Host: hostname, Err: err}
 	}
 	return certPEM, keyPEM, err
@@ -197,10 +214,11 @@ func wait(ctx context.Context, d time.Duration) error {
 	}
 }
 
-func (i *Issuer) logf(format string, args ...any) {
-	if i.Logf != nil {
-		i.Logf(format, args...)
+func (i *Issuer) log() *slog.Logger {
+	if i.Log == nil {
+		return slog.New(slog.DiscardHandler)
 	}
+	return i.Log
 }
 
 func (i *Issuer) report(p domain.Progress) {
@@ -211,7 +229,9 @@ func (i *Issuer) report(p domain.Progress) {
 
 // obtainOnce runs one order for hostname; again marks the second.
 func (i *Issuer) obtainOnce(ctx context.Context, hostname string, again bool) (certPEM, keyPEM []byte, err error) {
-	cl := &acme.Client{Key: i.AccountKey, DirectoryURL: i.DirectoryURL, HTTPClient: i.HTTP, UserAgent: userAgent, RetryBackoff: retryBackoff}
+	cl := &acme.Client{Key: i.AccountKey, DirectoryURL: i.DirectoryURL, HTTPClient: i.HTTP, UserAgent: userAgent, RetryBackoff: i.retryBackoff}
+	log := i.log().With("again", again)
+	log.Debug("Reading the ACME directory.")
 	dir, err := cl.Discover(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("acme directory: %w", err)
@@ -226,10 +246,13 @@ func (i *Issuer) obtainOnce(ctx context.Context, hostname string, again bool) (c
 	if _, err := cl.Register(ctx, &acme.Account{}, acme.AcceptTOS); err != nil && !errors.Is(err, acme.ErrAccountAlreadyExists) {
 		return nil, nil, fmt.Errorf("acme account: %w", err)
 	}
+	log.Debug("The ACME account is ready.")
+	log.Info("Asking Let's Encrypt for an order.")
 	order, err := cl.AuthorizeOrder(ctx, acme.DomainIDs(hostname))
 	if err != nil {
 		return nil, nil, fmt.Errorf("acme order: %w", err)
 	}
+	log.Info("The order is placed.", "proofs", len(order.AuthzURLs))
 	for _, u := range order.AuthzURLs {
 		if err := i.authorize(ctx, cl, u, again); err != nil {
 			return nil, nil, err
@@ -239,6 +262,7 @@ func (i *Issuer) obtainOnce(ctx context.Context, hostname string, again bool) (c
 	if err != nil {
 		return nil, nil, fmt.Errorf("acme order: %w", err)
 	}
+	log.Info("Let's Encrypt is issuing the certificate.")
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, nil, err
@@ -257,6 +281,7 @@ func (i *Issuer) obtainOnce(ctx context.Context, hostname string, again bool) (c
 			return nil, nil, fmt.Errorf("acme certificate: %w", err)
 		}
 	}
+	log.Info("Let's Encrypt issued the certificate.", "chain", len(chain))
 	for _, der := range chain {
 		certPEM = append(certPEM, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})...)
 	}
@@ -279,11 +304,13 @@ func (i *Issuer) fetchIssued(ctx context.Context, cl *acme.Client, orderURL stri
 }
 
 func (i *Issuer) authorize(ctx context.Context, cl *acme.Client, authzURL string, again bool) error {
+	log := i.log().With("again", again)
 	z, err := cl.GetAuthorization(ctx, authzURL)
 	if err != nil {
 		return fmt.Errorf("acme authorization: %w", err)
 	}
 	if z.Status == acme.StatusValid {
+		log.Info("Let's Encrypt still holds a valid proof for the name.")
 		return nil
 	}
 	var chal *acme.Challenge
@@ -302,28 +329,44 @@ func (i *Issuer) authorize(ctx context.Context, cl *acme.Client, authzURL string
 	}
 	fqdn := "_acme-challenge." + z.Identifier.Value
 	i.report(domain.Progress{Stage: domain.StagePublish, Again: again})
+	log.Info("Writing the proof record at deSEC.")
 	cleanup, err := i.DNS.SetTXT(ctx, fqdn, value)
 	if err != nil {
 		return fmt.Errorf("challenge record: %w", err)
 	}
-	defer func() { _ = cleanup(context.WithoutCancel(ctx)) }()
+	log.Info("The proof record is written at deSEC.")
+	defer func() {
+		if err := cleanup(context.WithoutCancel(ctx)); err != nil {
+			log.Warn("The proof record could not be removed from deSEC.", "error", err)
+		} else {
+			log.Debug("The proof record is removed from deSEC.")
+		}
+	}()
 	if i.Propagated != nil {
+		started := time.Now()
 		err := i.Propagated(ctx, fqdn, value, func(done, total int, timed bool) {
 			i.report(domain.Progress{Stage: domain.StagePublish, Done: done, Total: total, Timed: timed, Again: again})
 		})
 		if err != nil {
 			return err
 		}
+		log.Info("deSEC's servers show the proof.", "after", time.Since(started).Round(time.Second))
+	}
+	if i.Settle > 0 {
+		log.Debug("Waiting a short margin for copies of the servers.", "for", i.Settle)
 	}
 	if err := wait(ctx, i.Settle); err != nil {
 		return err
 	}
 	i.report(domain.Progress{Stage: domain.StageCheck, Again: again})
+	log.Info("Asking Let's Encrypt to check the proof.")
+	started := time.Now()
 	if _, err := cl.Accept(ctx, chal); err != nil {
 		return fmt.Errorf("acme challenge: %w", err)
 	}
 	if _, err := cl.WaitAuthorization(ctx, z.URI); err != nil {
 		return fmt.Errorf("acme authorization: %w", err)
 	}
+	log.Info("Let's Encrypt accepted the proof.", "after", time.Since(started).Round(time.Second))
 	return nil
 }

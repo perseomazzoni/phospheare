@@ -34,6 +34,10 @@ type wipeLAN struct {
 
 func (f *wipeLAN) Stop() error { f.stops++; return f.err }
 
+type wipeLogs struct{ clears int }
+
+func (f *wipeLogs) Clear() error { f.clears++; return nil }
+
 type wipeAutostart struct{ on bool }
 
 func (f *wipeAutostart) Enable(string, []string) error { f.on = true; return nil }
@@ -55,7 +59,7 @@ func setUp() domain.Config {
 
 func newWipe() (*Wipe, *memConfig, *wipeIdentity, *wipeLAN, *wipeAutostart) {
 	store, id, lan, auto := &memConfig{cfg: setUp()}, &wipeIdentity{}, &wipeLAN{}, &wipeAutostart{on: true}
-	return &Wipe{Config: store, Identity: id, LAN: lan, Certs: &wipeCerts{}, Autostart: auto}, store, id, lan, auto
+	return &Wipe{Config: store, Identity: id, LAN: lan, Certs: &wipeCerts{}, Autostart: auto, Logs: &wipeLogs{}}, store, id, lan, auto
 }
 
 func TestWipeGoogleKeepsTheRest(t *testing.T) {
@@ -87,9 +91,9 @@ func TestWipeEverythingLeavesAFirstRun(t *testing.T) {
 		t.Fatalf("config %+v, want %+v", got, want)
 	}
 	// The keys go, rather than being replaced: the vault keeps nothing.
-	if id.forgets != 1 || id.signOuts != 0 || lan.stops != 1 || auto.on || w.Certs.(*wipeCerts).forgets != 1 {
-		t.Fatalf("forgets %d, sign-outs %d, stops %d, autostart %v, certificate forgets %d",
-			id.forgets, id.signOuts, lan.stops, auto.on, w.Certs.(*wipeCerts).forgets)
+	if id.forgets != 1 || id.signOuts != 0 || lan.stops != 1 || auto.on || w.Certs.(*wipeCerts).forgets != 1 || w.Logs.(*wipeLogs).clears != 1 {
+		t.Fatalf("forgets %d, sign-outs %d, stops %d, autostart %v, certificate forgets %d, log clears %d",
+			id.forgets, id.signOuts, lan.stops, auto.on, w.Certs.(*wipeCerts).forgets, w.Logs.(*wipeLogs).clears)
 	}
 }
 
@@ -99,7 +103,7 @@ func TestWipeEverythingStopsWhereItFails(t *testing.T) {
 	if err := w.Everything(); err == nil {
 		t.Fatal("a wipe whose listener did not stop succeeded")
 	}
-	if store.Get().Google.ClientID == "" || id.forgets != 0 || w.Certs.(*wipeCerts).forgets != 0 {
+	if store.Get().Google.ClientID == "" || id.forgets != 0 || w.Certs.(*wipeCerts).forgets != 0 || w.Logs.(*wipeLogs).clears != 0 {
 		t.Fatal("a failed wipe went on")
 	}
 }

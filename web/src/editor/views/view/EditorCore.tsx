@@ -1327,6 +1327,7 @@ export const EditorCore = forwardRef<WritingViewHandle, EditorCoreProps>(
 
     // ── Text input ───────────────────────────────────────────────────────────
 
+    const reportUnhandled = host.unhandledInput;
     useEffect(() => {
       const el = editorRef.current;
       if (!el) return;
@@ -1343,12 +1344,13 @@ export const EditorCore = forwardRef<WritingViewHandle, EditorCoreProps>(
           e,
           { composing, composed, rendering },
           revealCaretIfHidden,
+          reportUnhandled,
         );
       };
 
       el.addEventListener("beforeinput", onBeforeInput);
       return () => el.removeEventListener("beforeinput", onBeforeInput);
-    }, [engine]);
+    }, [engine, reportUnhandled]);
 
     // ── Keyboard shortcuts ───────────────────────────────────────────────────
 

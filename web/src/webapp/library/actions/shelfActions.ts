@@ -10,6 +10,7 @@ import {
   type StorageProvider,
 } from "../../../storage";
 import { storageErrorMessage } from "../../../storage/messages";
+import { appLog, describeError } from "../../../log";
 import type { SyncCheckResult } from "../../../project/sync/check";
 import { libraryCard } from "../../../profile/library";
 import { libraryRows } from "../../../profile/profileSync";
@@ -56,11 +57,36 @@ export type ShelfToasts = Pick<Toasts, "post" | "dismiss">;
 /** The signed-in account an action works for. */
 export type ShelfUser = { id: string } | null;
 
+/** The Library actions whose failures `actionFailure` words and logs. */
+export type LibraryAction =
+  | "delete"
+  | "duplicate-folder"
+  | "duplicate-copy"
+  | "choose-folder"
+  | "forget-folder"
+  | "move-to-local-folder"
+  | "move-to-local-copy"
+  | "move-to-remote"
+  | "save-facts"
+  | "undo-facts"
+  | "start-sync"
+  | "sync-now"
+  | "unpair";
+
 /**
  * An action's failure in the writer's language: a storage failure says its
- * own reason, anything else reads "could not be opened".
+ * own reason, anything else reads "could not be opened". The failure goes to
+ * the app's log too, named by its action; the project stays unnamed.
  */
-export function actionFailure(err: unknown, t: TFunction): string {
+export function actionFailure(
+  err: unknown,
+  t: TFunction,
+  action: LibraryAction,
+): string {
+  appLog.error("library", "A Library action failed.", {
+    action,
+    ...describeError(err),
+  });
   return storageErrorMessage(err, t, t("library.openFailed"));
 }
 

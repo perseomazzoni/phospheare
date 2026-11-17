@@ -14,6 +14,7 @@ import {
 import { pair } from "../../../project/sync/pairing";
 import { baselinesForUpload } from "../../../project/sync/apply";
 import { projectIdFor } from "../../../project/projectId";
+import { refForLog } from "../../../project/logRef";
 import {
   createDriveProject,
   driveProvider,
@@ -25,9 +26,11 @@ import type { ActionFailure } from "./useActionError";
 import type { CopyJob } from "./useCopyJob";
 import {
   actionFailure,
+  type LibraryAction,
   type LibraryCardsApi,
   type ShelfToasts,
 } from "./shelfActions";
+import { appLog, describeError } from "../../../log";
 
 export interface ProjectSyncInput extends Pick<
   LibraryCardsApi,
@@ -78,6 +81,9 @@ export function useProjectSync({
       clearFailure();
 
       const signal = startCopy(ref.name, "sync");
+      const began = Date.now();
+      const about = refForLog(ref);
+      appLog.info("sync", "A first upload started.", about);
 
       try {
         const target = await createDriveProject(
@@ -96,6 +102,12 @@ export function useProjectSync({
         );
 
         if (result.cancelled) {
+          appLog.info("sync", "A first upload finished.", {
+            ...about,
+            copied: result.copied,
+            cancelled: true,
+            ms: Date.now() - began,
+          });
           // States what reached Remote Storage, because the writer will find
           // those files. Nothing is paired, so they stay an untracked copy
           // rather than a half-set-up sync.
@@ -152,10 +164,16 @@ export function useProjectSync({
           serializeProperties(props),
         );
 
+        appLog.info("sync", "A first upload finished.", {
+          ...about,
+          copied: result.copied,
+          cancelled: false,
+          ms: Date.now() - began,
+        });
         post(t("library.syncStarted", { name: ref.name }));
         void revalidate(ref);
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "start-sync"));
       } finally {
         finish();
       }
@@ -193,6 +211,12 @@ export function useProjectSync({
       clearFailure();
       try {
         const result = await checkNow(ref);
+        appLog.info("sync", "Sync now ended.", {
+          ...refForLog(ref),
+          toPull: result?.verdict.toPull.length ?? null,
+          toPush: result?.verdict.toPush.length ?? null,
+          conflict: result?.verdict.conflict ?? null,
+        });
         if (!result || result.verdict.conflict) return;
         const name = ref.name;
         post(
@@ -203,7 +227,7 @@ export function useProjectSync({
               : t("sync.upToDate", { name }),
         );
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "sync-now"));
       }
     },
     [checkNow, post, t, clearFailure, fail],
@@ -214,10 +238,17 @@ export function useProjectSync({
     async (ref: ProjectRef) => {
       clearFailure();
       try {
+        const about = refForLog(ref);
+        const began = Date.now();
         await unpairCard(ref);
+        appLog.info("library", "A Library action succeeded.", {
+          action: "unpair" satisfies LibraryAction,
+          ...about,
+          ms: Date.now() - began,
+        });
         post(t("library.unpaired", { name: ref.name }));
       } catch (err) {
-        fail(actionFailure(err, t));
+        fail(actionFailure(err, t, "unpair"));
       }
     },
     [unpairCard, post, t, clearFailure, fail],
@@ -237,7 +268,11 @@ export function useProjectSync({
       setUploadingAgain(projectId);
       try {
         await unpairCard(ref);
-      } catch {
+      } catch (err) {
+        appLog.error("sync", "Upload again could not drop the old pairing.", {
+          project: projectId,
+          ...describeError(err),
+        });
         post(t("sync.uploadAgainFailed", { name: ref.name }));
         return;
       } finally {

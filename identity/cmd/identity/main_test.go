@@ -79,6 +79,32 @@ func TestGoogleCheckReportsEveryOrigin(t *testing.T) {
 	}
 }
 
+// net/http writes a handler's panic and its stack in one call; each line
+// reaches the desktop as its own ERROR record.
+func TestARequestsPanicIsAnErrorWithItsStack(t *testing.T) {
+	var out bytes.Buffer
+	logger := serverLog(slog.New(slog.NewJSONHandler(&out, nil)))
+	logger.Print("http: TLS handshake error from 127.0.0.1:5000: EOF")
+	logger.Print("http: panic serving 127.0.0.1:5001: boom\ngoroutine 7 [running]:\nmain.handler()")
+	var levels []string
+	for line := range strings.SplitSeq(strings.TrimSpace(out.String()), "\n") {
+		var rec struct{ Level, Msg string }
+		if err := json.Unmarshal([]byte(line), &rec); err != nil {
+			t.Fatalf("line %q: %v", line, err)
+		}
+		levels = append(levels, rec.Level+" "+rec.Msg)
+	}
+	want := []string{
+		"WARN http: TLS handshake error from 127.0.0.1:5000: EOF",
+		"ERROR http: panic serving 127.0.0.1:5001: boom",
+		"ERROR goroutine 7 [running]:",
+		"ERROR main.handler()",
+	}
+	if strings.Join(levels, "\n") != strings.Join(want, "\n") {
+		t.Fatalf("records %q", levels)
+	}
+}
+
 func TestUnknownCommandShowsUsage(t *testing.T) {
 	var out, errOut bytes.Buffer
 	if code := cli([]string{"keys", "old"}, strings.NewReader(""), &out, &errOut); code != 2 || !strings.Contains(errOut.String(), "usage:") {
@@ -212,7 +238,7 @@ func TestRunServesThenDrainsTheRequestsInFlight(t *testing.T) {
 			},
 			sealer: sealer,
 			google: g,
-			logger: slog.New(slog.NewTextHandler(logs, nil)),
+			logger: slog.New(slog.NewTextHandler(logs, &slog.HandlerOptions{Level: slog.LevelDebug})),
 			drain:  5 * time.Second,
 		}, ln)
 	}()
@@ -298,7 +324,7 @@ func TestRunServesThenDrainsTheRequestsInFlight(t *testing.T) {
 	if _, err := net.DialTimeout("tcp", ln.Addr().String(), time.Second); err == nil {
 		t.Fatal("still accepting after the drain")
 	}
-	for _, want := range []string{"identity service listening", "identity service draining", "route=/identity/google/callback"} {
+	for _, want := range []string{"identity service listening", "identity service draining", `msg="GET /identity/google/callback"`} {
 		if !strings.Contains(logs.String(), want) {
 			t.Fatalf("the log misses %q:\n%s", want, logs.String())
 		}

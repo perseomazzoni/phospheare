@@ -30,6 +30,20 @@ import {
 } from "../../project/referenceSections";
 import { referenceNames } from "./commandReferences";
 import type { LiveStructure } from "./mapAnswer";
+import { appLog, describeError } from "../../log";
+
+// Both listings rerun on every run, chat switch and tree change: one line a
+// session for each.
+const logged = new Set<"missing" | "catalogue">();
+
+function logOnce(listing: "missing" | "catalogue", err: unknown): void {
+  if (logged.has(listing)) return;
+  logged.add(listing);
+  appLog.warn("ai", "The panel's source listing failed.", {
+    listing,
+    ...describeError(err),
+  });
+}
 
 /**
  * The Ask face's view of the project's sources: the live catalogue and
@@ -79,7 +93,8 @@ export function usePanelCatalogue({
       .then((found) => {
         if (current) setMissing(found);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        logOnce("missing", err);
         // A failed listing names nothing missing rather than everything.
         if (current) setMissing([]);
       });
@@ -274,7 +289,8 @@ export function usePanelCatalogue({
           () => undefined,
         );
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        logOnce("catalogue", err);
         // The catalogue stays as it is: a failed listing is no reason to
         // strip the titles the transcript already shows.
       });

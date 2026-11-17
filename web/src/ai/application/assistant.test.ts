@@ -25,6 +25,7 @@ import {
 import { citationsAsText } from "../domain/citations";
 import { NO_WEB_CITATIONS, type WebCitations } from "../domain/webCitations";
 import { hashOf } from "../../text/hash";
+import { appLog } from "../../log";
 import { SummarySourceChangedError } from "./summaries";
 import { TOOL_RESULT_RETAINED } from "./budgets";
 import { questionOf, skillFor } from "../domain/skills";
@@ -1001,6 +1002,38 @@ describe("Assistant application service", () => {
       outcome: "failed",
     });
     expect(assistant.getSnapshot().error).toBe("Ollama is offline");
+  });
+
+  it("logs a failed turn by its model and code, never the provider's words", async () => {
+    const model = new ProgrammableModel(async function* () {
+      yield {
+        type: "failed",
+        error: {
+          code: "key-expired",
+          message: "The provider quoted: my secret chapter.",
+          retryable: false,
+        },
+      };
+    });
+    const { assistant } = setup({ model });
+    const chat = await newChat(assistant, "general");
+    const error = vi.spyOn(appLog, "error");
+    try {
+      await assistant.send("Hello");
+      const turn = error.mock.calls.find(
+        ([area, message]) => area === "ai" && message === "A chat turn failed.",
+      );
+      expect(turn?.[2]).toMatchObject({
+        chat: chat.id,
+        provider: expect.any(String),
+        model: expect.any(String),
+        code: "key-expired",
+        retryable: false,
+      });
+      expect(JSON.stringify(error.mock.calls)).not.toContain("secret");
+    } finally {
+      error.mockRestore();
+    }
   });
 
   it("never stores the failure's message as the answer, nor replays it as one", async () => {

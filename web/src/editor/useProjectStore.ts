@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { remoteFor } from "../project/sync/remoteFor";
 import type { CacheStore } from "../storage/cache/cacheStore";
 import { openCacheStore } from "../storage/cache/opfsCacheStore";
+import { appLog, describeError } from "../log";
+import { refForLog } from "../project/logRef";
 
 // The working copy, for the lifetime of one mount. Before the route opens
 // anything it must know whether the project has a remote to commit to, which
@@ -40,7 +42,13 @@ export function useProjectStore(
     // project's saves still reach its disk, and the next sync check pushes
     // what the queue did not carry.
     void remoteFor(ref)
-      .catch(() => null)
+      .catch((err: unknown) => {
+        appLog.warn("sync", "A project's pairing could not be read.", {
+          ...refForLog(ref),
+          ...describeError(err),
+        });
+        return null;
+      })
       .then((remote) => {
         // The unmount may have happened while the pairing read was in flight.
         // Do not open a store nothing will dispose.
@@ -52,6 +60,10 @@ export function useProjectStore(
       });
     return () => {
       live = false;
+      appLog.info("editor", "A project was closed.", {
+        ...refForLog(ref),
+        workingCopy: opened !== null,
+      });
       opened?.dispose();
       // Back to "not answered yet" rather than "no remote": the next project
       // has not been looked up, and "no remote" would open it undecorated.

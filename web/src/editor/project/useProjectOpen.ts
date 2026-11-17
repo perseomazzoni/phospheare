@@ -9,13 +9,15 @@ import type { ProjectRef, StorageProvider } from "../../storage";
 import type { EditorEngine } from "../views/engine";
 import type { ProjectStatus } from "../ProjectContext";
 import type { EditorServices } from "../services/port";
-import { findNode, nodeOfFile } from "../../project/structure";
+import { findNode, nodeOfFile, sectionNumbers } from "../../project/structure";
 import type { StructureError } from "../../project/types";
 import type { MetadataLanes } from "./application/metadataLanes";
 import { readProject, verifySnapshotHashes } from "./application/projectOpener";
 import type { StatsKeeper } from "./application/statsKeeper";
 import type { MetadataStore } from "./application/stores";
 import { providerReader } from "./storageStores";
+import { appLog, describeError } from "../../log";
+import { refForLog } from "../../project/logRef";
 
 /**
  * The open: one sequence with one token, from the access check to the
@@ -110,6 +112,7 @@ export function useProjectOpen({
       targetProvider: StorageProvider,
       restore: string | null = null,
     ) => {
+      const started = Date.now();
       const token = (loadSeq.current += 1);
       // Another open started since this one: a key change, a reload or a
       // reconnect. Its reads can finish first, so this one checks after each
@@ -141,6 +144,11 @@ export function useProjectOpen({
         );
         if (!verdict || overtaken()) return;
         if (!verdict.ok) {
+          appLog.info("editor", "A project was found invalid.", {
+            ...refForLog(target),
+            codes: [...new Set(verdict.errors.map((e) => e.code))].join(","),
+            ms: Date.now() - started,
+          });
           refuse(verdict.errors);
           return;
         }
@@ -149,6 +157,11 @@ export function useProjectOpen({
           properties: parsedProps,
           catalogue: parsedCatalogue,
         } = verdict;
+        appLog.info("editor", "A project was opened.", {
+          ...refForLog(target),
+          sections: sectionNumbers(loaded).size,
+          ms: Date.now() - started,
+        });
 
         // A project reached by URL alone has only its key for a name. With the
         // properties read, the document's title replaces the opaque id.
@@ -223,6 +236,10 @@ export function useProjectOpen({
         void stats.backfillHashes(metadata, reader, named, loaded, stillHere);
       } catch (err) {
         if (overtaken()) return;
+        appLog.error("editor", "A project could not be opened.", {
+          ...refForLog(target),
+          ...describeError(err),
+        });
         setStatus("error");
         setError(message(err));
       }
@@ -349,7 +366,11 @@ export function useProjectOpen({
       // the document is there and cannot be reached yet. Otherwise a provider
       // that throws from a query leaves the panel empty with nothing to
       // click, which reads as a lost project.
-      .catch(() => {
+      .catch((err: unknown) => {
+        appLog.warn("editor", "A project's access could not be checked.", {
+          ...refForLog(target),
+          ...describeError(err),
+        });
         if (!cancelled) setPendingRef(target);
       });
     return () => {

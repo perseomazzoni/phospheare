@@ -32,6 +32,8 @@ type env struct {
 	h  http.Handler
 	// configured is whether a Google client is set up; newEnv sets it.
 	configured bool
+	// log holds every line the handler logs, DEBUG included.
+	log *bytes.Buffer
 }
 
 // upstream stands for the identity service: it answers with what reached
@@ -70,8 +72,9 @@ var testSPA = fstest.MapFS{
 // Google set up and the desktop paths answering "desktop".
 func newEnv(t *testing.T) *env {
 	t.Helper()
-	e := &env{id: newUpstream(t), configured: true}
+	e := &env{id: newUpstream(t), configured: true, log: new(bytes.Buffer)}
 	e.h = front.Handler(front.Options{
+		Logger:    slog.New(slog.NewTextHandler(e.log, &slog.HandlerOptions{Level: slog.LevelDebug})),
 		Listener:  front.Listener{Origin: localOrigin, ExpectedHost: localHost},
 		AliasHost: "127.0.0.1:47821",
 		WrongHost: "Phospheare answers only at its own address.",
@@ -239,6 +242,11 @@ func TestIdentityRoutesSayWhenTheServiceIsDown(t *testing.T) {
 	if rec := get(e, "/identity/session"); rec.Code != http.StatusOK {
 		t.Fatalf("a running service: %d", rec.Code)
 	}
+	log := e.log.String()
+	if !strings.Contains(log, "level=WARN msg=\"The identity service is not running.") ||
+		!strings.Contains(log, "level=ERROR msg=\"The identity service did not answer.\"") || strings.Contains(log, "/identity/session") {
+		t.Fatalf("log %q", log)
+	}
 }
 
 // The log names the route that answered, never the path, which can name a
@@ -250,13 +258,32 @@ func TestFrontLogsRoutesNotPaths(t *testing.T) {
 		Listener: front.Listener{Origin: localOrigin, ExpectedHost: localHost},
 		Identity: e.id,
 		SPA:      testSPA,
-		Logger:   slog.New(slog.NewTextHandler(&out, nil)),
+		Logger:   slog.New(slog.NewTextHandler(&out, &slog.HandlerOptions{Level: slog.LevelDebug})),
 	})
 	get(&env{h: h}, "/app/editor/project-7f3a")
 	get(&env{h: h}, "/identity/session")
 	log := out.String()
-	if strings.Contains(log, "project-7f3a") || strings.Contains(log, "/identity/") || !strings.Contains(log, "route=/") || strings.Count(log, "\n") != 1 {
+	if strings.Contains(log, "project-7f3a") || strings.Contains(log, "/identity/") || !strings.Contains(log, `msg="GET /"`) || strings.Count(log, "\n") != 1 {
 		t.Fatalf("log %q", log)
+	}
+}
+
+func TestARequestsLevelFollowsItsOutcome(t *testing.T) {
+	for _, c := range []struct {
+		method string
+		status int
+		want   slog.Level
+	}{
+		{http.MethodGet, http.StatusOK, slog.LevelDebug},
+		{http.MethodGet, http.StatusNotModified, slog.LevelDebug},
+		{http.MethodPost, http.StatusAccepted, slog.LevelInfo},
+		{http.MethodGet, http.StatusNotFound, slog.LevelWarn},
+		{http.MethodPut, http.StatusBadRequest, slog.LevelWarn},
+		{http.MethodGet, http.StatusBadGateway, slog.LevelError},
+	} {
+		if got := front.RequestLevel(c.method, c.status); got != c.want {
+			t.Errorf("%s %d: %v, want %v", c.method, c.status, got, c.want)
+		}
 	}
 }
 

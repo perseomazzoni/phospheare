@@ -59,6 +59,7 @@ import {
   reviewRecipe,
 } from "../domain/policy";
 import { genreBriefing } from "../domain/genres";
+import { appLog, describeError } from "../../log";
 
 // Reviews past one Section run as a resumable work plan, not one oversized
 // prompt. The plan is a checkpoint ledger: the work is partitioned into
@@ -564,7 +565,13 @@ async function synthesise(
   let parsed: unknown;
   try {
     parsed = JSON.parse(result.text.replace(/^```json\s*|\s*```$/g, ""));
-  } catch {
+  } catch (err) {
+    appLog.warn("ai", "The merged review findings were not JSON.", {
+      provider: checkpoint.model.providerId,
+      model: checkpoint.model.modelId,
+      length: result.text.length,
+      ...describeError(err),
+    });
     return null;
   }
   if (!Array.isArray(parsed)) return null;
@@ -652,6 +659,8 @@ export async function publishReview(
     working = { ...working, findings: synthesis.findings, usage };
   }
   const freshCaptures = new Map<string, SourceText>();
+  const unreadable: string[] = [];
+  let readError: unknown;
   for (const sourceId of new Set(
     working.findings.flatMap((finding) =>
       finding.evidence.map((anchor) => anchor.sourceId),
@@ -659,18 +668,36 @@ export async function publishReview(
   )) {
     try {
       freshCaptures.set(sourceId, await dependencies.sources.read(sourceId));
-    } catch {
+    } catch (err) {
       // Unreadable at publish time; validation drops the anchors.
+      unreadable.push(sourceId);
+      readError = err;
     }
   }
   // Each source's kind, so a reference's quote is held to its answers and
   // names its field. An unreadable catalogue checks text alone.
   const kinds = new Map(
-    (await dependencies.sources.list().catch(() => [])).map((one) => [
-      one.id,
-      one,
-    ]),
+    (
+      await dependencies.sources.list().catch((err) => {
+        appLog.warn(
+          "ai",
+          "The source catalogue could not be listed at publish.",
+          {
+            ...describeError(err),
+          },
+        );
+        return [];
+      })
+    ).map((one) => [one.id, one]),
   );
+  if (unreadable.length > 0)
+    appLog.warn("ai", "Cited sources could not be read at publish.", {
+      count: unreadable.length,
+      kinds: [
+        ...new Set(unreadable.map((id) => kinds.get(id)?.kind ?? "unknown")),
+      ].join(","),
+      ...describeError(readError),
+    });
   const validated = validateFindings(working.findings, freshCaptures, kinds);
   const inspected = working.sources.filter(
     (one) => one.state === "complete",

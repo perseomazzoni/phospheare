@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"log/slog"
 	"strings"
 	"testing"
 )
@@ -43,6 +44,25 @@ func TestLoadReadsStopOnStdinClose(t *testing.T) {
 	c, err := Load(env(vars))
 	if err != nil || !c.StopOnStdinClose {
 		t.Fatalf("stop on stdin close %v, %v", c.StopOnStdinClose, err)
+	}
+}
+
+func TestLoadReadsTheLogSettings(t *testing.T) {
+	c, err := Load(env(valid()))
+	if err != nil || c.LogJSON || c.LogLevel != slog.LevelInfo {
+		t.Fatalf("defaults: json %v, level %v, %v", c.LogJSON, c.LogLevel, err)
+	}
+	vars := valid()
+	vars["IDENTITY_LOG_FORMAT"] = "json"
+	vars["IDENTITY_LOG_LEVEL"] = "debug"
+	if c, err = Load(env(vars)); err != nil || !c.LogJSON || c.LogLevel != slog.LevelDebug {
+		t.Fatalf("set: json %v, level %v, %v", c.LogJSON, c.LogLevel, err)
+	}
+	vars["IDENTITY_LOG_FORMAT"] = "xml"
+	vars["IDENTITY_LOG_LEVEL"] = "loud"
+	_, err = Load(env(vars))
+	if err == nil || !strings.Contains(err.Error(), "IDENTITY_LOG_FORMAT") || !strings.Contains(err.Error(), "IDENTITY_LOG_LEVEL") {
+		t.Fatalf("bad values: %v", err)
 	}
 }
 

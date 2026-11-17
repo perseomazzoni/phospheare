@@ -22,6 +22,7 @@ import {
   COMMENTS_CONTEXT_SHARE,
   type RunBudget,
 } from "./budgets";
+import { appLog, describeError } from "../../log";
 
 // ── A turn's comments block ──────────────────────────────────────────────────
 //
@@ -53,9 +54,13 @@ export async function commentsBlock(
   let chapters;
   try {
     chapters = await port.threadsOf([...labels.keys()]);
-  } catch {
+  } catch (err) {
     // A margin that cannot be read costs the turn its comments, never the
     // turn: the prose is still there to answer from.
+    appLog.warn("ai", "Margin threads could not be read for a chat turn.", {
+      sections: labels.size,
+      ...describeError(err),
+    });
     return "";
   }
   return commentsContext(
@@ -132,6 +137,9 @@ export async function divertFindings(
   }
   const gone = new Set<Finding>();
   const commented: CommentedChapter[] = [];
+  let unwritten = 0;
+  let kept = 0;
+  let writeError: unknown;
   for (const [nodeId, list] of byNode) {
     let outcomes: ProposalOutcome[];
     try {
@@ -151,8 +159,11 @@ export async function divertFindings(
           };
         }),
       );
-    } catch {
+    } catch (err) {
       // A margin that cannot be written keeps its findings in the chat.
+      unwritten += 1;
+      kept += list.length;
+      writeError = err;
       continue;
     }
     let placed = 0;
@@ -164,6 +175,12 @@ export async function divertFindings(
     });
     if (placed > 0) commented.push({ nodeId, count: placed });
   }
+  if (unwritten > 0)
+    appLog.warn("ai", "Review findings could not be written to the margin.", {
+      sections: unwritten,
+      findings: kept,
+      ...describeError(writeError),
+    });
   return {
     findings: findings.filter((finding) => !gone.has(finding)),
     commented,
@@ -211,7 +228,12 @@ export async function keepForLater(
       placed += again.filter((one) => one === "placed").length;
     }
     return placed;
-  } catch {
+  } catch (err) {
+    appLog.warn("ai", "Drafting notes could not be placed in the margin.", {
+      node: nodeId,
+      findings: notes.length,
+      ...describeError(err),
+    });
     return 0;
   }
 }

@@ -543,7 +543,7 @@ document:
     expect(attr("validation")()).toBe("filesMissing");
   });
 
-  it("treats an unreadable properties file as an absent one — invalid when the folder is empty", async () => {
+  it("fails the open, never calling the folder not a project, when the properties file cannot be read", async () => {
     await make({
       files: {},
       before: (p) => {
@@ -557,7 +557,9 @@ document:
         });
       },
     });
-    await waitFor(() => expect(attr("status")()).toBe("invalid"));
+    // An error offers Try again; "invalid" would say the folder holds no
+    // project, and offer only the way back to the Library.
+    await waitFor(() => expect(attr("status")()).toBe("error"));
   });
 
   it("does nothing when the provider is unsupported, and never reopens", async () => {

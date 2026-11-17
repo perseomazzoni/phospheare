@@ -35,6 +35,7 @@ import {
   writerRegistry,
 } from "../writers/registry";
 import type { WriterRecord } from "../writers/domain/writer";
+import { appLog } from "../log";
 import {
   enterWithoutGoogle,
   signInWithGoogle,
@@ -245,10 +246,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // What a sign-out clears, in order, once its caller has written the work
   // open in an editor: the profile copy's pending changes, then the purge
   // (while `userId` is still current, as `purgeLocalData` requires), then
-  // the credentials, then the account. None of these throws. The pending
-  // changes get a bounded wait, so a sync that hangs cannot keep the account
-  // signed in. `"leave"` skips the purge and drops only the credentials held
-  // for the session, so the remembered key is there at the next entry.
+  // the credentials, then the account, then the log. None of these throws.
+  // The pending changes get a bounded wait, so a sync that hangs cannot keep
+  // the account signed in. `"leave"` skips the purge, the log's clear
+  // included, and drops only the credentials held for the session, so the
+  // remembered key is there at the next entry.
   //
   // The record goes with a clean: a record is what tells the sweep at the
   // next entry that an account left its things here, and a cleaned account
@@ -269,6 +271,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .catch(() => {});
       if (clean) removeWriter(id);
       adopt(null);
+      // The log is this browser's, not the account's, and its lines carry
+      // the account id: a clean empties it, other accounts' lines included.
+      if (clean) await appLog.clear().catch(() => {});
     },
     [adopt, platform],
   );
@@ -420,6 +425,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // cannot keep it stops here, still signed in.
       if (!(await writeOpenWork()))
         throw new Error("Open work could not be preserved.");
+      const started = Date.now();
+      appLog.info("account", "A sign-out started.", { choice });
       ending.current = true;
       try {
         setSignedIn(null);
@@ -429,6 +436,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           userId,
         });
         await clearAccount(userId, choice);
+        appLog.info("account", "A sign-out finished.", {
+          choice,
+          ms: Date.now() - started,
+        });
       } finally {
         ending.current = false;
       }

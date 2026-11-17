@@ -115,6 +115,7 @@ import type {
   AssistantDependencies,
   AssistantSnapshot,
 } from "./assistantTypes";
+import { appLog, describeError } from "../../log";
 
 /**
  * What a turn may use of the aggregate. The run reads the live snapshot
@@ -315,7 +316,11 @@ export async function runTurn(
     asked = true;
     try {
       await host.writes.persistRun(started, working);
-    } catch {
+    } catch (err) {
+      appLog.error("ai", "A question could not be saved.", {
+        chat: chatId,
+        ...describeError(err),
+      });
       host.publish({
         error: "Your message could not be saved.",
         problem: null,
@@ -1118,6 +1123,10 @@ export async function runTurn(
       // Stop raced the step helper: retain whatever text arrived, and every
       // search the run was asked about. A Stop while an ask waited leaves its
       // rows declined, written here with the turn.
+      appLog.info("ai", "A chat turn was stopped.", {
+        chat: chatId,
+        elapsedMs: elapsed(),
+      });
       working = withTurn(working, assistantTurn.id, {
         outcome: "interrupted",
         errorCode: "cancelled",
@@ -1132,6 +1141,14 @@ export async function runTurn(
         working.turns.find((turn) => turn.id === assistantTurn.id)?.text ?? "";
       const failureCode =
         error instanceof ModelRunError ? error.failure.code : null;
+      appLog.error("ai", "A chat turn failed.", {
+        chat: chatId,
+        provider: model.providerId,
+        model: model.modelId,
+        elapsedMs: elapsed(),
+        partialChars: partial.length,
+        ...describeError(error),
+      });
       working = withTurn({ ...working, updatedAt: now() }, assistantTurn.id, {
         // Only prose that arrived. The failure's own sentence is never
         // stored as the answer: the transcript would show an adapter's English

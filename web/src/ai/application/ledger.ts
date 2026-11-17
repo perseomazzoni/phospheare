@@ -67,6 +67,7 @@ import {
   structuredAnswer,
   type StructuredAnswerShape,
 } from "./structuredAnswer";
+import { appLog, describeError } from "../../log";
 
 /**
  * The most characters one extraction reads, well under any window. What
@@ -263,15 +264,24 @@ export async function declaredDocuments(
   signal: AbortSignal,
 ): Promise<DeclaredDocument[]> {
   const documents: DeclaredDocument[] = [];
+  let skipped = 0;
+  let readError: unknown;
   for (const source of candidates) {
     if (!isDeclaredDocument(source)) continue;
     throwIfCancelled(signal);
     try {
       documents.push({ source, ...(await sources.read(source.id)) });
-    } catch {
+    } catch (err) {
       // Left out this time; the next check tries again.
+      skipped += 1;
+      readError = err;
     }
   }
+  if (skipped > 0)
+    appLog.warn("ai", "Declared documents could not be read for a check.", {
+      skipped,
+      ...describeError(readError),
+    });
   return documents;
 }
 
@@ -291,6 +301,8 @@ export async function referenceDocuments(
 ): Promise<DeclaredDocument[]> {
   const documents: DeclaredDocument[] = [];
   const seen = new Set<string>();
+  let skipped = 0;
+  let readError: unknown;
   for (const source of candidates) {
     if (!isFactSheet(source) && !isDeclaredDocument(source)) continue;
     // A sheet the command also declares is one document.
@@ -299,10 +311,17 @@ export async function referenceDocuments(
     throwIfCancelled(signal);
     try {
       documents.push({ source, ...(await sources.read(source.id)) });
-    } catch {
+    } catch (err) {
       // Left out this time; the next check tries again.
+      skipped += 1;
+      readError = err;
     }
   }
+  if (skipped > 0)
+    appLog.warn("ai", "Reference documents could not be read for a check.", {
+      skipped,
+      ...describeError(readError),
+    });
   return documents;
 }
 
@@ -364,6 +383,8 @@ export async function ledgerTexts(
   signal: AbortSignal,
 ): Promise<LedgerText[]> {
   const texts: LedgerText[] = [];
+  let skipped = 0;
+  let readError: unknown;
   for (const source of candidates) {
     const section =
       source.kind === "manuscript" && source.nodeKind === "section";
@@ -372,11 +393,18 @@ export async function ledgerTexts(
     try {
       const one = ledgerTextOf(source, await sources.read(source.id));
       if (one) texts.push(one);
-    } catch {
+    } catch (err) {
       // Unreadable is not empty, and not a failure of the whole check: the
       // source has no ledger this time, and the next check tries again.
+      skipped += 1;
+      readError = err;
     }
   }
+  if (skipped > 0)
+    appLog.warn("ai", "Sections or sheets could not be read for a check.", {
+      skipped,
+      ...describeError(readError),
+    });
   return texts;
 }
 
@@ -464,6 +492,7 @@ export async function ensureLedgers(
   const read = new Map(fresh.map((ledger) => [ledger.sourceId, ledger]));
   const unread: SourceDescriptor[] = [];
   let usage: RunUsage = { steps: 0 };
+  let cacheLogged = false;
   for (const [done, one] of stale.entries()) {
     throwIfCancelled(signal);
     onReading(one.source, done, stale.length);
@@ -482,7 +511,14 @@ export async function ensureLedgers(
     }
     // Kept only to spare the next check a reading: this check has the
     // ledger in hand, so a store that refuses it costs nothing more.
-    await deps.artifacts.writeLedger(extracted.ledger).catch(() => undefined);
+    await deps.artifacts.writeLedger(extracted.ledger).catch((err) => {
+      if (cacheLogged) return;
+      cacheLogged = true;
+      appLog.warn("ai", "An AI cache file could not be written.", {
+        artifact: "ledger",
+        ...describeError(err),
+      });
+    });
     read.set(one.source.id, extracted.ledger);
   }
   return {

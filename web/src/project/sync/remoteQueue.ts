@@ -49,6 +49,7 @@ import {
 import { getManifest, putManifest } from "./manifestStore";
 import { withSyncLock } from "./syncLock";
 import { isScanned } from "./scan";
+import { appLog, describeError } from "../../log";
 
 // ── Coalescing ───────────────────────────────────────────────────────────────
 //
@@ -454,7 +455,7 @@ type OpOutcome =
 type Step =
   | { kind: "empty" }
   | { kind: "held" }
-  | { kind: "ran"; id: number; outcome: OpOutcome };
+  | { kind: "ran"; id: number; op: Op["kind"]; outcome: OpOutcome };
 
 /**
  * The code an error carries, recognized by shape rather than class identity:
@@ -815,15 +816,24 @@ async function drainOnce(ref: QueuedProject): Promise<void> {
     return;
   }
   draining.add(key);
+  // One line per drain that moved something, never per op: a drain that
+  // found nothing to do says nothing new.
+  const began = Date.now();
+  let moved = 0;
+  const kinds = new Set<string>();
   try {
     for (;;) {
       let remote: RemoteTarget | null;
       try {
         remote = await remoteFor(ref);
-      } catch {
+      } catch (err) {
         // The pairing could not be read, which says nothing about whether
         // the writer unpaired. The ops stay, and the drain reads again after
         // a backoff. Not counted as an op failure: no op ran.
+        appLog.warn("sync", "A project's pairing could not be read.", {
+          project: ref.id ?? null,
+          ...describeError(err),
+        });
         await refresh();
         scheduleRetry(ref);
         return;
@@ -921,10 +931,15 @@ async function drainOnce(ref: QueuedProject): Promise<void> {
                   outcome.pushed,
                   outcome.remote,
                 );
-              } catch {
+              } catch (err) {
                 // The push landed, so the op is done. A baseline the store
                 // cannot take now costs the next check a question, since it
                 // sees both sides changed, never the writer's bytes.
+                appLog.warn(
+                  "sync",
+                  "A sync baseline could not be written after a push.",
+                  { project: book, op: head.op.kind, ...describeError(err) },
+                );
               }
             }
             return outcome;
@@ -938,7 +953,7 @@ async function drainOnce(ref: QueuedProject): Promise<void> {
             ? await withSyncLock(book, attempt)
             : await attempt();
           if (outcome.done) await removeOp(head.id);
-          return { kind: "ran", id: head.id, outcome };
+          return { kind: "ran", id: head.id, op: head.op.kind, outcome };
         });
 
       // One store per op, opened inside the loop and disposed in the
@@ -984,7 +999,15 @@ async function drainOnce(ref: QueuedProject): Promise<void> {
         return;
       }
       const { outcome } = step;
+      // The project's id and the kind of change, never the file's path: a
+      // chapter's name can be personal.
+      const about = { project: ref.id ?? null, op: step.op };
       if (!outcome.done && outcome.verdict === "lost") {
+        appLog.warn(
+          "sync",
+          "A change found its file gone. It is skipped.",
+          about,
+        );
         // Not a failure: the ops behind it drain on. The row stays, stopped as
         // lost, so the notice can say so until the writer has read it.
         await markStopped(step.id, LOST);
@@ -1003,24 +1026,51 @@ async function drainOnce(ref: QueuedProject): Promise<void> {
         // `stop` is the destination's final answer, so there is nothing to
         // back off for.
         if (outcome.verdict === "stop") {
+          appLog.error("sync", "Sync stopped at a change.", {
+            ...about,
+            code: outcome.code,
+          });
           await stop();
           return;
         }
         const consecutive = (failures.get(key) ?? 0) + 1;
         if (consecutive >= MAX_CONSECUTIVE_FAILURES) {
+          appLog.error("sync", "Sync stopped at a change after many tries.", {
+            ...about,
+            code: outcome.code,
+            tries: consecutive,
+          });
           await stop();
           return;
         }
+        appLog.warn(
+          "sync",
+          "A change did not reach its destination. Trying again.",
+          {
+            ...about,
+            code: outcome.code,
+            try: consecutive,
+          },
+        );
         failures.set(key, consecutive);
         scheduleRetry(ref);
         return;
       }
       // The next step's claim re-reads the store, which drops the removed
       // op from the index.
+      moved += 1;
+      kinds.add(step.op);
       failures.delete(key);
       clearRetry(key);
     }
   } finally {
+    if (moved > 0)
+      appLog.info("sync", "A sync drain moved changes.", {
+        project: ref.id ?? null,
+        ops: moved,
+        kinds: [...kinds].join(","),
+        ms: Date.now() - began,
+      });
     draining.delete(key);
     wakeAgain.delete(key);
   }
@@ -1090,7 +1140,16 @@ if (typeof window !== "undefined") {
     // oversized file or an inexpressible path, and clearing every stopped op
     // on each reconnect would burn the failure cap again. This is for ops
     // waiting out a backoff.
-    for (const ref of pendingRefs()) kick(ref);
+    const waiting = pendingRefs();
+    if (waiting.length > 0)
+      appLog.info(
+        "sync",
+        "The browser came back online with changes waiting.",
+        {
+          projects: waiting.length,
+        },
+      );
+    for (const ref of waiting) kick(ref);
   });
 }
 

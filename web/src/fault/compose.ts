@@ -6,6 +6,7 @@
 import { browserPage, consoleReporter, sessionReloadMemory } from "./browser";
 import { createFaultHandling } from "./application/handleFault";
 import { createUpdateReady } from "./application/updateReady";
+import { appLog } from "../log";
 
 // The one place the browser side meets the fault rules. Presentation
 // reaches the browser side only through these instances.
@@ -33,6 +34,9 @@ function isResizeObserverNotice(event: ErrorEvent): boolean {
   );
 }
 
+/** Whether this tab's log already says a newer version is ready. */
+let updateNoted = false;
+
 /**
  * Routes every failure React did not render a page for to the reporter, and
  * turns a chunk that failed to load into "A newer version is ready".
@@ -59,7 +63,12 @@ export function installFaultListeners(): void {
     faults.report(event.reason, "window");
   });
   window.addEventListener("vite:preloadError", () => {
-    if (browserPage.online()) updateReady.mark();
+    if (!browserPage.online()) return;
+    // Once a tab: every chunk of the old build fails the same way.
+    if (!updateNoted)
+      appLog.info("fault", "A newer version of the app was found.");
+    updateNoted = true;
+    updateReady.mark();
   });
 }
 

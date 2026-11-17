@@ -43,6 +43,11 @@ export interface ViewHost {
    * line with the class the view gives it.
    */
   guideMark: (className: string) => ReactNode;
+  /**
+   * Hears an input the view does not handle, by its type only. The view
+   * cannot log; the host may. Absent, nothing hears it.
+   */
+  unhandledInput?: (inputType: string, cancelable: boolean) => void;
 }
 
 /** What a find session asks the view to paint; mirrors the shell's state. */

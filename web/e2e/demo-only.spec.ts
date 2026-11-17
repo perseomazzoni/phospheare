@@ -123,6 +123,12 @@ test("the demo says nothing is saved, with the Quickstart, until closed", async 
     notice.getByRole("link", { name: /build the program on your computer/ }),
   ).toHaveAttribute("href", QUICKSTART);
 
+  // The long notice lies in the titlebar's band and stays clear of its right
+  // cluster: its dismiss or its link over Palette would catch that click.
+  const pill = await notice.boundingBox();
+  const cluster = await page.locator(".titlebar-right").boundingBox();
+  expect(pill!.x + pill!.width).toBeLessThan(cluster!.x);
+
   await notice.getByRole("button", { name: "Close" }).click();
   await expect(notice).toHaveCount(0);
 

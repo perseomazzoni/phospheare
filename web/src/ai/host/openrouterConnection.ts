@@ -39,6 +39,7 @@ import {
   WikipediaDirectSearchEngine,
 } from "../adapters/directSearch";
 import { OPENROUTER_HOST, type Attribution } from "../adapters/directWire";
+import { appLog, describeError } from "../../log";
 
 // The writer's OpenRouter key, held in this tab and in the platform's vault.
 // Nothing about the key passes through a server the publisher
@@ -643,7 +644,12 @@ export function connectOpenRouter(
           state: pkce.state,
           keyLabel,
         });
-      } catch {
+      } catch (err) {
+        // The provider alone: the authorize URL carries the PKCE challenge.
+        appLog.warn("account", "The approval window could not be opened.", {
+          provider: OPENROUTER_ID,
+          ...describeError(err),
+        });
         mine.settle(null);
       }
     });
@@ -663,7 +669,19 @@ async function finish(
   if (!stillOurs()) return "superseded";
 
   const entry = heldFor(writerId);
-  const refuse = (refusal: ConnectRefusal): ConnectOutcome => {
+  // The step and the refusal's kind, never the key.
+  const refuse = (
+    refusal: ConnectRefusal,
+    step: string,
+    failure?: unknown,
+  ): ConnectOutcome => {
+    appLog.warn("account", "A provider connection was refused.", {
+      provider: OPENROUTER_ID,
+      refusal,
+      step,
+      remember: rememberPreference(writerId),
+      ...(failure === undefined ? {} : describeError(failure)),
+    });
     entry.refusal = refusal;
     notify();
     return refusal;
@@ -682,6 +700,7 @@ async function finish(
             : exchanged.failure === "unreachable"
               ? "unreachable"
               : "exchange-failed",
+          `exchange-${exchanged.failure}`,
         );
 
   const inspected = await inspectKey(
@@ -689,17 +708,22 @@ async function finish(
     exchanged.key,
     new AbortController().signal,
   );
-  if (!inspected.ok) return refuse("unreachable");
+  if (!inspected.ok)
+    return refuse("unreachable", `inspect-${inspected.failure}`);
   const acceptance = keyAcceptance(inspected.info, Date.now());
-  if (!acceptance.accepted) return refuse(acceptance.reason);
+  if (!acceptance.accepted) return refuse(acceptance.reason, "accept");
   if (!stillOurs()) return "superseded";
 
   const platform = boundPlatform;
-  if (!platform) return refuse("unreachable");
+  if (!platform) return refuse("unreachable", "platform");
+  let storeError: unknown;
   const stored = await platform.vault
     .set(KEY_NAME, exchanged.key, { remember: rememberPreference(writerId) })
-    .catch(() => null);
-  if (!stored) return refuse("unreachable");
+    .catch((err: unknown) => {
+      storeError = err;
+      return null;
+    });
+  if (!stored) return refuse("unreachable", "store", storeError);
   if (!stored.remembered) setRememberPreference(writerId, false);
   entry.key = exchanged.key;
   entry.info = inspected.info;
@@ -711,6 +735,11 @@ async function finish(
   entry.refusal = null;
   notify();
   announceConnect({ providerId: OPENROUTER_ID, ok: true });
+  appLog.info("account", "A provider connection ended.", {
+    provider: OPENROUTER_ID,
+    outcome: "connected",
+    remember: stored.remembered,
+  });
   return "connected";
 }
 

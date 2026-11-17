@@ -41,6 +41,7 @@ import type { StreamSpend } from "./openrouterStream";
 import { projectCatalogue } from "./openrouterCatalogue";
 import { inspectKey } from "./openrouterAuth";
 import { ModelRunError } from "../application/runStep";
+import { appLog, describeError } from "../../log";
 
 export interface DirectTimeouts {
   metadataMs: number;
@@ -224,6 +225,8 @@ export class OpenRouterDirectProvider implements ModelProvider {
       this.timeouts.metadataMs,
       "metadata-timeout",
     );
+    const started = this.now();
+    let status: number | undefined;
     try {
       const key = await keyFrom(this.options.apiKey);
       const read = (bearer: string | null) =>
@@ -242,6 +245,7 @@ export class OpenRouterDirectProvider implements ModelProvider {
         void response.body?.cancel().catch(() => undefined);
         response = await read(null);
       }
+      status = response.status;
       if (!response.ok) throw new Error(`catalogue-${response.status}`);
       const models = projectCatalogue(
         await response.json(),
@@ -252,8 +256,15 @@ export class OpenRouterDirectProvider implements ModelProvider {
       this.catalogue = new Map(models.map((model) => [model.id, model]));
       return this.catalogue;
     } catch (error) {
-      if (!signal.aborted)
+      if (!signal.aborted) {
         this.catalogueRetryAt = this.now() + CATALOGUE_BACKOFF_MS;
+        appLog.warn("ai", "The OpenRouter model catalogue could not be read.", {
+          provider: this.id,
+          ...(status === undefined ? {} : { status }),
+          ms: this.now() - started,
+          ...describeError(error),
+        });
+      }
       throw error;
     } finally {
       deadlines.dispose();

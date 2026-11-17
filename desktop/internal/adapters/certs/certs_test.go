@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -129,7 +130,7 @@ func TestIssuerAsksOnceMoreWhenTheRecordIsNotSeen(t *testing.T) {
 	var logged []string
 	is := &Issuer{
 		DirectoryURL: ca.url("/directory"), AccountKey: key, AcceptedTerms: fakeTerms, HTTP: http.DefaultClient, DNS: &mapDNS{d: resolver},
-		Logf: func(format string, args ...any) { logged = append(logged, fmt.Sprintf(format, args...)) },
+		Log: capture(&logged),
 	}
 	_, _, err := is.Obtain(context.Background(), "studio.example.com")
 	var ns *NotSeenError
@@ -159,10 +160,10 @@ func TestSourceWritesTheRecordsAndObtains(t *testing.T) {
 	}
 	thumb, _ := acme.JWKThumbprint(key.Public())
 	ca := newFakeACME(t, resolver, thumb)
-	var waited []string
+	var waited, steps []string
 	src := &Source{
 		Dir: dir, ACMEDirectory: ca.url("/directory"), Records: &desec.Client{BaseURL: f.URL, HTTP: f.Client()},
-		HTTP: http.DefaultClient,
+		HTTP: http.DefaultClient, Log: captureAll(&steps),
 		Propagated: func(_ context.Context, fqdn, value string, _ func(int, int, bool)) error {
 			if !resolver.has(fqdn, value) {
 				return fmt.Errorf("%s does not carry %s yet", fqdn, value)
@@ -190,6 +191,18 @@ func TestSourceWritesTheRecordsAndObtains(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(dir.Path, "cert.pem")); err != nil {
 		t.Fatal("the certificate was not stored")
+	}
+	if missing := inOrder(steps,
+		"Asking Let's Encrypt for an order.", "The order is placed.",
+		"Writing the proof record at deSEC.", "The proof record is written at deSEC.",
+		"deSEC's servers show the proof.", "Asking Let's Encrypt to check the proof.",
+		"Let's Encrypt accepted the proof.", "Let's Encrypt is issuing the certificate.",
+		"Let's Encrypt issued the certificate.", "The certificate is saved.",
+	); missing != "" {
+		t.Fatalf("the log misses %q in its place:\n%s", missing, strings.Join(steps, ""))
+	}
+	if log := strings.Join(steps, ""); !strings.Contains(log, "The proof record is removed from deSEC.") || strings.Contains(log, "rossi") {
+		t.Fatalf("the log misses the removal or names the name:\n%s", log)
 	}
 
 	// A second start with a fresh certificate and a new address rewrites
@@ -346,7 +359,7 @@ func storedSource(t *testing.T, notAfter time.Time, rec records) (*Source, *[]st
 	logged := new([]string)
 	return &Source{
 		Dir: dir, ACMEDirectory: closed.URL + "/directory", Records: rec, HTTP: http.DefaultClient,
-		Logf: func(format string, args ...any) { *logged = append(*logged, fmt.Sprintf(format, args...)) },
+		Log: capture(logged),
 	}, logged
 }
 
@@ -405,7 +418,7 @@ func TestTheIssuerReportsARateLimitAtOnce(t *testing.T) {
 	key, _ := newAccountKey(t)
 	var logged []string
 	iss := &Issuer{DirectoryURL: srv.URL + "/directory", AccountKey: key, HTTP: srv.Client(),
-		Logf: func(format string, args ...any) { logged = append(logged, fmt.Sprintf(format, args...)) }}
+		Log: capture(&logged)}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	start := time.Now()
@@ -414,7 +427,7 @@ func TestTheIssuerReportsARateLimitAtOnce(t *testing.T) {
 	if !errors.As(err, &limited) || time.Since(start) > 5*time.Second {
 		t.Fatalf("after %s: %v", time.Since(start), err)
 	}
-	if !strings.Contains(err.Error(), "Let's Encrypt asks to wait") || len(logged) != 1 || !strings.Contains(logged[0], "too many certificates") {
+	if !strings.Contains(err.Error(), "Let's Encrypt asks to wait") || inOrder(logged, "Not asking again.", "too many certificates") != "" {
 		t.Fatalf("error %q, logged %q", err, logged)
 	}
 }
@@ -443,6 +456,8 @@ func TestAnAddressLeftUnwrittenIsWrittenLater(t *testing.T) {
 		t.Fatalf("while deSEC is unreachable: %v %v", owed, err)
 	}
 	src.Records = countingRecords{records{}, &calls}
+	var steps []string
+	src.Log = captureAll(&steps)
 	if owed, err := src.WriteAddress(context.Background(), rossi); owed || err != nil {
 		t.Fatalf("once deSEC answers: %v %v", owed, err)
 	}
@@ -450,8 +465,8 @@ func TestAnAddressLeftUnwrittenIsWrittenLater(t *testing.T) {
 	if owed, err := src.WriteAddress(context.Background(), rossi); owed || err != nil || calls != before {
 		t.Fatalf("after the write: %v %v, %d more calls", owed, err, calls-before)
 	}
-	if last := (*logged)[len(*logged)-1]; !strings.Contains(last, "address record is written") {
-		t.Fatalf("logged %q", *logged)
+	if len(steps) != 1 || !strings.Contains(steps[0], "address record is written") || len(*logged) == 0 {
+		t.Fatalf("logged %q, then %q", *logged, steps)
 	}
 }
 
@@ -522,7 +537,7 @@ func TestAnActionTheAuthorityAsksForIsATermsError(t *testing.T) {
 	var logged []string
 	is := &Issuer{
 		DirectoryURL: ca.url("/directory"), AccountKey: key, AcceptedTerms: fakeTerms, HTTP: http.DefaultClient, DNS: &mapDNS{d: resolver},
-		Logf: func(format string, args ...any) { logged = append(logged, fmt.Sprintf(format, args...)) },
+		Log: capture(&logged),
 	}
 	_, _, err := is.Obtain(context.Background(), "studio.example.com")
 	var terms *TermsError
@@ -598,5 +613,54 @@ func TestSourceAsksUnderTheAcceptedAgreementOnly(t *testing.T) {
 	}
 	if accounts, _ := ca.counts(); accounts == 0 {
 		t.Fatal("the authority was not asked")
+	}
+}
+
+// capture answers a logger that keeps each WARN or ERROR record as one
+// line of text: the refusals, without the steps.
+func capture(lines *[]string) *slog.Logger {
+	return slog.New(slog.NewTextHandler(lineWriter{lines}, &slog.HandlerOptions{Level: slog.LevelWarn}))
+}
+
+// captureAll keeps every record, DEBUG included.
+func captureAll(lines *[]string) *slog.Logger {
+	return slog.New(slog.NewTextHandler(lineWriter{lines}, &slog.HandlerOptions{Level: slog.LevelDebug}))
+}
+
+// inOrder reports the first of want that lines do not hold after the one
+// before it, or "".
+func inOrder(lines []string, want ...string) string {
+	at := 0
+	for _, w := range want {
+		for at < len(lines) && !strings.Contains(lines[at], w) {
+			at++
+		}
+		if at == len(lines) {
+			return w
+		}
+		at++
+	}
+	return ""
+}
+
+type lineWriter struct{ lines *[]string }
+
+func (w lineWriter) Write(p []byte) (int, error) {
+	*w.lines = append(*w.lines, string(p))
+	return len(p), nil
+}
+
+func TestEachRetryOfTheAuthorityIsLogged(t *testing.T) {
+	var logged []string
+	i := &Issuer{Log: capture(&logged)}
+	if d := i.retryBackoff(0, nil, &http.Response{StatusCode: http.StatusServiceUnavailable, Header: http.Header{}}); d != time.Second {
+		t.Fatalf("pause %v", d)
+	}
+	if d := i.retryBackoff(0, nil, &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}); d >= 0 {
+		t.Fatalf("a rate limit was asked again after %v", d)
+	}
+	if inOrder(logged, `"Let's Encrypt did not answer as expected. Asking again." status=503 try=1 after=1s`,
+		`"Let's Encrypt refused a request. Not asking again." status=429`) != "" {
+		t.Fatalf("logged %q", logged)
 	}
 }

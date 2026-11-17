@@ -9,6 +9,7 @@ import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import type { GoogleIdentity, Platform } from "../platform/types";
 import { PlatformError } from "../platform/types";
+import { appLog } from "../log";
 
 // The platform is a stand-in: these rows pin who the provider says is signed
 // in, not the identity service's popup flow (`identityPlatform.test.ts`).
@@ -260,6 +261,7 @@ describe("AuthProvider — signing out", () => {
     purgeLocalData.mockImplementationOnce(async () => {
       currentDuringPurge = getCurrentUserId();
     });
+    const clearLog = vi.spyOn(appLog, "clear").mockResolvedValue();
 
     await act(() => hook.result.current.signOut("clean"));
 
@@ -273,17 +275,37 @@ describe("AuthProvider — signing out", () => {
     // A cleaned account leaves no record: the next sweep treats anything
     // still under its id as a leftover.
     expect(registry.findWriter(ada.id)).toBeNull();
+    // Nor a log line that names it.
+    expect(clearLog).toHaveBeenCalledOnce();
+    clearLog.mockRestore();
+  });
+
+  it("signs out cleanly when the log cannot be emptied", async () => {
+    seedSignedIn();
+    const clearLog = vi
+      .spyOn(appLog, "clear")
+      .mockRejectedValue(new Error("closed"));
+    const hook = renderHook(() => useAuth(), { wrapper });
+
+    await act(() => hook.result.current.signOut("clean"));
+
+    expect(clearLog).toHaveBeenCalled();
+    expect(hook.result.current.status).toBe("anonymous");
+    clearLog.mockRestore();
   });
 
   it("leaves a Google account's things and record on a leaving sign-out", async () => {
     const ada = seedSignedIn();
     const heard = anotherTabListening();
     const hook = renderHook(() => useAuth(), { wrapper });
+    const clearLog = vi.spyOn(appLog, "clear");
 
     await act(() => hook.result.current.signOut("leave"));
 
     expect(hook.result.current.status).toBe("anonymous");
     expect(purgeLocalData).not.toHaveBeenCalled();
+    expect(clearLog).not.toHaveBeenCalled();
+    clearLog.mockRestore();
     expect(platform.vaultDelete).not.toHaveBeenCalled();
     expect(registry.findWriter(ada.id)).not.toBeNull();
     expect(heard).toEqual([{ kind: "left", userId: ada.id }]);

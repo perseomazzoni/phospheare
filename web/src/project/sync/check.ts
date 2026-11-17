@@ -34,6 +34,7 @@ import { getManifest, putManifest } from "./manifestStore";
 import { pairingFor } from "./pairing";
 import { remoteCopyGone, scan, type Scan } from "./scan";
 import { withSyncLock } from "./syncLock";
+import { appLog, describeError } from "../../log";
 
 // A check is a read-modify-write over one manifest and one set of local
 // files, and nothing above this module serializes callers: the Library's
@@ -68,7 +69,12 @@ export interface SyncCheckResult {
 async function readOrNull(side: Side, path: string): Promise<string | null> {
   try {
     return await side.provider.readFile(side.ref, path);
-  } catch {
+  } catch (err) {
+    if (!((err as { code?: unknown } | null)?.code === "not-found"))
+      appLog.warn("sync", "A file could not be read for a sync check.", {
+        provider: side.ref.providerId,
+        ...describeError(err),
+      });
     return null;
   }
 }

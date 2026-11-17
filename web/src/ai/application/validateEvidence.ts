@@ -19,6 +19,7 @@ import type {
 import { occurrences, typographic } from "../domain/textMatch";
 import { plainLine } from "../domain/webText";
 import type { AssistantDependencies } from "./assistantTypes";
+import { appLog, describeError } from "../../log";
 
 // Citations are earned, not claimed. The model proposes quotations; this
 // module decides whether they exist in the exact text captured for the run
@@ -329,6 +330,8 @@ export async function validateTurnFindings(
     string,
     { text: string; revision: string; origin: "live-buffer" | "project-file" }
   >();
+  let unreadable = 0;
+  let readError: unknown;
   for (const sourceId of new Set(
     findings.flatMap((finding) =>
       finding.evidence.map((anchor) => anchor.sourceId),
@@ -337,10 +340,17 @@ export async function validateTurnFindings(
     try {
       if (!used.some((use) => use.id === sourceId)) continue;
       captures.set(sourceId, await dependencies.sources.read(sourceId));
-    } catch {
+    } catch (err) {
       // Unreadable now; the anchor is dropped by validation.
+      unreadable += 1;
+      readError = err;
     }
   }
+  if (unreadable > 0)
+    appLog.warn("ai", "Cited sources could not be read to check evidence.", {
+      count: unreadable,
+      ...describeError(readError),
+    });
   return validateFindings(
     findings,
     captures,

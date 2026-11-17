@@ -15,6 +15,7 @@ import {
 } from "./application/commitFunnel";
 import type { MetadataLanes } from "./application/metadataLanes";
 import type { MetadataStore } from "./application/stores";
+import { appLog, describeError } from "../../log";
 
 /**
  * The structural funnel's outcome and the one undo it leaves. `commit` arms
@@ -63,6 +64,7 @@ export function useUndoToast({
     ): Promise<boolean> => {
       const { undo = true, writeStructure, writeRecords, binEdit } = options;
       let first: unknown;
+      const started = Date.now();
       const outcome = await commitChange(
         lanes,
         metadata,
@@ -76,19 +78,34 @@ export function useUndoToast({
         },
         (err) => {
           first = err;
+          appLog.error("structure", "A change to the structure failed.", {
+            action: action.code,
+            ...describeError(err),
+          });
           setError(message(err));
         },
       );
       if (!outcome?.ok) {
         // A rollback that did not fully land leaves the folder unlike what
         // is shown: the writer is told, and told to open the project again.
-        if (outcome && !outcome.restored)
+        if (outcome && !outcome.restored) {
+          appLog.error(
+            "structure",
+            "A failed change could not be taken back in full.",
+            { action: action.code },
+          );
           setError(
             t("structure.rollbackIncomplete", { detail: message(first) }),
           );
+        }
         return false;
       }
       const takeBack = outcome.undo;
+      appLog.info("structure", "A change to the structure was made.", {
+        action: action.code,
+        undo: undo && Boolean(takeBack),
+        ms: Date.now() - started,
+      });
       if (!takeBack) return true;
 
       setError(null);
@@ -110,9 +127,18 @@ export function useUndoToast({
 
   const undoLast = useCallback(async () => {
     if (!lastAction?.undo) return;
+    const started = Date.now();
     try {
       await lastAction.undo();
+      appLog.info("structure", "A change to the structure was undone.", {
+        action: lastAction.code,
+        ms: Date.now() - started,
+      });
     } catch (err) {
+      appLog.error("structure", "An undo failed.", {
+        action: lastAction.code,
+        ...describeError(err),
+      });
       setError(
         err instanceof RollbackIncomplete
           ? t("structure.rollbackIncomplete", { detail: message(err.cause) })

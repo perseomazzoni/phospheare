@@ -6,6 +6,16 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { respondersTo, type Mentionable } from "../domain/mentions";
 import type { Entry, Thread } from "../domain/model";
+import { appLog, describeError } from "../../../log";
+
+/** A stopped run is not a failure: an abort, or a model run cancelled. */
+function cancelled(err: unknown): boolean {
+  const found = err as {
+    name?: unknown;
+    failure?: { code?: unknown };
+  } | null;
+  return found?.name === "AbortError" || found?.failure?.code === "cancelled";
+}
 
 // Personas answering in the margin. The writer writes in a thread, and
 // whoever that entry calls answers: the personas it tags, in the order it
@@ -88,7 +98,14 @@ export function useMarginAnswers(
           { nodeId, threadId, personaId: persona.id },
           (doing) => show({ doing }),
           (asking) => show({ asking }),
-        ).catch(() => ({ ok: false }));
+        ).catch((err: unknown) => {
+          if (!cancelled(err))
+            appLog.warn("comments", "A persona's answer failed.", {
+              persona: persona.id,
+              ...describeError(err),
+            });
+          return { ok: false };
+        });
         put(
           threadId,
           outcome.ok

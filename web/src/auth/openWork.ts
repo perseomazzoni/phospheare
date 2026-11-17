@@ -12,6 +12,8 @@
 // context, because the account layer sits above the editor and cannot read
 // its state.
 
+import { appLog, describeError } from "../log";
+
 const holders = new Set<() => Promise<unknown>>();
 
 /**
@@ -35,11 +37,26 @@ export function holdOpenWork(write: () => Promise<unknown>): () => void {
  */
 export async function writeOpenWork(): Promise<boolean> {
   if (holders.size === 0) return true;
+  let failed = 0;
+  let firstError: unknown = null;
   const writes = [...holders].map(async (write) => {
     try {
       return (await write()) !== false;
-    } catch {
+    } catch (err) {
+      if (failed === 0) firstError = err;
+      failed += 1;
       return false;
+    }
+  });
+  const holderCount = writes.length;
+  // One line for every failed write, once all have settled.
+  void Promise.all(writes).then(() => {
+    if (failed > 0) {
+      appLog.warn("account", "Open work could not be written.", {
+        holders: holderCount,
+        failed,
+        ...describeError(firstError),
+      });
     }
   });
   let timer: ReturnType<typeof setTimeout> | undefined;

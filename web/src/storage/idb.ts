@@ -8,10 +8,10 @@ import { StorageError } from "./types";
 // ── The sole IndexedDB opener ────────────────────────────────────────────────
 //
 // IndexedDB runs one upgrade transaction per database, and every store must be
-// declared there, so every store the app keeps lives in one database opened
-// only from this file. Two call sites racing their own `indexedDB.open` with
-// different versions would let a stray `VersionError` reach a writer
-// mid-session.
+// declared there, so every store of the writer's data lives in one database
+// opened only from this file. Two call sites racing their own
+// `indexedDB.open` with different versions would let a stray `VersionError`
+// reach a writer mid-session.
 
 // Per-user scoping (handles and sync keyed `[userId, key]`) lives in the store
 // modules, because out-of-line keys accept arrays. Queue records instead keep
@@ -109,6 +109,55 @@ export function openDb(): Promise<IDBDatabase> {
     };
   });
   dbPromise = opening;
+  return opening;
+}
+
+// ── The log's database ───────────────────────────────────────────────────────
+//
+// The app's log (`log/`) has a database of its own, opened here too. Its
+// writes are frequent and best effort, and a full or failing log must never
+// hold up the writer's data, nor an upgrade of it; it is emptied on its own.
+
+const LOG_DB_NAME = "writer-log";
+const LOG_DB_VERSION = 1;
+
+export const STORE_LOG = "lines";
+/** Lines by their time, for the prune of old ones. */
+export const INDEX_LOG_AT = "at";
+
+let logDbPromise: Promise<IDBDatabase> | null = null;
+
+export function openLogDb(): Promise<IDBDatabase> {
+  if (logDbPromise) return logDbPromise;
+  const opening = new Promise<IDBDatabase>((resolve, reject) => {
+    const req = indexedDB.open(LOG_DB_NAME, LOG_DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE_LOG)) {
+        db.createObjectStore(STORE_LOG, {
+          keyPath: "id",
+          autoIncrement: true,
+        }).createIndex(INDEX_LOG_AT, "at");
+      }
+    };
+    req.onsuccess = () => {
+      const db = req.result;
+      db.onversionchange = () => {
+        db.close();
+        if (logDbPromise === opening) logDbPromise = null;
+      };
+      resolve(db);
+    };
+    req.onblocked = () => {
+      if (logDbPromise === opening) logDbPromise = null;
+      reject(new StorageError("idb: the log is held open", "unavailable"));
+    };
+    req.onerror = () => {
+      if (logDbPromise === opening) logDbPromise = null;
+      reject(req.error);
+    };
+  });
+  logDbPromise = opening;
   return opening;
 }
 

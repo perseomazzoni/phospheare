@@ -200,6 +200,7 @@ web/                   the SPA
   src/demo/            the demo site's entry
   src/auth/            the open account, its state and the cross-tab session check
   src/fault/           what a failure leaves the writer with: error pages and reload policy
+  src/log/             the app's log: its lines, their redaction, the store and the page
   src/legal/           the legal, privacy and terms pages; their facts (the date
                        the texts last changed, the author's details) in domain/facts.ts
   src/security/        the Content-Security-Policy and its Trusted Types policy
@@ -218,7 +219,8 @@ desktop/               once-dark-studio-desktop, the desktop program (Go)
 .github/workflows/     CI (with CodeQL), the release build, the site deployment
 tools/                 notices, licence and header checks, CSS order check, lockfile
                        audit, SARIF check, changelog (git-cliff), Go module licences,
-                       the files-only server for the demo site's suite
+                       the files-only server for the demo site's suite, dev-wizard.mjs
+                       (npm run dev:wizard)
 docs/                  architecture, internals, features, the identity contract,
                        the install guide, the home-network guide, the AI guide
 docs/brand/            logo assets
@@ -339,6 +341,28 @@ Run these by hand when you change the code they cover.
   docker stop phospheare-pebble phospheare-challtestsrv && docker network rm phospheare-pebble
   ```
 
+- **The setup page, by hand.** This runs the desktop program against
+  stand-ins for Google, deSEC and Let's Encrypt. You need no account, no
+  email and no real certificate. It needs Go and Docker running:
+
+  ```bash
+  npm run dev:wizard
+  ```
+
+  - The program prints the setup page's address.
+  - The control page of `desktop/cmd/fake-services` gives the Google test
+    client, chooses what Google answers and clicks the link of deSEC's
+    email.
+  - The setup page's links to Google Cloud Console open local pages. Each
+    step that needs an action outside the page says what to do.
+  - The script builds the program and the identity service with the
+    `devfake` tag and the address of the stand-ins, so the release binaries
+    hold none of that code. CI checks this.
+  - Each run starts from an empty data folder and keeps its secrets in a
+    file, apart from your own copy of the program. Ctrl+C stops it and
+    removes the containers and its folder.
+  - A phone cannot open the home address in this mode.
+
 - **The Ollama protocol against a real Ollama.** The browser specs in
   `web/e2e/ai-assistant.spec.ts` replace Ollama with synthetic responses. They
   prove the wiring, not real model behaviour or loopback CORS. This test talks
@@ -414,6 +438,7 @@ every job. The same CI workflow runs weekly on
   - says what it does not cover when its name could promise more.
 
   A number that is a budget, not a measurement, says so in its test.
+
 - **Hexagonal modules, where they pay.** A module's rules live in pure
   functions that import no React, DOM or storage, and its boundary tests fail
   on an illegal import. Add a port only when it isolates a second real
@@ -444,6 +469,7 @@ every job. The same CI workflow runs weekly on
   - a change needs less reading afterwards, not more.
 
   A helper with one caller lives beside that caller.
+
 - **A custom hook serves one concrete use case.** These are the principles of
   React's guide,
   [keep your custom hooks focused on concrete high-level use cases](https://react.dev/learn/reusing-logic-with-custom-hooks#keep-your-custom-hooks-focused-on-concrete-high-level-use-cases):
@@ -461,6 +487,24 @@ every job. The same CI workflow runs weekly on
   suite that several test files share is named `*.fixture.ts` and sits
   beside the code it serves. The coverage count leaves it out, as it does
   the tests.
+- **A failure leaves a line in the log.** The app keeps its log in the
+  browser (`web/src/log`). The desktop program writes its own log and the
+  identity service's to files (`desktop/internal/adapters/logs`).
+  [Internals](docs/internals.md#the-apps-log) says how the app keeps it.
+  - When code catches a real failure, it writes one line: `warn` when the
+    work goes on, `error` when the writer loses something or the work
+    stops. The line names its area, says what happened in one sentence and
+    carries the failure with its stack (`describeError` in the app).
+  - A catch that answers an expected case writes nothing, such as an
+    optional file that is not there or a feature test.
+  - An `info` line marks a step that explains a later failure, such as a
+    page or a project that opens.
+  - A line holds no personal data. It names no person, no email or network
+    address, title, file or folder name, path or URL. It holds no
+    manuscript or chat text, prompt, query, key or token. The writer
+    account id is the only exception. The redaction in each log is a safety
+    net behind this rule, not a way around it.
+  - Nothing sends a log by itself.
 - **Interface text in both languages.** A new string goes in both
   `web/src/locales/en.json` and `web/src/locales/it.json`. The desktop
   program's setup page and tray menu keep theirs in

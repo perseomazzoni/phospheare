@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import type { ProjectRef } from "../../storage";
 import type { MetadataLanes } from "./application/metadataLanes";
 import { nodeOfFile } from "../../project/structure";
+import { appLog, describeError } from "../../log";
 import { withSummary, withUi, withoutSummary } from "../../project/properties";
 import type {
   DocumentProperties,
@@ -73,7 +74,11 @@ export function usePropertyActions({
               nodeOfFile(lanes.structure, bufferFileRef.current)?.id) ??
             latest.ui.lastOpened,
         }),
-      ).catch(() => {});
+      ).catch((err: unknown) => {
+        appLog.warn("editor", "The structure's open rows could not be saved.", {
+          ...describeError(err),
+        });
+      });
     },
     [lanes, enqueuePropsWrite, bufferFileRef],
   );
@@ -90,7 +95,16 @@ export function usePropertyActions({
       const target = lanes.owner;
       if (!target) return;
       void enqueuePropsWrite(target, (latest) => withUi(latest, next)).catch(
-        () => {},
+        (err: unknown) => {
+          appLog.warn(
+            "editor",
+            "A project's view settings could not be saved.",
+            {
+              fields: Object.keys(next).join(","),
+              ...describeError(err),
+            },
+          );
+        },
       );
     },
     [lanes, enqueuePropsWrite],

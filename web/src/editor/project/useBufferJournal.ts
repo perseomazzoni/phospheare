@@ -9,6 +9,7 @@ import type { EditorEngine } from "../views/engine";
 import { JournalKeeper } from "./application/journalKeeper";
 import type { MetadataLanes } from "./application/metadataLanes";
 import { providerJournal } from "./storageStores";
+import { appLog } from "../../log";
 
 /**
  * The undo timeline's journal: its read when a file opens, its flush, and
@@ -93,7 +94,14 @@ export function useBufferJournal({
       journals.opened(journal);
       engine.open(content, { ...opts, journal });
       bufferFileRef.current = fileName;
-      if (engine.lastOpenDroppedJournal) showJournalNotice();
+      if (engine.lastOpenDroppedJournal) {
+        // The engine cannot log, and does not say why: the journal was
+        // damaged, or no longer matches the file.
+        appLog.warn("history", "A Section's history was dropped at open.", {
+          chars: journal === undefined ? 0 : journal.length,
+        });
+        showJournalNotice();
+      }
       return true;
     },
     [journals, engine, showJournalNotice, bufferFileRef],

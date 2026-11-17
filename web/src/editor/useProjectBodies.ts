@@ -8,6 +8,7 @@ import type { StorageProvider, ProjectRef } from "../storage";
 import { prepareSource, type BodySource } from "../project/search";
 import { pooled } from "../project/pool";
 import { refIdentity } from "../project/refIdentity";
+import { appLog, describeError } from "../log";
 
 // The project's own words, held long enough to be searched: a map from a
 // source key to a file's text, filled on demand and dropped with the project.
@@ -113,6 +114,8 @@ export function useProjectBodies(
     if (owed.length === 0) return;
 
     const controller = new AbortController();
+    let unread = 0;
+    let lastError: unknown;
     void pooled(
       owed,
       READ_AT_ONCE,
@@ -120,9 +123,11 @@ export function useProjectBodies(
         const writtenAt = written.get(source.path) ?? 0;
         try {
           return { writtenAt, text: await provider.readFile(ref, source.path) };
-        } catch {
+        } catch (err) {
           // An unreadable file drops out of the results; the rest of the
           // project stays searchable.
+          unread += 1;
+          lastError = err;
           return { writtenAt, text: null };
         }
       },
@@ -141,10 +146,18 @@ export function useProjectBodies(
         });
       },
       controller.signal,
-    ).catch(() => {
-      // `pooled` rejects on abort with the signal's reason. The results
-      // already delivered stand, and the superseding sweep is running.
-    });
+    )
+      .catch(() => {
+        // `pooled` rejects on abort with the signal's reason. The results
+        // already delivered stand, and the superseding sweep is running.
+      })
+      .then(() => {
+        if (unread > 0)
+          appLog.warn("editor", "Files could not be read for a search.", {
+            count: unread,
+            ...describeError(lastError),
+          });
+      });
 
     return () => controller.abort();
     // `entries` is read but not a dependency: it changes on every file that

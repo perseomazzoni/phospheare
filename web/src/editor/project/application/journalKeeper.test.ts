@@ -6,6 +6,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { JournalStore, ProjectId } from "./stores";
 import { JournalKeeper } from "./journalKeeper";
+import { appLog } from "../../../log";
 
 const A: ProjectId = { providerId: "fake", key: "a" };
 
@@ -73,7 +74,13 @@ describe("JournalKeeper", () => {
       const { store, unreadable } = fakeStore({ "c.md": "j1" });
       unreadable.add("c.md");
       const keeper = new JournalKeeper<ProjectId>();
+      const warn = vi.spyOn(appLog, "warn");
       await expect(keeper.read(store, A, "c.md")).resolves.toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        "history",
+        expect.any(String),
+        expect.objectContaining({ error: expect.any(String) }),
+      );
     });
   });
 
@@ -116,7 +123,7 @@ describe("JournalKeeper", () => {
     });
 
     it("never writes a journal it cannot read", async () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warn = vi.spyOn(appLog, "warn");
       const { store, unreadable } = fakeStore({ "c.md": "j1" });
       unreadable.add("c.md");
       const keeper = new JournalKeeper<ProjectId>();
@@ -129,7 +136,7 @@ describe("JournalKeeper", () => {
     });
 
     it("keeps the lane open after a failed write", async () => {
-      vi.spyOn(console, "warn").mockImplementation(() => {});
+      vi.spyOn(appLog, "warn");
       const { store, disk, failWrites } = fakeStore({ "c.md": "j1" });
       const keeper = new JournalKeeper<ProjectId>();
       keeper.opened("j1");
@@ -186,13 +193,17 @@ describe("JournalKeeper", () => {
     });
 
     it("never fails the caller", async () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warn = vi.spyOn(appLog, "warn");
       const { store, unreadable } = fakeStore({ "c.md": "j1" });
       unreadable.add("c.md");
       const keeper = new JournalKeeper<ProjectId>();
       await expect(keeper.remove(store, A, "c.md")).resolves.toBeUndefined();
       expect(store.remove).not.toHaveBeenCalled();
-      expect(warn).toHaveBeenCalled();
+      expect(warn).toHaveBeenCalledWith(
+        "history",
+        expect.any(String),
+        expect.anything(),
+      );
     });
   });
 });

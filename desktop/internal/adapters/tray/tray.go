@@ -13,6 +13,7 @@ package tray
 
 import (
 	"context"
+	"log/slog"
 	"time"
 )
 
@@ -78,8 +79,11 @@ type Actions struct {
 	// waiting on the system.
 	StartAtLogin    func() (bool, error)
 	SetStartAtLogin func(bool) error
-	Quit            func()
-	Logf            func(format string, args ...any)
+	// ShowLogs shows the folder of the log files.
+	ShowLogs func()
+	Quit     func()
+	// Log may be nil.
+	Log *slog.Logger
 }
 
 // Tray is the menu, built.
@@ -92,9 +96,9 @@ type Tray struct {
 	asked <-chan struct{}
 	// named are the entries whose title is only their name, in the order
 	// of look.names.
-	named                          [5]Item
+	named                          [6]Item
 	open, setup, switched, checked <-chan struct{}
-	phoned                         <-chan struct{}
+	phoned, logs                   <-chan struct{}
 	quit                           <-chan struct{}
 	network                        Network
 	loginOn                        bool
@@ -117,13 +121,13 @@ type look struct {
 	// is hidden.
 	ask   string
 	login bool
-	// names are the titles of Open, Setup, Open on a phone, Start at login
-	// and Quit, which change only with the language.
-	names [5]string
+	// names are the titles of Open, Setup, Open on a phone, Start at login,
+	// Show the log files and Quit, which change only with the language.
+	names [6]string
 }
 
 // nameKeys are the texts of look.names.
-var nameKeys = [5]string{"tray.open", "tray.setup", "tray.phone", "tray.login", "tray.quit"}
+var nameKeys = [6]string{"tray.open", "tray.setup", "tray.phone", "tray.login", "tray.logs", "tray.quit"}
 
 // every is how often the menu reads the program's state again.
 var every = 2 * time.Second
@@ -143,7 +147,8 @@ func Build(m Menu, a Actions) *Tray {
 	t.login, t.checked = m.AddCheckbox("", false)
 	t.named[3] = t.login
 	m.AddSeparator()
-	t.named[4], t.quit = m.Add("")
+	t.named[4], t.logs = m.Add("")
+	t.named[5], t.quit = m.Add("")
 	t.Refresh()
 	return t
 }
@@ -176,7 +181,7 @@ func (t *Tray) Refresh() {
 	next.phone = t.network.State == NetworkOn
 	on, err := t.a.StartAtLogin()
 	if err != nil && err.Error() != t.loginErr {
-		t.logf("tray: start at login: %v", err)
+		t.log().Warn("The login list could not be read.", "error", err)
 	}
 	t.loginErr = ""
 	if err != nil {
@@ -255,9 +260,11 @@ func (t *Tray) Serve(ctx context.Context) {
 			t.switchNetwork()
 		case <-t.checked:
 			if err := t.a.SetStartAtLogin(!t.loginOn); err != nil {
-				t.logf("tray: start at login: %v", err)
+				t.log().Warn("Start at login could not be changed.", "error", err)
 				t.a.Setup()
 			}
+		case <-t.logs:
+			t.a.ShowLogs()
 		case <-t.quit:
 			t.a.Quit()
 			return
@@ -277,13 +284,14 @@ func (t *Tray) switchNetwork() {
 		err = t.a.StartNetwork()
 	}
 	if err != nil {
-		t.logf("tray: home network: %v", err)
+		t.log().Warn("The home network could not be switched.", "error", err)
 		t.a.Setup()
 	}
 }
 
-func (t *Tray) logf(format string, args ...any) {
-	if t.a.Logf != nil {
-		t.a.Logf(format, args...)
+func (t *Tray) log() *slog.Logger {
+	if t.a.Log == nil {
+		return slog.New(slog.DiscardHandler)
 	}
+	return t.a.Log
 }

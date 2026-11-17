@@ -274,6 +274,10 @@ export const SCRIPTED = [
   // the shell, by `EditorRoute`: three things move out of the keyboard's
   // way and one of them, the toast, is rendered outside the shell.
   "--kb",
+  // The room the titlebar's right cluster takes from the window's right
+  // edge, written onto the root by `WorkspaceTitlebar`: the status notices,
+  // rendered outside the shell, keep their width clear of it.
+  "--titlebar-right",
   // How tall the Ask face's floating asking stack currently is, written
   // onto `.ai-stage` by `AiPanel` on every render. The transcript takes
   // it as bottom padding and the jump button as its sticky offset, so

@@ -39,6 +39,7 @@ import {
 } from "./tools";
 import type { SearchPause } from "./searchAsk";
 import { webRoom } from "./webResults";
+import { appLog, describeError } from "../../log";
 
 /** What the caller does around the loop, as it happens. */
 export interface ToolLoopSink {
@@ -213,6 +214,11 @@ export async function runToolLoop(run: ToolLoopRun): Promise<ToolLoopResult> {
         try {
           value = await executeTool(call, toolContext);
         } catch (error) {
+          if (!signal.aborted)
+            appLog.warn("ai", "A tool call failed.", {
+              tool: call.name,
+              ...describeError(error),
+            });
           value = {
             error: "tool-failed",
             message: error instanceof Error ? error.message : "failed",

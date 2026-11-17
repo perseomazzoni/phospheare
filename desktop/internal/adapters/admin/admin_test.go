@@ -12,6 +12,7 @@ import (
 	"errors"
 	"image/png"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -22,6 +23,7 @@ import (
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/configfile"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/desec"
 	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/desec/desectest"
+	"github.com/perseomazzoni/phospheare/desktop/internal/adapters/logs"
 	"github.com/perseomazzoni/phospheare/desktop/internal/application"
 	"github.com/perseomazzoni/phospheare/desktop/internal/domain"
 )
@@ -123,6 +125,11 @@ type forgetNothing struct{}
 
 func (forgetNothing) Forget() error { return nil }
 
+// fakeLogs stands for the log files.
+type fakeLogs struct{ clears int }
+
+func (f *fakeLogs) Clear() error { f.clears++; return nil }
+
 type fixture struct {
 	a     *Admin
 	h     http.Handler
@@ -131,10 +138,15 @@ type fixture struct {
 	id    *fakeIdentity
 	desec *desectest.Fake
 	quit  chan struct{}
+	logs  *fakeLogs
+	// opened are the folders the page asked to show; openErr is the
+	// answer.
+	opened  []string
+	openErr error
 }
 
 func newFixture(t *testing.T) *fixture {
-	f := &fixture{lan: &fakeLAN{status: application.Status{State: application.StateOff}}, auto: &fakeAutostart{}, id: &fakeIdentity{}, quit: make(chan struct{}, 1)}
+	f := &fixture{lan: &fakeLAN{status: application.Status{State: application.StateOff}}, auto: &fakeAutostart{}, id: &fakeIdentity{}, quit: make(chan struct{}, 1), logs: &fakeLogs{}}
 	github := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(map[string]string{"tag_name": "v1.4.0", "html_url": "https://github.com/perseomazzoni/phospheare/releases/tag/v1.4.0"})
 	}))
@@ -171,11 +183,14 @@ func newFixture(t *testing.T) *fixture {
 			return []domain.Address{{IP: "192.168.1.20", Interface: "wlan0"}}, nil
 		},
 		Autostart:  f.auto,
-		Wipe:       &application.Wipe{Config: config, Identity: f.id, LAN: f.lan, Certs: forgetNothing{}, Autostart: f.auto},
+		Wipe:       &application.Wipe{Config: config, Identity: f.id, LAN: f.lan, Certs: forgetNothing{}, Autostart: f.auto, Logs: f.logs},
 		Executable: func() (string, error) { return "/opt/phospheare/once-dark-studio-desktop", nil },
 		HTTP:       http.DefaultClient,
 		ReleaseURL: github.URL,
 		Quit:       func() { f.quit <- struct{}{} },
+		LogDir:     "/data/logs",
+		OpenFolder: func(dir string) error { f.opened = append(f.opened, dir); return f.openErr },
+		Detail:     &logs.Detail{Level: new(slog.LevelVar), Base: slog.LevelInfo},
 	}
 	f.h = f.a.Handler()
 	return f
@@ -525,8 +540,61 @@ func TestAdminWipesEverything(t *testing.T) {
 		t.Fatalf("wipe: %d %s", rec.Code, rec.Body.String())
 	}
 	cfg := f.a.Config.Get()
-	if cfg.Google.Configured() || cfg.LAN.DeSEC.Name != "" || cfg.StartAtLogin || f.auto.on || f.lan.stops != 1 || f.id.forgets != 1 {
-		t.Fatalf("config %+v, autostart %v, %d stops, %d key forgets", cfg, f.auto.on, f.lan.stops, f.id.forgets)
+	if cfg.Google.Configured() || cfg.LAN.DeSEC.Name != "" || cfg.StartAtLogin || f.auto.on || f.lan.stops != 1 || f.id.forgets != 1 || f.logs.clears != 1 {
+		t.Fatalf("config %+v, autostart %v, %d stops, %d key forgets, %d log clears", cfg, f.auto.on, f.lan.stops, f.id.forgets, f.logs.clears)
+	}
+}
+
+func TestAdminShowsTheLogFolder(t *testing.T) {
+	f := newFixture(t)
+	if rec := f.call(http.MethodPost, "/desktop/setup/api/logs/open", nil); rec.Code != http.StatusNoContent {
+		t.Fatalf("open: %d %s", rec.Code, rec.Body.String())
+	}
+	if len(f.opened) != 1 || f.opened[0] != "/data/logs" {
+		t.Fatalf("opened %q", f.opened)
+	}
+	// When the folder cannot open, the page shows its path from the state,
+	// and the log keeps the cause.
+	var log bytes.Buffer
+	f.a.Log = slog.New(slog.NewTextHandler(&log, nil))
+	f.openErr = errors.New("no file manager")
+	rec := f.call(http.MethodPost, "/desktop/setup/api/logs/open", nil)
+	if rec.Code != http.StatusInternalServerError || !strings.Contains(rec.Body.String(), "logs-open-failed") {
+		t.Fatalf("failed open: %d %s", rec.Code, rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), "no file manager") {
+		t.Fatal("the problem carries the system's error")
+	}
+	if l := log.String(); !strings.Contains(l, "level=ERROR") || !strings.Contains(l, "problem=logs-open-failed") || !strings.Contains(l, `error="no file manager"`) {
+		t.Fatalf("log %q", l)
+	}
+	s := body(t, f.call(http.MethodGet, "/desktop/setup/api/state", nil))
+	if s["logs"].(map[string]any)["folder"] != "/data/logs" {
+		t.Fatalf("state %v", s["logs"])
+	}
+}
+
+func TestAdminTurnsTheDetailedLogOnForADay(t *testing.T) {
+	f := newFixture(t)
+	before := time.Now()
+	out := body(t, f.call(http.MethodPut, "/desktop/setup/api/logs/detailed", map[string]bool{"on": true}))
+	until, err := time.Parse(time.RFC3339, out["detailedUntil"].(string))
+	if err != nil {
+		t.Fatalf("answer %v: %v", out, err)
+	}
+	if d := until.Sub(before); d < logs.DetailFor-2*time.Second || d > logs.DetailFor {
+		t.Fatalf("on for %s", d)
+	}
+	if !f.a.Config.Get().LogDetailedUntil.Equal(until) || f.a.Detail.Level.Level() != slog.LevelDebug {
+		t.Fatalf("saved %s, level %s", f.a.Config.Get().LogDetailedUntil, f.a.Detail.Level.Level())
+	}
+	s := body(t, f.call(http.MethodGet, "/desktop/setup/api/state", nil))
+	if s["logs"].(map[string]any)["detailedUntil"] != out["detailedUntil"] {
+		t.Fatalf("state %v", s["logs"])
+	}
+	out = body(t, f.call(http.MethodPut, "/desktop/setup/api/logs/detailed", map[string]bool{"on": false}))
+	if out["detailedUntil"] != "" || !f.a.Config.Get().LogDetailedUntil.IsZero() || f.a.Detail.Level.Level() != slog.LevelInfo {
+		t.Fatalf("off: %v, saved %s, level %s", out, f.a.Config.Get().LogDetailedUntil, f.a.Detail.Level.Level())
 	}
 }
 

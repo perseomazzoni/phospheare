@@ -6,10 +6,15 @@
 import type { ChatRecord } from "../domain/types";
 import { reviewProgressOf } from "./reviewRun";
 import type { WorkflowHost } from "./workflowRun";
+import { appLog, describeError } from "../../log";
 
 // The chat list as the project opens: the stored listing merged with what
 // this session holds, and the Resume offer a stored review plan earns. The
 // single flight that joins a second caller stays in the aggregate.
+
+// Each selection of a chat reads its plans again, so an unreadable plan is
+// logged once a session.
+const unreadableLogged = new Set<string>();
 
 /** What the listing reads and writes of the aggregate. */
 export type ListingHost = Pick<
@@ -99,8 +104,19 @@ export async function hydratePendingReview(
         host.publish({ pendingReview: reviewProgressOf(checkpoint) });
         return;
       }
-    } catch {
+    } catch (err) {
       // An unreadable plan cannot be resumed; try the next link.
+      if (!unreadableLogged.has(review.runId)) {
+        unreadableLogged.add(review.runId);
+        appLog.warn(
+          "ai",
+          "A review plan could not be read for the resume offer.",
+          {
+            run: review.runId,
+            ...describeError(err),
+          },
+        );
+      }
     }
   }
   if (shown()) host.publish({ pendingReview: null });

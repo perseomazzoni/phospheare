@@ -75,9 +75,11 @@ p > code, p > a > code { white-space: nowrap; }
 
 /* The home network's name opens the app there. */
 .ready a code { color: inherit; }
-.foot code { white-space: normal; }
+.foot code, .result code { white-space: normal; }
 
 .hint { color: var(--muted); font-size: .92rem; }
+/* Words the person must not miss, such as what a button makes them accept. */
+.is-strong { font-weight: 600; }
 
 .visually-hidden {
   position: absolute;
@@ -343,7 +345,12 @@ input[type="text"], input[type="email"], input[type="password"], input[type="num
    to do about it. */
 .callout { margin: .75rem 0 1rem; padding: .75rem 1rem; border-radius: var(--radius); background: var(--warn-soft); }
 .callout.is-error { background: var(--danger-soft); }
-.callout > p { margin: 0 0 .5rem; }
+.callout > p, #lan-terms-first > p { margin: 0 0 .5rem; }
+#lan-terms-first > ul.plain { margin: 0 0 .5rem; }
+/* The last word before the button stands one empty line apart. */
+#lan-terms-first > p.is-apart { margin-top: 1.5rem; }
+/* The home network's name, each time the agreement's summary names it. */
+.terms-name { font-weight: 600; }
 .callout strong { color: var(--warn); }
 .callout.is-error strong { color: var(--danger); }
 .callout .row { margin-top: .75rem; }
@@ -440,6 +447,8 @@ ul.plain li { margin: .45rem 0; }
 }
 .sheet-row > .tick-mark { grid-column: 1; grid-row: 1; }
 .sheet-row > .done-button { grid-column: 4; grid-row: 1; }
+/* A long row answers at its end, under its words, where the reading stops. */
+.sheet-row.done-below > .done-button { grid-column: 2 / -1; grid-row: 2; justify-self: end; }
 .sheet-row > dd { grid-column: 2; grid-row: 1; padding-top: .1rem; }
 .sheet-row > .row-links { grid-column: 3; grid-row: 1; display: flex; gap: .75rem; line-height: 1.75rem; white-space: nowrap; }
 .sheet-row > dd.row-why, .sheet-row > dd.row-done { grid-column: 2 / -1; grid-row: auto; padding-top: 0; }

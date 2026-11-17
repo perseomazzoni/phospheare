@@ -12,6 +12,7 @@ import {
   type SourceMeta,
 } from "../domain/source";
 import type { InputFile, ReadContext, ReaderLoader, ZipProbe } from "../ports";
+import { appLog, describeError } from "../../../log";
 
 // From chosen files to one source. Each file is sniffed, measured against its
 // cap, handed to its reader, and answered with a typed result, read or
@@ -58,6 +59,13 @@ function reasonOf(err: unknown): Refusal {
   return "damaged";
 }
 
+const paragraphCount = (doc: SourceDocument): number =>
+  doc.flows.reduce(
+    (sum, flow) =>
+      sum + flow.blocks.filter((block) => block.kind === "para").length,
+    0,
+  );
+
 const capFor = (format: FormatId): number =>
   PACKAGE_FORMATS.has(format)
     ? MAX_FILE_BYTES.package
@@ -71,14 +79,33 @@ export async function readFile(
   ctx: ReadContext,
 ): Promise<FileResult> {
   const base = { name: file.name, size: file.size };
+  const started = Date.now();
+  // One line per file the writer picked. A refusal that a catch below has
+  // already logged as a failure does not pass through here.
+  const done = (result: FileResult): FileResult => {
+    appLog.info("import", "A file was read for import.", {
+      format: result.format,
+      status: result.status,
+      reason: result.status === "refused" ? result.reason : undefined,
+      bytes: result.size,
+      paragraphs:
+        result.status === "ok" ? paragraphCount(result.doc) : undefined,
+      ms: Date.now() - started,
+    });
+    return result;
+  };
   // The largest cap of any family, before a byte is read: nothing bigger
   // could be accepted whatever it turns out to be.
   if (file.size > MAX_FILE_BYTES.package)
-    return { status: "refused", ...base, reason: "tooLarge" };
+    return done({ status: "refused", ...base, reason: "tooLarge" });
   let bytes: Uint8Array;
   try {
     bytes = await file.bytes();
-  } catch {
+  } catch (err) {
+    appLog.warn("import", "A chosen file could not be loaded.", {
+      bytes: file.size,
+      ...describeError(err),
+    });
     return { status: "refused", ...base, reason: "damaged" };
   }
   let found = sniff(file.name, bytes.subarray(0, 4096));
@@ -88,17 +115,21 @@ export async function readFile(
   if (found.kind === "zip")
     try {
       found = await deps.probe(bytes);
-    } catch {
+    } catch (err) {
+      appLog.warn("import", "A zip file could not be probed.", {
+        bytes: bytes.length,
+        ...describeError(err),
+      });
       return { status: "refused", ...base, reason: "damaged" };
     }
   if (found.kind === "refused")
-    return { status: "refused", ...base, reason: found.reason };
+    return done({ status: "refused", ...base, reason: found.reason });
   // A probe that answers "zip" again has found no package it knows.
   if (found.kind === "zip")
-    return { status: "refused", ...base, reason: "unknown" };
+    return done({ status: "refused", ...base, reason: "unknown" });
   const format = found.format;
   if (bytes.length > capFor(format))
-    return { status: "refused", ...base, format, reason: "tooLarge" };
+    return done({ status: "refused", ...base, format, reason: "tooLarge" });
   try {
     const reader = await deps.load(format);
     const doc = await reader.read(bytes, file.name, ctx);
@@ -109,11 +140,19 @@ export async function readFile(
           block.inlines.every((inline) => !inline.text.trim()),
       ),
     );
-    if (empty) return { status: "refused", ...base, format, reason: "empty" };
-    return { status: "ok", ...base, format, doc };
+    if (empty)
+      return done({ status: "refused", ...base, format, reason: "empty" });
+    return done({ status: "ok", ...base, format, doc });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") throw err;
-    return { status: "refused", ...base, format, reason: reasonOf(err) };
+    const reason = reasonOf(err);
+    appLog.warn("import", "A file could not be read.", {
+      format,
+      reason,
+      bytes: bytes.length,
+      ...describeError(err),
+    });
+    return { status: "refused", ...base, format, reason };
   }
 }
 

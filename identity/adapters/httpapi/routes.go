@@ -74,7 +74,11 @@ func (h *Host) session(r *http.Request) *domain.Session {
 	if h.Sealer.Open(sealSession, c.Value, &s) != nil {
 		return nil
 	}
-	return h.OAuth.Admit(s, r.Header.Get(SessionHeader))
+	admitted := h.OAuth.Admit(s, r.Header.Get(SessionHeader))
+	if admitted != nil {
+		noteAccount(r, admitted.WriterID)
+	}
+	return admitted
 }
 
 // flow opens the flow this browser carries under id, or nil. Each flow has
@@ -91,6 +95,7 @@ func (h *Host) flow(r *http.Request, id string) *domain.Flow {
 	if h.Sealer.Open(sealFlow, c.Value, &f) != nil || f.ID != id {
 		return nil
 	}
+	noteAccount(r, f.WriterID)
 	return &f
 }
 
@@ -213,6 +218,9 @@ func (h *Host) openSession(w http.ResponseWriter, r *http.Request, l Listener) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+	// The body's id is the session's only once it is sealed: a seal that
+	// fails names no account.
+	noteAccount(r, claims.WriterID)
 	setCookie(w, l, sessionCookie, sealed, "/identity", sessionMaxAge, http.SameSiteStrictMode)
 	writeJSON(w, http.StatusOK, map[string]string{"proof": claims.Proof})
 }

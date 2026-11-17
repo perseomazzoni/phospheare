@@ -12,6 +12,7 @@ import { Dialog, Dots } from "../../ui";
 import { bookExport, doneMessageKey, fileLanguage } from "./host/bookExport";
 import { openExportBook, type ExportBook } from "./host/openBook";
 import ExportDialog from "./presentation/ExportDialog";
+import { appLog, describeError } from "../../log";
 
 // The export window as the Library opens it, and the export's composition
 // root. It opens the book with `openExportBook`, the editor's own reading
@@ -141,7 +142,13 @@ export default function BookExportWindow({
         // Best effort, after the fact: the file is already out under this
         // name, and a book that cannot take the note keeps its old one.
         saving.current = setProjectAuthor(book.storage, project, clean).catch(
-          () => {},
+          (err: unknown) => {
+            appLog.warn(
+              "export",
+              "The author of a book could not be saved after an export.",
+              { ...describeError(err) },
+            );
+          },
         );
       }}
       onDone={(outcome) => onMessage(t(doneMessageKey(outcome)))}

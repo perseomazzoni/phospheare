@@ -15,6 +15,8 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"slices"
@@ -86,7 +88,11 @@ type Manager struct {
 	// RetryAfter is the first pause before a start at login that found no
 	// network tries again; each pause doubles it. 30 seconds when zero.
 	RetryAfter time.Duration
-	Logf       func(format string, args ...any)
+	// Log may be nil.
+	Log *slog.Logger
+	// ErrorLog hears what the listener's server complains of, such as a
+	// failed handshake or a handler's panic. Nil sends it to Log at WARN.
+	ErrorLog *log.Logger
 
 	// ops makes Start and Stop take turns, so a Start never joins the wait
 	// of a Stop under way.
@@ -230,14 +236,14 @@ func (m *Manager) Terms(ctx context.Context) (TermsState, error) {
 	defer cancel()
 	current, err := m.Certs.Terms(tctx, cfg)
 	if err != nil {
-		m.logf("home network: the agreement could not be read: %v", err)
+		m.log().Warn("The agreement of Let's Encrypt could not be read.", "error", err)
 		return TermsState{}, ErrTermsUnreachable
 	}
 	if current == "" {
 		return TermsState{Accepted: cfg.CertTerms == domain.NoCertTerms}, nil
 	}
 	if !domain.TermsAddress(current) {
-		m.logf("home network: the authority names no agreement to show: %q", current)
+		m.log().Warn("Let's Encrypt names no agreement to show.", "named", current)
 		return TermsState{}, ErrTermsUnshown
 	}
 	return TermsState{URL: current, Accepted: cfg.CertTerms == current}, nil
@@ -298,10 +304,18 @@ func (m *Manager) AcceptTerms(ctx context.Context, address string) error {
 	return nil
 }
 
-func (m *Manager) logf(format string, args ...any) {
-	if m.Logf != nil {
-		m.Logf(format, args...)
+func (m *Manager) log() *slog.Logger {
+	if m.Log == nil {
+		return slog.New(slog.DiscardHandler)
 	}
+	return m.Log
+}
+
+func (m *Manager) errorLog() *log.Logger {
+	if m.ErrorLog == nil {
+		return slog.NewLogLogger(m.log().Handler(), slog.LevelWarn)
+	}
+	return m.ErrorLog
 }
 
 func (m *Manager) fail(err error) {
@@ -312,7 +326,7 @@ func (m *Manager) fail(err error) {
 	m.status.URL = ""
 	m.status.Progress = nil
 	m.status.Terms = termsAsked(err)
-	m.logf("home network: %v", err)
+	m.log().Error("The home network did not turn on.", "error", err)
 }
 
 func (m *Manager) prepareOnce(ctx context.Context, cfg domain.LAN) (*tls.Certificate, domain.CertInfo, error) {
@@ -417,7 +431,7 @@ func (m *Manager) run(ctx context.Context, cfg domain.LAN, resume bool, wake cha
 	}
 	ln, err := listen("tcp", net.JoinHostPort("0.0.0.0", strconv.Itoa(cfg.Port)))
 	if err != nil {
-		m.logf("home network: port %d: %v", cfg.Port, err)
+		m.log().Error("The port could not be opened.", "port", cfg.Port, "error", err)
 		m.fail(errors.New(portRefused(cfg.Port, m.probe(cfg.Port), false)))
 		return
 	}
@@ -430,6 +444,9 @@ func (m *Manager) run(ctx context.Context, cfg domain.LAN, resume bool, wake cha
 		ReadTimeout:  time.Minute,
 		WriteTimeout: 5 * time.Minute,
 		IdleTimeout:  2 * time.Minute,
+		// A failed handshake names the device's address, which the log
+		// removes.
+		ErrorLog: m.errorLog(),
 		TLSConfig: &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			GetCertificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
@@ -453,7 +470,7 @@ func (m *Manager) run(ctx context.Context, cfg domain.LAN, resume bool, wake cha
 	m.status.URL = origin + "/app"
 	m.status.Cert = &info
 	m.mu.Unlock()
-	m.logf("home network: serving %s", origin)
+	m.log().Info("The home network is on.", "port", cfg.Port)
 
 	served := make(chan error, 1)
 	go func() { served <- srv.Serve(tls.NewListener(ln, srv.TLSConfig)) }()
@@ -488,12 +505,12 @@ func (m *Manager) renewLoop(ctx context.Context, cfg domain.LAN, info domain.Cer
 		case err == nil:
 			renewErr = ""
 			if cert != nil {
-				m.logf("home network: certificate renewed")
+				m.log().Info("The certificate is renewed.")
 			}
 		case err.Error() != renewErr:
 			// A renewal still refused is logged once per reason.
 			renewErr = err.Error()
-			m.logf("home network: certificate renewal: %v", err)
+			m.log().Warn("The certificate could not be renewed.", "error", err)
 		}
 	}
 	renew()
@@ -529,7 +546,7 @@ func (m *Manager) renewLoop(ctx context.Context, cfg domain.LAN, info domain.Cer
 				addressErr = ""
 			} else if err.Error() != addressErr {
 				addressErr = err.Error()
-				m.logf("home network: %v", err)
+				m.log().Warn("The address record could not be written.", "error", err)
 			}
 		case <-wake:
 			renew()
@@ -614,11 +631,11 @@ func (m *Manager) Ports() PortChoice {
 func (m *Manager) PickPort() {
 	p := domain.PickPort(m.use)
 	if p == 0 {
-		m.logf("home network: no free port found from %d", domain.DefaultLANPort)
+		m.log().Warn("No free port found.", "from", domain.DefaultLANPort)
 		return
 	}
 	if err := m.Config.Update(func(c *domain.Config) { c.LAN.Port = p }); err != nil {
-		m.logf("home network: the port could not be saved: %v", err)
+		m.log().Warn("The port could not be saved.", "error", err)
 	}
 }
 
@@ -680,7 +697,7 @@ func (m *Manager) Stop() error {
 	if srv != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		if graceful := srv.Shutdown(ctx); graceful != nil {
-			m.logf("home network: closing the connections still open: %v", graceful)
+			m.log().Warn("Closing the connections still open.", "error", graceful)
 			err = srv.Close()
 		}
 		cancel()

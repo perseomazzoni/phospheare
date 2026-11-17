@@ -5,8 +5,13 @@
 
 import { StorageError, baseName } from "./types";
 import { driveAccessToken } from "./driveToken";
-import { noteDriveAccepted, noteDriveRefused } from "./driveGrant";
+import {
+  driveGrantLapsed,
+  noteDriveAccepted,
+  noteDriveRefused,
+} from "./driveGrant";
 import { PRODUCT } from "../product";
+import { appLog } from "../log";
 
 // The Drive HTTP primitives every Drive caller shares: the endpoints, the
 // retry-on-401 fetch, the error mapping, and the two upload shapes. They live
@@ -70,6 +75,13 @@ export function fail(
     //
     // The latch is set here rather than by the caller: the request has
     // already been retried with a fresh token and rate limits excluded above.
+    // Logged on the change of state only: every request after a refusal is
+    // refused the same way.
+    if (!driveGrantLapsed())
+      appLog.info("drive", "Remote Storage refused the grant.", {
+        status,
+        reasons: reasons.join(",") || null,
+      });
     noteDriveRefused();
     return new StorageError(message, "permission", "storage.disconnected");
   }
@@ -116,7 +128,13 @@ export async function driveFetch(
     }
   }
 
-  if (response.ok) noteDriveAccepted();
+  if (response.ok) {
+    if (driveGrantLapsed())
+      appLog.info("drive", "Remote Storage accepted the grant again.", {
+        status: response.status,
+      });
+    noteDriveAccepted();
+  }
 
   return response;
 }

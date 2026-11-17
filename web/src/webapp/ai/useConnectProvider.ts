@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { currentPlatform } from "../../platform";
 import { onConnect } from "../../ai/host/connectChannel";
+import { appLog, describeError } from "../../log";
 import {
   OPENROUTER_ID,
   connectOpenRouter,
@@ -62,7 +63,13 @@ export function useConnectProvider(): {
       setPending(null);
       if (result === "blocked") setBlocked(true);
     };
-    void outcome.then(ended).catch(() => ended(null));
+    void outcome.then(ended).catch((err) => {
+      appLog.warn("ai", "A provider connection failed.", {
+        provider: providerId,
+        ...describeError(err),
+      });
+      ended(null);
+    });
   }, []);
 
   return {

@@ -35,8 +35,8 @@ through deSEC.
    `oncedark317.dedyn.io`. The name is public, so leave out anything
    personal. If someone already has the name, choose another number.
 2. The page shows the password of your new deSEC account. Save it in your
-   password manager or write it down. Then tick "I have saved the password in
-   my password manager, or on a note I keep." Once Dark Studio forgets the
+   password manager. Then tick "I have saved the password in my password
+   manager." Once Dark Studio forgets the
    password when the name is ready; with it, you can look at your account on
    <https://desec.io>.
 3. On the same page, read the limits of deSEC's free names and click **Yes,
@@ -60,8 +60,9 @@ through deSEC.
 
    Click **Done** when it is saved.
 
-7. On the setup page, the card shows a link to Let's Encrypt's subscriber
-   agreement. Read it and click **Accept and turn on**. Once Dark Studio asks
+7. On the setup page, the card gives a summary of Let's Encrypt's subscriber
+   agreement and a link to it. Read the agreement and click **Accept and turn
+   on**. Once Dark Studio asks
    Let's Encrypt for nothing before that. The page shows each stage while the
    certificate is issued: first deSEC sends the proof that the name is yours
    to its servers, with a count of how many have it, then Let's Encrypt
@@ -81,8 +82,9 @@ restarts, until you turn it off. The tray menu can also start and stop the
 home network.
 
 Your acceptance of Let's Encrypt's agreement stays valid for the renewals of
-the certificate. When Let's Encrypt changes its agreement, the card and the
-tray menu ask you to accept the new one. The certificate in use works until
+the certificate. When Let's Encrypt makes a major change to its agreement, the
+card and the tray menu ask you to accept the new one. Let's Encrypt applies a
+smaller change without a new acceptance. The certificate in use works until
 it expires.
 
 A computer that has just started may not be on the network yet: Once Dark

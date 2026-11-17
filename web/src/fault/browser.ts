@@ -8,6 +8,7 @@ import type {
   Page,
   ReloadMemory,
 } from "./application/handleFault";
+import { appLog, describeError } from "../log";
 
 // The browser's side of the fault rules: the page, the console and the
 // tab's own storage.
@@ -21,16 +22,35 @@ export const browserPage: Page = {
   now: () => Date.now(),
 };
 
-// The console is the only sink: no failure detail leaves the browser, so the
-// privacy notice's account of what is collected stays whole. The thrown value
-// is passed as itself, so the console keeps its stack and its cause chain
-// clickable.
+/**
+ * The page as the log names it: its route pattern, never its path, which can
+ * hold text from a link. The app sets it once its router exists; before, the
+ * line names no page.
+ */
+let routeForLog: () => string = () => "-";
+
+/** Sets how the fault's log line names the page. */
+export function setFaultRoute(route: () => string): void {
+  routeForLog = route;
+}
+
+// Two sinks, both in this browser: the console, and the log the writer can
+// download and send. No failure detail leaves the browser by itself, so the
+// privacy notice's account of what is collected stays whole. The console gets
+// the thrown value as itself, so it keeps its stack and its cause chain
+// clickable; the log gets its message and stack as text, redacted.
 
 export const consoleReporter: FaultReporter = {
   report(error, { site, kind, path, componentStack }) {
     const where = `Fault: ${kind}, met at ${site}, on ${path}`;
     if (componentStack) console.error(where, error, componentStack);
     else console.error(where, error);
+    appLog.error("fault", `A failure: ${kind}.`, {
+      site,
+      route: routeForLog(),
+      ...describeError(error),
+      componentStack,
+    });
   },
 };
 

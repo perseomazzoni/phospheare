@@ -9,6 +9,7 @@
 // content.
 
 import type { ChatRecord, ChatTurn } from "../domain/types";
+import { appLog, describeError } from "../../log";
 
 /** What the writes read and publish, as `Assistant` holds it. */
 export interface ChatListState {
@@ -266,7 +267,11 @@ export class ChatWrites {
           saveFailedChatId: this.shownFailure(chatId),
         });
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        appLog.error("ai", "A chat could not be saved.", {
+          chat: chatId,
+          ...describeError(err),
+        });
         if (this.host.gone(chatId)) return;
         const chat = written ?? record();
         this.clearFailure(chatId);

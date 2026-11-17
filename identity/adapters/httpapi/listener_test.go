@@ -6,6 +6,8 @@
 package httpapi_test
 
 import (
+	"errors"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -13,6 +15,7 @@ import (
 
 	"github.com/perseomazzoni/phospheare/identity/adapters/httpapi"
 	"github.com/perseomazzoni/phospheare/identity/domain"
+	"github.com/perseomazzoni/phospheare/identity/ports"
 )
 
 // ── Cross-site guard ─────────────────────────────────────────────────────────
@@ -142,10 +145,21 @@ func TestLogsCarryNoQueryCodeOrToken(t *testing.T) {
 			t.Fatalf("the log carries %q:\n%s", secret, logs)
 		}
 	}
-	if !strings.Contains(logs, "method=GET route=/identity/google/callback status=200") ||
-		!strings.Contains(logs, "method=POST route=/identity/session status=200") ||
-		!strings.Contains(logs, "method=POST route=/identity/google/flows/{flowId}/finish status=200") {
+	if !strings.Contains(logs, `msg="GET /identity/google/callback" status=200`) ||
+		!strings.Contains(logs, `msg="POST /identity/session" status=200`) ||
+		!strings.Contains(logs, `msg="POST /identity/google/flows/{flowId}/finish" status=200`) {
 		t.Fatalf("the log misses request lines:\n%s", logs)
+	}
+	// Google's redirect carries no session proof; the flow's own cookie
+	// names the account.
+	named := false
+	for line := range strings.SplitSeq(logs, "\n") {
+		if strings.Contains(line, `msg="GET /identity/google/callback" status=200`) && strings.Contains(line, "account=writer-a") {
+			named = true
+		}
+	}
+	if !named {
+		t.Fatalf("no callback line names the account:\n%s", logs)
 	}
 }
 
@@ -202,11 +216,88 @@ func TestRequestIDIsKeptOrMade(t *testing.T) {
 	}
 }
 
+// A request line names the writer account its sealed session acts for;
+// an id the request only states is never written.
+func TestARequestLineNamesTheSessionsAccount(t *testing.T) {
+	e := newEnv(t)
+	b := e.browser()
+	b.request(http.MethodGet, "/identity/session", nil)
+	b.openSession("writer-a")
+	b.request(http.MethodGet, "/identity/session", nil)
+	proof := b.proof
+	// The cookie without its proof is no session.
+	b.proof = ""
+	b.request(http.MethodGet, "/identity/session", nil)
+	b.proof = proof
+	// Another browser states an account it has no session for.
+	other := e.browser()
+	other.request(http.MethodPost, "/identity/google/flows", map[string]string{"purpose": "identity", "writerId": "writer-z"})
+
+	var got []string
+	for line := range strings.SplitSeq(strings.TrimSpace(e.logs.String()), "\n") {
+		if !strings.Contains(line, "requestId=") {
+			continue
+		}
+		account := "-"
+		if _, after, ok := strings.Cut(line, " account="); ok {
+			account, _, _ = strings.Cut(after, " ")
+		}
+		msg, _, _ := strings.Cut(line[strings.Index(line, "msg=")+4:], " status=")
+		got = append(got, msg+" "+account)
+	}
+	want := []string{
+		`"GET /identity/session" -`,
+		`"POST /identity/session" writer-a`,
+		`"GET /identity/session" writer-a`,
+		`"GET /identity/session" -`,
+		`"POST /identity/google/flows" -`,
+	}
+	if strings.Join(got, "\n") != strings.Join(want, "\n") {
+		t.Fatalf("lines\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+}
+
+// failingSeal refuses every seal, as a broken keyring would.
+type failingSeal struct{ ports.Sealer }
+
+func (failingSeal) Seal(string, any) (string, error) { return "", errors.New("no key") }
+
+// A session whose seal fails names no account: the id came from the body
+// and was never sealed.
+func TestAFailedSealNamesNoAccount(t *testing.T) {
+	e := newEnv(t)
+	e.host.Sealer = failingSeal{e.sealer}
+	rec := e.browser().request(http.MethodPost, "/identity/session", map[string]string{"writerId": "writer-q"})
+	if rec.Code != http.StatusInternalServerError {
+		t.Fatalf("status %d", rec.Code)
+	}
+	if strings.Contains(e.logs.String(), "writer-q") {
+		t.Fatalf("the log names the unsealed account:\n%s", e.logs.String())
+	}
+}
+
 func TestIdentityBodiesAreCapped(t *testing.T) {
 	e := newEnv(t)
 	b := e.browser()
 	body := map[string]string{"writerId": "w", "pad": strings.Repeat("x", 20<<10)}
 	expectProblem(t, b.request(http.MethodPost, "/identity/session", body), http.StatusBadRequest, "bad-request")
+}
+
+func TestARequestsLevelFollowsItsOutcome(t *testing.T) {
+	for _, c := range []struct {
+		method string
+		status int
+		want   slog.Level
+	}{
+		{http.MethodGet, http.StatusOK, slog.LevelDebug},
+		{http.MethodPost, http.StatusOK, slog.LevelInfo},
+		{http.MethodPost, http.StatusGone, slog.LevelWarn},
+		{http.MethodGet, http.StatusServiceUnavailable, slog.LevelError},
+	} {
+		if got := httpapi.RequestLevel(c.method, c.status); got != c.want {
+			t.Errorf("%s %d: %v, want %v", c.method, c.status, got, c.want)
+		}
+	}
 }
 
 func TestRequestsAreLoggedByRoutePattern(t *testing.T) {
@@ -216,8 +307,8 @@ func TestRequestsAreLoggedByRoutePattern(t *testing.T) {
 	b.request(http.MethodPost, "/identity/google/flows/AAAAAAAAAAAAAAAAAAAAAA/finish", nil)
 	b.request(http.MethodGet, "/elsewhere", nil)
 	for _, want := range []string{
-		"route=/identity/google/flows/{flowId}/finish status=410",
-		"route=/ status=404",
+		`msg="POST /identity/google/flows/{flowId}/finish" status=410`,
+		`msg="GET /" status=404`,
 	} {
 		if !strings.Contains(logs.String(), want) {
 			t.Fatalf("the log misses %q:\n%s", want, logs.String())

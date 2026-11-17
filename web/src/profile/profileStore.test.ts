@@ -212,6 +212,21 @@ describe("the local copy", () => {
     expect(profileDoc(W).prefs.density.value).toBe("grid");
   });
 
+  it("tells the log once a session that the stored settings are damaged", async () => {
+    localStorage.setItem(`profile.${W}`, "{ not json");
+    const { profileDoc } = await load();
+    const { appLog } = await import("../log");
+    const error = vi.spyOn(appLog, "error");
+    expect(profileDoc(W).prefs).toEqual({});
+    expect(profileDoc(W).prefs).toEqual({});
+    expect(error).toHaveBeenCalledOnce();
+    expect(error).toHaveBeenCalledWith(
+      "profile",
+      expect.any(String),
+      expect.objectContaining({ bytes: 10, error: expect.any(String) }),
+    );
+  });
+
   it("ignores a stored profile it cannot read", async () => {
     localStorage.setItem(`profile.${W}`, JSON.stringify({ doc: { v: 2 } }));
     const { profileDoc, pref } = await load();

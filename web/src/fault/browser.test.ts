@@ -5,7 +5,13 @@
 
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { browserPage, consoleReporter, sessionReloadMemory } from "./browser";
+import {
+  browserPage,
+  consoleReporter,
+  sessionReloadMemory,
+  setFaultRoute,
+} from "./browser";
+import { appLog } from "../log";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -74,6 +80,30 @@ describe("the console reporter", () => {
       error,
       "\n    at Library",
     );
+  });
+});
+
+// Pins that the log names the page by its route pattern, never its path,
+// which can hold text from a link.
+
+describe("the fault's log line", () => {
+  it("names the route the app set, and no page before it is set", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const line = vi.spyOn(appLog, "error").mockImplementation(() => {});
+    const report = () =>
+      consoleReporter.report(new Error("boom"), {
+        site: "window",
+        kind: "unexpected",
+        path: "/app/a-title-from-a-link",
+      });
+    report();
+    setFaultRoute(() => "/app/*");
+    report();
+    expect(line.mock.calls.map((call) => call[2]?.route)).toEqual([
+      "-",
+      "/app/*",
+    ]);
+    expect(JSON.stringify(line.mock.calls)).not.toContain("a-title");
   });
 });
 

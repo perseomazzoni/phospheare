@@ -126,7 +126,21 @@
                acceptance; while the authority asks again, it shows above the
                switch. -->
           <div class="callout" id="lan-terms" hidden>
-            <p id="lan-terms-first">{{.T "terms.first"}}</p>
+            <div id="lan-terms-first">
+              <p>{{.T "terms.first"}}</p>
+              <p>{{.T "terms.short"}}</p>
+              <ul class="plain">
+                <li>{{.T "terms.yours"}}</li>
+                <li>{{.T "terms.key"}}</li>
+                <li>{{.T "terms.stop"}}</li>
+                <li>{{.T "terms.public"}}</li>
+                <li>{{.T "terms.cancel"}}</li>
+                <li>{{.T "terms.noGuarantee"}}</li>
+                <li>{{.T "terms.law"}}</li>
+              </ul>
+              <p>{{.T "terms.renewals"}}</p>
+              <p class="is-strong is-apart">{{.T "terms.summary"}}</p>
+            </div>
             <p id="lan-terms-changed" hidden>{{.T "terms.changed"}} <span id="lan-terms-keeps">{{.T "terms.keeps"}}</span></p>
             <div class="row">
               <button type="button" class="primary" id="lan-terms-accept"></button>
@@ -248,6 +262,25 @@
           <p class="result" id="updates-result" aria-live="polite"></p>
         </div>
         <button type="button" id="check-updates">{{.T "updates.check"}}</button>
+      </div>
+
+      <div class="line" id="logs-line">
+        <div class="line-text">
+          <h3 id="logs-title">{{.T "logs.title"}}</h3>
+          <p class="hint">{{.T "logs.hint"}}</p>
+          <p class="result" id="logs-result" aria-live="polite"></p>
+        </div>
+        <button type="button" id="logs-open">{{.T "logs.open"}}</button>
+      </div>
+
+      <div class="line">
+        <div class="line-text">
+          <h3 id="detailed-title">{{.T "logs.detailed.title"}}</h3>
+          <p class="hint">{{.T "logs.detailed.hint"}}</p>
+          <p class="result" id="detailed-result" aria-live="polite"></p>
+        </div>
+        <label class="switch"><input type="checkbox" id="logs-detailed">
+          <span class="visually-hidden">{{.T "logs.detailed.label"}}</span></label>
       </div>
 
       <div class="line">
@@ -511,14 +544,14 @@ https://www.googleapis.com/auth/drive.appdata</code></dd>
         <div class="sheet-row wide no-tick"><dd>{{.T "h2.password"}} <code id="name-password"></code></dd>
           <dd class="row-why" hidden>{{.T "h2.passwordWhy"}}</dd></div>
         <div class="sheet-row wide" id="saved-row"><dd>{{.T "h2.saved"}}</dd></div>
-        <div class="sheet-row wide" id="limits-row" data-done="{{.Plain "h2.limitsYes"}}"><dd>{{.T "h2.limits"}}</dd></div>
+        <div class="sheet-row wide done-below" id="limits-row" data-done="{{.Plain "h2.limitsYes"}}"><dd>{{.T "h2.limits"}}</dd></div>
       </dl>
-      <p class="hint">{{.T "h2.accept"}}</p>
+      <p class="hint is-strong">{{.T "h2.accept"}}</p>
       <p class="result" id="name-result" aria-live="polite"></p>
     </article>
 
     <!-- Waits for the link in deSEC's email, then says the name is
-         confirmed and waits for Continue. -->
+         confirmed under the same steps and waits for Continue. -->
     <article class="step" data-flow="home" data-next="none" data-back="none">
       <h2 tabindex="-1">{{.T "h3.title"}}</h2>
       <div id="waiting-on">
@@ -533,7 +566,7 @@ https://www.googleapis.com/auth/drive.appdata</code></dd>
           <p>{{.T "h3.slow"}}</p>
           <div class="row"><button type="button" class="primary" id="waiting-existing">{{.T "h3.useMine"}}</button></div>
         </div>
-        <div class="row"><button type="button" id="name-restart">{{.T "h3.restart"}}</button></div>
+        <div class="row" id="waiting-restart"><button type="button" id="name-restart">{{.T "h3.restart"}}</button></div>
       </div>
       <div id="name-done" class="done" hidden>
         <p class="status is-ok">{{.T "h3.done"}}</p>

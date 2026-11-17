@@ -12,6 +12,7 @@ import { getProvider, type ProjectRef } from "../../../storage";
 import { renameLibraryRow } from "../../../profile/profileSync";
 import type { ProjectCard as Card } from "../useProjects";
 import type { ActionFailure } from "./useActionError";
+import { appLog, describeError } from "../../../log";
 import {
   actionFailure,
   type LibraryCardsApi,
@@ -87,9 +88,14 @@ export function useProjectFacts({
       : null;
     try {
       if (opened) facts = await readProjectFacts(opened.storage, card.ref);
-    } catch {
+    } catch (err) {
       // The window says it could not read the book; for every cause a writer
       // can act on, the reason is that the folder is not readable.
+      appLog.warn("library", "A project's properties could not be read.", {
+        provider: card.ref.providerId,
+        project: card.id,
+        ...describeError(err),
+      });
     } finally {
       opened?.dispose();
     }
@@ -197,7 +203,7 @@ export function useProjectFacts({
               try {
                 await writeFacts(card, saved, was, next.title);
               } catch (err) {
-                fail(actionFailure(err, t));
+                fail(actionFailure(err, t, "undo-facts"));
               }
             })();
           },
@@ -207,7 +213,7 @@ export function useProjectFacts({
         forThisWindow((open) => ({
           ...open,
           saving: false,
-          error: actionFailure(err, t),
+          error: actionFailure(err, t, "save-facts"),
         }));
       }
     },

@@ -3,7 +3,7 @@
 // Free software under the GNU Affero General Public License, version 3 or
 // later; the full text is in `LICENSE`.
 
-import { memo, useCallback, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import type { EvidenceTargets } from "./assistant/evidenceOpener";
@@ -26,6 +26,7 @@ import {
 import { EditorEngine } from "./views/engine";
 import { viewFor } from "./views/view/registry";
 import { useViewHost } from "./viewHost";
+import { logEngineFaults } from "./engineLog";
 import { selectionFor } from "./searchArrival";
 import type { WritingViewHandle } from "./views/view/port";
 import {
@@ -60,6 +61,7 @@ import { useBackCloses } from "../ui/overlay/useBackCloses";
 import { OverlayBackgroundProvider } from "../ui/overlay/background";
 import type { ProjectRef, StorageProvider } from "../storage";
 import { Assistant } from "../ai";
+import { appLog, describeError } from "../log";
 import { useEditorServices } from "./services/context";
 import { useEditorAssistant } from "./workspace/useEditorAssistant";
 import { useSearchArrival } from "./workspace/useSearchArrival";
@@ -111,6 +113,7 @@ export function EditorScreen({
   projectKey: string;
 }) {
   const engineRef = useRef(new EditorEngine());
+  useEffect(() => logEngineFaults(engineRef.current), []);
 
   return (
     <ProjectProvider
@@ -207,7 +210,12 @@ function WorkspaceBridge({ engine }: { engine: EditorEngine }) {
   );
   const setSourceBarred = useCallback(
     (sourceId: string, barred: boolean) =>
-      void barredSources?.setBarred(sourceId, barred).catch(() => undefined),
+      void barredSources?.setBarred(sourceId, barred).catch((err: unknown) =>
+        appLog.error("ai", "A source could not be barred or let back in.", {
+          barred,
+          ...describeError(err),
+        }),
+      ),
     [barredSources],
   );
 

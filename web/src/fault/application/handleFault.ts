@@ -5,6 +5,7 @@
 
 import { classify, type Fault, type FaultKind } from "../domain/fault";
 import { mayAutoReload } from "../domain/reloadPolicy";
+import { appLog } from "../../log";
 
 /**
  * Where a failure was met: a React render, the window's own error events, or
@@ -94,7 +95,16 @@ export function createFaultHandling({ reporter, memory, page }: FaultPorts) {
     reloadOnce(fault: Fault): boolean {
       if (fault.kind !== "stale-build") return false;
       const now = page.now();
-      if (!mayAutoReload(memory.last(), now) || !memory.mark(now)) return false;
+      const outcome = !mayAutoReload(memory.last(), now)
+        ? "refused-policy"
+        : !memory.mark(now)
+          ? "refused-memory"
+          : "reloaded";
+      appLog.info("fault", "An automatic reload for a stale build was tried.", {
+        outcome,
+        online: page.online(),
+      });
+      if (outcome !== "reloaded") return false;
       page.reload();
       return true;
     },
