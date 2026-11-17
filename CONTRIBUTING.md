@@ -43,6 +43,13 @@ To report a security problem, do not open an issue: follow
 
 2. **Stabilization**: fixing bugs and making what exists reliable.
 
+3. **The app on phones and tablets**: fix and polish the interface on small
+   and touch screens. Every control fits the screen and is easy to reach
+   with a finger, and no text or panel is cut off or hidden by the
+   keyboard. Check a change in portrait and landscape, with the mobile
+   [Playwright projects](#playwright-projects) and on a real device when
+   you can.
+
 After that, the work in view is:
 
 - **The editor engine** (`web/src/editor/engine/`): improve the core that
