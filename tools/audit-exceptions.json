@@ -1,3 +1,10 @@
 {
-  "exceptions": []
+  "exceptions": [
+    {
+      "advisory": "GHSA-fc5q-39xc-vjpf",
+      "lockfile": "package-lock.json",
+      "reason": "picomatch is a dev dependency, reached only through vite, vitest, tinyglobby and fdir, which match the globs of the repository's own config and import.meta.glob calls against its own file paths at build and test time. No pattern comes from outside the repository, and the built app holds no picomatch. No patched release exists: the advisory covers every version through 4.0.7, the newest.",
+      "expires": "2026-12-17"
+    }
+  ]
 }
