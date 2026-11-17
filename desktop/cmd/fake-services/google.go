@@ -278,7 +278,7 @@ func (g *fakeGoogle) token(w http.ResponseWriter, r *http.Request) {
 		oauthError(w, http.StatusBadRequest, "unsupported_grant_type")
 		return
 	}
-	access := "ya29.wizard-" + randomText()
+	access := "wizard-access-" + randomText()
 	g.tokens[access] = scope
 	out := map[string]any{"access_token": access, "expires_in": 3599, "scope": scope, "token_type": "Bearer"}
 	if offline {

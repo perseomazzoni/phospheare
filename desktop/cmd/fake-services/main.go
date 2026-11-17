@@ -63,7 +63,7 @@ func main() {
 
 	desec := desectest.NewUnstarted()
 	desec.OnTXT = dnsMirror{base: strings.TrimSuffix(*challtestsrv, "/")}.txt
-	// Pebble serves ACME with a certificate from its own test CA.
+	// codeql[go/disabled-certificate-check] Pebble serves ACME with a certificate from its own test CA.
 	pebbleClient := &http.Client{Timeout: 30 * time.Second, Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
 
 	google := newFakeGoogle()

@@ -169,7 +169,7 @@ jobs:
             sleep 1
           done
           cat "$dir/session.json"
-          grep -q '"code":"no-session"' "$dir/session.json"
+          grep -q '"writerId":null' "$dir/session.json"
           test "$(grep -c . "$dir/seal.keys")" = 1
           kill -TERM "$pid"
           wait "$pid"
