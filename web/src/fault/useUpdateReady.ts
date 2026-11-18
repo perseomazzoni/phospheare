@@ -8,5 +8,11 @@ import { updateReady } from "./compose";
 
 /** Whether "A newer version is ready" is showing. */
 export function useUpdateReady(): boolean {
-  return useSyncExternalStore(updateReady.subscribe, updateReady.showing);
+  // No update is showing in a page rendered at build time (the demo site's
+  // prerender), nor while the browser hydrates that page.
+  return useSyncExternalStore(
+    updateReady.subscribe,
+    updateReady.showing,
+    () => false,
+  );
 }

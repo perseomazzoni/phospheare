@@ -8,19 +8,22 @@
 // its children among them, falls to "not found". Each module imported here
 // is a module the demo bundle carries, so imports name files, not barrels.
 
-import { Suspense, lazy, useRef } from "react";
+import { StrictMode, Suspense, lazy, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  RouterProvider,
-  createBrowserRouter,
-  type RouteObject,
-} from "react-router";
+import type { RouteObject } from "react-router";
 // The landing's, legal pages' and fault pages' styles, which the full root
 // gets from the `webapp` barrel.
 import "../webapp/frame.css";
 import Landing from "../webapp/entry/landing/Landing";
 import { useDownloadEntry } from "../webapp/entry/landing/downloadEntry";
-import { NotFoundPage, RouteFault, reloadPage, useUpdateReady } from "../fault";
+import {
+  NotFoundPage,
+  RootFault,
+  RouteFault,
+  reloadPage,
+  useUpdateReady,
+} from "../fault";
+import { ThemeProvider } from "../theme";
 import {
   DEMO_NOTICE_REGION_ID,
   DemoNotice,
@@ -74,16 +77,34 @@ export const demoRoutes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter(demoRoutes);
+/**
+ * The whole tree, around a router. One component, so the page the build
+ * renders and the page the browser hydrates cannot drift apart: the
+ * browser's router comes from `main.tsx`, and the static one from
+ * `prerender.tsx`, which renders the site's pages in Node at build time. So
+ * nothing in it may read the browser while it renders.
+ */
+export function DemoRoot({ children }: { children: ReactNode }) {
+  return (
+    <StrictMode>
+      <RootFault>
+        <ThemeProvider>
+          <DemoApp>{children}</DemoApp>
+        </ThemeProvider>
+      </RootFault>
+    </StrictMode>
+  );
+}
 
-export default function DemoApp() {
-  const page = useRef(document.body);
+/** The demo site around its router. */
+function DemoApp({ children }: { children: ReactNode }) {
+  const page = useRef(typeof document === "undefined" ? null : document.body);
   useScrollReveal(page, true);
   const { t } = useTranslation();
   const updateReady = useUpdateReady();
   return (
     <>
-      <RouterProvider router={router} />
+      {children}
       <div id={NOTICE_STACK_ID} className="status-notices">
         <UpdateNotice shown={updateReady} onReload={reloadPage} />
       </div>

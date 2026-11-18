@@ -58,7 +58,8 @@ export const CAPITALS = Object.values(KEYS)
   .map((key) => key.char)
   .filter((char) => /^\p{Lu}$/u.test(char));
 
-const isMac = () =>
+/** Whether the key labels are a Mac's: `⌘` and `⌥`, with no "+". */
+export const isMac = () =>
   typeof navigator !== "undefined" &&
   /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 

@@ -9,8 +9,10 @@ import indexHtml from "../index.html?raw";
 import {
   PRODUCT,
   PRODUCT_NAME_PLACEHOLDER,
+  PRODUCT_SITE,
   injectProductName,
   productNames,
+  productSite,
 } from "./product";
 
 describe("productNames", () => {
@@ -66,6 +68,29 @@ describe("productNames", () => {
 
   it("reads the name from product.json", () => {
     expect(PRODUCT.name).toBe(product.name.trim());
+  });
+});
+
+describe("productSite", () => {
+  it("keeps an https origin", () => {
+    expect(productSite("https://example.org")).toBe("https://example.org");
+    expect(productSite(" https://example.org ")).toBe("https://example.org");
+  });
+
+  it("refuses anything a canonical link cannot start with", () => {
+    for (const raw of [
+      undefined,
+      "",
+      "example.org",
+      "http://example.org",
+      "https://example.org/",
+      "https://example.org/site",
+    ])
+      expect(() => productSite(raw)).toThrow(/product\.json/);
+  });
+
+  it("reads the site from product.json", () => {
+    expect(PRODUCT_SITE).toBe(product.site);
   });
 });
 

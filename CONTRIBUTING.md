@@ -204,7 +204,7 @@ web/                   the SPA
   src/profile/         the account's data: library, profile and its Drive copy
   src/preferences/     the writer's preferences
   src/release/         the notice of a new release
-  src/demo/            the demo site's entry
+  src/demo/            the demo site's entry, and the build-time render of its text pages
   src/auth/            the open account, its state and the cross-tab session check
   src/fault/           what a failure leaves the writer with: error pages and reload policy
   src/log/             the app's log: its lines, their redaction, the store and the page
@@ -597,6 +597,9 @@ take it with `-X main.productName=...` (see
 tests fail the build if any shipped string contains the working name. To
 rename the product, edit `product.json` and rebuild. The desktop program
 carries the public name in its binary file name, `once-dark-studio-desktop`.
+`product.json` also holds `site`, the origin of the public site. The demo
+build writes it into the canonical link of each text page and into
+`sitemap.xml`.
 
 Everything the browser stores (storage keys, the IndexedDB database, channel
 names) has a neutral name that uses neither the working name nor the product

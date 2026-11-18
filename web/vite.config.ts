@@ -5,11 +5,11 @@
 
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { defineConfig, type Plugin } from "vitest/config";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { defineConfig, type ConfigEnv, type Plugin } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { injectCsp } from "./src/security/csp.ts";
-import { injectProductName, PRODUCT } from "./src/product.ts";
+import { injectProductName, PRODUCT, PRODUCT_SITE } from "./src/product.ts";
 import {
   describeFindings,
   findForbiddenMarkers,
@@ -17,15 +17,31 @@ import {
 } from "./build/demoBoundary.ts";
 import {
   DEMO_LEFT_OUT_PUBLIC,
+  DEMO_SITE_DIR,
+  PRERENDERED_PAGES,
   demoPageFiles,
   demoTwin,
   mayHaveTwin,
+  pageFile,
+  pageUrl,
+  prerenderedHtml,
   publicTexts,
   pruneLocale,
+  robotsWithSitemap,
+  sitemapXml,
 } from "./build/demoBuild.ts";
 
 /** The mode `build:demo` passes; it builds the demo site, not the program. */
 const DEMO_MODE = "demo";
+
+/**
+ * `build:demo` runs two builds: the site for the browser, then
+ * `src/demo/prerender.tsx` for Node (`demoPrerenderPlugin`). The plugins
+ * that shape the shipped site run in the first only; the twins and the
+ * pruned locales run in both, so the prerender renders what the site ships.
+ */
+const siteBuild = (_config: unknown, env: ConfigEnv) =>
+  env.command === "build" && !env.isSsrBuild;
 
 /**
  * Puts the Content-Security-Policy into the served HTML. It is injected
@@ -56,7 +72,7 @@ function demoEntryPlugin(): Plugin {
   const full = 'src="/src/main.tsx"';
   return {
     name: "demo-entry",
-    apply: "build",
+    apply: siteBuild,
     transformIndexHtml: {
       order: "pre",
       handler: (html) => {
@@ -122,7 +138,7 @@ function demoPagesPlugin(): Plugin {
   let outDir = "";
   return {
     name: "demo-pages",
-    apply: "build",
+    apply: siteBuild,
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);
     },
@@ -137,6 +153,64 @@ function demoPagesPlugin(): Plugin {
   };
 }
 
+/** What `src/demo/prerender.tsx` exports, as its Node build is imported. */
+interface Prerender {
+  renderPage(
+    path: string,
+  ): Promise<{ body: string; state: string; title: string }>;
+}
+
+/**
+ * Runs in the second build of `build:demo`, the prerender's build for Node.
+ * Once it is written, renders each of `PRERENDERED_PAGES` and writes it
+ * into the site's copy of the page (`prerenderedHtml`), then writes the
+ * sitemap and names it in the site's `robots.txt`. The demo editor and
+ * `404.html` keep the empty page.
+ */
+function demoPrerenderPlugin(): Plugin {
+  let root = "";
+  let outDir = "";
+  let entry = "";
+  return {
+    name: "demo-prerender",
+    apply: (_config, env) => env.command === "build" && !!env.isSsrBuild,
+    configResolved(config) {
+      root = config.root;
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    generateBundle(_options, bundle) {
+      const chunk = Object.values(bundle).find(
+        (output) => output.type === "chunk" && output.isEntry,
+      );
+      if (!chunk) this.error("the prerender build has no entry chunk");
+      entry = chunk.fileName;
+    },
+    async closeBundle() {
+      const site = resolve(root, DEMO_SITE_DIR);
+      const prerender = (await import(
+        pathToFileURL(resolve(outDir, entry)).href
+      )) as Prerender;
+      const template = readFileSync(resolve(site, "index.html"), "utf8");
+      for (const path of PRERENDERED_PAGES) {
+        const page = await prerender.renderPage(path);
+        writeFileSync(
+          resolve(site, pageFile(path)),
+          prerenderedHtml(template, {
+            ...page,
+            url: pageUrl(PRODUCT_SITE, path),
+          }),
+        );
+      }
+      writeFileSync(resolve(site, "sitemap.xml"), sitemapXml(PRODUCT_SITE));
+      const robots = resolve(site, "robots.txt");
+      writeFileSync(
+        robots,
+        robotsWithSitemap(readFileSync(robots, "utf8"), PRODUCT_SITE),
+      );
+    },
+  };
+}
+
 /**
  * Ships the program's licence with the demo and removes the install icons
  * Vite copied from `public/` (`DEMO_LEFT_OUT_PUBLIC`).
@@ -145,7 +219,7 @@ function demoPublicPlugin(): Plugin {
   let outDir = "";
   return {
     name: "demo-public",
-    apply: "build",
+    apply: siteBuild,
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);
     },
@@ -176,7 +250,7 @@ function demoGatePlugin(): Plugin {
   let publicDir = "";
   return {
     name: "demo-gate",
-    apply: "build",
+    apply: siteBuild,
     enforce: "post",
     configResolved(config) {
       publicDir = config.publicDir;
@@ -375,7 +449,7 @@ function releaseStandInPlugin(): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, isSsrBuild }) => ({
   define: releaseDefines(mode),
   plugins: [
     react(),
@@ -391,6 +465,7 @@ export default defineConfig(({ mode }) => ({
           demoPagesPlugin(),
           demoPublicPlugin(),
           demoGatePlugin(),
+          demoPrerenderPlugin(),
         ]
       : []),
   ],
@@ -446,6 +521,9 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist",
+    // The demo prerender's Node build (`demoPrerenderPlugin`) does not ship,
+    // so it takes no copy of `public/`.
+    copyPublicDir: !isSsrBuild,
     // The first versions with `light-dark()`. Below them Lightning CSS
     // rewrites it into `--lightningcss-light` and `--lightningcss-dark`, which
     // only a stylesheet's own `color-scheme` defines. The theme sets

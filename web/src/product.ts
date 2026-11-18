@@ -73,6 +73,24 @@ export function productNames(raw: unknown): ProductNames {
 
 export const PRODUCT: ProductNames = productNames(product.name);
 
+/**
+ * The public site's origin, with no path and no trailing slash. The demo
+ * build writes it into each page's canonical link and into the sitemap, which
+ * must name absolute addresses.
+ */
+export function productSite(raw: unknown): string {
+  const text = typeof raw === "string" ? raw.trim() : "";
+  const url = URL.canParse(text) ? new URL(text) : null;
+  if (!url || url.protocol !== "https:" || url.origin !== text) {
+    throw new Error(
+      'product.json must give the public site as an https origin with no path, such as "https://example.org".',
+    );
+  }
+  return url.origin;
+}
+
+export const PRODUCT_SITE: string = productSite(product.site);
+
 /** The placeholder `index.html` writes wherever the product's name goes. */
 export const PRODUCT_NAME_PLACEHOLDER = "%PRODUCT_NAME%";
 

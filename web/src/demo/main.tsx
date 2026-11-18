@@ -6,16 +6,17 @@
 // The demo site's entry. `build:demo` points `index.html` here in place of
 // `src/main.tsx`, so the bundle holds what this root imports and nothing of
 // the full program's root. It starts the same way: theme, strings, then the
-// tree inside `RootFault`.
+// tree inside `RootFault`. The site's pages hold HTML rendered at build time
+// (`prerender.tsx`), which React takes over when it matches.
 import "../styles/frame.css";
 
-import React from "react";
 import ReactDOM from "react-dom/client";
-import DemoApp from "./App";
-import { ThemeProvider, applyStoredTheme } from "../theme";
+import { RouterProvider, createBrowserRouter } from "react-router";
+import { DemoRoot, demoRoutes } from "./App";
+import { canHydrate } from "./pageState";
+import { applyStoredTheme } from "../theme";
 import { initI18n } from "../locales/i18n";
 import {
-  RootFault,
   installFaultListeners,
   reactRootOptions,
   showBootFailure,
@@ -33,15 +34,21 @@ async function main() {
   const rootEl = document.getElementById("root");
   if (!rootEl) throw new Error("missing #root mount node");
 
-  ReactDOM.createRoot(rootEl, reactRootOptions).render(
-    <React.StrictMode>
-      <RootFault>
-        <ThemeProvider>
-          <DemoApp />
-        </ThemeProvider>
-      </RootFault>
-    </React.StrictMode>,
+  // The same tree `prerender.tsx` renders at build time, with the browser's
+  // router in place of the static one.
+  const tree = (
+    <DemoRoot>
+      <RouterProvider router={createBrowserRouter(demoRoutes)} />
+    </DemoRoot>
   );
+  if (canHydrate(rootEl)) {
+    ReactDOM.hydrateRoot(rootEl, tree, reactRootOptions);
+    return;
+  }
+  // The build's HTML is not this visitor's first render, or there is none:
+  // it goes, and the page renders from nothing.
+  rootEl.replaceChildren();
+  ReactDOM.createRoot(rootEl, reactRootOptions).render(tree);
 }
 
 main().catch(showBootFailure);

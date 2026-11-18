@@ -56,7 +56,8 @@ export default function EntryActions({
           </Button>
         )}
       </div>
-      {/* A narrow screen breaks the line between its terms, never inside one. */}
+      {/* A narrow screen breaks the line between its terms first. A term
+          wider than the screen then wraps inside its own box. */}
       <p className="landing-cta-note">
         {terms.map((term, index) => (
           <span key={term}>

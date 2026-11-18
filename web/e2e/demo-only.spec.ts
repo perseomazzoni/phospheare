@@ -11,7 +11,9 @@ import { START_MS } from "./start";
 // sign-in; every address of the full program is "not found"; the demo opens
 // with its "nothing is saved" notice; the site serves its own two legal
 // texts and the third-party licences; each page has its own file, so a host
-// that serves files only answers it, and every other address is a 404; and
+// that serves files only answers it, and every other address is a 404; the
+// text pages carry their text before any script runs, and the browser takes
+// over that HTML only when it renders the same; and
 // no request leaves the site's origin while the browser keeps nothing that
 // outlives the tab.
 
@@ -108,6 +110,159 @@ test("each page answers on its own and every other address is a 404", async ({
     expect(await answer.text(), path).toContain('<div id="root">');
   }
 });
+
+test("each text page carries its text, title and address before any script", async ({
+  request,
+}) => {
+  for (const [path, heading, address] of [
+    ["/", "From the start, through rewrites", "/"],
+    ["/legal/", "Legal notice", "/legal/"],
+    ["/privacy/", "Privacy notice", "/privacy/"],
+  ]) {
+    const html = await (await request.get(path)).text();
+    expect(html, path).toMatch(
+      /<div id="root" data-prerendered="[^"]+"><[a-z]/,
+    );
+    expect(html, path).toContain(heading);
+    expect(html, path).toMatch(
+      new RegExp(`<link rel="canonical" href="https://[^"]+${address}" />`),
+    );
+    expect(html, path).not.toMatch(/<script(?![^>]*\bsrc=)/);
+  }
+  const landing = await (await request.get("/")).text();
+  const legal = await (await request.get("/legal/")).text();
+  expect(landing.match(/<title>[^<]*<\/title>/)?.[0]).not.toBe(
+    legal.match(/<title>[^<]*<\/title>/)?.[0],
+  );
+  // The demo editor is the program, not text to index.
+  const demo = await (await request.get("/app/editor/demo/")).text();
+  expect(demo).toContain('<div id="root"></div>');
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).toMatch(/^Sitemap: https:\/\/\S+\/sitemap\.xml$/m);
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  expect(await sitemap.text()).toContain("/privacy/</loc>");
+});
+
+/**
+ * The landing's DOM in a form two renders of one page share: attributes
+ * sorted, classes sorted, styles as the browser reads them, text joined.
+ * What only the build writes is left out: `#root`'s state, React's image
+ * preload, the `useId` values and a `selected` attribute React writes as
+ * markup but sets as a property in the browser.
+ */
+async function landingShape(page: Page): Promise<string> {
+  return await page.evaluate(() => {
+    const out: string[] = [];
+    const walk = (el: Element, depth: number) => {
+      if (el instanceof HTMLLinkElement && el.rel === "preload") return;
+      const attrs = [...el.attributes]
+        .filter(
+          (a) => !["style", "data-prerendered", "selected"].includes(a.name),
+        )
+        .map((a) => {
+          const value =
+            a.name === "class"
+              ? a.value.split(/\s+/).sort().join(" ")
+              : a.value.replace(/_[rR]_[0-9a-z]+_/g, "_id_");
+          return `${a.name}=${JSON.stringify(value)}`;
+        })
+        .sort();
+      if (el instanceof HTMLElement && el.getAttribute("style") !== null)
+        attrs.push(`style=${JSON.stringify(el.style.cssText)}`);
+      out.push(`${"  ".repeat(depth)}<${el.tagName} ${attrs.join(" ")}>`);
+      let text = "";
+      const flush = () => {
+        if (text.trim()) out.push(`${"  ".repeat(depth + 1)}${text.trim()}`);
+        text = "";
+      };
+      for (const node of el.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) text += node.textContent;
+        else if (node instanceof Element) {
+          flush();
+          walk(node, depth + 1);
+        }
+      }
+      flush();
+    };
+    walk(document.getElementById("root")!, 0);
+    return out.join("\n").replace(/\s+/g, " ");
+  });
+}
+
+test("the hydrated landing is the page the browser renders from nothing", async ({
+  browser,
+  baseURL,
+}) => {
+  // The same bundle twice, at the same fixed time: once on the build's
+  // HTML, once with that HTML taken out, as the site served it before the
+  // prerender. A value the build cannot know (a browser feature, the
+  // platform) shows here as a difference, since the production build keeps
+  // a mismatched attribute without a word.
+  const shapes: string[] = [];
+  for (const strip of [false, true]) {
+    const context = await browser.newContext({ locale: "en-GB" });
+    const page = await context.newPage();
+    await page.clock.install({ time: new Date("2026-11-18T10:00:00Z") });
+    if (strip)
+      await page.route(`${baseURL}/`, async (route) => {
+        const answer = await route.fetch();
+        const body = (await answer.text()).replace(
+          /<div id="root" data-prerendered="[^"]*">[\s\S]*<\/div>(\s*<\/body>)/,
+          '<div id="root"></div>$1',
+        );
+        expect(body).not.toContain("data-prerendered");
+        await route.fulfill({ response: answer, body });
+      });
+    await page.goto("/");
+    await page.locator("h1").waitFor();
+    await page.clock.runFor(4000);
+    shapes.push(await landingShape(page));
+    await context.close();
+  }
+  expect(shapes[0].length).toBeGreaterThan(10_000);
+  expect(shapes[0]).toBe(shapes[1]);
+});
+
+for (const [locale, kept] of [
+  ["en-GB", true],
+  ["it-IT", false],
+] as const) {
+  test.describe(locale, () => {
+    test.use({ locale });
+
+    test(`the landing ${kept ? "keeps" : "replaces"} the build's HTML, with no error`, async ({
+      page,
+    }) => {
+      const errors: string[] = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      page.on("console", (message) => {
+        if (message.type() === "error") errors.push(message.text());
+      });
+      // The build's first element, held before any script runs: React keeps
+      // it when it hydrates, and drops it when it renders from nothing.
+      await page.addInitScript(() => {
+        document.addEventListener("DOMContentLoaded", () => {
+          const held = window as { builtFirst?: Element | null };
+          held.builtFirst = document.getElementById("root")?.firstElementChild;
+        });
+      });
+      await page.goto("/");
+      await expect(page.locator("html")).toHaveAttribute(
+        "lang",
+        locale.slice(0, 2),
+      );
+      await expect(page.locator("h1")).toBeVisible();
+      const stillThere = await page.evaluate(
+        () =>
+          (window as { builtFirst?: Element | null }).builtFirst?.isConnected ??
+          false,
+      );
+      expect(stillThere).toBe(kept);
+      expect(errors).toEqual([]);
+    });
+  });
+}
 
 test("the demo says nothing is saved, with the Quickstart, until closed", async ({
   page,

@@ -84,6 +84,9 @@ export async function loadSheet(theme: Theme): Promise<void> {
 
 /** Whether the page is in this variant, its sheet included. */
 export function isApplied(theme: Theme): boolean {
+  // No page at all in the demo site's prerender, which renders the provider
+  // in Node at build time.
+  if (typeof document === "undefined") return false;
   return (
     document.documentElement.dataset.theme === theme.id && sheetLoaded(theme)
   );

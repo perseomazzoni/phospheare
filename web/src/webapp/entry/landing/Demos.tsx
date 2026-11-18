@@ -11,6 +11,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type Dispatch,
   type FC,
   type ReactNode,
@@ -376,6 +377,12 @@ function caretFrom(event: React.MouseEvent, prose: HTMLElement): Caret | null {
   return paragraph < 0 ? null : { paragraph, offset: hit.offset };
 }
 
+/** Custom Highlights do not come or go while a page is open. */
+const staticStore = () => () => undefined;
+const hasHighlights = () =>
+  typeof CSS !== "undefined" && Boolean(CSS.highlights);
+const noHighlights = () => false;
+
 function Focus() {
   const { t } = useTranslation();
   const [mode] = useFocusMode();
@@ -384,6 +391,15 @@ function Focus() {
   const [mark, setMark] = useState<{ left: number; top: number } | null>(null);
   const prose = useRef<HTMLDivElement>(null);
   const highlights = typeof CSS !== "undefined" ? CSS.highlights : undefined;
+  // Read through a store, not straight from `highlights`: the demo site's
+  // pages are rendered at build time in Node, which has none, and React
+  // keeps the build's class on the page it hydrates unless the first render
+  // agrees with it and the next one changes it.
+  const canHighlight = useSyncExternalStore(
+    staticStore,
+    hasHighlights,
+    noHighlights,
+  );
   const paragraphs = ["p1", "p2", "p3"].map((id) => t(`landing.focus.${id}`));
 
   // The lines move when the column narrows, so the lit line is measured
@@ -436,7 +452,7 @@ function Focus() {
     };
   }, [caret, mode, width, fonts, highlights]);
 
-  const dim = mode !== "off" && Boolean(highlights);
+  const dim = mode !== "off" && canHighlight;
   return (
     <div className="landing-demo-app landing-focus">
       <div className="landing-sheet landing-demo-page">

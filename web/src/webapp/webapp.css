@@ -2276,8 +2276,11 @@
   text-wrap: balance;
 }
 
+/* A box per term, not `nowrap`: a term is a whole clause, wider than a phone,
+   and an unbreakable one widens the hero column past the screen. */
 .landing-cta-term {
-  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .landing-hero-shot {

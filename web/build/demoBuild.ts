@@ -42,6 +42,115 @@ export function demoPageFiles(): string[] {
 }
 
 /**
+ * The pages rendered to HTML at build time (`src/demo/prerender.tsx`) and
+ * listed in the sitemap: the landing and the legal texts. The demo editor
+ * is left out: it is the program, not text to index, and `robots.txt` keeps
+ * crawlers out of `/app/`.
+ */
+export const PRERENDERED_PAGES: readonly string[] = ["/", "/legal", "/privacy"];
+
+/**
+ * Where `build:demo` writes the site, and where its second step writes the
+ * prerender's Node build, which does not ship. Both relative to `web/`.
+ */
+export const DEMO_SITE_DIR = "dist/demo";
+export const PRERENDER_OUT_DIR = "dist/demo-prerender";
+
+/** The site's written file for a page: `index.html` in its folder. */
+export function pageFile(page: string): string {
+  const folder = page.replace(/^\/+|\/+$/g, "");
+  return folder ? `${folder}/index.html` : "index.html";
+}
+
+/**
+ * A page's one address. The host answers `/legal` with a redirect to
+ * `/legal/`, the folder that holds its file, so the canonical form ends in
+ * "/".
+ */
+export function pageUrl(site: string, page: string): string {
+  const folder = page.replace(/^\/+|\/+$/g, "");
+  return folder ? `${site}/${folder}/` : `${site}/`;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/** What the prerender gives the build for one page. */
+export interface PrerenderedPage {
+  body: string;
+  state: string;
+  title: string;
+  url: string;
+}
+
+/**
+ * The built page with a prerendered page in it: the markup inside `#root`,
+ * the state it was rendered in on `#root`, its own title, and its address as
+ * the canonical link and the link preview's. A template without one of the
+ * anchors throws, so a change to `index.html` cannot silently ship pages
+ * without their text.
+ */
+export function prerenderedHtml(
+  template: string,
+  page: PrerenderedPage,
+): string {
+  const url = escapeHtml(page.url);
+  const title = escapeHtml(page.title);
+  // Each swap is a function, so a `$` in the page's text is never read as a
+  // replacement pattern.
+  const swaps: [RegExp, (indent: string) => string][] = [
+    [
+      /<div id="root"><\/div>/,
+      () =>
+        `<div id="root" data-prerendered="${escapeHtml(page.state)}">${page.body}</div>`,
+    ],
+    [/<title>[^<]*<\/title>/, () => `<title>${title}</title>`],
+    [
+      /<meta property="og:title" content="[^"]*" \/>/,
+      () => `<meta property="og:title" content="${title}" />`,
+    ],
+    [
+      /([ \t]*)<meta property="og:type" content="website" \/>/,
+      (indent) =>
+        `${indent}<meta property="og:type" content="website" />\n` +
+        `${indent}<meta property="og:url" content="${url}" />\n` +
+        `${indent}<link rel="canonical" href="${url}" />`,
+    ],
+  ];
+  return swaps.reduce((html, [anchor, swap]) => {
+    if (!anchor.test(html))
+      throw new Error(`the built page has no ${anchor.source} to fill`);
+    return html.replace(anchor, (_whole, indent?: string) =>
+      swap(typeof indent === "string" ? indent : ""),
+    );
+  }, template);
+}
+
+/** The sitemap of the prerendered pages (sitemaps.org protocol 0.9). */
+export function sitemapXml(site: string): string {
+  const urls = PRERENDERED_PAGES.map(
+    (page) => `  <url><loc>${escapeHtml(pageUrl(site, page))}</loc></url>`,
+  );
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls,
+    "</urlset>",
+    "",
+  ].join("\n");
+}
+
+/** `robots.txt` with the sitemap's absolute address after its rules. */
+export function robotsWithSitemap(robots: string, site: string): string {
+  return `${robots.trimEnd()}\n\nSitemap: ${site}/sitemap.xml\n`;
+}
+
+/**
  * Modules the demo build replaces with the `.demo` file beside them, as
  * `web/src/`-relative paths without the extension. A twin keeps its
  * original's exports, so no importer changes. The log's twins keep and read

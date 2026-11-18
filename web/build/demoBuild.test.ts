@@ -11,12 +11,20 @@ import { LEGAL_SET } from "../src/legal/compose.demo";
 import { DEMO_PATH } from "../src/webapp/entry/landing/content";
 import {
   DEMO_PAGES,
+  DEMO_SITE_DIR,
   DEMO_TWINS,
+  PRERENDERED_PAGES,
+  PRERENDER_OUT_DIR,
   demoPageFiles,
   demoTwin,
   mayHaveTwin,
+  pageFile,
+  pageUrl,
+  prerenderedHtml,
   publicTexts,
   pruneLocale,
+  robotsWithSitemap,
+  sitemapXml,
 } from "./demoBuild";
 
 const SRC = "C:\\repo\\web\\src";
@@ -82,6 +90,101 @@ describe("demoPageFiles", () => {
       "privacy/index.html",
       "404.html",
     ]);
+  });
+});
+
+describe("the prerendered pages", () => {
+  const SITE = "https://example.org";
+  const TEMPLATE = [
+    "<head>",
+    '    <meta property="og:title" content="Name" />',
+    '    <meta property="og:type" content="website" />',
+    "    <title>Name</title>",
+    "</head>",
+    '<body><div id="root"></div></body>',
+  ].join("\n");
+  const PAGE = {
+    body: "<main><h1>Costs $5 &amp; more</h1></main>",
+    state: "en a b moving",
+    title: 'Notice "one" — Name',
+    url: `${SITE}/legal/`,
+  };
+
+  it("are the landing and the legal texts, never the demo editor", () => {
+    expect([...PRERENDERED_PAGES].sort()).toEqual(
+      ["/", ...LEGAL_SET.map((document) => LEGAL_PATHS[document.id])].sort(),
+    );
+    expect(PRERENDERED_PAGES).not.toContain(DEMO_PATH);
+  });
+
+  it("each have one file and one address, which ends in a slash", () => {
+    expect(PRERENDERED_PAGES.map(pageFile)).toEqual([
+      "index.html",
+      "legal/index.html",
+      "privacy/index.html",
+    ]);
+    expect(PRERENDERED_PAGES.map((page) => pageUrl(SITE, page))).toEqual([
+      `${SITE}/`,
+      `${SITE}/legal/`,
+      `${SITE}/privacy/`,
+    ]);
+  });
+
+  it("go into the built page with their title and canonical address", () => {
+    const html = prerenderedHtml(TEMPLATE, PAGE);
+    expect(html).toContain(
+      '<div id="root" data-prerendered="en a b moving"><main><h1>Costs $5 &amp; more</h1></main></div>',
+    );
+    expect(html).toContain("<title>Notice &quot;one&quot; — Name</title>");
+    expect(html).toContain(
+      '<meta property="og:title" content="Notice &quot;one&quot; — Name" />',
+    );
+    expect(html).toContain(
+      [
+        '    <meta property="og:type" content="website" />',
+        `    <meta property="og:url" content="${SITE}/legal/" />`,
+        `    <link rel="canonical" href="${SITE}/legal/" />`,
+      ].join("\n"),
+    );
+  });
+
+  it("refuse a built page that lost an anchor", () => {
+    for (const anchor of [
+      '<div id="root"></div>',
+      "<title>Name</title>",
+      '<meta property="og:type" content="website" />',
+    ])
+      expect(() => prerenderedHtml(TEMPLATE.replace(anchor, ""), PAGE)).toThrow(
+        /has no/,
+      );
+  });
+
+  it("are listed in the sitemap, which robots.txt names", () => {
+    expect(sitemapXml(SITE)).toBe(
+      [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        `  <url><loc>${SITE}/</loc></url>`,
+        `  <url><loc>${SITE}/legal/</loc></url>`,
+        `  <url><loc>${SITE}/privacy/</loc></url>`,
+        "</urlset>",
+        "",
+      ].join("\n"),
+    );
+    expect(robotsWithSitemap("User-agent: *\nAllow: /\n\n", SITE)).toBe(
+      `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`,
+    );
+  });
+
+  it("are built by build:demo into the folders the plugin reads", () => {
+    const script = (
+      JSON.parse(
+        readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+      ) as { scripts: Record<string, string> }
+    ).scripts["build:demo"];
+    expect(script).toContain(`--outDir ${DEMO_SITE_DIR} `);
+    expect(script).toContain("--ssr src/demo/prerender.tsx");
+    expect(script).toContain(`--outDir ${PRERENDER_OUT_DIR} `);
   });
 });
 

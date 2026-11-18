@@ -48,8 +48,12 @@ export function setLanguage(lng: string): void {
   void i18n.changeLanguage(lng);
 }
 
-export async function initI18n(): Promise<void> {
-  const lng = detectLanguage();
+/**
+ * `lng` fixes the language instead of detecting it: the demo site's
+ * prerender renders its pages in English in Node, where there is no
+ * browser preference to read.
+ */
+export async function initI18n(lng = detectLanguage()): Promise<void> {
   syncDocumentLang(lng);
 
   await i18n.use(initReactI18next).init({

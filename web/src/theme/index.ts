@@ -29,6 +29,7 @@ registerFamily(vision);
 registerFamily(radiant);
 
 export { allThemes } from "./application/registry";
-export const { applyStoredTheme, prefetchSheets } = choices;
+export const { applyStoredTheme, prefetchSheets, firstChoice, resolveChoice } =
+  choices;
 export { ThemeProvider, useTheme } from "./ThemeContext";
 export type { Theme, ThemeFamily, SchemeChoice } from "./domain/types";
