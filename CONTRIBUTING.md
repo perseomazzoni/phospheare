@@ -598,8 +598,9 @@ tests fail the build if any shipped string contains the working name. To
 rename the product, edit `product.json` and rebuild. The desktop program
 carries the public name in its binary file name, `once-dark-studio-desktop`.
 `product.json` also holds `site`, the origin of the public site. The demo
-build writes it into the canonical link of each text page and into
-`sitemap.xml`.
+build writes it into the address of each text page, into the landing's
+canonical link, into the links between the landing's languages (`/` and
+`/it/`) and into `sitemap.xml`.
 
 Everything the browser stores (storage keys, the IndexedDB database, channel
 names) has a neutral name that uses neither the working name nor the product

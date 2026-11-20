@@ -13,6 +13,8 @@ import { preferences } from "../preferences/compose";
 // nothing else wires an adapter.
 
 export const page = documentPage;
+// What a theme writes on a page, for a build that writes it into HTML.
+export { themeMarkup, type ThemeMarkup } from "./page";
 export const account = preferences;
 export const choices = createChoices({
   page: documentPage,

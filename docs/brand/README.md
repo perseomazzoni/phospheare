@@ -37,6 +37,9 @@ In the app:
   on a transparent ground, in the light pair and the dark pair of
   `favicon.svg`. The top of the README shows the one that suits GitHub's
   theme.
+- `link-preview.png`: the picture that a link to the public site shows,
+  1200 × 630: the dark stacked lockup beside the editor, on the landing's
+  ground. The demo build ships it at the site's root.
 - `tray-day.png`, `tray-night.png`: the whole figure on a transparent square,
   in the pair for a light taskbar and the pair for a dark one.
 - `study.html`: the complete study: the origin, the three-mark family, the

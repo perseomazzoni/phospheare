@@ -23,13 +23,17 @@
     "foot": {
       "by": "Di {{author}}"
     },
+    "meta": {
+      "title": "Uno strumento gratuito per scrivere romanzi e racconti — {{product}}",
+      "description": "Uno strumento open source e gratuito per scrivere romanzi e racconti: struttura, appunti, commenti e, se vuoi, assistenti AI. Prova la demo senza registrarti."
+    },
     "hero": {
       "title": "Dall’inizio, passando per ogni revisione, fino all’ultimo dettaglio.",
       "lede": "Quando vuoi un parere puoi attivare un team di assistenti AI che possono aiutarti.",
       "start": "Inizia a scrivere",
       "try": "Prova la demo",
       "price": "Un progetto personale · libero e open source",
-      "category": "Per i tuoi romanzi e le tue storie",
+      "category": "Per scrivere romanzi e racconti",
       "note": "Open source e gratuito, un progetto aperto a tutti, senza fini di lucro · Accedi alla demo senza registrarti e decidi se fa per te · Con Google il tuo lavoro ti segue sugli altri tuoi dispositivi",
       "shotAlt": "L’editor: la struttura del libro a sinistra, il capitolo al centro, i commenti a margine."
     },

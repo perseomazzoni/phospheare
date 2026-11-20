@@ -3,7 +3,8 @@
 // Free software under the GNU Affero General Public License, version 3 or
 // later; the full text is in `LICENSE`.
 
-// The demo site's pages are rendered at build time in English, in the theme
+// The demo site's pages are rendered at build time in English, or in the
+// language their address fixes (`languagePaths.ts`), in the theme
 // a first visit gets, with motion on (`prerender.tsx`). React can take over
 // that HTML only when the visitor's first render is the same markup. These
 // are the inputs that change the markup: the language, the theme choice and

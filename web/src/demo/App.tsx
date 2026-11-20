@@ -3,7 +3,8 @@
 // Free software under the GNU Affero General Public License, version 3 or
 // later; the full text is in `LICENSE`.
 
-// The demo site's routes: the landing, the legal pages it needs, the demo
+// The demo site's routes: the landing at each of its addresses
+// (`languagePaths.ts`), the legal pages it needs, the demo
 // editor and "not found". Every other path of the full program, `/app` and
 // its children among them, falls to "not found". Each module imported here
 // is a module the demo bundle carries, so imports name files, not barrels.
@@ -40,6 +41,7 @@ import { LEGAL_PATHS } from "../legal/domain/paths";
 // The site's own texts by name; shared code reaches them through the twin.
 import { LEGAL_SET } from "../legal/compose.demo";
 import { DEMO_PATH, QUICKSTART_URL } from "../webapp/entry/landing/content";
+import { LANDING_PATHS } from "./languagePaths";
 
 // The editor's own lazy chunk, fetched by the demo route. Not through
 // `editorChunk.ts`, whose other loaders lead to the full program's routes.
@@ -54,7 +56,10 @@ export const demoRoutes: RouteObject[] = [
   {
     ErrorBoundary: RouteFault,
     children: [
-      { path: "/", element: <Landing useEntry={useDownloadEntry} /> },
+      ...Object.values(LANDING_PATHS).map((path) => ({
+        path,
+        element: <Landing useEntry={useDownloadEntry} />,
+      })),
       ...LEGAL_SET.map((document) => ({
         path: LEGAL_PATHS[document.id],
         element: <LegalPage document={document} />,

@@ -23,13 +23,17 @@
     "foot": {
       "by": "By {{author}}"
     },
+    "meta": {
+      "title": "A free writing tool for novels and stories — {{product}}",
+      "description": "A free, open source writing tool for novels and stories, with structure, notes, comments and optional AI assistants. Try the demo without signing up."
+    },
     "hero": {
       "title": "From the start, through rewrites, to the final polish.",
       "lede": "When you want feedback, you can turn on a team of AI assistants that can help you.",
       "start": "Start writing",
       "try": "Try it now",
       "price": "A personal project · free and open source",
-      "category": "For your novels and stories",
+      "category": "A writing tool for novels and stories",
       "note": "Free and open source, a project open to everyone, not for profit · Open the demo without signing up, and decide if it is for you · With Google, your work follows you to your other devices",
       "shotAlt": "The editor: the book's structure on the left, the chapter in the middle, comments in the margin."
     },

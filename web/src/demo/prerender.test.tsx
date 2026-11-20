@@ -17,7 +17,11 @@ import i18n from "i18next";
 import { renderPage } from "./prerender";
 import { DemoRoot, demoRoutes } from "./App";
 import { PRERENDERED_ATTRIBUTE, canHydrate, pageState } from "./pageState";
+import { languageOfPath } from "./languagePaths";
 import { PRODUCT } from "../product";
+import { DEMO_PATH } from "../webapp/entry/landing/content";
+import itLocale from "../locales/it.json";
+import { firstChoice, resolveChoice } from "../theme";
 
 // This file drives React itself, with no Testing Library to declare `act`
 // supported, and every console warning fails a test below.
@@ -63,7 +67,7 @@ async function builtRoot(path: string): Promise<HTMLElement> {
 }
 
 describe("the prerendered pages", () => {
-  for (const path of ["/", "/legal", "/privacy"]) {
+  for (const path of ["/", "/it", "/legal", "/privacy"]) {
     it(`hydrates ${path} with no mismatch`, async () => {
       const root = await builtRoot(path);
       const first = root.firstElementChild;
@@ -91,11 +95,48 @@ describe("the prerendered pages", () => {
     expect(landing.body).toContain("<h1");
     expect(landing.body).toContain('href="/legal"');
     expect(landing.body).toContain('href="/privacy"');
-    expect(landing.title).toBe(PRODUCT.name);
+    // What the program is, then its name, for a search result's title.
+    expect(landing.title).toBe(i18n.t("landing.meta.title"));
+    expect(landing.title).toMatch(new RegExp(`. — ${PRODUCT.name}$`));
     const legal = await renderPage("/legal");
     expect(legal.title).toBe(
       `${i18n.t("legal.notice.title")} — ${PRODUCT.name}`,
     );
+  });
+
+  it("renders the landing in the language its address fixes", async () => {
+    const italian = await renderPage("/it");
+    expect(italian.language).toBe("it");
+    expect(italian.state.split(" ")[0]).toBe("it");
+    expect(italian.body).toContain(itLocale.landing.hero.category);
+    expect(italian.title).toBe(
+      itLocale.landing.meta.title.replace("{{product}}", PRODUCT.name),
+    );
+    expect(italian.description).toBe(itLocale.landing.meta.description);
+    expect(italian.imageAlt).toBe(itLocale.landing.hero.shotAlt);
+    // Every other page is in English, whatever the page before it.
+    const legal = await renderPage("/legal");
+    expect(legal.language).toBe("en");
+    expect(legal.state.split(" ")[0]).toBe("en");
+    // Only the landing describes the program to search engines.
+    expect(legal.description).toBeNull();
+  });
+
+  it("paints every page in the theme a first visit gets", async () => {
+    const page = await renderPage("/");
+    const theme = resolveChoice(firstChoice());
+    expect(page.theme.dataset.theme).toBe(theme?.id);
+    expect(page.theme.sheet).toMatch(/^@layer frame, theme;\n@layer theme \{/);
+    expect(page.theme.sheet.length).toBeGreaterThan(1000);
+  });
+});
+
+describe("languageOfPath", () => {
+  it("fixes the language only at the landing's address in it", () => {
+    expect(languageOfPath("/it")).toBe("it");
+    expect(languageOfPath("/it/")).toBe("it");
+    for (const path of ["/", "/legal", "/it/legal", "/italy", DEMO_PATH])
+      expect(languageOfPath(path), path).toBeUndefined();
   });
 });
 

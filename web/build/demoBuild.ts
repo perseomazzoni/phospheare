@@ -15,17 +15,32 @@ import { extname, join, relative } from "node:path";
 import { moduleName } from "./demoBoundary.ts";
 
 /**
- * The site's pages other than `/`: the demo editor (`DEMO_PATH`) and the
- * site's two legal texts (`legal/compose.demo.ts`). A static host has no
- * rewrite rules, so each page gets its own copy of the built page, and the
- * router inside it reads the address. Written out rather than imported, so
- * `vite.config.ts` loads no app module; the test checks them against the
- * routes.
+ * The landing's address for each language (`src/demo/languagePaths.ts`), the
+ * default one first. Written out rather than imported, as `DEMO_PAGES` is.
+ */
+export const LANDING_PAGES: Readonly<Record<string, string>> = {
+  en: "/",
+  it: "/it",
+};
+
+/** The landing's addresses other than "/". */
+const OTHER_LANDINGS = Object.values(LANDING_PAGES).filter(
+  (page) => page !== "/",
+);
+
+/**
+ * The site's pages other than `/`: the demo editor (`DEMO_PATH`), the
+ * site's two legal texts (`legal/compose.demo.ts`) and the landing in the
+ * other languages. A static host has no rewrite rules, so each page gets its
+ * own copy of the built page, and the router inside it reads the address.
+ * Written out rather than imported, so `vite.config.ts` loads no app module;
+ * the test checks them against the routes.
  */
 export const DEMO_PAGES: readonly string[] = [
   "/app/editor/demo",
   "/legal",
   "/privacy",
+  ...OTHER_LANDINGS,
 ];
 
 /**
@@ -42,12 +57,44 @@ export function demoPageFiles(): string[] {
 }
 
 /**
- * The pages rendered to HTML at build time (`src/demo/prerender.tsx`) and
- * listed in the sitemap: the landing and the legal texts. The demo editor
- * is left out: it is the program, not text to index, and `robots.txt` keeps
- * crawlers out of `/app/`.
+ * The pages rendered to HTML at build time (`src/demo/prerender.tsx`): the
+ * landing in each language and the legal texts. The demo editor is left out:
+ * it is the program, not text to index, and `robots.txt` keeps crawlers out
+ * of `/app/`.
  */
-export const PRERENDERED_PAGES: readonly string[] = ["/", "/legal", "/privacy"];
+export const PRERENDERED_PAGES: readonly string[] = [
+  "/",
+  ...OTHER_LANDINGS,
+  "/legal",
+  "/privacy",
+];
+
+/**
+ * The pages search engines may index and the sitemap offers: the landing,
+ * in each language. The legal texts carry the Author's name and contact,
+ * which the Author chose to keep out of search results: they stay online and
+ * linked from the landing, and carry `noindex` (`prerenderedHtml`).
+ */
+export const SITEMAP_PAGES: readonly string[] = Object.values(LANDING_PAGES);
+
+/**
+ * The other languages of a page, as `[hreflang, address]` pairs: for the
+ * landing, each of its addresses, and "/" again as the one for every other
+ * language (`x-default`), since "/" follows the visitor's language. Every
+ * other page has one language and no pairs.
+ */
+export function alternatesOf(
+  site: string,
+  page: string,
+): (readonly [string, string])[] {
+  if (!SITEMAP_PAGES.includes(page)) return [];
+  return [
+    ...Object.entries(LANDING_PAGES).map(
+      ([language, landing]) => [language, pageUrl(site, landing)] as const,
+    ),
+    ["x-default", pageUrl(site, "/")] as const,
+  ];
+}
 
 /**
  * Where `build:demo` writes the site, and where its second step writes the
@@ -72,6 +119,28 @@ export function pageUrl(site: string, page: string): string {
   return folder ? `${site}/${folder}/` : `${site}/`;
 }
 
+/**
+ * The picture a link to the site shows (Open Graph), shipped by the demo
+ * build at the site's root from `docs/brand/`, and its size in pixels.
+ */
+export const LINK_PREVIEW = {
+  file: "link-preview.png",
+  width: 1200,
+  height: 630,
+} as const;
+
+/**
+ * The program's source repository, as the landing names it (`SOURCE_URL`).
+ * Written out, as `DEMO_PAGES` is.
+ */
+export const SOURCE_REPOSITORY = "https://github.com/perseomazzoni/phospheare";
+
+/** The Open Graph locale of each language the pages are rendered in. */
+const OG_LOCALES: Readonly<Record<string, string>> = {
+  en: "en_GB",
+  it: "it_IT",
+};
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -85,15 +154,69 @@ export interface PrerenderedPage {
   body: string;
   state: string;
   title: string;
+  /** The language the page is rendered in. */
+  language: string;
+  /** What the page says it is, or `null` to keep the built page's own. */
+  description: string | null;
+  /** What the link preview's picture shows, in the page's language. */
+  imageAlt: string;
+  /** The product's name. */
+  product: string;
   url: string;
+  /** False for a page search engines must leave out of their results. */
+  indexed: boolean;
+  /** The page in its other languages (`alternatesOf`). */
+  alternates: readonly (readonly [string, string])[];
+  /** The theme a first visit gets, as the theme writes it (`themeMarkup`). */
+  theme: PaintedTheme;
 }
 
 /**
- * The built page with a prerendered page in it: the markup inside `#root`,
- * the state it was rendered in on `#root`, its own title, and its address as
- * the canonical link and the link preview's. A template without one of the
- * anchors throws, so a change to `index.html` cannot silently ship pages
- * without their text.
+ * What a theme puts on the page: the root's inline properties and data
+ * attributes, and its style element. The shape of `ThemeMarkup` in
+ * `src/theme/page.ts`, written out, as `DEMO_PAGES` is.
+ */
+export interface PaintedTheme {
+  style: [string, string][];
+  dataset: Record<string, string>;
+  sheet: string;
+  sheetId: string;
+}
+
+/**
+ * The root element's attributes that put `theme` on the page before any
+ * script runs, as `applyTheme` would: each data attribute, then the inline
+ * properties.
+ */
+function themeAttributes(theme: PaintedTheme): string {
+  const data = Object.entries(theme.dataset).map(
+    ([name, value]) =>
+      ` data-${name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}="${escapeHtml(value)}"`,
+  );
+  const style = theme.style.map(([name, value]) => `${name}: ${value}`);
+  return `${data.join("")} style="${escapeHtml(style.join("; "))}"`;
+}
+
+/** The theme's style element, or "" for a theme with no sheet. */
+function themeSheet(theme: PaintedTheme): string {
+  if (!theme.sheet) return "";
+  // Inside a style element, only its end tag ends the text.
+  if (/<\/style/i.test(theme.sheet))
+    throw new Error("the theme's sheet holds </style");
+  return `<style id="${escapeHtml(theme.sheetId)}">${theme.sheet}</style>`;
+}
+
+/**
+ * The built page with a prerendered page in it: its language and its theme,
+ * so it paints as the script will leave it, the markup
+ * inside `#root`, the state it was rendered in on `#root`, its own title and
+ * description, and the link preview's address, picture and locale. An
+ * indexed page names its address as the canonical link, then the page in
+ * each of its languages, and says what the program is in data a search
+ * engine reads (`structuredData`); any other page asks search engines not to
+ * index it instead, since a canonical link would say the opposite. A
+ * template without one of the anchors throws, so a change to `index.html`
+ * cannot silently ship pages without their text.
  */
 export function prerenderedHtml(
   template: string,
@@ -101,9 +224,53 @@ export function prerenderedHtml(
 ): string {
   const url = escapeHtml(page.url);
   const title = escapeHtml(page.title);
+  const describe = (whole: string, name: string) =>
+    page.description === null
+      ? whole
+      : `<meta ${name} content="${escapeHtml(page.description)}" />`;
+  const head = (indent: string) =>
+    [
+      `<meta property="og:url" content="${url}" />`,
+      `<meta property="og:locale" content="${OG_LOCALES[page.language] ?? page.language}" />`,
+      `<meta property="og:image" content="${escapeHtml(previewUrl(page.url))}" />`,
+      `<meta property="og:image:width" content="${LINK_PREVIEW.width}" />`,
+      `<meta property="og:image:height" content="${LINK_PREVIEW.height}" />`,
+      `<meta property="og:image:alt" content="${escapeHtml(page.imageAlt)}" />`,
+      '<meta name="twitter:card" content="summary_large_image" />',
+      ...(page.indexed
+        ? [
+            `<link rel="canonical" href="${url}" />`,
+            ...page.alternates.map(
+              ([language, address]) =>
+                `<link rel="alternate" hreflang="${escapeHtml(language)}" href="${escapeHtml(address)}" />`,
+            ),
+            ...(page.description === null
+              ? []
+              : [
+                  `<script type="application/ld+json">${structuredData(page, page.description)}</script>`,
+                ]),
+          ]
+        : ['<meta name="robots" content="noindex" />']),
+    ]
+      .map((line) => `${indent}${line}\n`)
+      .join("");
   // Each swap is a function, so a `$` in the page's text is never read as a
   // replacement pattern.
-  const swaps: [RegExp, (indent: string) => string][] = [
+  const swaps: [RegExp, (indent: string, whole: string) => string][] = [
+    [
+      /<html lang="[^"]*">/,
+      () =>
+        `<html lang="${escapeHtml(page.language)}"${themeAttributes(page.theme)}>`,
+    ],
+    [
+      /([ \t]*)<\/head>/,
+      (indent) => {
+        const sheet = themeSheet(page.theme);
+        return sheet
+          ? `${indent}  ${sheet}\n${indent}</head>`
+          : `${indent}</head>`;
+      },
+    ],
     [
       /<div id="root"><\/div>/,
       () =>
@@ -111,29 +278,71 @@ export function prerenderedHtml(
     ],
     [/<title>[^<]*<\/title>/, () => `<title>${title}</title>`],
     [
+      /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
+      (_indent, whole) => describe(whole, 'name="description"'),
+    ],
+    [
       /<meta property="og:title" content="[^"]*" \/>/,
       () => `<meta property="og:title" content="${title}" />`,
     ],
     [
-      /([ \t]*)<meta property="og:type" content="website" \/>/,
+      /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
+      (_indent, whole) => describe(whole, 'property="og:description"'),
+    ],
+    [
+      /([ \t]*)<meta property="og:type" content="website" \/>\r?\n/,
       (indent) =>
         `${indent}<meta property="og:type" content="website" />\n` +
-        `${indent}<meta property="og:url" content="${url}" />\n` +
-        `${indent}<link rel="canonical" href="${url}" />`,
+        head(indent),
     ],
   ];
   return swaps.reduce((html, [anchor, swap]) => {
     if (!anchor.test(html))
       throw new Error(`the built page has no ${anchor.source} to fill`);
-    return html.replace(anchor, (_whole, indent?: string) =>
-      swap(typeof indent === "string" ? indent : ""),
+    return html.replace(anchor, (whole, indent?: string) =>
+      swap(typeof indent === "string" ? indent : "", whole),
     );
   }, template);
 }
 
-/** The sitemap of the prerendered pages (sitemaps.org protocol 0.9). */
+/** The link preview's picture, at the root of the page's site. */
+function previewUrl(pageUrl: string): string {
+  return new URL(`/${LINK_PREVIEW.file}`, pageUrl).href;
+}
+
+/**
+ * What the program is, as schema.org data in JSON-LD, for a search engine
+ * or an assistant that reads the page. It states only facts the site
+ * states. It names no author: the Author's name stays out of search
+ * results, as on the legal texts. It carries no rating, since none exists.
+ * Google lists no category for writing tools, and `BusinessApplication`,
+ * its category for work tools, is the nearest. `<` is escaped, so no text
+ * can close the script element.
+ */
+export function structuredData(
+  page: PrerenderedPage,
+  description: string,
+): string {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: page.product,
+    description,
+    url: page.url,
+    inLanguage: page.language,
+    image: previewUrl(page.url),
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Windows, macOS, Linux",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    license: "https://www.gnu.org/licenses/agpl-3.0.html",
+    sameAs: [SOURCE_REPOSITORY],
+  }).replace(/</g, "\\u003c");
+}
+
+/** The sitemap of `SITEMAP_PAGES` (sitemaps.org protocol 0.9). */
 export function sitemapXml(site: string): string {
-  const urls = PRERENDERED_PAGES.map(
+  const urls = SITEMAP_PAGES.map(
     (page) => `  <url><loc>${escapeHtml(pageUrl(site, page))}</loc></url>`,
   );
   return [

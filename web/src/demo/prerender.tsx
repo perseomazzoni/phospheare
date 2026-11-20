@@ -19,10 +19,17 @@ import {
 import i18n from "i18next";
 import { DemoRoot, demoRoutes } from "./App";
 import { pageState } from "./pageState";
+import { LANDING_PATHS, languageOfPath } from "./languagePaths";
 import { initI18n } from "../locales/i18n";
 import { LEGAL_PATHS } from "../legal/domain/paths";
 import { LEGAL_SET } from "../legal/compose.demo";
 import { PRODUCT } from "../product";
+import {
+  firstChoice,
+  resolveChoice,
+  themeMarkup,
+  type ThemeMarkup,
+} from "../theme";
 
 /** One page as the build writes it. */
 export interface RenderedPage {
@@ -32,6 +39,14 @@ export interface RenderedPage {
   state: string;
   /** The page's `<title>`. */
   title: string;
+  /** The language it is rendered in, for `<html lang>`. */
+  language: string;
+  /** What the landing says it is, for search results; `null` elsewhere. */
+  description: string | null;
+  /** What the link preview's picture shows, the editor. */
+  imageAlt: string;
+  /** The theme a first visit gets, to paint before any script runs. */
+  theme: ThemeMarkup;
 }
 
 // `useInView` counts a missing `IntersectionObserver` as "in view", for a
@@ -50,17 +65,34 @@ globalThis.IntersectionObserver ??= class {
 
 const languageReady = initI18n("en");
 
-/** The page's title: the product, and the legal text's own title before it. */
+/**
+ * The theme a first visit gets, as `main.tsx` puts it on (`firstChoice`):
+ * the site stores nothing, so it is every visitor's.
+ */
+async function firstTheme(): Promise<ThemeMarkup> {
+  const theme = resolveChoice(firstChoice());
+  if (!theme) throw new Error("no theme for a first visit");
+  return themeMarkup(theme, (await theme.sheet()).trim());
+}
+
+/**
+ * The page's title: the product's name after what the page is, the legal
+ * text's own title or, on the landing, what the program is.
+ */
 function titleOf(path: string): string {
   const document = LEGAL_SET.find((one) => LEGAL_PATHS[one.id] === path);
   return document
     ? `${i18n.t(`legal.${document.text}.title`)} — ${PRODUCT.name}`
-    : PRODUCT.name;
+    : i18n.t("landing.meta.title");
 }
 
-/** Renders the page at `path`, a route of `demoRoutes` with no loader. */
+/**
+ * Renders the page at `path`, a route of `demoRoutes` with no loader, in the
+ * language its address fixes, or in English.
+ */
 export async function renderPage(path: string): Promise<RenderedPage> {
   await languageReady;
+  await i18n.changeLanguage(languageOfPath(path) ?? "en");
   const handler = createStaticHandler(demoRoutes);
   const context = await handler.query(
     new Request(new URL(path, "http://localhost")),
@@ -76,5 +108,15 @@ export async function renderPage(path: string): Promise<RenderedPage> {
       <StaticRouterProvider router={router} context={context} hydrate={false} />
     </DemoRoot>,
   );
-  return { body, state: pageState(), title: titleOf(path) };
+  return {
+    body,
+    state: pageState(),
+    title: titleOf(path),
+    language: i18n.language,
+    description: Object.values(LANDING_PATHS).includes(path)
+      ? i18n.t("landing.meta.description")
+      : null,
+    imageAlt: i18n.t("landing.hero.shotAlt"),
+    theme: await firstTheme(),
+  };
 }

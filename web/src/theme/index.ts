@@ -32,4 +32,5 @@ export { allThemes } from "./application/registry";
 export const { applyStoredTheme, prefetchSheets, firstChoice, resolveChoice } =
   choices;
 export { ThemeProvider, useTheme } from "./ThemeContext";
+export { themeMarkup, type ThemeMarkup } from "./compose";
 export type { Theme, ThemeFamily, SchemeChoice } from "./domain/types";

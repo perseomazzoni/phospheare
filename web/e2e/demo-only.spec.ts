@@ -88,6 +88,7 @@ test("each page answers on its own and every other address is a 404", async ({
 }) => {
   for (const path of [
     "/",
+    "/it/",
     "/app/editor/demo",
     "/app/editor/demo/?lang=it",
     "/legal",
@@ -114,21 +115,75 @@ test("each page answers on its own and every other address is a 404", async ({
 test("each text page carries its text, title and address before any script", async ({
   request,
 }) => {
-  for (const [path, heading, address] of [
-    ["/", "From the start, through rewrites", "/"],
-    ["/legal/", "Legal notice", "/legal/"],
-    ["/privacy/", "Privacy notice", "/privacy/"],
-  ]) {
+  // The legal texts carry the Author's name, which stays out of search
+  // results: `noindex` and no canonical link.
+  for (const [path, heading, language, indexed] of [
+    ["/", "From the start, through rewrites", "en", true],
+    ["/it/", "passando per ogni revisione", "it", true],
+    ["/legal/", "Legal notice", "en", false],
+    ["/privacy/", "Privacy notice", "en", false],
+  ] as const) {
     const html = await (await request.get(path)).text();
     expect(html, path).toMatch(
       /<div id="root" data-prerendered="[^"]+"><[a-z]/,
     );
     expect(html, path).toContain(heading);
+    // In the theme a first visit gets, before any script.
     expect(html, path).toMatch(
-      new RegExp(`<link rel="canonical" href="https://[^"]+${address}" />`),
+      new RegExp(`<html lang="${language}" data-theme="[^"]+"[^>]* style="`),
     );
-    expect(html, path).not.toMatch(/<script(?![^>]*\bsrc=)/);
+    expect(html, path).toContain('<style id="theme-css">@layer frame, theme;');
+    // The landing names its address in each language; "/" serves any other.
+    const alternates = [...html.matchAll(/hreflang="([^"]+)" href="([^"]+)"/g)]
+      .map(([, hreflang, href]) => `${hreflang} ${new URL(href).pathname}`)
+      .sort();
+    expect(alternates, path).toEqual(
+      indexed ? ["en /", "it /it/", "x-default /"] : [],
+    );
+    const canonical = new RegExp(
+      `<link rel="canonical" href="https://[^"]+${path}" />`,
+    );
+    const noindex = '<meta name="robots" content="noindex" />';
+    if (indexed) {
+      expect(html, path).toMatch(canonical);
+      expect(html, path).not.toContain(noindex);
+    } else {
+      expect(html, path).toContain(noindex);
+      expect(html, path).not.toContain('rel="canonical"');
+    }
+    // No inline script runs: the one inline script element is data, which
+    // the landing carries and the policy does not need to allow.
+    expect(html, path).not.toMatch(
+      /<script(?![^>]*\bsrc=)(?! type="application\/ld\+json")/,
+    );
+    const data = [
+      ...html.matchAll(/<script type="application\/ld\+json">([^<]*)</g),
+    ].map(([, json]) => JSON.parse(json ?? ""));
+    expect(data, path).toEqual(
+      indexed
+        ? [
+            expect.objectContaining({
+              "@type": "SoftwareApplication",
+              inLanguage: language,
+            }),
+          ]
+        : [],
+    );
+    expect(html, path).toMatch(
+      /<meta property="og:image" content="https:\/\/[^"]+\/link-preview\.png" \/>/,
+    );
   }
+  // The picture a link to the site shows, at the root of the site.
+  const preview = await request.get("/link-preview.png");
+  expect(preview.status()).toBe(200);
+  expect(preview.headers()["content-type"]).toContain("image/png");
+  // Each landing describes the program in its own language.
+  const described = async (path: string) =>
+    (await (await request.get(path)).text()).match(
+      /<meta name="description" content="([^"]+)" \/>/,
+    )?.[1];
+  expect(await described("/")).toContain("writing tool");
+  expect(await described("/it/")).toContain("scrivere romanzi");
   const landing = await (await request.get("/")).text();
   const legal = await (await request.get("/legal/")).text();
   expect(landing.match(/<title>[^<]*<\/title>/)?.[0]).not.toBe(
@@ -141,7 +196,12 @@ test("each text page carries its text, title and address before any script", asy
   expect(robots).toMatch(/^Sitemap: https:\/\/\S+\/sitemap\.xml$/m);
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.status()).toBe(200);
-  expect(await sitemap.text()).toContain("/privacy/</loc>");
+  const listed = await sitemap.text();
+  expect(listed).toMatch(/<loc>https:\/\/[^<]+\/<\/loc>/);
+  expect(listed).toMatch(/<loc>https:\/\/[^<]+\/it\/<\/loc>/);
+  // The legal texts carry the Author's name and stay out of the sitemap.
+  expect(listed).not.toContain("/legal/");
+  expect(listed).not.toContain("/privacy/");
 });
 
 /**
@@ -190,45 +250,87 @@ async function landingShape(page: Page): Promise<string> {
   });
 }
 
-test("the hydrated landing is the page the browser renders from nothing", async ({
-  browser,
-  baseURL,
+for (const path of ["/", "/it/"])
+  test(`the hydrated landing at ${path} is the page the browser renders from nothing`, async ({
+    browser,
+    baseURL,
+  }) => {
+    // The same bundle twice, at the same fixed time: once on the build's
+    // HTML, once with that HTML taken out, as the site served it before the
+    // prerender. A value the build cannot know (a browser feature, the
+    // platform) shows here as a difference, since the production build keeps
+    // a mismatched attribute without a word.
+    const shapes: string[] = [];
+    for (const strip of [false, true]) {
+      const context = await browser.newContext({ locale: "en-GB" });
+      const page = await context.newPage();
+      await page.clock.install({ time: new Date("2026-11-18T10:00:00Z") });
+      if (strip)
+        await page.route(`${baseURL}${path}`, async (route) => {
+          const answer = await route.fetch();
+          const body = (await answer.text()).replace(
+            /<div id="root" data-prerendered="[^"]*">[\s\S]*<\/div>(\s*<\/body>)/,
+            '<div id="root"></div>$1',
+          );
+          expect(body).not.toContain("data-prerendered");
+          await route.fulfill({ response: answer, body });
+        });
+      await page.goto(path);
+      await page.locator("h1").waitFor();
+      await page.clock.runFor(4000);
+      shapes.push(await landingShape(page));
+      await context.close();
+    }
+    expect(shapes[0].length).toBeGreaterThan(10_000);
+    expect(shapes[0]).toBe(shapes[1]);
+  });
+
+test("the build's page shows in its theme before any script, as the script leaves it", async ({
+  page,
 }) => {
-  // The same bundle twice, at the same fixed time: once on the build's
-  // HTML, once with that HTML taken out, as the site served it before the
-  // prerender. A value the build cannot know (a browser feature, the
-  // platform) shows here as a difference, since the production build keeps
-  // a mismatched attribute without a word.
-  const shapes: string[] = [];
-  for (const strip of [false, true]) {
-    const context = await browser.newContext({ locale: "en-GB" });
-    const page = await context.newPage();
-    await page.clock.install({ time: new Date("2026-11-18T10:00:00Z") });
-    if (strip)
-      await page.route(`${baseURL}/`, async (route) => {
-        const answer = await route.fetch();
-        const body = (await answer.text()).replace(
-          /<div id="root" data-prerendered="[^"]*">[\s\S]*<\/div>(\s*<\/body>)/,
-          '<div id="root"></div>$1',
-        );
-        expect(body).not.toContain("data-prerendered");
-        await route.fulfill({ response: answer, body });
-      });
-    await page.goto("/");
-    await page.locator("h1").waitFor();
-    await page.clock.runFor(4000);
-    shapes.push(await landingShape(page));
-    await context.close();
-  }
-  expect(shapes[0].length).toBeGreaterThan(10_000);
-  expect(shapes[0]).toBe(shapes[1]);
+  // Holds the scripts back, as a slow first visit would: the build's HTML
+  // shows at once, painted in the theme a first visit gets.
+  await page.route(/\/assets\/.*\.js$/, async (route) => {
+    await new Promise((settle) => setTimeout(settle, 1500));
+    await route.continue();
+  });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const root = page.locator("#root");
+  await expect(root).toHaveAttribute("data-prerendered", /.+/);
+  await expect(page.locator("h1")).toBeVisible();
+  // What the eye sees of the theme: the ground, the type and its colours.
+  const looks = () =>
+    page.evaluate(() =>
+      [
+        ["body", "background-color"],
+        ["h1", "color"],
+        ["h1", "font-family"],
+        [".landing-eyebrow", "color"],
+        [".landing-lede", "color"],
+      ].map(([selector, property]) =>
+        getComputedStyle(document.querySelector(selector!)!).getPropertyValue(
+          property!,
+        ),
+      ),
+    );
+  const before = await looks();
+  expect(before[0]).not.toBe("rgba(0, 0, 0, 0)");
+  expect(
+    await page.evaluate(() => document.documentElement.dataset.theme),
+  ).toBeTruthy();
+  // Once the scripts run, they take the page over in the same theme.
+  await expect(root).not.toHaveAttribute("data-prerendered");
+  expect(await looks()).toEqual(before);
 });
 
-for (const [locale, kept] of [
-  ["en-GB", true],
-  ["it-IT", false],
+// "/" is built in English and follows the browser's language; `/it/` is
+// built in Italian and stays Italian in any browser.
+for (const [locale, path, language, kept] of [
+  ["en-GB", "/", "en", true],
+  ["it-IT", "/", "it", false],
+  ["en-GB", "/it/", "it", true],
 ] as const) {
-  test.describe(locale, () => {
+  test.describe(`${locale} on ${path}`, () => {
     test.use({ locale });
 
     test(`the landing ${kept ? "keeps" : "replaces"} the build's HTML, with no error`, async ({
@@ -247,11 +349,8 @@ for (const [locale, kept] of [
           held.builtFirst = document.getElementById("root")?.firstElementChild;
         });
       });
-      await page.goto("/");
-      await expect(page.locator("html")).toHaveAttribute(
-        "lang",
-        locale.slice(0, 2),
-      );
+      await page.goto(path);
+      await expect(page.locator("html")).toHaveAttribute("lang", language);
       await expect(page.locator("h1")).toBeVisible();
       const stillThere = await page.evaluate(
         () =>

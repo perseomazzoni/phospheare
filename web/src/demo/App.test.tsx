@@ -12,8 +12,15 @@ import { demoRoutes } from "./App";
 // site serves, so the list is exact.
 
 describe("the demo site's routes", () => {
-  it("serve the landing, two legal pages, the demo editor and not-found only", () => {
+  it("serve the landing in each language, two legal pages, the demo editor and not-found only", () => {
     const paths = (demoRoutes[0]?.children ?? []).map((route) => route.path);
-    expect(paths).toEqual(["/", "/legal", "/privacy", "/app/editor/demo", "*"]);
+    expect(paths).toEqual([
+      "/",
+      "/it",
+      "/legal",
+      "/privacy",
+      "/app/editor/demo",
+      "*",
+    ]);
   });
 });

@@ -92,6 +92,59 @@ export function isApplied(theme: Theme): boolean {
   );
 }
 
+/** What a theme puts on the page, as data (`themeMarkup`). */
+export interface ThemeMarkup {
+  /** The root's inline properties: the tokens and `color-scheme`. */
+  style: [string, string][];
+  /** The root's data attributes, by their `dataset` names. */
+  dataset: Record<string, string>;
+  /** The text of the theme's style element, or "" for no element. */
+  sheet: string;
+  /** The style element's id. */
+  sheetId: string;
+}
+
+/**
+ * What a theme with the sheet `css` puts on the page, without a page:
+ * `applyTheme` writes it into the document, and the demo site's build writes
+ * it into the HTML of the pages it renders, so they paint in their theme
+ * before any script runs.
+ */
+export function themeMarkup(theme: Theme, css: string): ThemeMarkup {
+  const { frame, decorations } = theme;
+  return {
+    style: [
+      ...THEME_TOKENS.map((token): [string, string] => [
+        token,
+        theme.tokens[token],
+      ]),
+      ...Object.entries(theme.own),
+      // Native controls, form fields and scrollbars follow this rather than
+      // staying stubbornly light on a dark page.
+      ["color-scheme", theme.scheme],
+    ],
+    // Read by the frame's stylesheets, which lay each option out once, and
+    // by the theme's sheet, which paints it.
+    dataset: {
+      theme: theme.id,
+      comments: frame.comments,
+      underBar: frame.underBar,
+      dockTabs: frame.dockTabs,
+      panel: frame.panel,
+      barCentre: frame.barCentre,
+      leaves: frame.leaves,
+      crop: decorations.pageCorners === "crop" ? "1" : "0",
+      marginRule: decorations.marginRule,
+    },
+    // The theme's layer sits over the frame's whatever loads after it
+    // (`styles/frame.css`). The order is stated here too: whichever
+    // statement the browser meets first fixes it, and this sheet can come
+    // first.
+    sheet: css ? `@layer frame, theme;\n@layer theme {\n${css}\n}\n` : "",
+    sheetId: STYLE_ID,
+  };
+}
+
 /**
  * Puts a theme on the page.
  *
@@ -102,38 +155,19 @@ export function applyTheme(theme: Theme): void {
   const css = sheets.get(theme.sheet);
   if (css === undefined)
     throw new Error(`${theme.id}'s sheet is not loaded (loadSheet)`);
+  const markup = themeMarkup(theme, css);
   const root = document.documentElement;
 
-  for (const token of THEME_TOKENS) {
-    root.style.setProperty(token, theme.tokens[token]);
-  }
   // A theme's own tokens leave with it.
   for (const name of ownOnPage) root.style.removeProperty(name);
-  for (const [name, value] of Object.entries(theme.own)) {
-    root.style.setProperty(name, value);
-  }
+  for (const [name, value] of markup.style) root.style.setProperty(name, value);
   ownOnPage = Object.keys(theme.own);
-
-  // Native controls, form fields and scrollbars follow this rather than staying
-  // stubbornly light on a dark page.
-  root.style.colorScheme = theme.scheme;
-  root.dataset.theme = theme.id;
-  // Read by the frame's stylesheets, which lay each option out once, and by
-  // the theme's sheet, which paints it.
-  const { frame, decorations } = theme;
-  root.dataset.comments = frame.comments;
-  root.dataset.underBar = frame.underBar;
-  root.dataset.dockTabs = frame.dockTabs;
-  root.dataset.panel = frame.panel;
-  root.dataset.barCentre = frame.barCentre;
-  root.dataset.leaves = frame.leaves;
-  root.dataset.crop = decorations.pageCorners === "crop" ? "1" : "0";
-  root.dataset.marginRule = decorations.marginRule;
+  Object.assign(root.dataset, markup.dataset);
 
   // One element, replaced wholesale: a theme's sheet must not outlive the
   // theme itself. An empty sheet writes no element.
   let style = document.getElementById(STYLE_ID);
-  if (!css) {
+  if (!markup.sheet) {
     style?.remove();
     return;
   }
@@ -142,10 +176,7 @@ export function applyTheme(theme: Theme): void {
     style.id = STYLE_ID;
     document.head.append(style);
   }
-  // The theme's layer sits over the frame's whatever loads after it
-  // (`styles/frame.css`). The order is stated here too: whichever statement
-  // the browser meets first fixes it, and this sheet can come first.
-  style.textContent = `@layer frame, theme;\n@layer theme {\n${css}\n}\n`;
+  style.textContent = markup.sheet;
 }
 
 /** The scheme alone, so the browser's empty canvas follows the theme early. */

@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://oncedark.studio/">Website and demo</a> ·
   <a href="#quickstart-for-everyone">Quickstart</a> ·
   <a href="docs/install.md">Install guide</a>
 </p>

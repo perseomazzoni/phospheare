@@ -5,7 +5,7 @@
 
 // @vitest-environment jsdom
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { applyTheme, loadSheet, sheetLoaded } from "./page";
+import { applyTheme, loadSheet, sheetLoaded, themeMarkup } from "./page";
 import { matte } from "./themes/matte";
 import { shine } from "./themes/shine";
 import { vision } from "./themes/vision";
@@ -28,6 +28,19 @@ beforeAll(() =>
 );
 
 describe("applyTheme", () => {
+  it("writes on the page exactly what themeMarkup gives the demo site's build", async () => {
+    const theme = await withCss(matte.dark, "a { color: red }");
+    applyTheme(theme);
+    const markup = themeMarkup(theme, "a { color: red }");
+    const root = document.documentElement;
+    for (const [name, value] of markup.style)
+      expect(root.style.getPropertyValue(name), name).toBe(value);
+    expect({ ...root.dataset }).toMatchObject(markup.dataset);
+    expect(markup.sheetId).toBe("theme-css");
+    expect(sheet()?.textContent).toBe(markup.sheet);
+    expect(markup.style).toContainEqual(["color-scheme", "dark"]);
+  });
+
   it("names the frame's layouts the theme picks on the root", () => {
     const root = document.documentElement.dataset;
     applyTheme(vision.light);

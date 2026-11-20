@@ -19,6 +19,10 @@ import {
   DEMO_LEFT_OUT_PUBLIC,
   DEMO_SITE_DIR,
   PRERENDERED_PAGES,
+  SITEMAP_PAGES,
+  LINK_PREVIEW,
+  type PaintedTheme,
+  alternatesOf,
   demoPageFiles,
   demoTwin,
   mayHaveTwin,
@@ -155,9 +159,15 @@ function demoPagesPlugin(): Plugin {
 
 /** What `src/demo/prerender.tsx` exports, as its Node build is imported. */
 interface Prerender {
-  renderPage(
-    path: string,
-  ): Promise<{ body: string; state: string; title: string }>;
+  renderPage(path: string): Promise<{
+    body: string;
+    state: string;
+    title: string;
+    language: string;
+    description: string | null;
+    imageAlt: string;
+    theme: PaintedTheme;
+  }>;
 }
 
 /**
@@ -197,7 +207,10 @@ function demoPrerenderPlugin(): Plugin {
           resolve(site, pageFile(path)),
           prerenderedHtml(template, {
             ...page,
+            product: PRODUCT.name,
             url: pageUrl(PRODUCT_SITE, path),
+            indexed: SITEMAP_PAGES.includes(path),
+            alternates: alternatesOf(PRODUCT_SITE, path),
           }),
         );
       }
@@ -212,8 +225,9 @@ function demoPrerenderPlugin(): Plugin {
 }
 
 /**
- * Ships the program's licence with the demo and removes the install icons
- * Vite copied from `public/` (`DEMO_LEFT_OUT_PUBLIC`).
+ * Ships the program's licence and the link preview's picture
+ * (`LINK_PREVIEW`) with the demo, and removes the install icons Vite copied
+ * from `public/` (`DEMO_LEFT_OUT_PUBLIC`).
  */
 function demoPublicPlugin(): Plugin {
   let outDir = "";
@@ -228,6 +242,13 @@ function demoPublicPlugin(): Plugin {
         type: "asset",
         fileName: "LICENSE.txt",
         source: readFileSync(new URL("../LICENSE", import.meta.url), "utf8"),
+      });
+      this.emitFile({
+        type: "asset",
+        fileName: LINK_PREVIEW.file,
+        source: readFileSync(
+          new URL(`../docs/brand/${LINK_PREVIEW.file}`, import.meta.url),
+        ),
       });
     },
     closeBundle() {
